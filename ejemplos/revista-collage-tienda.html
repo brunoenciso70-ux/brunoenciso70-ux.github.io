@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ANTENA — Tienda urbana, Asunción</title>
+<meta name="description" content="Ropa urbana, zapatillas y accesorios en Asunción. Drops nuevos todas las semanas.">
+<style>
+  :root {
+    --negro: #101014; --fucsia: #e91e8c; --amarillo: #f5e942; --teal: #17c3b2;
+    --blanco: #f5f2fa; --gris: #8b8798;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background: var(--negro); color: var(--blanco); line-height: 1.5; overflow-x: hidden; }
+
+  nav { display: flex; justify-content: space-between; align-items: center; padding: 18px 5vw; }
+  .brand { font-weight: 900; font-size: 22px; letter-spacing: 0.14em; }
+  .brand i { font-style: normal; color: var(--fucsia); }
+  .btn {
+    display: inline-block; background: var(--amarillo); color: var(--negro); text-decoration: none;
+    padding: 11px 24px; font-weight: 800; font-size: 13.5px; text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .btn:hover { background: var(--fucsia); color: #fff; }
+
+  /* cinta marquee arriba (efecto E3) */
+  .cinta { background: var(--fucsia); overflow: hidden; }
+  .cinta-in { display: flex; gap: 30px; padding: 9px 15px; white-space: nowrap; animation: marq 11s linear infinite; width: max-content; }
+  .cinta-in span { font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; }
+  @keyframes marq { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  /* HERO estilo revista: grid de paneles como el collage */
+  .revista {
+    display: grid; gap: 10px; padding: 22px 5vw 10px;
+    grid-template-columns: 1.4fr 1fr 1fr;
+    grid-template-rows: 150px 150px;
+  }
+  @media (max-width: 760px) { .revista { grid-template-columns: 1fr 1fr; grid-template-rows: auto; } .panel.p1 { grid-column: span 2; } }
+  .panel { border-radius: 6px; padding: 18px; display: flex; flex-direction: column; justify-content: flex-end; position: relative; overflow: hidden; }
+  .panel h1, .panel .big { font-weight: 900; text-transform: uppercase; line-height: 0.95; }
+  .p1 { background: var(--amarillo); color: var(--negro); grid-row: span 2; }
+  .p1 h1 { font-size: clamp(34px, 5.5vw, 58px); }
+  .p1 .sub { font-weight: 700; font-size: 13px; margin-top: 10px; }
+  .p2 { background: linear-gradient(135deg, var(--fucsia), #8f1157); }
+  .p2 .big { font-size: 22px; }
+  .p3 { background: #1d1d26; border: 1px solid #2c2c3a; }
+  .p3 .big { font-size: 20px; color: var(--teal); }
+  .p4 { background: linear-gradient(135deg, var(--teal), #0a5a52); }
+  .p4 .big { font-size: 20px; }
+  .p5 { background: #1d1d26; border: 1px solid #2c2c3a; }
+  .p5 .big { font-size: 20px; color: var(--amarillo); }
+  .panel .mini { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; opacity: 0.75; }
+  .panel .fig { position: absolute; top: -18px; right: -18px; width: 74px; height: 74px; border-radius: 99px; opacity: 0.3; background: #fff; }
+
+  section { padding: 56px 5vw; max-width: 1000px; margin: 0 auto; }
+  h2 { font-size: 14px; font-weight: 900; letter-spacing: 0.3em; text-transform: uppercase; color: var(--fucsia); margin-bottom: 24px; }
+
+  .drops { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+  .drop { text-decoration: none; color: var(--blanco); }
+  .drop .ph { aspect-ratio: 4/5; border-radius: 6px; overflow: hidden; position: relative; }
+  .drop .ph > div { width: 100%; height: 100%; transition: transform 0.5s ease; display: flex; align-items: center; justify-content: center; font-weight: 800; color: rgba(255,255,255,0.5); font-size: 12px; }
+  .drop:hover .ph > div { transform: scale(1.1) rotate(1.5deg); }
+  .g1 { background: linear-gradient(135deg, #3a3a4a, #17171f); }
+  .g2 { background: linear-gradient(135deg, var(--fucsia), #6b1044); }
+  .g3 { background: linear-gradient(135deg, #4a3aa7, #221a52); }
+  .g4 { background: linear-gradient(135deg, var(--teal), #0a5a52); }
+  .drop .et { position: absolute; top: 10px; left: 10px; background: var(--amarillo); color: var(--negro); font-size: 10.5px; font-weight: 800; text-transform: uppercase; padding: 3px 10px; }
+  .drop .nm { font-weight: 700; font-size: 14px; margin-top: 10px; }
+  .drop .pr { color: var(--gris); font-size: 13.5px; }
+
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (max-width: 640px) { .split { grid-template-columns: 1fr; } }
+  .split .bloque { border-radius: 6px; padding: 30px 24px; }
+  .b1 { background: var(--fucsia); }
+  .b1 .big { font-size: 24px; font-weight: 900; text-transform: uppercase; line-height: 1.05; }
+  .b1 p { font-size: 13.5px; margin-top: 8px; opacity: 0.9; }
+  .b2 { background: #1d1d26; border: 1px solid #2c2c3a; }
+  .b2 h3 { color: var(--amarillo); font-size: 13px; text-transform: uppercase; letter-spacing: 0.15em; }
+  .b2 p { font-size: 14px; color: var(--gris); margin-top: 8px; }
+  .b2 p b { color: var(--blanco); }
+
+  footer { text-align: center; padding: 28px; color: var(--gris); font-size: 13px; border-top: 1px solid #2c2c3a; }
+  footer a { color: var(--blanco); }
+  .wa-float {
+    position: fixed; right: 18px; bottom: 18px; width: 56px; height: 56px; border-radius: 99px;
+    background: #25d366; color: #fff; display: flex; align-items: center; justify-content: center;
+    font-size: 28px; text-decoration: none; box-shadow: 0 6px 18px rgba(0,0,0,0.4); z-index: 30;
+  }
+</style>
+</head>
+<body>
+
+<div class="cinta"><div class="cinta-in" id="cinta"></div></div>
+
+<nav>
+  <div class="brand">ANTENA<i>*</i></div>
+  <a class="btn" href="https://wa.me/595983518856?text=Hola!%20Quiero%20ver%20el%20drop%20nuevo">Pedir por WhatsApp</a>
+</nav>
+
+<div class="revista">
+  <div class="panel p1">
+    <div class="mini">Tienda urbana · Asunción</div>
+    <h1>Drop<br>nuevo<br>cada<br>semana</h1>
+    <div class="sub">Ropa, zapatillas y accesorios que no vas a ver repetidos.</div>
+  </div>
+  <div class="panel p2"><div class="fig"></div><div class="mini">Hasta agotar</div><div class="big">−30% en hoodies</div></div>
+  <div class="panel p3"><div class="mini">Recién llegado</div><div class="big">Zapas edición limitada</div></div>
+  <div class="panel p4"><div class="fig"></div><div class="mini">Envíos</div><div class="big">24h en Asunción</div></div>
+  <div class="panel p5"><div class="mini">Comunidad</div><div class="big">+5.000 en Instagram</div></div>
+</div>
+
+<section>
+  <h2>El drop de esta semana</h2>
+  <div class="drops">
+    <a class="drop" href="https://wa.me/595983518856?text=Hola!%20Quiero%20el%20hoodie%20Antena%20negro">
+      <div class="ph"><div class="g1">HOODIE</div><span class="et">Nuevo</span></div>
+      <div class="nm">Hoodie Antena negro</div><div class="pr">280.000 Gs</div>
+    </a>
+    <a class="drop" href="https://wa.me/595983518856?text=Hola!%20Quiero%20la%20remera%20fucsia%20oversize">
+      <div class="ph"><div class="g2">REMERA</div><span class="et">Hot</span></div>
+      <div class="nm">Remera fucsia oversize</div><div class="pr">150.000 Gs</div>
+    </a>
+    <a class="drop" href="https://wa.me/595983518856?text=Hola!%20Quiero%20las%20zapas%20retro%20violeta">
+      <div class="ph"><div class="g3">ZAPAS</div><span class="et">Últimas</span></div>
+      <div class="nm">Zapas retro violeta</div><div class="pr">520.000 Gs</div>
+    </a>
+    <a class="drop" href="https://wa.me/595983518856?text=Hola!%20Quiero%20la%20gorra%20teal">
+      <div class="ph"><div class="g4">GORRA</div><span class="et">Nuevo</span></div>
+      <div class="nm">Gorra teal bordada</div><div class="pr">95.000 Gs</div>
+    </a>
+  </div>
+</section>
+
+<section>
+  <h2>Cómo comprar</h2>
+  <div class="split">
+    <div class="bloque b1">
+      <div class="big">Lo ves. Lo pedís. Es tuyo.</div>
+      <p>Tocá cualquier producto y se abre WhatsApp con el pedido armado. Pagás por transferencia o giro y en 24h lo tenés.</p>
+    </div>
+    <div class="bloque b2">
+      <h3>Showroom</h3>
+      <p><b>Av. Ejemplo 555, Asunción</b><br>Miér–Sáb 14:00–20:00<br>Probate todo, sin compromiso.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <strong style="color:var(--blanco)">ANTENA*</strong> · Asunción · <a href="https://wa.me/595983518856">0970 000 000</a><br>
+  <span style="opacity:0.65">Página de demostración — diseño: KatuWeb · WhatsApp +595 983 518 856</span>
+</footer>
+
+<a class="wa-float" href="https://wa.me/595983518856" aria-label="WhatsApp">✆</a>
+
+<script>
+(function () {
+  'use strict';
+  // cinta marquee (efecto E3)
+  var items = ['Drop nuevo cada viernes', '★', 'Envíos a todo el país', '★', 'Cambios sin drama', '★'];
+  var c = document.getElementById('cinta');
+  items.concat(items).forEach(function (t) {
+    var s = document.createElement('span');
+    s.textContent = t;
+    c.appendChild(s);
+  });
+  // reveal de paneles (efecto E2)
+  var io = new IntersectionObserver(function (es) {
+    es.forEach(function (en) {
+      if (en.isIntersecting) { en.target.style.opacity = 1; en.target.style.transform = 'none'; io.unobserve(en.target); }
+    });
+  }, { threshold: 0.1 });
+  var revs = document.querySelectorAll('.panel, .drop, .bloque');
+  revs.forEach(function (el, i) {
+    el.style.opacity = 0; el.style.transform = 'translateY(20px)';
+    el.style.transition = 'opacity 0.5s ease ' + (i % 6) * 0.08 + 's, transform 0.5s ease ' + (i % 6) * 0.08 + 's';
+    io.observe(el);
+  });
+  // respaldo: nada queda invisible pase lo que pase
+  setTimeout(function () {
+    revs.forEach(function (el) { el.style.opacity = 1; el.style.transform = 'none'; });
+  }, 2500);
+})();
+</script>
+</body>
+</html>

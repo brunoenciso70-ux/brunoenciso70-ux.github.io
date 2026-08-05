@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NUBE — Software y sistemas, Asunción</title>
+<meta name="description" content="Desarrollo de sistemas, apps y automatización para empresas paraguayas. Facturación, inventario, pedidos.">
+<style>
+  :root {
+    --bg: #0d0d12; --panel: #16161f; --panel-2: #1c1c28; --linea: #262636;
+    --blanco: #f0f0f6; --gris: #8a8aa3; --azul: #4d7fff; --cian: #22d3ee; --lima: #a3e635;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background: var(--bg); color: var(--blanco); line-height: 1.6; }
+
+  nav { display: flex; justify-content: space-between; align-items: center; padding: 18px 5vw; border-bottom: 1px solid var(--linea); position: sticky; top: 0; background: rgba(13,13,18,0.85); backdrop-filter: blur(10px); z-index: 20; }
+  .brand { font-weight: 800; font-size: 19px; }
+  .brand span { color: var(--cian); }
+  .btn {
+    display: inline-block; background: var(--azul); color: #fff; text-decoration: none;
+    padding: 11px 22px; font-weight: 700; font-size: 14px; border-radius: 9px;
+    box-shadow: 0 0 24px rgba(77,127,255,0.35);
+  }
+  .btn:hover { filter: brightness(1.12); }
+  .btn.ghost { background: transparent; border: 1px solid var(--linea); box-shadow: none; color: var(--gris); }
+
+  .hero { text-align: center; padding: 84px 5vw 70px; position: relative; overflow: hidden; }
+  .hero::before {
+    content: ""; position: absolute; inset: -40% -20% auto; height: 130%;
+    background: radial-gradient(ellipse at 50% 0%, rgba(77,127,255,0.22), transparent 60%);
+    pointer-events: none;
+  }
+  .hero .kick { color: var(--cian); font-size: 13px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; }
+  .hero h1 { font-size: clamp(36px, 7vw, 64px); font-weight: 800; line-height: 1.06; letter-spacing: -0.02em; margin-top: 14px; }
+  .hero h1 .l2 { color: var(--azul); }
+  .hero h1 .l3 { color: var(--cian); }
+  .hero p { color: var(--gris); font-size: 17px; margin-top: 16px; max-width: 52ch; margin-inline: auto; }
+  .hero .cta { margin-top: 28px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+  .stats { display: flex; justify-content: center; gap: 44px; padding: 10px 5vw 40px; flex-wrap: wrap; }
+  .stat { text-align: center; }
+  .stat .n { font-size: 30px; font-weight: 800; color: var(--lima); font-variant-numeric: tabular-nums; }
+  .stat .l { font-size: 12.5px; color: var(--gris); }
+
+  section { padding: 60px 5vw; max-width: 1040px; margin: 0 auto; }
+  h2 { font-size: 24px; font-weight: 800; letter-spacing: -0.01em; }
+  .sub { color: var(--gris); margin-top: 6px; margin-bottom: 28px; }
+
+  /* bento grid */
+  .bento { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  @media (max-width: 860px) { .bento { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 520px) { .bento { grid-template-columns: 1fr; } }
+  .cell {
+    background: var(--panel); border: 1px solid var(--linea); border-radius: 16px; padding: 24px;
+    transition: transform 0.18s ease, border-color 0.18s ease;
+  }
+  .cell:hover { transform: translateY(-4px); border-color: var(--azul); }
+  .cell.big { grid-column: span 2; background: linear-gradient(140deg, var(--panel-2), var(--panel)); }
+  .cell .ico { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 17px; background: rgba(77,127,255,0.18); color: var(--azul); }
+  .cell:nth-child(2) .ico { background: rgba(34,211,238,0.15); color: var(--cian); }
+  .cell:nth-child(3) .ico { background: rgba(163,230,53,0.14); color: var(--lima); }
+  .cell h3 { font-size: 16.5px; margin-top: 14px; }
+  .cell p { font-size: 13.5px; color: var(--gris); margin-top: 6px; }
+  .cell .tag { display: inline-block; margin-top: 12px; font-size: 11.5px; font-weight: 700; color: var(--cian); background: rgba(34,211,238,0.1); padding: 4px 12px; border-radius: 99px; }
+
+  /* logos marquee */
+  .logos-band { border-block: 1px solid var(--linea); overflow: hidden; }
+  .logos-in { display: flex; gap: 54px; padding: 22px; white-space: nowrap; animation: marq 16s linear infinite; align-items: center; width: max-content; }
+  .logos-in span { font-size: 14.5px; font-weight: 800; color: #4a4a60; letter-spacing: 0.1em; }
+  @keyframes marq { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  .cta-final { text-align: center; background: linear-gradient(140deg, var(--panel-2), var(--panel)); border: 1px solid var(--linea); border-radius: 20px; padding: 48px 24px; }
+  .cta-final h2 span { color: var(--lima); }
+  .cta-final p { color: var(--gris); margin-top: 8px; }
+  .cta-final .btn { margin-top: 24px; }
+
+  footer { text-align: center; padding: 28px; color: var(--gris); font-size: 13px; border-top: 1px solid var(--linea); }
+  footer a { color: var(--blanco); }
+  .wa-float {
+    position: fixed; right: 18px; bottom: 18px; width: 56px; height: 56px; border-radius: 99px;
+    background: #25d366; color: #fff; display: flex; align-items: center; justify-content: center;
+    font-size: 28px; text-decoration: none; box-shadow: 0 6px 18px rgba(0,0,0,0.4); z-index: 30;
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="brand">NUBE<span>_</span></div>
+  <a class="btn" href="https://wa.me/595983518856?text=Hola!%20Necesito%20un%20sistema%20para%20mi%20empresa">Pedir demo</a>
+</nav>
+
+<div class="hero">
+  <div class="kick">Software a medida · Paraguay</div>
+  <h1>Pensalo.<br><span class="l2">Pedilo.</span><br><span class="l3">Listo.</span></h1>
+  <p>Sistemas de facturación, inventario y pedidos hechos para empresas paraguayas.
+  Sin licencias eternas ni sistemas que nadie entiende.</p>
+  <div class="cta">
+    <a class="btn" href="https://wa.me/595983518856?text=Hola!%20Quiero%20una%20demo">Pedir una demo</a>
+    <a class="btn ghost" href="#soluciones">Ver soluciones</a>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="n" data-meta="45">0</div><div class="l">empresas usan NUBE</div></div>
+  <div class="stat"><div class="n" data-meta="99">0</div><div class="l">% de uptime</div></div>
+  <div class="stat"><div class="n" data-meta="8">0</div><div class="l">años en el mercado</div></div>
+</div>
+
+<div class="logos-band">
+  <div class="logos-in" id="logos"></div>
+</div>
+
+<section id="soluciones">
+  <h2>Todo tu negocio, en una pantalla</h2>
+  <p class="sub">Módulos que se combinan según lo que tu empresa necesita.</p>
+  <div class="bento">
+    <div class="cell big">
+      <div class="ico">F</div>
+      <h3>Facturación electrónica</h3>
+      <p>Emití facturas legales en segundos, integrado con el sistema tributario. Tus números siempre al día.</p>
+      <span class="tag">El más pedido</span>
+    </div>
+    <div class="cell">
+      <div class="ico">I</div>
+      <h3>Inventario</h3>
+      <p>Stock en tiempo real con alertas de reposición.</p>
+    </div>
+    <div class="cell">
+      <div class="ico">P</div>
+      <h3>Pedidos y ventas</h3>
+      <p>Del WhatsApp del cliente a tu sistema, sin retipear.</p>
+    </div>
+    <div class="cell">
+      <div class="ico">R</div>
+      <h3>Reportes</h3>
+      <p>Ventas del día en tu teléfono, cada mañana a las 7.</p>
+    </div>
+    <div class="cell">
+      <div class="ico">C</div>
+      <h3>Clientes</h3>
+      <p>Historial, deudas y recordatorios de cobro automáticos.</p>
+    </div>
+    <div class="cell big">
+      <div class="ico">+</div>
+      <h3>A tu medida</h3>
+      <p>¿Tu negocio funciona distinto? El sistema se adapta a vos, no al revés. Contanos cómo trabajás y lo armamos.</p>
+      <span class="tag">Consultanos</span>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="cta-final">
+    <h2>Tu competencia ya <span>automatizó</span></h2>
+    <p>Una demo de 20 minutos y sabés si es para vos. Sin compromiso.</p>
+    <a class="btn" href="https://wa.me/595983518856?text=Hola!%20Quiero%20la%20demo%20de%2020%20minutos">Agendar demo de 20 min</a>
+  </div>
+</section>
+
+<footer>
+  <strong style="color:var(--blanco)">NUBE Software</strong> · Asunción · <a href="https://wa.me/595983518856">0970 000 000</a><br>
+  <span style="opacity:0.65">Página de demostración — diseño: KatuWeb · WhatsApp +595 983 518 856</span>
+</footer>
+
+<a class="wa-float" href="https://wa.me/595983518856" aria-label="WhatsApp">✆</a>
+
+<script>
+(function () {
+  'use strict';
+  // logos marquee (duplicated)
+  var names = ['FERRETERÍA CENTRAL', 'DISTRIBUIDORA KOKUÉ', 'FARMACIA SANTA ANA', 'AUTOPARTES RUTA 2', 'SUPER SAN JOSÉ'];
+  var cont = document.getElementById('logos');
+  names.concat(names).forEach(function (n) {
+    var s = document.createElement('span');
+    s.textContent = n;
+    cont.appendChild(s);
+  });
+  // counters on view (efecto E7)
+  function ease(t) { return 1 - Math.pow(1 - t, 4); }
+  function count(el) {
+    var end = +el.dataset.meta, t0 = null;
+    function step(ts) {
+      if (!t0) t0 = ts;
+      var p = Math.min((ts - t0) / 1400, 1);
+      el.textContent = Math.round(end * ease(p));
+      if (p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  var done = false;
+  new IntersectionObserver(function (es) {
+    es.forEach(function (en) {
+      if (en.isIntersecting && !done) { done = true; document.querySelectorAll('.stat .n').forEach(count); }
+    });
+  }).observe(document.querySelector('.stats'));
+  // scroll reveal (efecto E2)
+  var io = new IntersectionObserver(function (es) {
+    es.forEach(function (en) {
+      if (en.isIntersecting) { en.target.style.opacity = 1; en.target.style.transform = 'none'; io.unobserve(en.target); }
+    });
+  }, { threshold: 0.15 });
+  var cells = document.querySelectorAll('.cell');
+  cells.forEach(function (c, i) {
+    c.style.opacity = 0; c.style.transform = 'translateY(22px)';
+    c.style.transition = 'opacity 0.55s ease ' + (i * 0.08) + 's, transform 0.55s ease ' + (i * 0.08) + 's, border-color 0.18s ease';
+    io.observe(c);
+  });
+  // respaldo: nada queda invisible pase lo que pase
+  setTimeout(function () {
+    cells.forEach(function (c) { c.style.opacity = 1; c.style.transform = 'none'; });
+  }, 2500);
+})();
+</script>
+</body>
+</html>

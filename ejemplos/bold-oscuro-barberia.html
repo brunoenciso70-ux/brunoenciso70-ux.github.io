@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EL PATRÓN — Barbería, Asunción</title>
+<meta name="description" content="Barbería en Asunción. Cortes clásicos y modernos, barba, cejas. Reservá tu turno por WhatsApp.">
+<style>
+  :root {
+    --negro: #121212; --negro-2: #1b1b1b; --oro: #c8a24a; --blanco: #f5f2ea;
+    --gris: #9b968c; --linea: #2c2c2c;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background: var(--negro); color: var(--blanco); line-height: 1.6; }
+
+  nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 5vw; border-bottom: 1px solid var(--linea); }
+  .brand { font-weight: 900; font-size: 20px; letter-spacing: 0.22em; }
+  .brand span { color: var(--oro); }
+  .btn {
+    display: inline-block; background: var(--oro); color: var(--negro); text-decoration: none;
+    padding: 12px 26px; font-weight: 800; font-size: 13.5px; letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .btn:hover { filter: brightness(1.1); }
+
+  .hero { text-align: center; padding: 100px 5vw 88px; background: radial-gradient(ellipse at 50% 0%, #24211a 0%, var(--negro) 65%); }
+  .hero .kicker { color: var(--oro); font-size: 13px; letter-spacing: 0.4em; text-transform: uppercase; font-weight: 700; }
+  .hero h1 { font-size: clamp(44px, 9vw, 88px); font-weight: 900; letter-spacing: 0.02em; text-transform: uppercase; margin-top: 14px; line-height: 1.05; }
+  .hero p { color: var(--gris); margin-top: 16px; font-size: 17px; }
+  .hero .btn { margin-top: 32px; padding: 16px 38px; }
+
+  section { padding: 72px 5vw; max-width: 900px; margin: 0 auto; }
+  h2 { font-size: 15px; letter-spacing: 0.35em; text-transform: uppercase; color: var(--oro); font-weight: 800; text-align: center; margin-bottom: 40px; }
+
+  .precios { border-top: 1px solid var(--linea); }
+  .fila { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 18px 4px; border-bottom: 1px solid var(--linea); }
+  .fila .serv { font-size: 18px; font-weight: 650; }
+  .fila .desc { font-size: 13px; color: var(--gris); margin-top: 2px; }
+  .fila .precio { font-size: 17px; font-weight: 800; color: var(--oro); white-space: nowrap; }
+
+  .galeria { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; }
+  .g { aspect-ratio: 1; background: linear-gradient(150deg, #2b2b2b, #191919); border: 1px solid var(--linea); display: flex; align-items: center; justify-content: center; color: #4a4a4a; font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase; }
+
+  .datos { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+  .dato { background: var(--negro-2); border: 1px solid var(--linea); padding: 24px; text-align: center; }
+  .dato h3 { color: var(--oro); font-size: 12px; letter-spacing: 0.25em; text-transform: uppercase; }
+  .dato p { margin-top: 10px; font-size: 15.5px; }
+  .dato small { color: var(--gris); }
+
+  footer { border-top: 1px solid var(--linea); text-align: center; padding: 30px 5vw; color: var(--gris); font-size: 13.5px; }
+  footer a { color: var(--blanco); }
+  .wa-float {
+    position: fixed; right: 18px; bottom: 18px; width: 56px; height: 56px; border-radius: 99px;
+    background: #25d366; color: #fff; display: flex; align-items: center; justify-content: center;
+    font-size: 28px; text-decoration: none; box-shadow: 0 6px 18px rgba(0,0,0,0.4); z-index: 30;
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="brand">EL <span>PATRÓN</span></div>
+  <a class="btn" href="https://wa.me/595983518856?text=Hola!%20Quiero%20reservar%20un%20turno">Reservar</a>
+</nav>
+
+<div class="hero">
+  <div class="kicker">Barbería · Asunción</div>
+  <h1>Salí<br>hecho otro</h1>
+  <p>Cortes clásicos y modernos, barba prolija, atención sin apuro. Con turno, sin fila.</p>
+  <a class="btn" href="https://wa.me/595983518856?text=Hola!%20Quiero%20reservar%20un%20turno">Reservar mi turno</a>
+</div>
+
+<section>
+  <h2>Precios</h2>
+  <div class="precios">
+    <div class="fila">
+      <div><div class="serv">Corte</div><div class="desc">Clásico o degradé, con terminación a navaja</div></div>
+      <div class="precio">50.000 Gs</div>
+    </div>
+    <div class="fila">
+      <div><div class="serv">Corte + barba</div><div class="desc">El combo completo, con toalla caliente</div></div>
+      <div class="precio">75.000 Gs</div>
+    </div>
+    <div class="fila">
+      <div><div class="serv">Barba</div><div class="desc">Perfilado, navaja y aceite</div></div>
+      <div class="precio">35.000 Gs</div>
+    </div>
+    <div class="fila">
+      <div><div class="serv">Corte niños</div><div class="desc">Hasta 12 años, con paciencia de sobra</div></div>
+      <div class="precio">40.000 Gs</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Trabajos</h2>
+  <div class="galeria">
+    <div class="g">Foto 1</div><div class="g">Foto 2</div><div class="g">Foto 3</div>
+    <div class="g">Foto 4</div><div class="g">Foto 5</div><div class="g">Foto 6</div>
+  </div>
+</section>
+
+<section>
+  <h2>Encontranos</h2>
+  <div class="datos">
+    <div class="dato"><h3>Dirección</h3><p>Av. Ejemplo 321<br>Lambaré</p></div>
+    <div class="dato"><h3>Horarios</h3><p>Mar–Sáb 9:00–20:00</p><small>Lunes cerrado</small></div>
+    <div class="dato"><h3>Turnos</h3><p>Por WhatsApp<br>0970 000 000</p></div>
+  </div>
+</section>
+
+<footer>
+  <strong style="color:var(--blanco)">EL PATRÓN</strong> · Barbería · Lambaré · <a href="https://wa.me/595983518856">0970 000 000</a><br>
+  <span style="opacity:0.65">Página de demostración — diseño: KatuWeb · WhatsApp +595 983 518 856</span>
+</footer>
+
+<a class="wa-float" href="https://wa.me/595983518856" aria-label="WhatsApp">✆</a>
+
+</body>
+</html>

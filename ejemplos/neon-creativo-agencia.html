@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PIRAÑA — Estudio creativo, Asunción</title>
+<meta name="description" content="Estudio creativo en Asunción: diseño, redes sociales, video y branding para marcas con actitud.">
+<style>
+  :root {
+    --negro: #14121c; --panel: #1d1a29; --linea: #322d45;
+    --fucsia: #e91e8c; --amarillo: #f5e942; --blanco: #f2f0fa; --gris: #8d87a5;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background: var(--negro); color: var(--blanco); line-height: 1.6; overflow-x: hidden; }
+
+  nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 5vw; }
+  .brand { font-weight: 900; font-size: 21px; letter-spacing: 0.06em; }
+  .brand span { color: var(--fucsia); }
+  .btn {
+    display: inline-block; background: var(--fucsia); color: var(--negro); text-decoration: none;
+    padding: 12px 26px; font-weight: 800; font-size: 13.5px; border-radius: 4px;
+    box-shadow: 0 0 22px rgba(233,30,140,0.55);
+  }
+  .btn:hover { background: var(--amarillo); box-shadow: 0 0 22px rgba(245,233,66,0.55); }
+
+  .hero {
+    position: relative; overflow: hidden; padding: 90px 5vw 100px; text-align: left;
+    background: linear-gradient(125deg, #17141f 58%, #b2166c 58.5%, var(--fucsia) 84%, var(--amarillo) 84.5%);
+  }
+  .hero .kick { color: var(--amarillo); font-size: 13px; letter-spacing: 0.35em; text-transform: uppercase; font-weight: 800; }
+  .hero h1 { font-size: clamp(40px, 8vw, 76px); font-weight: 900; text-transform: uppercase; line-height: 1.02; margin-top: 14px; max-width: 12ch; }
+  .hero h1 em { font-style: normal; color: var(--fucsia); -webkit-text-stroke: 0; }
+  .hero p { color: var(--gris); margin-top: 16px; font-size: 16px; max-width: 44ch; }
+  .hero .btn { margin-top: 28px; }
+  .blob { position: absolute; border-radius: 99px; opacity: 0.5; animation: floaty 7s ease-in-out infinite; pointer-events: none; }
+  @keyframes floaty { 0%,100% { transform: translate(0,0) rotate(0); } 50% { transform: translate(12px,-14px) rotate(10deg); } }
+
+  section { padding: 68px 5vw; max-width: 1000px; margin: 0 auto; }
+  h2 { color: var(--fucsia); font-size: 13px; letter-spacing: 0.3em; text-transform: uppercase; font-weight: 800; margin-bottom: 28px; }
+
+  .servs { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+  .serv { background: var(--panel); border: 1px solid var(--linea); border-radius: 10px; padding: 22px; transition: transform 0.18s ease, box-shadow 0.18s ease; }
+  .serv:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(233,30,140,0.25); }
+  .serv .n { font-size: 26px; font-weight: 900; color: var(--amarillo); }
+  .serv h3 { font-size: 16px; margin-top: 8px; }
+  .serv p { font-size: 13.5px; color: var(--gris); margin-top: 6px; }
+
+  .works { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; }
+  .work { aspect-ratio: 1; border-radius: 10px; display: flex; align-items: flex-end; padding: 12px; font-size: 12px; font-weight: 700; }
+  .w1 { background: linear-gradient(135deg, var(--fucsia), #6b1044); }
+  .w2 { background: linear-gradient(135deg, var(--amarillo), #8a7f10); color: var(--negro); }
+  .w3 { background: linear-gradient(135deg, #4a3aa7, #1d1a29); }
+  .w4 { background: linear-gradient(135deg, #ff7a1a, #7a3505); }
+  .w5 { background: linear-gradient(135deg, #17c3b2, #0a5a52); }
+  .w6 { background: linear-gradient(135deg, #b2166c, #1d1a29); }
+
+  .cta { text-align: center; background: var(--panel); border: 1px solid var(--linea); border-radius: 14px; padding: 44px 24px; }
+  .cta h2 { margin-bottom: 8px; }
+  .cta .big { font-size: clamp(24px, 5vw, 38px); font-weight: 900; text-transform: uppercase; }
+  .cta .big span { color: var(--amarillo); }
+  .cta .btn { margin-top: 22px; }
+
+  footer { text-align: center; padding: 28px 5vw; color: var(--gris); font-size: 13px; border-top: 1px solid var(--linea); }
+  footer a { color: var(--blanco); }
+  .wa-float {
+    position: fixed; right: 18px; bottom: 18px; width: 56px; height: 56px; border-radius: 99px;
+    background: #25d366; color: #fff; display: flex; align-items: center; justify-content: center;
+    font-size: 28px; text-decoration: none; box-shadow: 0 6px 18px rgba(0,0,0,0.4); z-index: 30;
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="brand">PIRAÑA<span>.</span></div>
+  <a class="btn" href="https://wa.me/595983518856?text=Hola!%20Quiero%20una%20cotizaci%C3%B3n">Cotizar</a>
+</nav>
+
+<div class="hero">
+  <div class="blob" style="width:90px;height:90px;left:55%;top:14%;background:var(--fucsia)"></div>
+  <div class="blob" style="width:50px;height:50px;left:78%;top:60%;background:var(--amarillo);animation-delay:1.5s"></div>
+  <div class="blob" style="width:34px;height:34px;left:40%;top:72%;background:#4a3aa7;animation-delay:2.8s"></div>
+  <div class="kick">Estudio creativo · Asunción</div>
+  <h1>Marcas con <em>dientes</em></h1>
+  <p>Diseño, redes sociales, video y branding para negocios que no quieren pasar desapercibidos.</p>
+  <a class="btn" href="https://wa.me/595983518856?text=Hola!%20Quiero%20que%20mi%20marca%20muerda">Quiero que mi marca muerda</a>
+</div>
+
+<section>
+  <h2>Lo que hacemos</h2>
+  <div class="servs">
+    <div class="serv"><div class="n">01</div><h3>Identidad y branding</h3><p>Logo, colores y voz de marca que se reconocen a una cuadra.</p></div>
+    <div class="serv"><div class="n">02</div><h3>Redes sociales</h3><p>Contenido mensual que la gente comparte sola.</p></div>
+    <div class="serv"><div class="n">03</div><h3>Video y reels</h3><p>Grabación y edición con ritmo, para vender sin aburrir.</p></div>
+    <div class="serv"><div class="n">04</div><h3>Páginas web</h3><p>Rápidas, llamativas y con WhatsApp al frente.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>Trabajos</h2>
+  <div class="works">
+    <div class="work w1">Rebranding · Café</div>
+    <div class="work w2">Campaña · Moda</div>
+    <div class="work w3">Reels · Gym</div>
+    <div class="work w4">Menú · Resto</div>
+    <div class="work w5">Web · Clínica</div>
+    <div class="work w6">Evento · Feria</div>
+  </div>
+</section>
+
+<section>
+  <div class="cta">
+    <h2>¿Arrancamos?</h2>
+    <div class="big">Tu marca puede más<span>.</span></div>
+    <a class="btn" href="https://wa.me/595983518856?text=Hola!%20Quiero%20una%20cotizaci%C3%B3n">Hablemos por WhatsApp</a>
+  </div>
+</section>
+
+<footer>
+  <strong style="color:var(--blanco)">PIRAÑA Estudio</strong> · Asunción · <a href="https://wa.me/595983518856">0970 000 000</a><br>
+  <span style="opacity:0.65">Página de demostración — diseño: KatuWeb · WhatsApp +595 983 518 856</span>
+</footer>
+
+<a class="wa-float" href="https://wa.me/595983518856" aria-label="WhatsApp">✆</a>
+
+</body>
+</html>
