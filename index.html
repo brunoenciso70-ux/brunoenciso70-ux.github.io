@@ -35,6 +35,9 @@
     box-shadow: 0 0 22px rgba(233,30,140,0.45); border: none; cursor: pointer;
   }
   .btn:hover { background: var(--amarillo); box-shadow: 0 0 22px rgba(245,233,66,0.5); }
+  /* tinte dinámico según estilo elegido */
+  .btn, .cinta, .plan.destacado, .qopt.sel { transition: background 0.7s ease, border-color 0.7s ease, box-shadow 0.7s ease, color 0.3s ease; }
+  h2, .brand span, .hero .kick { transition: color 0.7s ease; }
   .btn.wa { background: var(--wa); color: #fff; box-shadow: 0 0 22px rgba(37,211,102,0.35); }
   .btn.ghost { background: transparent; border: 1px solid var(--linea); color: var(--gris); box-shadow: none; }
 
@@ -185,9 +188,64 @@
   }
   .reveal { opacity: 0; transform: translateY(22px); transition: opacity 0.55s ease, transform 0.55s ease; }
   .reveal.vis { opacity: 1; transform: none; }
+
+  /* ===== Portal de entrada: 2 modos (Idea #1) ===== */
+  .portal { position: fixed; inset: 0; z-index: 300; display: flex; }
+  @media (max-width: 700px) { .portal { flex-direction: column; } }
+  .portal.oculto { display: none; }
+  .portal .mitad {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 30px 24px; cursor: pointer; position: relative; overflow: hidden;
+    transition: flex 0.55s cubic-bezier(0.2, 0.7, 0.2, 1), opacity 0.4s ease;
+  }
+  .portal.decidido .mitad { pointer-events: none; }
+  .portal .mitad.elegida { flex: 14; }
+  .portal .mitad.descartada { flex: 0.001; opacity: 0; }
+  .m-clasico { background: #f4f2ec; color: #1c1a24; }
+  .m-3d { background: radial-gradient(ellipse at 50% 30%, #221d3a 0%, #0a0a14 70%); color: #f2f0fa; }
+  .portal .kick2 { font-size: 12px; letter-spacing: 0.3em; text-transform: uppercase; font-weight: 800; opacity: 0.7; }
+  .portal h2.pt { font-size: clamp(26px, 4.5vw, 44px); font-weight: 900; text-transform: uppercase; margin-top: 10px; letter-spacing: 0.01em; }
+  .m-3d h2.pt { color: var(--teal); text-shadow: 0 0 24px rgba(23,195,178,0.5); }
+  .portal p.pd { font-size: 14.5px; opacity: 0.75; margin-top: 10px; max-width: 34ch; }
+  .portal .pbtn {
+    margin-top: 24px; padding: 13px 30px; border-radius: 99px; font-weight: 800; font-size: 14px;
+    border: 2px solid currentColor; background: transparent; color: inherit; cursor: pointer;
+  }
+  .m-clasico .pbtn:hover { background: #1c1a24; color: #f4f2ec; }
+  .m-3d .pbtn:hover { background: var(--teal); border-color: var(--teal); color: #0a0a14; }
+  .portal .divisor {
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 2;
+    background: var(--fucsia); color: #fff; font-weight: 900; font-size: 12px; letter-spacing: 0.15em;
+    padding: 10px 16px; border-radius: 99px; pointer-events: none; box-shadow: 0 0 30px rgba(233,30,140,0.6);
+  }
+  .m-3d .estrella-p { position: absolute; width: 3px; height: 3px; border-radius: 99px; background: #fff; animation: parp 2.4s ease-in-out infinite; }
+  @keyframes parp { 0%,100% { opacity: 0.15; } 50% { opacity: 0.9; } }
+  .m-3d .cubo {
+    position: absolute; width: 54px; height: 54px; border: 1.5px solid rgba(23,195,178,0.5); border-radius: 8px;
+    animation: girocubo 9s linear infinite; pointer-events: none;
+  }
+  @keyframes girocubo { from { transform: rotate3d(1, 1, 0, 0deg); } to { transform: rotate3d(1, 1, 0, 360deg); } }
 </style>
 </head>
 <body>
+
+<div class="portal" id="portal">
+  <div class="mitad m-clasico" id="mClasico">
+    <div class="kick2">Directo al grano</div>
+    <h2 class="pt">Modo clásico</h2>
+    <p class="pd">El sitio completo: estilos, precios y tu página en 5 minutos.</p>
+    <button class="pbtn">Entrar así</button>
+  </div>
+  <div class="divisor">ELEGÍ TU MODO</div>
+  <div class="mitad m-3d" id="m3d">
+    <div class="cubo" style="left:14%; top:18%"></div>
+    <div class="cubo" style="right:12%; bottom:16%; width:34px; height:34px; animation-duration:6s"></div>
+    <div class="kick2" style="color:var(--teal)">Una experiencia</div>
+    <h2 class="pt">Modo 3D</h2>
+    <p class="pd">Viajá por el espacio, respondé flotando y descubrí tu página ideal.</p>
+    <button class="pbtn">Entrar al viaje</button>
+  </div>
+</div>
 
 <div class="cinta"><div class="cinta-in" id="cinta"></div></div>
 
@@ -197,6 +255,7 @@
     <a href="#estilos">Estilos</a>
     <a href="#planes">Precios</a>
     <a href="efectos.html">Efectos</a>
+    <a href="modo-3d.html" style="color:var(--teal)">Modo 3D ✦</a>
     <a href="crea-tu-pagina.html">Armá tu página</a>
   </div>
   <a class="btn wa" href="https://wa.me/595983518856?text=Hola!%20Quiero%20una%20p%C3%A1gina%20para%20mi%20negocio">WhatsApp</a>
@@ -376,6 +435,40 @@
 <script>
 (function () {
   'use strict';
+  // ===== Portal de 2 modos (Idea #1): expansión por selección =====
+  var portal = document.getElementById('portal');
+  try {
+    if (sessionStorage.getItem('katuweb_modo')) portal.classList.add('oculto');
+  } catch (e) {}
+  // estrellas del lado 3D
+  var m3d = document.getElementById('m3d');
+  for (var si = 0; si < 26; si++) {
+    var st = document.createElement('div');
+    st.className = 'estrella-p';
+    st.style.left = (Math.random() * 96) + '%';
+    st.style.top = (Math.random() * 94) + '%';
+    st.style.animationDelay = (Math.random() * 2.4) + 's';
+    m3d.appendChild(st);
+  }
+  document.getElementById('mClasico').addEventListener('click', function () {
+    portal.classList.add('decidido');
+    this.classList.add('elegida');
+    m3d.classList.add('descartada');
+    try { sessionStorage.setItem('katuweb_modo', 'clasico'); } catch (e) {}
+    setTimeout(function () {
+      portal.style.transition = 'opacity 0.5s ease';
+      portal.style.opacity = 0;
+      setTimeout(function () { portal.classList.add('oculto'); }, 500);
+    }, 550);
+  });
+  m3d.addEventListener('click', function () {
+    portal.classList.add('decidido');
+    this.classList.add('elegida');
+    document.getElementById('mClasico').classList.add('descartada');
+    try { sessionStorage.setItem('katuweb_modo', '3d'); } catch (e) {}
+    setTimeout(function () { window.location.href = 'modo-3d.html'; }, 650);
+  });
+
   // cinta E3
   var items = ['Tu negocio online en 48h', '★', 'Menú con QR', '★', 'Catálogos con WhatsApp', '★', 'Diseño que vende', '★'];
   var c = document.getElementById('cinta');
@@ -448,6 +541,19 @@
     minisEl.appendChild(tile);
   });
 
+  // ---- tinte sutil de la página según el estilo elegido ----
+  var TINTES = {
+    clasico: ['#a8672a', '#e0b154'], minimal: ['#b56a4c', '#d9c3b4'], prof: ['#2f6fbe', '#22d3ee'],
+    bold: ['#c8a24a', '#f5e942'], neon: ['#e91e8c', '#f5e942'], grad: ['#7b2ff7', '#ff7a1a'],
+    tech: ['#4d7fff', '#a3e635'], revista: ['#e91e8c', '#f5e942'], ar: ['#a8672a', '#e0b154']
+  };
+  function teñir(key) {
+    var t = TINTES[key];
+    if (!t) return;
+    document.documentElement.style.setProperty('--fucsia', t[0]);
+    document.documentElement.style.setProperty('--teal', t[1]);
+  }
+
   // ---- lightbox ----
   var lb = document.getElementById('lb');
   var lbFrame = document.getElementById('lbFrame');
@@ -458,6 +564,7 @@
     document.getElementById('lbAbrir').href = s.demo;
     document.getElementById('lbArmar').href = 'crea-tu-pagina.html' + (QUIZ_KEY[key] ? '?estilo=' + key : '');
     lbFrame.src = s.demo;
+    teñir(key);
     lb.classList.add('on');
     requestAnimationFrame(function () { requestAnimationFrame(function () { lb.classList.add('vis'); }); });
     document.body.style.overflow = 'hidden';
@@ -522,6 +629,7 @@
     var ver = document.getElementById('qver');
     ver.onclick = function (e) { e.preventDefault(); openLb(best); };
     document.getElementById('qres').classList.add('on');
+    teñir(best);
   }
 })();
 </script>

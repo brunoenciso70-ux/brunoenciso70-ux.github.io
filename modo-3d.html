@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KatuWeb — Modo 3D</title>
+<meta name="description" content="Experiencia 3D de KatuWeb: viajá entre preguntas flotantes y descubrí el estilo ideal para tu página web.">
+<style>
+  :root {
+    --fondo: #0a0a14; --panel: rgba(24, 21, 40, 0.88); --linea: rgba(120, 110, 180, 0.35);
+    --blanco: #f2f0fa; --gris: #9a94b8; --fucsia: #e91e8c; --teal: #17c3b2; --amarillo: #f5e942;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background: var(--fondo);
+    color: var(--blanco); overflow: hidden; line-height: 1.5;
+  }
+
+  /* ===== Escena 3D ===== */
+  .viewport { position: fixed; inset: 0; perspective: 1100px; perspective-origin: 50% 45%; }
+  .look { position: absolute; inset: 0; transform-style: preserve-3d; }
+  .dolly {
+    position: absolute; inset: 0; transform-style: preserve-3d;
+    transition: transform 1.3s cubic-bezier(0.55, 0, 0.2, 1);
+  }
+  .estacion {
+    position: absolute; left: 50%; top: 50%; width: min(88vw, 560px);
+    transform-style: preserve-3d; backface-visibility: hidden;
+    transition: opacity 0.9s ease;
+  }
+  .tarjeta {
+    background: var(--panel); border: 1px solid var(--linea); border-radius: 20px;
+    padding: 30px 28px 32px; text-align: center; backdrop-filter: blur(8px);
+    box-shadow: 0 0 60px rgba(233, 30, 140, 0.12), 0 24px 70px rgba(0, 0, 0, 0.6);
+    animation: flotar 6.5s ease-in-out infinite;
+  }
+  @keyframes flotar { 0%, 100% { transform: translateY(0) rotateZ(0); } 50% { transform: translateY(-12px) rotateZ(0.4deg); } }
+  .kick { font-size: 11.5px; letter-spacing: 0.32em; text-transform: uppercase; font-weight: 800; color: var(--teal); }
+  h1 { font-size: clamp(26px, 5.5vw, 40px); font-weight: 900; text-transform: uppercase; margin-top: 10px; line-height: 1.08; }
+  h1 .fx { color: var(--fucsia); text-shadow: 0 0 26px rgba(233, 30, 140, 0.6); }
+  h2.q { font-size: clamp(20px, 4vw, 28px); font-weight: 800; margin-top: 10px; }
+  .sub { color: var(--gris); font-size: 14.5px; margin-top: 10px; }
+  .ops { display: flex; flex-direction: column; gap: 10px; margin-top: 22px; }
+  .op {
+    border: 1.5px solid var(--linea); border-radius: 14px; padding: 13px 18px; font-size: 15px;
+    font-weight: 650; cursor: pointer; background: rgba(255, 255, 255, 0.03); color: var(--blanco);
+    transition: all 0.15s ease; text-align: left; display: flex; align-items: center; gap: 12px;
+  }
+  .op .ico { font-size: 19px; }
+  .op:hover { border-color: var(--teal); background: rgba(23, 195, 178, 0.1); transform: translateX(4px); }
+  .btn {
+    display: inline-block; margin-top: 22px; padding: 14px 34px; border-radius: 99px; border: none;
+    background: var(--fucsia); color: #fff; font-weight: 800; font-size: 15px; cursor: pointer;
+    box-shadow: 0 0 26px rgba(233, 30, 140, 0.5); font-family: inherit; text-decoration: none;
+  }
+  .btn:hover { background: var(--teal); box-shadow: 0 0 26px rgba(23, 195, 178, 0.55); color: #0a0a14; }
+  .btn.sec { background: transparent; border: 1.5px solid var(--linea); color: var(--gris); box-shadow: none; font-size: 13px; padding: 11px 22px; }
+  .btn.sec:hover { color: var(--blanco); border-color: var(--gris); }
+
+  /* Quiz sensorial (Idea #2) */
+  .fxops { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+  @media (max-width: 520px) { .fxops { grid-template-columns: 1fr; } }
+  .fxop {
+    border: 1.5px solid var(--linea); border-radius: 14px; padding: 16px 14px; cursor: pointer;
+    background: rgba(255, 255, 255, 0.03); transition: all 0.15s ease; text-align: center;
+  }
+  .fxop .ico { font-size: 24px; }
+  .fxop .nm { font-weight: 800; font-size: 14px; margin-top: 6px; }
+  .fxop .d { font-size: 11.5px; color: var(--gris); margin-top: 3px; }
+  .fxop:hover { border-color: var(--amarillo); }
+  .fxop.sel { border-color: var(--fucsia); background: rgba(233, 30, 140, 0.12); box-shadow: 0 0 18px rgba(233, 30, 140, 0.3); }
+  .hint-fx { font-size: 11.5px; color: var(--gris); margin-top: 12px; }
+
+  /* Resultado */
+  .res-prev { height: 84px; border-radius: 14px; margin: 18px auto 0; max-width: 320px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 18px; }
+  .res-fx { font-size: 13px; color: var(--amarillo); margin-top: 10px; font-weight: 700; }
+  .pv-clasico { background: linear-gradient(150deg, #7c4a21, #5a3416); color: #fff; font-family: Georgia, serif; font-weight: 400; }
+  .pv-minimal { background: #fafafa; color: #111; letter-spacing: 0.3em; }
+  .pv-prof { background: linear-gradient(150deg, #eaf1f9, #fff); color: #1d4f8b; }
+  .pv-bold { background: #121212; color: #c8a24a; text-transform: uppercase; }
+  .pv-neon { background: linear-gradient(125deg, #17141f 55%, #e91e8c 55.5%, #e91e8c 78%, #f5e942 78.5%); color: #f5e942; text-transform: uppercase; }
+  .pv-grad { background: linear-gradient(120deg, #7b2ff7, #ff7a1a); color: #fff; }
+  .pv-tech { background: radial-gradient(ellipse at 50% 20%, rgba(77,127,255,0.45), #0d0d12 75%); color: #22d3ee; }
+  .pv-revista { background: linear-gradient(90deg, #f5e942 40%, #e91e8c 40%, #e91e8c 72%, #17c3b2 72%); color: #101014; text-transform: uppercase; }
+
+  /* Estrellas y objetos del espacio */
+  .estrella { position: absolute; border-radius: 99px; background: #fff; animation: parp 2.6s ease-in-out infinite; }
+  @keyframes parp { 0%, 100% { opacity: 0.12; } 50% { opacity: 0.9; } }
+  .orbe { position: absolute; border-radius: 99px; filter: blur(1px); opacity: 0.5; animation: flotar 8s ease-in-out infinite; }
+  .aro { position: absolute; border: 1.5px solid rgba(23, 195, 178, 0.35); border-radius: 99px; animation: girar 14s linear infinite; }
+  @keyframes girar { from { transform: rotate3d(1, 0.6, 0, 0deg); } to { transform: rotate3d(1, 0.6, 0, 360deg); } }
+
+  /* HUD */
+  .hud { position: fixed; top: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; z-index: 10; }
+  .hud .marca { font-weight: 900; font-size: 17px; }
+  .hud .marca span { color: var(--teal); }
+  .hud a { color: var(--gris); text-decoration: none; font-size: 13px; border: 1px solid var(--linea); border-radius: 99px; padding: 8px 16px; }
+  .hud a:hover { color: var(--blanco); }
+  .progreso { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; z-index: 10; }
+  .pdot { width: 9px; height: 9px; border-radius: 99px; background: rgba(255, 255, 255, 0.18); transition: all 0.4s ease; }
+  .pdot.on { background: var(--fucsia); box-shadow: 0 0 10px rgba(233, 30, 140, 0.7); transform: scale(1.25); }
+
+  /* efectos sensoriales temporales sobre la escena */
+  .look.fx-inmersivo { animation: inmersivo 3s ease-in-out; }
+  @keyframes inmersivo { 0% { transform: scale(1); } 45% { transform: scale(1.35) rotate3d(0, 0, 1, 2.5deg); } 100% { transform: scale(1); } }
+  .dolly.fx-flotante .tarjeta { animation-duration: 2.2s; }
+</style>
+</head>
+<body>
+
+<div class="hud">
+  <div class="marca">Katu<span>Web</span> <span style="font-size:11px; color:var(--amarillo)">MODO 3D</span></div>
+  <a href="index.html">← Modo clásico</a>
+</div>
+
+<div class="viewport">
+  <div class="look" id="look">
+    <div class="dolly" id="dolly"></div>
+  </div>
+</div>
+
+<div class="progreso" id="progreso"></div>
+
+<script>
+(function () {
+  'use strict';
+  var MI_WHATSAPP = '595983518856';
+  var PASO_Z = 1400;
+
+  var STYLES = {
+    clasico: { nombre: 'Clásico Cálido', prev: 'pv-clasico', label: 'Ña Rosa', why: 'Cálido y familiar: la comida y la tradición venden solas.' },
+    minimal: { nombre: 'Minimal Moderno', prev: 'pv-minimal', label: 'PALMA', why: 'Limpio y elegante: tus productos son los protagonistas.' },
+    prof: { nombre: 'Profesional Confianza', prev: 'pv-prof', label: 'Dra. Benítez', why: 'Seriedad y trayectoria, con el turno a un toque.' },
+    bold: { nombre: 'Bold Oscuro', prev: 'pv-bold', label: 'EL PATRÓN', why: 'Carácter puro, precios claros, actitud.' },
+    neon: { nombre: 'Neón Creativo', prev: 'pv-neon', label: 'PIRAÑA', why: 'Energía creativa para marcas que no pasan desapercibidas.' },
+    grad: { nombre: 'Degradado Vibrante', prev: 'pv-grad', label: 'Kapé', why: 'Alegría en movimiento: vender momentos felices.' },
+    tech: { nombre: 'Tech Bento', prev: 'pv-tech', label: 'NUBE_', why: 'Moderno y sólido: un sistema serio detrás.' },
+    revista: { nombre: 'Revista Collage', prev: 'pv-revista', label: 'ANTENA*', why: 'Novedad al frente: ideal para drops y promos.' }
+  };
+  var SCORES = {
+    comida: { clasico: 2, grad: 1 }, productos: { minimal: 2, revista: 2 },
+    servicios: { prof: 2, tech: 1 }, creativo: { neon: 2, bold: 2, revista: 1 },
+    calida: { clasico: 2, grad: 1 }, elegante: { minimal: 2, prof: 1 },
+    seria: { prof: 2, tech: 2 }, energia: { neon: 2, grad: 2, revista: 1 },
+    pedidos: { clasico: 1, grad: 1, revista: 1 }, catalogo: { minimal: 2, revista: 1, tech: 1 },
+    turnos: { prof: 2, bold: 1 }, impacto: { neon: 2, bold: 1, tech: 1 }
+  };
+  var FX3D = {
+    parallax: { nombre: 'Profundidad viva', d: 'la página reacciona al mouse', spec: 'parallax de capas que siguen el cursor (factores 0.02–0.08)' },
+    flotante: { nombre: 'Todo flota', d: 'los elementos respiran en el aire', spec: 'tarjetas con animación float 2–4s, delays escalonados' },
+    viajera: { nombre: 'Cámara viajera', d: 'el scroll te lleva volando', spec: 'transiciones dolly con translateZ y cubic-bezier(0.55,0,0.2,1)' },
+    inmersivo: { nombre: 'Inmersión total', d: 'la escena te envuelve', spec: 'escena 3D a pantalla completa con perspective y zoom envolvente' }
+  };
+
+  var answers = [null, null, null];
+  var fxElegido = null;
+  var paso = 0;
+
+  var dolly = document.getElementById('dolly');
+  var look = document.getElementById('look');
+
+  // ---- construir el espacio: estrellas + objetos a distintas profundidades ----
+  function agregarEspacio() {
+    for (var i = 0; i < 90; i++) {
+      var e = document.createElement('div');
+      e.className = 'estrella';
+      var s = 1.5 + Math.random() * 2.5;
+      e.style.width = s + 'px'; e.style.height = s + 'px';
+      e.style.left = (Math.random() * 100) + 'vw';
+      e.style.top = (Math.random() * 100) + 'vh';
+      e.style.transform = 'translateZ(' + (-Math.random() * PASO_Z * 6) + 'px)';
+      e.style.animationDelay = (Math.random() * 2.6) + 's';
+      dolly.appendChild(e);
+    }
+    var cols = ['#e91e8c', '#17c3b2', '#f5e942', '#7b2ff7'];
+    for (var j = 0; j < 10; j++) {
+      var o = document.createElement('div');
+      o.className = 'orbe';
+      var t = 24 + Math.random() * 60;
+      o.style.width = t + 'px'; o.style.height = t + 'px';
+      o.style.background = cols[j % 4];
+      o.style.left = (Math.random() * 90) + 'vw';
+      o.style.top = (Math.random() * 90) + 'vh';
+      o.style.transform = 'translateZ(' + (-200 - Math.random() * PASO_Z * 5.5) + 'px)';
+      o.style.animationDelay = (Math.random() * 5) + 's';
+      dolly.appendChild(o);
+    }
+    for (var k = 0; k < 4; k++) {
+      var a = document.createElement('div');
+      a.className = 'aro';
+      var r = 120 + Math.random() * 200;
+      a.style.width = r + 'px'; a.style.height = r + 'px';
+      a.style.left = (10 + Math.random() * 75) + 'vw';
+      a.style.top = (10 + Math.random() * 70) + 'vh';
+      a.style.transform = 'translateZ(' + (-500 - k * PASO_Z * 1.3) + 'px)';
+      dolly.appendChild(a);
+    }
+  }
+
+  // ---- estaciones (paneles flotantes en profundidad) ----
+  function estacion(i, html) {
+    var e = document.createElement('div');
+    e.className = 'estacion';
+    e.id = 'est' + i;
+    e.style.transform = 'translate(-50%, -50%) translateZ(' + (-i * PASO_Z) + 'px)';
+    e.innerHTML = html;
+    dolly.appendChild(e);
+  }
+
+  function ops(qi, lista) {
+    return '<div class="ops">' + lista.map(function (o) {
+      return '<div class="op" data-q="' + qi + '" data-v="' + o[0] + '"><span class="ico">' + o[1] + '</span>' + o[2] + '</div>';
+    }).join('') + '</div>';
+  }
+
+  estacion(0,
+    '<div class="tarjeta"><div class="kick">Bienvenido al espacio KatuWeb</div>' +
+    '<h1>Tu página ideal<br><span class="fx">está acá adentro</span></h1>' +
+    '<p class="sub">Tres preguntas flotando en el espacio. Respondé y la cámara te lleva a la siguiente.</p>' +
+    '<button class="btn" id="empezar">Iniciar el viaje ✦</button></div>');
+
+  estacion(1,
+    '<div class="tarjeta"><div class="kick">Pregunta 1 de 3</div><h2 class="q">¿Qué ofrece tu negocio?</h2>' +
+    ops(0, [['comida', '🍽', 'Comida / gastronomía'], ['productos', '🛍', 'Productos para vender'], ['servicios', '🩺', 'Servicios profesionales'], ['creativo', '🎨', 'Estilo, arte o entretenimiento']]) + '</div>');
+
+  estacion(2,
+    '<div class="tarjeta"><div class="kick">Pregunta 2 de 3</div><h2 class="q">¿Cómo querés que se sienta?</h2>' +
+    ops(1, [['calida', '🔥', 'Cálida y familiar'], ['elegante', '✨', 'Elegante y simple'], ['seria', '🤝', 'Seria y confiable'], ['energia', '⚡', 'Con energía y color']]) + '</div>');
+
+  estacion(3,
+    '<div class="tarjeta"><div class="kick">Pregunta 3 de 3</div><h2 class="q">¿Qué tiene que lograr primero?</h2>' +
+    ops(2, [['pedidos', '💬', 'Que me pidan por WhatsApp'], ['catalogo', '🛒', 'Que vean mis productos'], ['turnos', '📅', 'Que agenden turno o consulta'], ['impacto', '🚀', 'Que mi marca impacte']]) + '</div>');
+
+  estacion(4,
+    '<div class="tarjeta"><div class="kick">El toque final · elegí tu efecto 3D</div><h2 class="q">¿Cómo se tiene que sentir el movimiento?</h2>' +
+    '<p class="sub">Tocá cada opción y sentila en la escena. La que quede marcada es la tuya.</p>' +
+    '<div class="fxops">' +
+    Object.keys(FX3D).map(function (k) {
+      var f = FX3D[k];
+      var icos = { parallax: '🌌', flotante: '🎈', viajera: '🎥', inmersivo: '🌀' };
+      return '<div class="fxop" data-fx="' + k + '"><div class="ico">' + icos[k] + '</div><div class="nm">' + f.nombre + '</div><div class="d">' + f.d + '</div></div>';
+    }).join('') +
+    '</div><div class="hint-fx">Probá todas las veces que quieras — cada toque la demuestra en vivo.</div>' +
+    '<button class="btn" id="verResultado" style="display:none">Ver mi resultado ✦</button></div>');
+
+  estacion(5,
+    '<div class="tarjeta"><div class="kick">Fin del viaje</div><h2 class="q" id="resTitulo">Tu estilo</h2>' +
+    '<div class="res-prev" id="resPrev"></div><p class="sub" id="resWhy"></p><div class="res-fx" id="resFx"></div>' +
+    '<div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:6px">' +
+    '<a class="btn" id="resArmar" href="crea-tu-pagina.html">Armá tu página así</a>' +
+    '<a class="btn sec" id="resWa" href="#" target="_blank" rel="noopener">Enviar a KatuWeb</a>' +
+    '<a class="btn sec" href="index.html">Modo clásico</a></div></div>');
+
+  agregarEspacio();
+
+  // ---- progreso ----
+  var prog = document.getElementById('progreso');
+  for (var pi = 0; pi < 6; pi++) {
+    var pd = document.createElement('div');
+    pd.className = 'pdot' + (pi === 0 ? ' on' : '');
+    prog.appendChild(pd);
+  }
+
+  // ---- cámara ----
+  function irA(n) {
+    paso = n;
+    dolly.style.transform = 'translateZ(' + (n * PASO_Z) + 'px)';
+    var dots = prog.children;
+    for (var i = 0; i < dots.length; i++) dots[i].classList.toggle('on', i === n);
+    // desvanecer estaciones que quedaron atrás
+    for (var j = 0; j < 6; j++) {
+      var est = document.getElementById('est' + j);
+      if (est) est.style.opacity = (j < n) ? 0 : 1;
+    }
+  }
+
+  document.getElementById('empezar').addEventListener('click', function () { irA(1); });
+
+  document.querySelectorAll('.op').forEach(function (op) {
+    op.addEventListener('click', function () {
+      answers[+op.dataset.q] = op.dataset.v;
+      irA(paso + 1);
+    });
+  });
+
+  // ---- quiz sensorial (Idea #2): cada opción se SIENTE ----
+  var demoTimer = null;
+  function demoFx(k) {
+    if (demoTimer) { clearTimeout(demoTimer); limpiarFx(); }
+    if (k === 'parallax') {
+      factorLook = 4;
+      demoTimer = setTimeout(function () { factorLook = 1; }, 3000);
+    } else if (k === 'flotante') {
+      dolly.classList.add('fx-flotante');
+      demoTimer = setTimeout(function () { dolly.classList.remove('fx-flotante'); }, 3000);
+    } else if (k === 'viajera') {
+      var base = paso * PASO_Z;
+      dolly.style.transition = 'transform 0.7s cubic-bezier(0.55,0,0.2,1)';
+      dolly.style.transform = 'translateZ(' + (base + 500) + 'px)';
+      demoTimer = setTimeout(function () {
+        dolly.style.transform = 'translateZ(' + base + 'px)';
+        setTimeout(function () { dolly.style.transition = 'transform 1.3s cubic-bezier(0.55,0,0.2,1)'; }, 750);
+      }, 750);
+    } else if (k === 'inmersivo') {
+      look.classList.add('fx-inmersivo');
+      demoTimer = setTimeout(function () { look.classList.remove('fx-inmersivo'); }, 3100);
+    }
+  }
+  function limpiarFx() {
+    factorLook = 1;
+    dolly.classList.remove('fx-flotante');
+    look.classList.remove('fx-inmersivo');
+  }
+  document.querySelectorAll('.fxop').forEach(function (f) {
+    f.addEventListener('click', function () {
+      document.querySelectorAll('.fxop').forEach(function (x) { x.classList.remove('sel'); });
+      f.classList.add('sel');
+      fxElegido = f.dataset.fx;
+      demoFx(fxElegido);
+      document.getElementById('verResultado').style.display = 'inline-block';
+    });
+  });
+
+  document.getElementById('verResultado').addEventListener('click', function () {
+    // calcular estilo
+    var totals = {};
+    answers.forEach(function (a) {
+      var sc = SCORES[a] || {};
+      for (var k in sc) totals[k] = (totals[k] || 0) + sc[k];
+    });
+    var best = 'clasico', bv = -1;
+    Object.keys(STYLES).forEach(function (k) {
+      if ((totals[k] || 0) > bv) { bv = totals[k] || 0; best = k; }
+    });
+    var s = STYLES[best], f = FX3D[fxElegido] || FX3D.parallax;
+    document.getElementById('resTitulo').textContent = 'Tu estilo: ' + s.nombre;
+    var rp = document.getElementById('resPrev');
+    rp.className = 'res-prev ' + s.prev;
+    rp.textContent = s.label;
+    document.getElementById('resWhy').textContent = s.why;
+    document.getElementById('resFx').textContent = '✦ Con movimiento "' + f.nombre + '" — ' + f.d;
+    document.getElementById('resArmar').href = 'crea-tu-pagina.html?estilo=' + best;
+    var brief = 'Hola! Hice el viaje del Modo 3D de KatuWeb:\n• Estilo recomendado: ' + s.nombre +
+      '\n• Efecto 3D elegido: ' + f.nombre + ' (' + f.spec + ')' +
+      '\n• Respuestas: ' + answers.join(', ') + '\n¿Me pasás el presupuesto?';
+    document.getElementById('resWa').href = 'https://wa.me/' + MI_WHATSAPP + '?text=' + encodeURIComponent(brief);
+    irA(5);
+  });
+
+  // ---- mirada con el mouse (parallax de cámara) ----
+  var factorLook = 1;
+  var rx = 0, ry = 0, tx = 0, ty = 0;
+  document.addEventListener('mousemove', function (e) {
+    tx = ((e.clientX / window.innerWidth) - 0.5) * 7 * factorLook;
+    ty = ((e.clientY / window.innerHeight) - 0.5) * -5 * factorLook;
+  });
+  function animar() {
+    rx += (ty - rx) * 0.06;
+    ry += (tx - ry) * 0.06;
+    look.style.transform = 'rotateX(' + rx.toFixed(2) + 'deg) rotateY(' + ry.toFixed(2) + 'deg)';
+    requestAnimationFrame(animar);
+  }
+  animar();
+
+  // móvil: deriva suave automática
+  if (window.matchMedia('(hover: none)').matches) {
+    var t0 = 0;
+    setInterval(function () {
+      t0 += 0.02;
+      tx = Math.sin(t0) * 2.4;
+      ty = Math.cos(t0 * 0.8) * 1.6;
+    }, 50);
+  }
+})();
+</script>
+</body>
+</html>
