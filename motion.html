@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; frame-src 'self'; media-src 'self' data:; form-action 'none'; object-src 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KatuMotion — catálogo de portadas, efectos y estilos</title>
+<meta name="description" content="Todo lo que podés pedir para tu página, en un solo lugar: portadas, efectos, estilos y extras 3D. Elegí por número y pedilo por WhatsApp.">
+<style>
+  :root {
+    --bg: #08080c; --card: #101017; --card2: #15151f;
+    --linea: rgba(255,255,255,.10); --linea2: rgba(255,255,255,.18);
+    --txt: #fff; --txt2: #9a99a8; --txt3: #66646f;
+    --coral: #ff6a3d; --agua: #58e0d8; --oro: #ffc46b; --lila: #b2c6ff; --wa: #25d366;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--txt); line-height: 1.55; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; text-decoration: none; }
+  .mono { font-family: ui-monospace, "SF Mono", Menlo, monospace; letter-spacing: .16em; text-transform: uppercase; font-size: 10.5px; }
+  .wrap { max-width: 1240px; margin: 0 auto; padding: 0 clamp(14px, 3.5vw, 30px); }
+
+  /* barra */
+  nav { position: sticky; top: 0; z-index: 60; background: rgba(8,8,12,.82); backdrop-filter: blur(14px); border-bottom: 1px solid var(--linea); }
+  .nav-in { max-width: 1240px; margin: 0 auto; padding: 13px clamp(14px,3.5vw,30px); display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+  .marca { display: flex; align-items: center; gap: 9px; font-weight: 800; letter-spacing: -.02em; font-size: 17px; white-space: nowrap; }
+  .marca i { width: 22px; height: 22px; border-radius: 7px; background: conic-gradient(from 200deg, var(--coral), var(--lila), var(--agua), var(--oro), var(--coral)); }
+  .nav-links { display: flex; gap: 18px; font-size: 13.5px; color: var(--txt2); }
+  .nav-links a:hover { color: #fff; }
+  @media (max-width: 780px) { .nav-links { display: none; } }
+  .btn { display: inline-flex; align-items: center; gap: 7px; border-radius: 999px; padding: 9px 17px; font-size: 13px; font-weight: 700; cursor: pointer; border: none; white-space: nowrap; }
+  .btn-p { background: #fff; color: #0b0b12; }
+  .btn-g { background: rgba(255,255,255,.08); border: 1px solid var(--linea2); color: #fff; }
+  .btn-wa { background: var(--wa); color: #062d13; }
+
+  /* hero */
+  header { text-align: center; padding: clamp(46px,8vw,86px) 0 26px; position: relative; overflow: hidden; }
+  header::before { content: ''; position: absolute; left: 50%; top: -40px; width: min(760px,92vw); height: 260px; transform: translateX(-50%); background: radial-gradient(ellipse, rgba(178,198,255,.16), transparent 68%); filter: blur(26px); }
+  header > * { position: relative; }
+  .pill { display: inline-block; border: 1px solid var(--linea2); border-radius: 999px; padding: 5px 13px; color: var(--oro); }
+  h1 { font-size: clamp(30px, 6vw, 62px); font-weight: 900; letter-spacing: -.045em; line-height: .95; text-transform: uppercase; margin-top: 14px; }
+  h1 em { font-style: italic; font-family: Georgia, serif; font-weight: 400; text-transform: none; }
+  h1 .brillo { background: linear-gradient(100deg, #fff, #b2c6ff 40%, #ff6a3d 75%, #fff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  header p { color: var(--txt2); margin: 14px auto 0; max-width: 58ch; font-size: 15.5px; }
+  .hero-acc { display: flex; gap: 9px; justify-content: center; margin-top: 22px; flex-wrap: wrap; }
+
+  /* filtros */
+  .filtros { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin: 34px 0 20px; }
+  .tabs { display: inline-flex; background: var(--card); border: 1px solid var(--linea); border-radius: 999px; padding: 4px; }
+  .tabs button { background: transparent; border: none; color: var(--txt2); font-size: 13px; padding: 7px 15px; border-radius: 999px; cursor: pointer; font-family: inherit; white-space: nowrap; }
+  .tabs button.on { background: #fff; color: #0b0b12; font-weight: 700; }
+  .conteo { color: var(--txt3); font-size: 12.5px; }
+  @media (max-width: 720px) {
+    .filtros { display: block; }
+    .tabs { display: flex; width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tabs button { flex: 0 0 auto; }
+    .conteo { display: block; margin-top: 10px; }
+  }
+
+  /* grilla */
+  .grilla { display: grid; grid-template-columns: repeat(auto-fill, minmax(268px, 1fr)); gap: 18px; padding-bottom: 60px; }
+  .item { background: var(--card); border: 1px solid var(--linea); border-radius: 15px; overflow: hidden; cursor: pointer; transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease; display: flex; flex-direction: column; }
+  .item:hover { transform: translateY(-4px); border-color: var(--linea2); box-shadow: 0 20px 44px rgba(0,0,0,.5); }
+  .prev { height: 176px; position: relative; overflow: hidden; background: #0c0c12; }
+  .prev iframe { width: 400%; height: 400%; transform: scale(.25); transform-origin: 0 0; border: 0; pointer-events: none; background: #fff; }
+  .pie { padding: 12px 14px 14px; display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+  .pie h3 { font-size: 14.5px; font-weight: 700; letter-spacing: -.01em; }
+  .pie .cat { color: var(--txt3); font-size: 11.5px; margin-top: 1px; }
+  .tag { flex: none; font-size: 10.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 4px 9px; border-radius: 999px; border: 1px solid var(--linea2); color: var(--txt2); }
+  .tag.sinfoto { color: var(--agua); border-color: rgba(88,224,216,.4) }
+  .tag.extra { color: var(--oro); border-color: rgba(255,196,107,.4) }
+
+  /* ---- mini portadas ---- */
+  .mp { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 16px; }
+  .mp .t { font-size: 15px; font-weight: 800; letter-spacing: -.03em; color: #fff; line-height: 1.05; position: relative; z-index: 4; }
+  .mp .t em { font-family: Georgia, serif; font-style: italic; font-weight: 400 }
+  .p1 { background: radial-gradient(120% 90% at 50% 110%, #241a4a, #08060f 62%) }
+  .blob { position: absolute; left: 50%; top: 58%; width: 118px; height: 84px; transform: translate(-50%,-50%); border-radius: 60% 40% 55% 45% / 55% 50% 50% 45%; background: conic-gradient(from 200deg,#ffb36b,#ff6a3d,#b45cff,#58e0d8,#ffd76b,#ffb36b); filter: blur(1.5px) saturate(1.25); box-shadow: 0 0 60px 18px rgba(180,92,255,.3); animation: blobF 9s ease-in-out infinite; z-index: 2 }
+  @keyframes blobF { 0%,100%{transform:translate(-50%,-50%) rotate(0) scale(1);border-radius:60% 40% 55% 45%/55% 50% 50% 45%} 50%{transform:translate(-50%,-54%) rotate(8deg) scale(1.06);border-radius:45% 55% 40% 60%/48% 45% 55% 52%} }
+  .p2 { background: radial-gradient(120% 90% at 50% 50%, #0b1030, #04050c 70%) }
+  .anillo { position: absolute; left: 50%; top: 50%; width: 130px; height: 130px; transform: translate(-50%,-50%); border-radius: 50%; background: conic-gradient(from 0deg,#ff3d8b,#b45cff,#3d9bff,#58e0d8,#ff9f3d,#ff3d8b); -webkit-mask: radial-gradient(circle,transparent 58%,#000 60%); mask: radial-gradient(circle,transparent 58%,#000 60%); filter: blur(4px) saturate(1.4); animation: giro 14s linear infinite }
+  .anillo.b { filter: blur(14px); opacity: .7; animation-duration: 22s; animation-direction: reverse }
+  @keyframes giro { to { transform: translate(-50%,-50%) rotate(360deg) } }
+  .p3 { background: #05060a }
+  .p3 canvas { position: absolute; inset: 0; width: 100%; height: 100% }
+  .p4 { background: #0d0b12 }
+  .revimg { position: absolute; inset: 0; background: linear-gradient(120deg,#3b2a5e,#8a4f9e 40%,#e0824f 75%,#ffd7a8); clip-path: inset(0 100% 0 0); animation: revelar 2.6s cubic-bezier(.76,0,.24,1) infinite }
+  @keyframes revelar { 0%{clip-path:inset(0 100% 0 0)} 45%,80%{clip-path:inset(0 0 0 0)} 100%{clip-path:inset(0 0 0 100%)} }
+  .p5 { background: linear-gradient(180deg,#c7b6ff,#f2c9e0 45%,#ffe2c2) }
+  .p5 .t { color: #2b1c3d; text-shadow: 0 2px 16px rgba(255,255,255,.6) }
+  .nube { position: absolute; border-radius: 50%; filter: blur(16px); mix-blend-mode: screen; animation: derivar 16s ease-in-out infinite }
+  .n1 { width: 130px; height: 84px; background: #fff; left: 6%; top: 20% }
+  .n2 { width: 150px; height: 94px; background: #ffd9f2; right: 3%; top: 42%; animation-delay: 3s }
+  .n3 { width: 110px; height: 74px; background: #d9e6ff; left: 36%; bottom: 3%; animation-delay: 6s }
+  @keyframes derivar { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(12px,-10px) scale(1.08)} }
+  .p6 { background: #efece6; display: grid; grid-template-columns: 1fr .9fr }
+  .p6 .lado { padding: 14px; display: flex; flex-direction: column; justify-content: center; text-align: left }
+  .p6 .k { font-family: ui-monospace,monospace; font-size: 8px; letter-spacing: .2em; text-transform: uppercase; color: #8b8375 }
+  .p6 h4 { font-family: Georgia,serif; font-size: 17px; font-weight: 400; line-height: 1.05; color: #17140f; margin-top: 6px }
+  .p6 h4 b { font-style: italic; font-weight: 400; color: #8a5a2b }
+  .p6 .img { background: linear-gradient(160deg,#c9a875,#6d5433 55%,#2a1f13) }
+
+  /* ---- mini efectos ---- */
+  .me { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+  .e-osc { background: #14121c; color: #fff; }
+  .e-claro { background: #eef3fa; color: #10131a; }
+  .e-txt { font-size: 17px; font-weight: 900; text-transform: uppercase; letter-spacing: -.02em }
+  .lrev { overflow: hidden }
+  .lrev span { display: block; transform: translateY(110%); animation: subir .8s cubic-bezier(.2,.7,.2,1) infinite alternate }
+  @keyframes subir { to { transform: none } }
+  .cinta { display: flex; white-space: nowrap; width: 100% }
+  .cinta div { display: flex; gap: 22px; padding: 0 11px; animation: rodar 9s linear infinite }
+  .cinta span { font-size: 16px; font-weight: 900; text-transform: uppercase; color: var(--oro) }
+  @keyframes rodar { to { transform: translateX(-50%) } }
+  .tilt3 { width: 118px; height: 74px; border-radius: 11px; background: linear-gradient(135deg,#7b2ff7,#e91e8c); box-shadow: 0 12px 26px rgba(123,47,247,.35); animation: tiltA 4s ease-in-out infinite }
+  @keyframes tiltA { 0%,100%{transform:perspective(500px) rotateX(0) rotateY(0)} 25%{transform:perspective(500px) rotateX(7deg) rotateY(-9deg)} 75%{transform:perspective(500px) rotateX(-6deg) rotateY(9deg)} }
+  .cont { font-size: 30px; font-weight: 900; color: var(--oro); font-variant-numeric: tabular-nums }
+  .glow { padding: 11px 22px; border-radius: 999px; background: #e91e8c; color: #fff; font-weight: 800; font-size: 13px; animation: latirG 2s ease-in-out infinite }
+  @keyframes latirG { 0%,100%{box-shadow:0 0 0 0 rgba(233,30,140,.6)} 50%{box-shadow:0 0 26px 8px rgba(233,30,140,.35)} }
+  .cargando { width: 76%; }
+  .cargando .b { height: 3px; background: rgba(255,255,255,.18); border-radius: 9px; overflow: hidden; margin-top: 8px }
+  .cargando .b i { display: block; height: 100%; width: 0; background: #57a8ff; animation: cargar 2.4s ease-in-out infinite }
+  @keyframes cargar { 0%{width:0} 70%,100%{width:100%} }
+  .sparks span { position: absolute; font-size: 12px; color: var(--oro); animation: chispa 1.8s ease-in-out infinite }
+  @keyframes chispa { 0%,100%{opacity:0;transform:scale(.4)} 50%{opacity:1;transform:scale(1.1) rotate(20deg)} }
+
+  /* modal */
+  .modal { position: fixed; inset: 0; z-index: 90; background: rgba(4,4,8,.86); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; padding: 20px; }
+  .modal.on { display: flex; }
+  .m-caja { background: var(--card2); border: 1px solid var(--linea2); border-radius: 18px; max-width: 940px; width: 100%; max-height: 90svh; overflow: auto; }
+  .m-top { display: grid; grid-template-columns: 300px 1fr; gap: 0; }
+  @media (max-width: 760px) { .m-top { grid-template-columns: 1fr } }
+  .m-info { padding: 22px 22px 18px; }
+  .m-info h2 { font-size: 23px; font-weight: 800; letter-spacing: -.02em }
+  .m-info .cat { color: var(--agua); margin-top: 3px }
+  .m-info .desc { color: var(--txt2); font-size: 14px; margin-top: 12px }
+  .m-info .acc { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 18px }
+  .m-prev { position: relative; min-height: 300px; background: #0c0c12; border-left: 1px solid var(--linea); overflow: hidden }
+  @media (max-width: 760px) { .m-prev { border-left: none; border-top: 1px solid var(--linea); min-height: 230px } }
+  .m-spec { padding: 16px 22px 22px; border-top: 1px solid var(--linea); }
+  .m-spec .t { color: var(--txt3); margin-bottom: 7px }
+  .m-spec p { font-size: 13px; color: var(--txt2); font-family: ui-monospace, monospace; line-height: 1.65; word-break: break-word }
+  .cerrar { position: absolute; right: 14px; top: 14px; width: 32px; height: 32px; border-radius: 99px; background: rgba(255,255,255,.12); border: none; color: #fff; font-size: 16px; cursor: pointer; z-index: 5 }
+  .cerrar:hover { background: rgba(255,255,255,.24) }
+
+  footer { border-top: 1px solid var(--linea); padding: 30px 0 44px; color: var(--txt3); font-size: 13px; }
+  .foot { display: flex; justify-content: space-between; gap: 14px; flex-wrap: wrap }
+  footer a:hover { color: #fff }
+  .wa-float { position: fixed; right: 16px; bottom: 16px; width: 52px; height: 52px; border-radius: 99px; background: var(--wa); color: #062d13; display: grid; place-items: center; font-size: 24px; z-index: 70; box-shadow: 0 8px 22px rgba(37,211,102,.38) }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important } }
+</style>
+<script>
+(function () {
+  if (window.top === window.self) return;
+  if (window.location.protocol === 'file:') return;
+  var propio = false;
+  try { propio = (window.top.location.origin === window.location.origin); } catch (e) { propio = false; }
+  if (propio) return;
+  try { window.top.location = window.location.href; }
+  catch (e2) { document.documentElement.style.display = 'none'; }
+})();
+</script>
+</head>
+<body>
+
+<nav>
+  <div class="nav-in">
+    <div class="marca"><i></i> KatuMotion</div>
+    <div class="nav-links">
+      <a href="index.html">Inicio</a>
+      <a href="efectos.html">Efectos en detalle</a>
+      <a href="crea-tu-pagina.html">Armá tu página</a>
+      <a href="modo-3d.html">Modo 3D ✦</a>
+    </div>
+    <a class="btn btn-p" href="https://wa.me/595983518856?text=Hola!%20Vi%20el%20cat%C3%A1logo%20KatuMotion" target="_blank" rel="noopener noreferrer">Pedir presupuesto</a>
+  </div>
+</nav>
+
+<header>
+  <div class="wrap">
+    <span class="pill mono">Todo lo que podés pedir</span>
+    <h1>Elegí por número,<br><em>nosotros</em> <span class="brillo">lo construimos</span></h1>
+    <p>Portadas, efectos, estilos y extras en 3D — cada uno con su demo funcionando y su receta técnica.
+    Mirá, elegí los números que te gusten y mandámelos por WhatsApp. Así de simple arranca tu página.</p>
+    <div class="hero-acc">
+      <a class="btn btn-p" href="crea-tu-pagina.html">Armar mi página</a>
+      <a class="btn btn-g" href="#catalogo">Ver el catálogo ↓</a>
+    </div>
+  </div>
+</header>
+
+<div class="wrap" id="catalogo">
+  <div class="filtros">
+    <div class="tabs" id="tabs"></div>
+    <div class="conteo" id="conteo"></div>
+  </div>
+  <div class="grilla" id="grilla"></div>
+</div>
+
+<div class="modal" id="modal">
+  <div class="m-caja">
+    <div class="m-top">
+      <div class="m-info">
+        <h2 id="mTitulo">—</h2>
+        <div class="cat mono" id="mCat">—</div>
+        <p class="desc" id="mDesc">—</p>
+        <div class="acc">
+          <button class="btn btn-p" id="mCopiar">Copiar la receta</button>
+          <a class="btn btn-wa" id="mWa" href="#" target="_blank" rel="noopener noreferrer">Pedir este</a>
+          <a class="btn btn-g" id="mVer" href="#" target="_blank" rel="noopener noreferrer">Abrir en grande</a>
+        </div>
+      </div>
+      <div class="m-prev" id="mPrev"><button class="cerrar" id="mCerrar">✕</button></div>
+    </div>
+    <div class="m-spec">
+      <div class="t mono">Receta técnica</div>
+      <p id="mSpec">—</p>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap foot">
+    <div>KatuMotion · el catálogo de KatuWeb</div>
+    <div>Asunción, Paraguay</div>
+    <div><a href="https://wa.me/595983518856" target="_blank" rel="noopener noreferrer">WhatsApp +595 983 518 856</a></div>
+  </div>
+</footer>
+
+<a class="wa-float" href="https://wa.me/595983518856?text=Hola!%20Vi%20el%20cat%C3%A1logo%20KatuMotion%20y%20quiero%20pedir%20algo" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">✆</a>
+
+<script>
+(function () {
+  'use strict';
+  var WA = '595983518856';
+
+  /* ============ CATÁLOGO ============ */
+  var ITEMS = [
+    /* ---------- PORTADAS ---------- */
+    { id:'P1', t:'Objeto luminoso', c:'Portada', tipo:'portada', tag:'sin foto',
+      d:'Una figura viva de colores flotando en un fondo oscuro. Sirve justo cuando el negocio todavía no tiene fotos buenas: el protagonista es la luz, no el producto.',
+      s:'Fondo radial oscuro. Figura con border-radius asimétrico animado (60% 40% 55% 45% ↔ 45% 55% 40% 60%) rellena con conic-gradient de 5 colores, filter blur(2px) saturate(1.25) y halo box-shadow 0 0 90px 30px. Brillo interno con radial blanco al 32%/28%. Ciclo de 9 s. Nav en píldora flotante con backdrop-filter.',
+      html:'<div class="mp p1"><div class="blob"></div><div class="t">Lo que hacemos<br><em>no se explica</em></div></div>' },
+    { id:'P2', t:'Anillo de neón', c:'Portada', tipo:'portada', tag:'sin foto',
+      d:'Dos anillos de luz girando en sentidos opuestos detrás del titular. Muy fuerte de noche y en pantallas grandes.',
+      s:'Dos anillos superpuestos: conic-gradient de 6 colores recortado con mask radial-gradient(transparent 58%, #000 60%). El de atrás con blur(22px) girando al revés en 22 s; el de adelante con blur(6px) en 14 s. Texto encima con z-index. Cero imágenes.',
+      html:'<div class="mp p2"><div class="anillo b"></div><div class="anillo"></div><div class="t">La energía que<br><em>mueve</em> tu negocio</div></div>' },
+    { id:'P3', t:'Terreno topográfico', c:'Portada', tipo:'portada', tag:'sin foto',
+      d:'Curvas de nivel que se dibujan solas y respiran despacio, como un mapa vivo. Se tiñen con el color de la marca.',
+      s:'Canvas 2D con 26 líneas de contorno; cada punto es la suma de tres senos (frecuencias 0.008 / 0.021 / 0.05) desplazada por el tiempo. El color va de gris azulado a naranja según la altura y el trazo se engrosa en las crestas. 60 fps con requestAnimationFrame; se congela con prefers-reduced-motion.',
+      canvas:true, html:'<div class="mp p3"><canvas></canvas><div class="t" style="text-align:left"><em>Cada capa</em><br>cuenta algo</div></div>' },
+    { id:'P4', t:'Revelado con máscara', c:'Portada', tipo:'portada', tag:'con foto',
+      d:'La foto entra barriendo la pantalla de izquierda a derecha y el titular sube línea por línea. El más cinematográfico de todos.',
+      s:'La foto entra con clip-path inset(0 100% 0 0) → inset(0) en 1,6 s con cubic-bezier(0.76,0,0.24,1). Encima, cada línea del titular sube desde translateY(110%) dentro de un contenedor con overflow hidden, con 0,18 s de diferencia. Textura diagonal con repeating-linear-gradient al 16%.',
+      html:'<div class="mp p4"><div class="revimg"></div><div class="t">El antes<br><em>y el después</em></div></div>' },
+    { id:'P5', t:'Niebla de ensueño', c:'Portada', tipo:'portada', tag:'sin foto',
+      d:'Nubes de color derivando y tarjetitas de vidrio flotando encima. Para negocios que venden un momento y no un producto.',
+      s:'Degradado lila → rosa → durazno. Tres manchas con filter blur(26px) y mix-blend-mode screen derivando 16 s con retardos distintos. Tarjetas de vidrio con backdrop-filter blur(7px) y borde blanco al 80%, flotando 6 s. Titular oscuro con sombra blanca para leerse sobre el claro.',
+      html:'<div class="mp p5"><div class="nube n1"></div><div class="nube n2"></div><div class="nube n3"></div><div class="t">Momentos que<br><em>quedan</em></div></div>' },
+    { id:'P6', t:'Split editorial', c:'Portada', tipo:'portada', tag:'con foto',
+      d:'Media pantalla para la palabra y media para la imagen. El más sobrio y el que mejor envejece con los años.',
+      s:'Grilla 1.05fr / 0.95fr. A la izquierda etiqueta monoespaciada en mayúsculas, titular serif con una palabra en itálica de color, párrafo corto y botón oscuro. A la derecha la foto a sangre con textura de líneas al 5%. En celular se apila y la foto se oculta para que cargue más rápido.',
+      html:'<div class="mp p6"><div class="lado"><div class="k">Desde 1998</div><h4>La cocina de siempre,<br><b>servida hoy</b></h4></div><div class="img"></div></div>' },
+
+    /* ---------- EFECTOS ---------- */
+    { id:'E1', t:'Titular que se revela', c:'Efecto', tipo:'efecto', tag:'sin foto',
+      d:'Cada línea del titular sube desde abajo, una atrás de otra. El efecto más pedido y el más barato de todos.',
+      s:'Cada línea va en un contenedor con overflow hidden; el span interno pasa de translateY(110%) a 0 con cubic-bezier(0.2,0.7,0.2,1) en 0,7 s y 0,18 s de retardo entre líneas.',
+      html:'<div class="me e-osc"><div class="e-txt lrev"><span>Tu negocio</span></div></div>' },
+    { id:'E3', t:'Cinta infinita', c:'Efecto', tipo:'efecto', tag:'sin foto',
+      d:'Una franja de texto que gira sin parar. Sirve para promos, rubros o el nombre del negocio repetido.',
+      s:'El contenido va duplicado dentro del contenedor y se anima translateX de 0 a -50% en 11 s linear infinite. Al duplicar, el corte es invisible.',
+      html:'<div class="me e-osc cinta"><div><span>Menú QR</span><span>·</span><span>Catálogo</span><span>·</span><span>Menú QR</span><span>·</span><span>Catálogo</span><span>·</span></div></div>' },
+    { id:'E5', t:'Tarjetas con inclinación 3D', c:'Efecto', tipo:'efecto', tag:'sin foto',
+      d:'Las tarjetas se inclinan siguiendo el mouse, como si tuvieran profundidad. Muy bueno para productos destacados.',
+      s:'perspective en el contenedor y rotateX / rotateY de ±6 grados calculados desde la posición del cursor dentro de la tarjeta. Transición 0,12 s y will-change transform.',
+      html:'<div class="me e-claro"><div class="tilt3"></div></div>' },
+    { id:'E7', t:'Números que cuentan', c:'Efecto', tipo:'efecto', tag:'sin foto',
+      d:'Los números suben desde cero cuando entran en pantalla. Para años de experiencia, clientes o trabajos hechos.',
+      s:'requestAnimationFrame de 1,4 s con easeOutQuart (1 − (1−p)⁴), disparado cuando la franja entra en el viewport. Los números usan font-variant-numeric tabular-nums para que no bailen.',
+      html:'<div class="me e-osc"><div class="cont" data-n="1200">0</div></div>' },
+    { id:'E10', t:'Carrusel de logos', c:'Efecto', tipo:'efecto', tag:'sin foto',
+      d:'Los logos de tus clientes pasando en fila. Genera confianza en dos segundos, sin decir una palabra.',
+      s:'Mismo patrón que la cinta pero a 14 s y en gris. Máscara lateral con mask-image linear-gradient para que aparezcan y desaparezcan suave en los bordes.',
+      html:'<div class="me e-claro cinta"><div><span style="color:#8a8a8a">CLIENTE UNO</span><span style="color:#8a8a8a">MARCA DOS</span><span style="color:#8a8a8a">CLIENTE UNO</span><span style="color:#8a8a8a">MARCA DOS</span></div></div>' },
+    { id:'E12', t:'Destellos', c:'Efecto', tipo:'efecto', tag:'sin foto',
+      d:'Chispitas que aparecen y desaparecen alrededor del titular. Detalle mágico para eventos y fiestas.',
+      s:'4 a 6 elementos ✦ absolutos alrededor del titular; animación scale(0.4 → 1.1) + rotate + fade en 1,8 s con retardos distintos. Tamaño chico y opacidad máxima 1.',
+      html:'<div class="me e-osc sparks"><span style="left:18%;top:24%"></span><span style="right:16%;top:30%;animation-delay:.4s">✦</span><span style="left:26%;bottom:22%;animation-delay:.8s">✦</span><span style="right:24%;bottom:26%;animation-delay:1.2s">✦</span><div class="e-txt">Fiestas</div></div>' },
+    { id:'E13', t:'Entrada cinematográfica', c:'Efecto', tipo:'efecto', tag:'sin foto',
+      d:'La página arranca con una barra que carga de 0 a 100% con el nombre del negocio, y después entra en escena.',
+      s:'Capa fija con el nombre + barra que sube en pasos irregulares (más real que lineal). Al llegar a 100 la capa se desliza y la página entra con scale(1.04 → 1) + fade, cubic-bezier(0.16,0.84,0.3,1). Tope duro de 2 s y salida inmediata con prefers-reduced-motion.',
+      html:'<div class="me e-osc"><div class="cargando"><div style="font-size:12px;font-weight:800">TU NEGOCIO</div><div class="b"><i></i></div></div></div>' },
+    { id:'E14', t:'Botón con pulso de luz', c:'Efecto', tipo:'efecto', tag:'sin foto',
+      d:'El botón principal late suavemente con un halo de color. Se nota sin molestar y sube los clics.',
+      s:'box-shadow de 0 0 0 0 a 0 0 26px 8px del color de acento al 35%, en 2 s ease-in-out infinite. Nunca sobre más de un botón por pantalla.',
+      html:'<div class="me e-claro"><div class="glow">Pedir por WhatsApp</div></div>' },
+
+    /* ---------- ESTILOS (páginas completas) ---------- */
+    { id:'ES1', t:'Clásico Cálido', c:'Estilo · restaurantes', tipo:'estilo', tag:'con foto', url:'ejemplos/clasico-calido-restaurante.html',
+      d:'Cálido y con el menú como protagonista: la comida vende sola.', s:'Paleta tierra y crema, tipografía serif, menú con precios a la derecha y botón de WhatsApp fijo.' },
+    { id:'ES2', t:'Minimal Moderno', c:'Estilo · boutiques', tipo:'estilo', tag:'con foto', url:'ejemplos/minimal-moderno-boutique.html',
+      d:'Limpio y elegante: los productos brillan sin distracciones.', s:'Blanco, mucho aire, tipografía con letter-spacing amplio y grilla de productos 3:4 con zoom al pasar.' },
+    { id:'ES3', t:'Profesional Confianza', c:'Estilo · consultorios', tipo:'estilo', tag:'con foto', url:'ejemplos/profesional-confianza-consultorio.html',
+      d:'Transmite seriedad y trayectoria, con el turno siempre a un toque.', s:'Azul institucional, credenciales con contadores, franja de confianza y turno por WhatsApp.' },
+    { id:'ES4', t:'Bold Oscuro', c:'Estilo · barberías y gyms', tipo:'estilo', tag:'con foto', url:'ejemplos/bold-oscuro-barberia.html',
+      d:'Carácter puro: precios claros y actitud desde el primer scroll.', s:'Negro con dorado, titulares en mayúscula peso 900 y lista de precios tipo carta.' },
+    { id:'ES5', t:'Neón Creativo', c:'Estilo · agencias', tipo:'estilo', tag:'con foto', url:'ejemplos/neon-creativo-agencia.html',
+      d:'Energía y creatividad para marcas que no quieren pasar desapercibidas.', s:'Fucsia y amarillo sobre negro, formas geométricas grandes y grilla de trabajos cuadrada.' },
+    { id:'ES6', t:'Degradado Vibrante', c:'Estilo · eventos', tipo:'estilo', tag:'con foto', url:'ejemplos/degradado-vibrante-eventos.html',
+      d:'Alegría en movimiento: perfecto para vender momentos felices.', s:'Degradado animado violeta-naranja, tarjetas redondeadas y formas flotantes.' },
+    { id:'ES7', t:'Tech Bento', c:'Estilo · software', tipo:'estilo', tag:'con foto', url:'ejemplos/tech-bento-startup.html',
+      d:'Moderno y sólido: comunica que detrás hay un sistema serio.', s:'Grilla bento de 4 columnas con celdas de distinto tamaño, azul eléctrico y capturas de pantalla.' },
+    { id:'ES8', t:'Revista Collage', c:'Estilo · tiendas urbanas', tipo:'estilo', tag:'con foto', url:'ejemplos/revista-collage-tienda.html',
+      d:'Formato revista con novedades al frente: ideal para drops y promos.', s:'Bloques de color plano tipo collage, amarillo y fucsia, tipografía condensada en mayúscula.' },
+    { id:'ES9', t:'Editorial 90s', c:'Estilo · tatuajes y ropa', tipo:'estilo', tag:'sin foto', url:'ejemplos/editorial-90s-tatuajes.html',
+      d:'Blanco y negro con tipografía gigante. Se ve carísimo sin una sola foto profesional.', s:'Papel #f2f0eb, tinta #0a0a0a, un solo acento. Titulares clamp(52px,17vw,210px), bordes rectos, cursor propio en escritorio.' },
+    { id:'ES10', t:'Conversión SMB', c:'Estilo · servicios y oficios', tipo:'estilo', tag:'con foto', url:'ejemplos/conversion-smb-servicio.html',
+      d:'El molde que más vende: mockup de WhatsApp, estadísticas, casos, testimonios y precios.', s:'Estructura fija de 10 bloques en orden, máximo 2 efectos, todos los botones a wa.me con mensaje distinto por sección.' },
+    { id:'ES11', t:'Dark Premium', c:'Estilo · corralones e industria', tipo:'estilo', tag:'con foto', url:'ejemplos/dark-premium-ferreteria.html',
+      d:'Estética de empresa grande: panel de pedidos en vivo, metal y resplandor.', s:'Fondo #070709, tarjetas #0d0e12 radius 16, etiquetas pastel distintas por sección, resplandor que sigue al mouse, íconos SVG metálicos.' },
+
+    /* ---------- EXTRAS 3D ---------- */
+    { id:'X1', t:'Menú 3D con cámara (AR)', c:'Extra premium · restaurantes', tipo:'extra', tag:'extra', url:'ejemplos/extra-menu-3d/menu-3d-ar.html',
+      d:'El cliente apunta la cámara y ve el plato apoyado en su mesa, a tamaño real.', s:'model-viewer con ar-scale fixed y ar-placement floor. El GLB va en metros reales (plato 0,22 m). Escaneo del plato real con fotogrametría.' },
+    { id:'X2', t:'Salón 3D navegable', c:'Extra premium · locales', tipo:'extra', tag:'extra', url:'ejemplos/sala-3d-restaurante.html',
+      d:'El visitante queda parado adentro del local y gira 360° con el dedo. Cada pared es una sección.',  s:'Cuatro paredes en CSS 3D a distancia radio, cámara rotada con rotateX/rotateY y acomodo al múltiplo de 90 más cercano al soltar. Escala calculada para que la pared entre justa en pantalla.' },
+    { id:'X3', t:'Armador de viajes 3D', c:'Extra premium · turismo', tipo:'extra', tag:'extra', url:'ejemplos/inmersivo-agencia-viajes.html',
+      d:'Elige mes, toca su país en el mapamundi, se acerca a la ciudad y arma el viaje con hoteles y precio final.', s:'Globo de puntos en canvas con proyección ortográfica, avión recorriendo el arco por interpolación esférica, tres pantallas flotantes con perspectiva y resumen con total en dólares y guaraníes.' },
+    { id:'X4', t:'Modo 3D del sitio', c:'Extra premium · experiencia', tipo:'extra', tag:'extra', url:'modo-3d.html',
+      d:'El visitante viaja por el espacio respondiendo tres preguntas y sale con su página recomendada.', s:'Ocho estaciones separadas 1400px en Z, cámara con translateZ, respuestas sensoriales con destello y partículas, y holograma final con la página del cliente.' }
+  ];
+
+  /* ============ GRILLA ============ */
+  var TABS = [
+    { k:'todo', n:'Todo' }, { k:'portada', n:'Portadas' }, { k:'efecto', n:'Efectos' },
+    { k:'estilo', n:'Estilos' }, { k:'extra', n:'Extras 3D' }, { k:'sinfoto', n:'Sin fotos' }
+  ];
+  var filtro = 'todo';
+  var tabsEl = document.getElementById('tabs'), grillaEl = document.getElementById('grilla');
+
+  TABS.forEach(function (t, i) {
+    var b = document.createElement('button');
+    b.textContent = t.n; b.className = i === 0 ? 'on' : '';
+    b.addEventListener('click', function () {
+      filtro = t.k;
+      Array.prototype.forEach.call(tabsEl.children, function (x) { x.classList.remove('on'); });
+      b.classList.add('on');
+      pintar();
+    });
+    tabsEl.appendChild(b);
+  });
+
+  function coincide(it) {
+    if (filtro === 'todo') return true;
+    if (filtro === 'sinfoto') return it.tag === 'sin foto';
+    return it.tipo === filtro;
+  }
+
+  function pintar() {
+    grillaEl.textContent = '';
+    var vis = ITEMS.filter(coincide);
+    document.getElementById('conteo').textContent = vis.length + ' de ' + ITEMS.length + ' · tocá cualquiera para ver la receta';
+    vis.forEach(function (it) {
+      var card = document.createElement('div');
+      card.className = 'item';
+      var prev = document.createElement('div');
+      prev.className = 'prev';
+      if (it.url) {
+        var f = document.createElement('iframe');
+        f.src = it.url; f.loading = 'lazy'; f.setAttribute('tabindex', '-1'); f.setAttribute('aria-hidden', 'true');
+        prev.appendChild(f);
+      } else {
+        prev.innerHTML = it.html;
+      }
+      var pie = document.createElement('div');
+      pie.className = 'pie';
+      var izq = document.createElement('div');
+      var h = document.createElement('h3'); h.textContent = it.id + ' · ' + it.t;
+      var c = document.createElement('div'); c.className = 'cat'; c.textContent = it.c;
+      izq.appendChild(h); izq.appendChild(c);
+      var tg = document.createElement('div');
+      tg.className = 'tag' + (it.tag === 'sin foto' ? ' sinfoto' : (it.tag === 'extra' ? ' extra' : ''));
+      tg.textContent = it.tag;
+      pie.appendChild(izq); pie.appendChild(tg);
+      card.appendChild(prev); card.appendChild(pie);
+      card.addEventListener('click', function () { abrir(it); });
+      grillaEl.appendChild(card);
+    });
+    arrancarCanvas();
+  }
+
+  /* ============ MODAL ============ */
+  var modal = document.getElementById('modal');
+  function abrir(it) {
+    document.getElementById('mTitulo').textContent = it.id + ' · ' + it.t;
+    document.getElementById('mCat').textContent = it.c;
+    document.getElementById('mDesc').textContent = it.d;
+    document.getElementById('mSpec').textContent = it.s;
+    var prev = document.getElementById('mPrev');
+    Array.prototype.slice.call(prev.querySelectorAll(':scope > *:not(.cerrar)')).forEach(function (x) { x.remove(); });
+    if (it.url) {
+      var f = document.createElement('iframe');
+      f.src = it.url;
+      f.style.cssText = 'position:absolute;inset:0;width:200%;height:200%;transform:scale(.5);transform-origin:0 0;border:0;background:#fff';
+      prev.appendChild(f);
+      document.getElementById('mVer').style.display = '';
+      document.getElementById('mVer').href = it.url;
+    } else {
+      var d = document.createElement('div');
+      d.style.cssText = 'position:absolute;inset:0';
+      d.innerHTML = it.html;
+      prev.appendChild(d);
+      document.getElementById('mVer').style.display = it.tipo === 'portada' ? '' : 'none';
+      document.getElementById('mVer').href = 'portadas.html';
+    }
+    document.getElementById('mWa').href = 'https://wa.me/' + WA + '?text=' + encodeURIComponent(
+      'Hola! Del catálogo KatuMotion quiero el ' + it.id + ' — ' + it.t + ' (' + it.c + '). ¿Me pasás el presupuesto?');
+    document.getElementById('mCopiar').textContent = 'Copiar la receta';
+    modal.classList.add('on');
+    document.body.style.overflow = 'hidden';
+    arrancarCanvas();
+  }
+  function cerrar() { modal.classList.remove('on'); document.body.style.overflow = ''; }
+  document.getElementById('mCerrar').addEventListener('click', cerrar);
+  modal.addEventListener('click', function (e) { if (e.target === modal) cerrar(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') cerrar(); });
+
+  document.getElementById('mCopiar').addEventListener('click', function () {
+    var txt = document.getElementById('mTitulo').textContent + '\n' +
+              document.getElementById('mCat').textContent + '\n\n' +
+              document.getElementById('mDesc').textContent + '\n\nRECETA TÉCNICA:\n' +
+              document.getElementById('mSpec').textContent;
+    var ta = document.createElement('textarea');
+    ta.value = txt; document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); } catch (e) {}
+    document.body.removeChild(ta);
+    this.textContent = '¡Copiado!';
+    var b = this;
+    setTimeout(function () { b.textContent = 'Copiar la receta'; }, 1600);
+  });
+
+  /* ============ CANVAS DE P3 ============ */
+  function arrancarCanvas() {
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    document.querySelectorAll('.p3 canvas').forEach(function (cv) {
+      if (cv.dataset.on) return;
+      cv.dataset.on = '1';
+      var ctx = cv.getContext('2d'), t = 0, W = 0, H = 0;
+      function medir() {
+        var d = window.devicePixelRatio || 1, r = cv.parentElement.getBoundingClientRect();
+        W = r.width; H = r.height;
+        cv.width = W * d; cv.height = H * d;
+        ctx.setTransform(d, 0, 0, d, 0, 0);
+      }
+      function alt(x, k) {
+        return Math.sin(x * 0.012 + k * 0.35 + t) * 16
+             + Math.sin(x * 0.03 - k * 0.2 + t * 1.6) * 8
+             + Math.sin(x * 0.07 + k * 0.9 - t * 0.7) * 3;
+      }
+      function pintar() {
+        if (!W) medir();
+        ctx.clearRect(0, 0, W, H);
+        var lineas = 20, base = H * 0.28;
+        for (var k = 0; k < lineas; k++) {
+          var y0 = base + k * ((H - base) / lineas) * 1.15;
+          ctx.beginPath();
+          for (var x = 0; x <= W; x += 5) {
+            var y = y0 + alt(x, k) * (0.35 + k / lineas);
+            if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+          }
+          var calor = Math.min(1, Math.max(0, (alt(W / 2, k) + 20) / 40));
+          ctx.strokeStyle = 'rgba(' + Math.round(90 + calor * 165) + ',' + Math.round(105 + calor * 40) + ',' + Math.round(150 - calor * 90) + ',' + (0.22 + (k / lineas) * 0.6) + ')';
+          ctx.lineWidth = 0.6 + (k / lineas) * 0.9;
+          ctx.stroke();
+        }
+      }
+      (function bucle() { if (!reduce) t += 0.006; pintar(); requestAnimationFrame(bucle); })();
+      window.addEventListener('resize', function () { W = 0; });
+    });
+  }
+
+  /* ============ CONTADOR DE E7 ============ */
+  setInterval(function () {
+    document.querySelectorAll('.cont').forEach(function (n) {
+      var fin = +n.dataset.n, ini = null;
+      function paso(ts) {
+        if (!ini) ini = ts;
+        var p = Math.min((ts - ini) / 1400, 1);
+        n.textContent = Math.round(fin * (1 - Math.pow(1 - p, 3))).toLocaleString('es-PY');
+        if (p < 1) requestAnimationFrame(paso);
+      }
+      requestAnimationFrame(paso);
+    });
+  }, 3200);
+
+  pintar();
+})();
+</script>
+
+</body>
+</html>
