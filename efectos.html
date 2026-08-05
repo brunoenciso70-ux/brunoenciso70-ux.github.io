@@ -99,6 +99,17 @@
   .d12 { background: var(--oscuro); color: #fff; font-weight: 800; font-size: 20px; }
   .spark { position: absolute; font-size: 14px; animation: sparkle 1.8s ease-in-out infinite; }
   @keyframes sparkle { 0%,100% { opacity: 0; transform: scale(0.4) rotate(0); } 50% { opacity: 1; transform: scale(1.1) rotate(20deg); } }
+
+  /* E13 entrada cinematográfica */
+  .d13 { background: #eef3fa; overflow: hidden; }
+  .d13 .ld { position: absolute; inset: 0; background: #0d1626; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; z-index: 2; transition: transform 0.7s cubic-bezier(0.76,0,0.24,1); }
+  .d13 .ld.done { transform: translateY(-101%); }
+  .d13 .ld-marca { font-size: 20px; font-weight: 800; letter-spacing: -0.02em; }
+  .d13 .ld-barra { width: 140px; height: 3px; background: rgba(255,255,255,0.18); border-radius: 99px; overflow: hidden; }
+  .d13 .ld-barra i { display: block; height: 100%; width: 0; background: #57a8ff; transition: width 0.18s linear; }
+  .d13 .ld-pct { font-size: 10px; letter-spacing: 0.25em; color: #7f9ec4; }
+  .d13 .ld-pag { font-weight: 800; font-size: 17px; color: var(--oscuro); transform: scale(1.06); opacity: 0; transition: transform 0.9s cubic-bezier(0.16,0.84,0.3,1), opacity 0.7s ease; }
+  .d13 .ld-pag.listo { transform: none; opacity: 1; }
 </style>
 </head>
 <body>
@@ -197,6 +208,19 @@
     <div class="fx-head"><h2><span class="num">E12</span>Destellos (sparkles)</h2><span class="uso">Dogelon Mars · detalles mágicos, eventos</span></div>
     <div class="demo d12" id="d12">Fiestas que se recuerdan</div>
     <div class="spec"><b>Spec:</b> 4–6 elementos ✦ absolutos alrededor del titular, animación scale(0.4→1.1) + rotate + fade, 1.8s, delays distintos. Sutileza: opacidad máx 1 pero tamaño chico.</div>
+  </div>
+
+  <div class="fx">
+    <div class="fx-head"><h2><span class="num">E13</span>Entrada cinematográfica</h2><span class="uso">Noomo Labs / Patrick Heng · sube el valor percibido de todo</span></div>
+    <div class="demo d13" id="d13">
+      <div class="ld" id="ld13">
+        <div class="ld-marca">TU NEGOCIO</div>
+        <div class="ld-barra"><i></i></div>
+        <div class="ld-pct">0%</div>
+      </div>
+      <div class="ld-pag" id="ldpag">Tu página, entrando en escena</div>
+    </div>
+    <div class="spec"><b>Spec:</b> capa fija a pantalla completa con el nombre del negocio + barra que sube de 0 a 100% en pasos irregulares (más real que lineal); al llegar, la capa se desliza y la página entra con scale(1.04→1) + fade, cubic-bezier(0.16,0.84,0.3,1). <b>Tope duro de 2 segundos</b> y salida inmediata si <code>prefers-reduced-motion</code>. Nunca bloquea contenido ya cargado.</div>
   </div>
 
   <p class="sub" style="margin-top:22px"><strong>Regla de oro:</strong> máximo 2–3 efectos por página. El movimiento
@@ -325,6 +349,26 @@
     s.style.animationDelay = (i * 0.3) + 's';
     d12.appendChild(s);
   });
+
+  // E13: entrada cinematográfica (se repite en bucle para poder mostrarla)
+  var ld13 = document.getElementById('ld13'), pag13 = document.getElementById('ldpag');
+  var bar13 = ld13.querySelector('.ld-barra i'), pct13 = ld13.querySelector('.ld-pct');
+  function correrLoader() {
+    var v = 0;
+    ld13.classList.remove('done'); pag13.classList.remove('listo');
+    bar13.style.width = '0%'; pct13.textContent = '0%';
+    var t = setInterval(function () {
+      v += Math.random() * 16 + 8;
+      if (v >= 100) {
+        v = 100; clearInterval(t);
+        setTimeout(function () { ld13.classList.add('done'); pag13.classList.add('listo'); }, 220);
+        setTimeout(correrLoader, 3600);
+      }
+      bar13.style.width = v + '%';
+      pct13.textContent = Math.round(v) + '%';
+    }, 110);
+  }
+  correrLoader();
 })();
 </script>
 </body>

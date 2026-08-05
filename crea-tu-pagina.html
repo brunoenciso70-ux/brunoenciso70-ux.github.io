@@ -227,6 +227,34 @@
   .t-revista .ph, .t-revista .g, .t-revista .mapa { background: linear-gradient(135deg, var(--acc), color-mix(in srgb, var(--acc) 40%, #101014)); color: rgba(255,255,255,0.6); border-radius: 6px; }
   .t-revista footer { background: #0b0b0e; color: #8b8798; }
 
+  .t-edit { background: #f2f0eb; color: #0a0a0a; }
+  .t-edit .hero { background: #f2f0eb; color: #0a0a0a; text-align: left; border-bottom: 1.5px solid #0a0a0a; }
+  .t-edit .hero h1 { font-weight: 900; text-transform: uppercase; letter-spacing: -0.05em; line-height: 0.85; font-size: 30px; }
+  .t-edit .hero .kick { color: #0a0a0a; opacity: 0.55; letter-spacing: 0.22em; text-transform: uppercase; font-size: 9px; }
+  .t-edit .btn { background: var(--acc); color: #f2f0eb; border-radius: 0; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; }
+  .t-edit h2 { color: #0a0a0a; font-weight: 900; letter-spacing: -0.03em; text-transform: uppercase; font-size: 17px; border-bottom: 1px solid #d8d5cd; padding-bottom: 6px; }
+  .t-edit .price { color: var(--acc); font-weight: 900; }
+  .t-edit .item { border-bottom-color: #d8d5cd; }
+  .t-edit .tarj, .t-edit .testi { background: transparent; border: 1.5px solid #0a0a0a; border-radius: 0; }
+  .t-edit .prod { border: 1.5px solid #0a0a0a; border-radius: 0; }
+  .t-edit .ph, .t-edit .g, .t-edit .mapa { background: repeating-linear-gradient(45deg, #e7e4dd 0 8px, #f2f0eb 8px 16px); color: #6f6f6f; border-radius: 0; border: 1.5px solid #0a0a0a; }
+  .t-edit footer { background: #0a0a0a; color: #f2f0eb; }
+
+  /* E13 · entrada cinematografica en la vista completa */
+  #fullLoader {
+    position: absolute; inset: 0; z-index: 30; background: #0d1626; color: #fff;
+    display: none; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
+    transition: transform 0.7s cubic-bezier(0.76,0,0.24,1);
+  }
+  #fullLoader.on { display: flex; }
+  #fullLoader.done { transform: translateY(-101%); }
+  #fullLoader .fl-marca { font-size: clamp(24px, 5vw, 40px); font-weight: 800; letter-spacing: -0.02em; text-align: center; padding: 0 20px; }
+  #fullLoader .fl-barra { width: min(260px, 60vw); height: 3px; background: rgba(255,255,255,0.16); border-radius: 99px; overflow: hidden; }
+  #fullLoader .fl-barra i { display: block; height: 100%; width: 0; background: #57a8ff; transition: width 0.18s linear; }
+  #fullLoader .fl-pct { font-size: 11px; letter-spacing: 0.25em; color: #7f9ec4; }
+  .full-scroll.entrando .full-page { transform: scale(1.04); opacity: 0; }
+  .full-scroll .full-page { transition: transform 0.9s cubic-bezier(0.16,0.84,0.3,1), opacity 0.7s ease; }
+
   /* efectos de la biblioteca (preview) */
   .pv.fx-tilt .liftable { transition: transform 0.15s ease, box-shadow 0.15s ease; }
   .pv.fx-tilt .liftable:hover { transform: perspective(700px) rotateX(4deg) rotateY(-5deg) translateY(-2px); box-shadow: 0 10px 24px rgba(0,0,0,0.25); }
@@ -315,6 +343,23 @@
     transform-style: preserve-3d; transition: opacity 0.8s ease; pointer-events: none;
   }
   .inm-panel.activa { pointer-events: auto; }
+
+  /* V1 · recorrido continuo */
+  #inmScroll { position: absolute; inset: 0; overflow-y: auto; overflow-x: hidden; z-index: 1; -webkit-overflow-scrolling: touch; display: none; }
+  .inm.continuo #inmScroll { display: block; }
+  .inm.continuo .inm-viewport { pointer-events: none; z-index: 2; }
+  .inm.continuo .inm-dolly { transition: none; }        /* el bucle de scroll ya suaviza */
+  .inm.continuo .inm-panel { transition: opacity 0.25s linear; }
+  #inmEspaciador { width: 1px; }
+  .inm-barra { position: absolute; left: 0; right: 0; top: 0; height: 3px; background: rgba(255,255,255,0.12); z-index: 6; display: none; }
+  .inm.continuo .inm-barra { display: block; }
+  .inm-barra i { display: block; height: 100%; width: 0%; background: var(--azul, #2a78d6); transition: width 0.08s linear; }
+  .inm-modo { display: inline-flex; border: 1px solid rgba(255,255,255,0.25); border-radius: 999px; overflow: hidden; }
+  .inm-modo button { background: transparent; border: none; color: rgba(255,255,255,0.72); font-size: 12.5px; padding: 7px 13px; cursor: pointer; font-family: inherit; }
+  .inm-modo button.on { background: rgba(255,255,255,0.92); color: #10131a; font-weight: 700; }
+  .inm.continuo .inm-nav { opacity: 0.45; }
+  #inmGyro { display: none; }
+  .inm-hud .fila-ctrl { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
   .inm-caja {
     border-radius: 16px; overflow: hidden; background: #fff;
     border: 1.5px solid rgba(23, 195, 178, 0.55);
@@ -404,6 +449,7 @@
         <div class="estilo" data-v="grad"><div class="prev prev-grad">Kapé</div><div class="nm">Degradado Vibrante</div></div>
         <div class="estilo" data-v="tech"><div class="prev" style="background:radial-gradient(ellipse at 50% 20%, rgba(77,127,255,0.45), #0d0d12 75%); color:#22d3ee;">NUBE_</div><div class="nm">Tech Bento</div></div>
         <div class="estilo" data-v="revista"><div class="prev" style="background:linear-gradient(90deg,#f5e942 40%,#e91e8c 40%,#e91e8c 72%,#17c3b2 72%); color:#101014; text-transform:uppercase;">Antena*</div><div class="nm">Revista Collage</div></div>
+        <div class="estilo" data-v="edit"><div class="prev" style="background:#f2f0eb; color:#0a0a0a; font-weight:900; text-transform:uppercase; letter-spacing:-0.04em;">TINTA<span style="color:#e02020">✱</span></div><div class="nm">Editorial 90s</div></div>
       </div>
 
       <h2>3 · Color principal</h2>
@@ -465,6 +511,7 @@
         <div class="chip" data-v="e10">E10 · Carrusel de logos</div>
         <div class="chip" data-v="e11">E11 · Fotos con zoom</div>
         <div class="chip" data-v="e12">E12 · Destellos</div>
+        <div class="chip" data-v="e13">E13 · Entrada cinematográfica</div>
         <div class="chip" data-v="hover">Tarjetas que se elevan</div>
         <div class="chip" data-v="pulse">Botón que late</div>
         <div class="chip" data-v="glow">Brillo neón en botones</div>
@@ -529,19 +576,33 @@ Sopa paraguaya — 10.000"></textarea>
   <div class="full-scroll">
     <div class="full-page"><div class="pv" id="pvFull"></div></div>
   </div>
+  <div id="fullLoader">
+    <div class="fl-marca" id="flMarca">Tu página</div>
+    <div class="fl-barra"><i id="flBar"></i></div>
+    <div class="fl-pct" id="flPct">0%</div>
+  </div>
 </div>
 
 <div class="inm" id="inm">
+  <div id="inmScroll"><div id="inmEspaciador"></div></div>
   <div class="inm-viewport">
     <div class="inm-look" id="inmLook">
       <div class="inm-dolly" id="inmDolly"></div>
     </div>
   </div>
+  <div class="inm-barra"><i id="inmBarra"></i></div>
   <div class="inm-hud">
     <div class="t" id="inmTitulo">Tu página en 3D<small>Navegá sección por sección</small></div>
-    <button class="inm-btn" id="inmSalir">✕ Salir del 3D</button>
+    <div class="fila-ctrl">
+      <div class="inm-modo" id="inmModo">
+        <button data-m="pasos" class="on">Paso a paso</button>
+        <button data-m="continuo">Recorrido continuo</button>
+      </div>
+      <button class="inm-btn" id="inmGyro">📱 Activar movimiento</button>
+      <button class="inm-btn" id="inmSalir">✕ Salir del 3D</button>
+    </div>
   </div>
-  <div class="inm-hint">Rueda del mouse o botones para viajar entre secciones</div>
+  <div class="inm-hint" id="inmHint">Rueda del mouse o botones para viajar entre secciones</div>
   <div class="inm-nav">
     <button class="inm-btn" id="inmPrev">←</button>
     <div class="inm-dots" id="inmDots"></div>
@@ -555,8 +616,8 @@ Sopa paraguaya — 10.000"></textarea>
   // ⚠️ CAMBIAR: tu número de WhatsApp con código de país, sin + ni espacios
   var MI_WHATSAPP = '595983518856';
 
-  var NOMBRES = { clasico: 'Clásico Cálido', minimal: 'Minimal Moderno', prof: 'Profesional Confianza', bold: 'Bold Oscuro', neon: 'Neón Creativo', grad: 'Degradado Vibrante', tech: 'Tech Bento', revista: 'Revista Collage' };
-  var ACENTOS = { clasico: '#a8672a', minimal: '#b56a4c', prof: '#2f6fbe', bold: '#c8a24a', neon: '#e91e8c', grad: '#7b2ff7', tech: '#4d7fff', revista: '#17c3b2' };
+  var NOMBRES = { clasico: 'Clásico Cálido', minimal: 'Minimal Moderno', prof: 'Profesional Confianza', bold: 'Bold Oscuro', neon: 'Neón Creativo', grad: 'Degradado Vibrante', tech: 'Tech Bento', revista: 'Revista Collage', edit: 'Editorial 90s' };
+  var ACENTOS = { clasico: '#a8672a', minimal: '#b56a4c', prof: '#2f6fbe', bold: '#c8a24a', neon: '#e91e8c', grad: '#7b2ff7', tech: '#4d7fff', revista: '#17c3b2', edit: '#e02020' };
   var FX_NOMBRES = {
     e1: 'E1 titular revelado por líneas (translateY 110%→0, cubic-bezier(0.2,0.7,0.2,1), delay 0.18s por línea)',
     e3: 'E3 cinta infinita marquee (contenido duplicado, translateX 0→-50%, 11s linear)',
@@ -568,6 +629,7 @@ Sopa paraguaya — 10.000"></textarea>
     e9: 'E9 cursor con estela (punto 0.08s + aro 0.22s; ocultar en táctiles)',
     e10: 'E10 carrusel de logos infinito (marquee lento 14s, gris)',
     e11: 'E11 fotos con zoom al hover (scale 1.1 + rotate 1.5deg, 0.5s)',
+    e13: 'E13 entrada cinematografica (capa full-screen con nombre del negocio + barra 0-100%, tope 2s, salida translateY -101% + pagina scale 1.04->1; respeta prefers-reduced-motion)',
     e12: 'E12 destellos ✦ animados alrededor del titular (1.8s, delays escalonados)',
     hover: 'tarjetas que se elevan al hover (translateY -3px + sombra)',
     pulse: 'botón principal con pulso suave (scale 1↔1.045, 2.2s)',
@@ -581,7 +643,7 @@ Sopa paraguaya — 10.000"></textarea>
   var estado = {
     estilo: 'clasico', color: '#7c4a21', colorN: 'Marrón tierra', forma: 12, fuente: 'auto',
     entrada: 'fade', vel: 0.6, hover: false, pulse: false, glow: false, blobs: false, gradanim: false,
-    e1: false, e3: false, e4: false, tilt: false, par: false, e7: false, e8: false, e9: false, e10: false, e11: false, e12: false,
+    e1: false, e3: false, e4: false, tilt: false, par: false, e7: false, e8: false, e9: false, e10: false, e11: false, e12: false, e13: false,
     secciones: [
       { id: 'menu', nombre: 'Menú / precios', on: true },
       { id: 'catalogo', nombre: 'Catálogo de productos', on: false },
@@ -974,7 +1036,37 @@ Sopa paraguaya — 10.000"></textarea>
     $('btnEnviarFull').href = 'https://wa.me/' + MI_WHATSAPP + '?text=' + encodeURIComponent(armarBrief());
     $('full').classList.add('open');
     $('full').querySelector('.full-scroll').scrollTop = 0;
+    correrEntrada(datos);
   });
+
+  // E13 · entrada cinematografica
+  function correrEntrada(datos) {
+    var ld = $('fullLoader'), scr = $('full').querySelector('.full-scroll');
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    ld.classList.remove('on', 'done');
+    scr.classList.remove('entrando');
+    if (!estado.e13 || reduce) return;
+    $('flMarca').textContent = datos.nombre || 'Tu página';
+    $('flBar').style.width = '0%';
+    $('flPct').textContent = '0%';
+    ld.classList.add('on');
+    scr.classList.add('entrando');
+    var v = 0, fin = false;
+    function abrir() {
+      if (fin) return;
+      fin = true;
+      ld.classList.add('done');
+      scr.classList.remove('entrando');
+      setTimeout(function () { ld.classList.remove('on', 'done'); }, 800);
+    }
+    var t = setInterval(function () {
+      v += Math.random() * 16 + 8;
+      if (v >= 100) { v = 100; clearInterval(t); setTimeout(abrir, 220); }
+      $('flBar').style.width = v + '%';
+      $('flPct').textContent = Math.round(v) + '%';
+    }, 110);
+    setTimeout(function () { clearInterval(t); abrir(); }, 2000);
+  }
   $('btnCerrarFull').addEventListener('click', function () {
     $('full').classList.remove('open');
   });
@@ -1215,6 +1307,9 @@ Sopa paraguaya — 10.000"></textarea>
     inm.classList.add('on');
     inmAbierta = true;
     document.body.style.overflow = 'hidden';
+    inmProg = inmDest = 0;
+    if (window.DeviceOrientationEvent && ('ontouchstart' in window)) $('inmGyro').style.display = 'inline-block';
+    if (inmModoActual === 'continuo') { inmMedirScroll(); $('inmScroll').scrollTop = 0; if (!inmRaf) inmRaf = requestAnimationFrame(inmBucleContinuo); }
   }
 
   function inmIrA(n) {
@@ -1231,10 +1326,125 @@ Sopa paraguaya — 10.000"></textarea>
     for (var i2 = 0; i2 < dots.length; i2++) dots[i2].classList.toggle('on', i2 === n);
   }
 
+  /* ============ V1 · RECORRIDO CINEMATOGRÁFICO (scroll continuo) ============ */
+  var inmModoActual = 'pasos', inmProg = 0, inmDest = 0, inmRaf = null;
+
+  function inmAplicarProgreso(p) {
+    var dolly = $('inmDolly');
+    if (!dolly) return;
+    dolly.style.transform = 'translateZ(' + (p * INM_Z) + 'px)';
+    var panels = dolly.querySelectorAll('.inm-panel');
+    var cerca = Math.round(p);
+    panels.forEach(function (el) {
+      var i = +el.dataset.idx, d = i - p;
+      var op = 1;
+      if (d < -0.15) op = Math.max(0, 1 + (d + 0.15) / 0.55);      // ya pasó: se desvanece
+      else if (d > 1.7) op = Math.max(0.18, 1 - (d - 1.7) / 1.6);  // muy lejos: se atenúa
+      el.style.opacity = op.toFixed(3);
+      el.classList.toggle('activa', i === cerca);
+    });
+    var dots = $('inmDots').children;
+    for (var k = 0; k < dots.length; k++) dots[k].classList.toggle('on', k === cerca);
+    inmPaso = cerca;
+    var barra = $('inmBarra');
+    if (barra) barra.style.width = (inmTotal > 1 ? (p / (inmTotal - 1)) * 100 : 0) + '%';
+  }
+
+  function inmBucleContinuo() {
+    if (inmModoActual !== 'continuo' || !inmAbierta) { inmRaf = null; return; }
+    inmProg += (inmDest - inmProg) * 0.12;
+    if (Math.abs(inmDest - inmProg) < 0.0008) inmProg = inmDest;
+    inmAplicarProgreso(inmProg);
+    inmRaf = requestAnimationFrame(inmBucleContinuo);
+  }
+
+  function inmMedirScroll() {
+    var sc = $('inmScroll');
+    if (!sc) return;
+    $('inmEspaciador').style.height = (inmTotal * 100) + 'vh';
+  }
+
+  function inmCambiarModo(m) {
+    inmModoActual = m;
+    var inm = $('inm');
+    inm.classList.toggle('continuo', m === 'continuo');
+    Array.prototype.forEach.call($('inmModo').children, function (b) {
+      b.classList.toggle('on', b.dataset.m === m);
+    });
+    $('inmHint').textContent = m === 'continuo'
+      ? 'Bajá con el dedo o la rueda: la cámara viaja sin cortes'
+      : 'Rueda del mouse o botones para viajar entre secciones';
+    if (m === 'continuo') {
+      inmMedirScroll();
+      var sc = $('inmScroll');
+      sc.scrollTop = inmPaso * sc.clientHeight;
+      inmProg = inmDest = inmPaso;
+      if (!inmRaf) inmRaf = requestAnimationFrame(inmBucleContinuo);
+    } else {
+      if (inmRaf) { cancelAnimationFrame(inmRaf); inmRaf = null; }
+      inmIrA(Math.round(inmProg) || inmPaso);
+    }
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll('#inmModo button'), function (b) {
+    b.addEventListener('click', function () { inmCambiarModo(b.dataset.m); });
+  });
+
+  $('inmScroll').addEventListener('scroll', function () {
+    if (inmModoActual !== 'continuo') return;
+    var sc = $('inmScroll');
+    var alto = sc.clientHeight || 1;
+    var crudo = Math.max(0, Math.min(inmTotal - 1, sc.scrollTop / alto));
+    // reposo en cada sección + tramo de viaje suave (sensación cinematográfica)
+    var i = Math.floor(crudo), f = crudo - i;
+    var t = Math.max(0, Math.min(1, (f - 0.22) / 0.56));
+    t = t * t * (3 - 2 * t);
+    inmDest = Math.min(inmTotal - 1, i + t);
+    if (!inmRaf) inmRaf = requestAnimationFrame(inmBucleContinuo);
+  }, { passive: true });
+
+  window.addEventListener('resize', function () { if (inmAbierta && inmModoActual === 'continuo') inmMedirScroll(); });
+
+  /* ============ V4 · INCLINACIÓN POR GIROSCOPIO ============ */
+  var gyroOn = false, gyroLista = false;
+  function gyroDatos(e) {
+    if (!gyroOn) return;
+    var g = e.gamma || 0, b = e.beta || 0;
+    inmTx = Math.max(-1, Math.min(1, g / 26)) * 7;
+    inmTy = Math.max(-1, Math.min(1, (b - 45) / 26)) * -5;
+  }
+  function activarGyro() {
+    var btn = $('inmGyro');
+    if (gyroOn) {
+      gyroOn = false;
+      btn.textContent = '📱 Activar movimiento';
+      inmTx = 0; inmTy = 0;
+      return;
+    }
+    function enganchar() {
+      if (!gyroLista) { window.addEventListener('deviceorientation', gyroDatos); gyroLista = true; }
+      gyroOn = true;
+      btn.textContent = '📱 Movimiento activo';
+    }
+    var D = window.DeviceOrientationEvent;
+    if (D && typeof D.requestPermission === 'function') {
+      D.requestPermission().then(function (r) {
+        if (r === 'granted') enganchar();
+        else btn.textContent = '📱 Permiso denegado';
+      }).catch(function () { btn.textContent = '📱 No disponible'; });
+    } else if (D) {
+      enganchar();
+    } else {
+      btn.textContent = '📱 Sin sensor';
+    }
+  }
+  $('inmGyro').addEventListener('click', activarGyro);
+
   $('btnInmersiva').addEventListener('click', abrirInmersiva);
   $('inmSalir').addEventListener('click', function () {
     $('inm').classList.remove('on');
     inmAbierta = false;
+    if (inmRaf) { cancelAnimationFrame(inmRaf); inmRaf = null; }
     document.body.style.overflow = '';
     render(); // reconstruir la preview (las secciones fueron movidas a los paneles)
     buildInto($('pvFull'), getDatos());
@@ -1243,7 +1453,7 @@ Sopa paraguaya — 10.000"></textarea>
   $('inmPrev').addEventListener('click', function () { inmIrA(inmPaso - 1); });
   var inmWheelLock = 0;
   document.addEventListener('wheel', function (e) {
-    if (!inmAbierta) return;
+    if (!inmAbierta || inmModoActual === 'continuo') return;
     var caja = e.target.closest && e.target.closest('.inm-caja');
     if (caja && caja.scrollHeight > caja.clientHeight) return; // dejar scrollear dentro del panel
     var ahora = performance.now();
@@ -1253,6 +1463,10 @@ Sopa paraguaya — 10.000"></textarea>
   }, { passive: true });
   document.addEventListener('keydown', function (e) {
     if (!inmAbierta) return;
+    if (inmModoActual === 'continuo') {
+      if (e.key === 'Escape') $('inmSalir').click();
+      return;
+    }
     if (e.key === 'ArrowRight' || e.key === 'ArrowDown') inmIrA(inmPaso + 1);
     if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') inmIrA(inmPaso - 1);
     if (e.key === 'Escape') $('inmSalir').click();
