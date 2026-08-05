@@ -120,11 +120,11 @@
     border: 0; pointer-events: none; background: #fff;
   }
   .mini .mlabel {
-    position: absolute; left: 0; right: 0; bottom: 0; padding: 22px 12px 10px;
-    background: linear-gradient(transparent, rgba(10,9,16,0.92)); font-size: 13px; font-weight: 700;
-    display: flex; justify-content: space-between; align-items: baseline; gap: 8px;
+    position: absolute; left: 0; right: 0; bottom: 0; padding: 26px 12px 10px;
+    background: linear-gradient(transparent, rgba(10,9,16,0.92) 42%); font-size: 13px; font-weight: 700;
+    display: flex; flex-direction: column; align-items: flex-start; gap: 1px; line-height: 1.25;
   }
-  .mini .mlabel small { font-weight: 400; font-size: 11px; color: var(--gris); }
+  .mini .mlabel small { font-weight: 400; font-size: 11px; color: var(--gris); line-height: 1.3; }
   .mini .lupa {
     position: absolute; top: 10px; right: 10px; width: 30px; height: 30px; border-radius: 99px;
     background: rgba(20,18,28,0.75); border: 1px solid var(--linea); color: var(--blanco);
@@ -508,12 +508,12 @@
     grad: { nombre: 'Degradado Vibrante', para: 'Eventos · fiestas', demo: 'ejemplos/degradado-vibrante-eventos.html', prev: 'pv-grad', label: 'Kapé', why: 'Alegría en movimiento: perfecto para vender momentos felices.' },
     tech: { nombre: 'Tech Bento', para: 'Software · servicios', demo: 'ejemplos/tech-bento-startup.html', prev: 'pv-tech', label: 'NUBE_', why: 'Moderno y sólido: comunica que detrás hay un sistema serio.' },
     revista: { nombre: 'Revista Collage', para: 'Tiendas urbanas · drops', demo: 'ejemplos/revista-collage-tienda.html', prev: 'pv-revista', label: 'ANTENA*', why: 'Formato revista con novedades al frente: ideal para drops y promos.' },
-    conv: { nombre: 'Conversión SMB', para: 'Servicios · técnicos · oficios', demo: 'ejemplos/conversion-smb-servicio.html', prev: 'pv-prof', label: 'Aire Sur', why: 'Armada para vender: presupuesto por WhatsApp, precios claros y prueba social.' },
-    edit: { nombre: 'Editorial 90s', para: 'Tatuajes · ropa · estudios', demo: 'ejemplos/editorial-90s-tatuajes.html', prev: 'pv-edit', label: 'TINTA ROJA', why: 'Tipografía enorme y actitud: se ve carísimo sin una sola foto.' },
-    darkpro: { nombre: 'Dark Premium', para: 'Corralones · industria · B2B', demo: 'ejemplos/dark-premium-ferreteria.html', prev: 'pv-darkpro', label: 'HIERRO SUR', why: 'Estética de empresa grande: panel de pedidos en vivo, metal y resplandor. Para vender a quien compra por volumen.' },
-    viajes: { nombre: 'Globo inmersivo', para: 'Agencias de viajes · turismo', demo: 'ejemplos/inmersivo-agencia-viajes.html', prev: 'pv-viajes', label: 'MUNDO ABIERTO', why: 'El cliente gira el mundo, toca un destino y ve paquete, hoteles y paseos. Extra premium.' },
-    sala: { nombre: 'Salón 3D navegable', para: 'Restaurantes · locales · extra premium', demo: 'ejemplos/sala-3d-restaurante.html', prev: 'pv-sala', label: 'Salón 3D', why: 'El cliente entra al local y gira 360°: menú, fotos, horarios y promos en cada pared.' },
-    ar: { nombre: 'Menú 3D con cámara', para: 'Restaurantes · extra premium', demo: 'ejemplos/extra-menu-3d/menu-3d-ar.html', prev: 'pv-clasico', label: 'Menú 3D', why: '' }
+    conv: { nombre: 'Conversión SMB', para: 'Servicios y oficios', demo: 'ejemplos/conversion-smb-servicio.html', prev: 'pv-prof', label: 'Aire Sur', why: 'Armada para vender: presupuesto por WhatsApp, precios claros y prueba social.' },
+    edit: { nombre: 'Editorial 90s', para: 'Tatuajes, ropa y estudios', demo: 'ejemplos/editorial-90s-tatuajes.html', prev: 'pv-edit', label: 'TINTA ROJA', why: 'Tipografía enorme y actitud: se ve carísimo sin una sola foto.' },
+    darkpro: { nombre: 'Dark Premium', para: 'Corralones e industria', demo: 'ejemplos/dark-premium-ferreteria.html', prev: 'pv-darkpro', label: 'HIERRO SUR', why: 'Estética de empresa grande: panel de pedidos en vivo, metal y resplandor. Para vender a quien compra por volumen.' },
+    viajes: { nombre: 'Globo inmersivo', para: 'Viajes y turismo', demo: 'ejemplos/inmersivo-agencia-viajes.html', prev: 'pv-viajes', label: 'MUNDO ABIERTO', why: 'El cliente gira el mundo, toca un destino y ve paquete, hoteles y paseos. Extra premium.' },
+    sala: { nombre: 'Salón 3D navegable', para: 'Restaurantes y locales · extra', demo: 'ejemplos/sala-3d-restaurante.html', prev: 'pv-sala', label: 'Salón 3D', why: 'El cliente entra al local y gira 360°: menú, fotos, horarios y promos en cada pared.' },
+    ar: { nombre: 'Menú 3D con cámara', para: 'Restaurantes · extra', demo: 'ejemplos/extra-menu-3d/menu-3d-ar.html', prev: 'pv-clasico', label: 'Menú 3D', why: '' }
   };
   var QUIZ_KEY = { clasico: 'clasico', minimal: 'minimal', prof: 'prof', bold: 'bold', neon: 'neon', grad: 'grad', tech: 'tech', revista: 'revista' };
 
