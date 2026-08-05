@@ -17,6 +17,14 @@
   nav { display: flex; justify-content: space-between; align-items: center; padding: 22px 5vw; border-bottom: 1px solid var(--linea); background: var(--blanco); position: sticky; top: 0; z-index: 20; }
   .brand { font-size: 20px; font-weight: 800; letter-spacing: 0.35em; }
   nav .links { display: flex; gap: 26px; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; }
+  @media (max-width: 640px) {
+    nav { padding: 16px 4vw; gap: 10px; }
+    nav .links { gap: 14px; font-size: 11px; letter-spacing: 0.04em; flex-wrap: wrap; justify-content: flex-end; }
+    .brand { font-size: 17px; letter-spacing: 0.22em; }
+  }
+  @media (max-width: 420px) {
+    nav .links a:nth-child(n+3) { display: none; }
+  }
   nav .links a { text-decoration: none; color: var(--ink-2); }
   nav .links a:hover { color: var(--ink); }
 
