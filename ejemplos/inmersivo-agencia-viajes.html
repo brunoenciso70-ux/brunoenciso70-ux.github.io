@@ -4,270 +4,201 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>MUNDO ABIERTO — Agencia de viajes, Asunción</title>
-<meta name="description" content="Paquetes, hoteles y paseos desde Asunción. Girá el globo, elegí tu destino y pedí tu presupuesto por WhatsApp.">
+<meta name="description" content="Elegí el país, mirá cómo vuela el avión hasta tu destino y descubrí ciudades, hoteles y paseos. Presupuesto por WhatsApp desde Asunción.">
 <style>
   :root {
     --cielo-1: #f4f7ff; --cielo-2: #b9c9f5; --tinta: #0b0d14;
-    --noche-1: #070b18; --noche-2: #0d1430;
-    --coral: #ff6a3d; --agua: #58e0d8; --oro: #ffc46b;
-    --gris: #6a7186; --linea: rgba(11,13,20,0.16);
+    --noche-1: #060a16; --noche-2: #0e1734;
+    --coral: #ff6a3d; --agua: #58e0d8; --oro: #ffc46b; --lila: #b2c6ff;
     --wa: #25d366;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
-  body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; background: var(--cielo-1); color: var(--tinta); line-height: 1.55; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+  body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; background: var(--noche-1); color: #fff; line-height: 1.55; -webkit-font-smoothing: antialiased; }
   a { color: inherit; text-decoration: none; }
-  .mono { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; letter-spacing: 0.14em; text-transform: uppercase; font-size: 11.5px; }
-  .cond { font-weight: 900; letter-spacing: -0.045em; text-transform: uppercase; line-height: 0.88; transform: scaleX(0.94); transform-origin: left; }
+  .mono { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; letter-spacing: 0.16em; text-transform: uppercase; font-size: 11.5px; }
+  .cond { font-weight: 900; letter-spacing: -0.045em; text-transform: uppercase; line-height: 0.88; }
 
-  /* ================= LOADER (patrón Noomo Labs) ================= */
-  #load {
-    position: fixed; inset: 0; z-index: 999; background: linear-gradient(180deg, var(--cielo-1) 0%, var(--cielo-2) 100%);
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    transition: opacity 0.6s ease, visibility 0.6s ease;
-  }
+  /* ---------- LOADER ---------- */
+  #load { position: fixed; inset: 0; z-index: 999; background: linear-gradient(180deg, var(--cielo-1), var(--cielo-2)); color: var(--tinta); display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.6s ease, visibility 0.6s ease; }
   #load.done { opacity: 0; visibility: hidden; }
-  .load-row { display: flex; align-items: center; gap: 18px; width: min(880px, 90vw); }
-  .load-row .txt { font-size: clamp(34px, 7vw, 72px); }
-  .pista { flex: 1; height: clamp(52px, 9vw, 96px); border: 2px solid var(--tinta); border-radius: 999px; position: relative; }
-  .bolita { position: absolute; top: 50%; left: 4px; width: calc(clamp(52px, 9vw, 96px) - 12px); height: calc(clamp(52px, 9vw, 96px) - 12px); background: var(--tinta); border-radius: 999px; transform: translate(0, -50%); transition: left 0.2s linear; }
-  .load-pct { font-size: clamp(30px, 6vw, 64px); font-weight: 900; letter-spacing: -0.04em; }
-  .load-pct sup { font-size: 0.45em; vertical-align: super; }
-  .load-pie { position: absolute; bottom: 8vh; left: 0; right: 0; text-align: center; }
-  .son-tog { display: inline-flex; align-items: center; gap: 10px; background: var(--tinta); color: #fff; border: none; border-radius: 999px; padding: 9px 16px; cursor: pointer; }
-  .onda { display: flex; align-items: center; gap: 2.5px; height: 15px; }
+  .load-row { display: flex; align-items: center; gap: 16px; width: min(880px, 90vw); }
+  .load-row .txt { font-size: clamp(30px, 6.4vw, 66px); }
+  .pista { flex: 1; height: clamp(46px, 8vw, 88px); border: 2px solid var(--tinta); border-radius: 999px; position: relative; }
+  .bolita { position: absolute; top: 50%; left: 4px; width: calc(clamp(46px, 8vw, 88px) - 12px); height: calc(clamp(46px, 8vw, 88px) - 12px); background: var(--tinta); border-radius: 999px; transform: translateY(-50%); transition: left 0.2s linear; }
+  .load-pct { font-size: clamp(26px, 5.4vw, 58px); font-weight: 900; letter-spacing: -0.04em; }
+  .load-pie { position: absolute; bottom: 7vh; text-align: center; left: 0; right: 0; }
+  .son-tog { display: inline-flex; align-items: center; gap: 9px; background: var(--tinta); color: #fff; border: none; border-radius: 999px; padding: 8px 15px; cursor: pointer; }
+  .onda { display: flex; align-items: center; gap: 2.5px; height: 14px; }
   .onda i { width: 2px; background: #fff; border-radius: 2px; height: 5px; animation: onda 1s ease-in-out infinite; }
-  .onda i:nth-child(2) { animation-delay: 0.1s; } .onda i:nth-child(3) { animation-delay: 0.2s; }
-  .onda i:nth-child(4) { animation-delay: 0.3s; } .onda i:nth-child(5) { animation-delay: 0.4s; }
-  @keyframes onda { 0%,100% { height: 4px; } 50% { height: 14px; } }
-  .son-tog.off .onda i { animation-play-state: paused; height: 4px; opacity: 0.45; }
-  .load-pie p { margin-top: 12px; color: rgba(11,13,20,0.72); }
+  .onda i:nth-child(2){animation-delay:.1s}.onda i:nth-child(3){animation-delay:.2s}
+  .onda i:nth-child(4){animation-delay:.3s}.onda i:nth-child(5){animation-delay:.4s}
+  @keyframes onda { 0%,100%{height:4px} 50%{height:13px} }
+  .son-tog.off .onda i { animation-play-state: paused; height: 4px; opacity: .45; }
+  .load-pie p { margin-top: 11px; color: rgba(11,13,20,.72); }
 
-  /* ================= ESCENA INMERSIVA ================= */
-  .escena { position: relative; height: 100svh; min-height: 560px; background: radial-gradient(120% 90% at 50% 8%, var(--noche-2) 0%, var(--noche-1) 62%); overflow: hidden; color: #fff; }
-  #cielo { position: absolute; inset: 0; }
-  #globo { position: absolute; inset: 0; touch-action: none; cursor: grab; }
-  #globo.arrastrando { cursor: grabbing; }
+  /* ---------- ESCENA FIJA ---------- */
+  #escena { position: fixed; inset: 0; z-index: 1; background: radial-gradient(130% 95% at 50% 6%, var(--noche-2) 0%, var(--noche-1) 62%); overflow: hidden; }
+  #cielo, #mapa { position: absolute; inset: 0; }
+  #riel { position: relative; z-index: 2; pointer-events: none; }
 
-  .barra { position: absolute; top: 0; left: 0; right: 0; z-index: 6; display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 18px clamp(16px, 4vw, 34px); }
-  .logo { display: flex; align-items: center; gap: 9px; font-weight: 900; letter-spacing: -0.02em; font-size: 17px; }
-  .logo i { width: 22px; height: 22px; border-radius: 99px; background: conic-gradient(from 210deg, var(--agua), var(--coral), var(--oro), var(--agua)); display: inline-block; box-shadow: 0 0 18px rgba(88,224,216,0.5); }
-  .barra .der { display: flex; align-items: center; gap: 10px; }
-  @media (max-width: 520px) {
-    .barra { padding: 14px 16px; }
-    .logo { font-size: 13.5px; white-space: nowrap; }
-    .logo i { width: 18px; height: 18px; }
-    .mini { padding: 7px 11px; font-size: 11.5px; }
+  /* ---------- BARRA SUPERIOR ---------- */
+  .barra { position: fixed; top: 0; left: 0; right: 0; z-index: 40; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px clamp(14px, 4vw, 32px); }
+  .logo { display: flex; align-items: center; gap: 9px; font-weight: 900; letter-spacing: -0.02em; font-size: 16.5px; white-space: nowrap; }
+  .logo i { width: 21px; height: 21px; border-radius: 99px; background: conic-gradient(from 210deg, var(--agua), var(--coral), var(--oro), var(--agua)); box-shadow: 0 0 16px rgba(88,224,216,.5); }
+  .der { display: flex; gap: 8px; align-items: center; }
+  .mini { background: rgba(255,255,255,.09); border: 1px solid rgba(255,255,255,.18); color: #fff; border-radius: 999px; padding: 7px 13px; font-size: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 7px; }
+  .mini:hover { background: rgba(255,255,255,.17); }
+  @media (max-width: 520px) { .logo { font-size: 13px } .mini { padding: 6px 10px; font-size: 11px } }
+
+  /* ---------- PROGRESO DEL VIAJE ---------- */
+  .ruta { position: fixed; left: 0; right: 0; top: 0; height: 3px; background: rgba(255,255,255,.10); z-index: 45; }
+  .ruta i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--agua), var(--coral)); }
+  .etapas { position: fixed; right: clamp(12px, 3vw, 26px); top: 50%; transform: translateY(-50%); z-index: 40; display: flex; flex-direction: column; gap: 12px; }
+  .etapa { width: 9px; height: 9px; border-radius: 99px; background: rgba(255,255,255,.22); position: relative; }
+  .etapa.on { background: var(--coral); box-shadow: 0 0 12px var(--coral); }
+  .etapa span { position: absolute; right: 18px; top: 50%; transform: translateY(-50%); white-space: nowrap; font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.55); opacity: 0; transition: opacity .3s ease; font-family: ui-monospace, monospace; }
+  .etapa.on span { opacity: 1; }
+  @media (max-width: 700px) { .etapas { display: none } }
+
+  /* ---------- CAPAS DE TEXTO ---------- */
+  .capa { position: fixed; inset: 0; z-index: 20; display: flex; align-items: center; pointer-events: none; padding: 0 clamp(16px, 5vw, 60px); }
+  .capa .caja { max-width: 460px; opacity: 0; transform: translateY(26px); }
+  .capa.der-lado { justify-content: flex-end; }
+  h1 { font-size: clamp(36px, 6.2vw, 74px); font-weight: 900; letter-spacing: -0.045em; line-height: .9; text-transform: uppercase; }
+  h1 em { font-style: normal; color: var(--coral); }
+  h2 { font-size: clamp(26px, 4.4vw, 50px); font-weight: 900; letter-spacing: -0.04em; line-height: .95; text-transform: uppercase; }
+  .capa p.sub { color: rgba(255,255,255,.72); margin-top: 14px; font-size: 15.5px; }
+  .kicker { color: var(--agua); margin-bottom: 10px; }
+  .kicker.p { color: var(--oro) } .kicker.l { color: var(--lila) }
+
+  /* fichas de país */
+  .paises { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 22px; }
+  .pais-b { border: 1px solid rgba(255,255,255,.22); background: rgba(255,255,255,.06); color: #fff; border-radius: 999px; padding: 9px 16px; font-size: 13.5px; cursor: pointer; transition: all .22s ease; }
+  .pais-b:hover { background: rgba(255,255,255,.15); transform: translateY(-2px); }
+  .pais-b.on { background: var(--coral); border-color: var(--coral); color: #2a0d02; font-weight: 700; }
+
+  /* listas */
+  .lista { margin-top: 16px; display: grid; gap: 9px; max-height: 50vh; overflow: auto; padding-right: 4px; }
+  .lista::-webkit-scrollbar { width: 4px } .lista::-webkit-scrollbar-thumb { background: rgba(255,255,255,.2); border-radius: 9px }
+  .item { border: 1px solid rgba(255,255,255,.14); background: rgba(10,16,34,.74); backdrop-filter: blur(9px); border-radius: 13px; padding: 13px 15px; transition: border-color .2s ease, transform .2s ease; }
+  .item:hover { border-color: rgba(88,224,216,.5); transform: translateX(3px); }
+  .item .fila { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+  .item h3 { font-size: 16px; font-weight: 700; }
+  .item .tag { font-size: 11.5px; color: var(--agua); white-space: nowrap; }
+  .item .tag.oro { color: var(--oro) }
+  .item p { font-size: 13px; color: rgba(255,255,255,.62); margin-top: 3px; }
+  .vista { height: 60px; border-radius: 9px; margin-bottom: 10px; position: relative; overflow: hidden; }
+  .vista span { position: absolute; left: 9px; bottom: 6px; font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.92); text-shadow: 0 1px 6px rgba(0,0,0,.5); }
+  .v-mar { background: linear-gradient(180deg,#1b4f7a,#2f9fb5 62%,#7fd7c8) }
+  .v-ciudad { background: linear-gradient(180deg,#241a3a,#5b3f7a 60%,#c98b6b) }
+  .v-monte { background: linear-gradient(180deg,#12314a,#2f6f5e 58%,#8fae72) }
+  .v-selva { background: linear-gradient(180deg,#0f2e22,#2f6b3c 62%,#8fc46a) }
+
+  .cta-wa { display: inline-flex; align-items: center; gap: 9px; background: var(--wa); color: #062d13; font-weight: 700; border-radius: 999px; padding: 13px 22px; font-size: 14.5px; margin-top: 16px; }
+  .cta-wa:hover { filter: brightness(1.07) }
+
+  .baja { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); z-index: 30; color: rgba(255,255,255,.5); text-align: center; transition: opacity .4s ease; pointer-events: none; }
+  .baja i { display: block; width: 1px; height: 26px; background: linear-gradient(rgba(255,255,255,.55), transparent); margin: 8px auto 0; }
+
+  .cierre { position: relative; z-index: 20; background: linear-gradient(180deg, transparent, var(--noche-1) 22%); padding: 130px clamp(16px,5vw,60px) 90px; text-align: center; }
+  .cierre h2 { max-width: 720px; margin: 0 auto }
+  .cierre p { color: rgba(255,255,255,.7); max-width: 520px; margin: 14px auto 0 }
+  footer { position: relative; z-index: 20; background: var(--noche-1); border-top: 1px solid rgba(255,255,255,.09); padding: 30px clamp(16px,5vw,60px); color: rgba(255,255,255,.5); font-size: 13px; display: flex; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+  footer a:hover { color: #fff }
+  .wa-float { position: fixed; right: 15px; bottom: 15px; width: 52px; height: 52px; border-radius: 99px; background: var(--wa); color: #062d13; display: grid; place-items: center; font-size: 24px; z-index: 60; box-shadow: 0 8px 22px rgba(37,211,102,.38) }
+
+  @media (max-width: 860px) {
+    .capa { align-items: flex-end; padding-bottom: 84px }
+    .capa.der-lado { justify-content: flex-start }
+    .capa .caja { max-width: none; width: 100% }
+    .lista { max-height: 38vh }
+    .baja { bottom: 12px }
   }
-  .mini { background: rgba(255,255,255,0.09); border: 1px solid rgba(255,255,255,0.18); color: #fff; border-radius: 999px; padding: 8px 14px; cursor: pointer; font-size: 12.5px; display: inline-flex; align-items: center; gap: 8px; }
-  .mini:hover { background: rgba(255,255,255,0.16); }
-  .mini .onda i { background: #fff; }
-
-  .titulo-esc { position: absolute; left: clamp(16px, 4vw, 40px); top: clamp(84px, 13vh, 130px); z-index: 5; max-width: 400px; pointer-events: none; transition: opacity 0.45s ease, transform 0.45s ease; }
-  .titulo-esc h1 { font-size: clamp(38px, 6.4vw, 76px); font-weight: 900; letter-spacing: -0.045em; line-height: 0.9; text-transform: uppercase; }
-  .titulo-esc h1 em { font-style: normal; color: var(--coral); }
-  .titulo-esc p { color: rgba(255,255,255,0.72); margin-top: 14px; font-size: 15.5px; }
-  .escena.abierta .titulo-esc { opacity: 0; transform: translateY(-14px); }
-  @media (max-width: 900px) { .titulo-esc { max-width: none; right: clamp(16px, 4vw, 40px); } }
-
-  .pista-hint { position: absolute; left: 50%; bottom: 118px; transform: translateX(-50%); z-index: 5; color: rgba(255,255,255,0.55); pointer-events: none; transition: opacity 0.4s ease; }
-  .escena.abierta .pista-hint { opacity: 0; }
-
-  /* fichas de destino */
-  .fichas { position: absolute; left: 0; right: 0; bottom: 0; z-index: 6; padding: 16px clamp(16px, 4vw, 34px) 22px; display: flex; gap: 9px; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; background: linear-gradient(180deg, transparent, rgba(7,11,24,0.85) 45%); }
-  .fichas::-webkit-scrollbar { display: none; }
-  .ficha { flex: none; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.06); color: #fff; border-radius: 999px; padding: 9px 17px; font-size: 13.5px; cursor: pointer; white-space: nowrap; transition: background 0.22s ease, border-color 0.22s ease, transform 0.22s ease; }
-  .ficha:hover { background: rgba(255,255,255,0.14); transform: translateY(-2px); }
-  .ficha.sel { background: var(--coral); border-color: var(--coral); color: #241004; font-weight: 700; }
-
-  /* panel de destino */
-  .panel {
-    position: absolute; right: 0; top: 0; bottom: 0; width: min(420px, 92vw); z-index: 8;
-    background: rgba(9,13,28,0.93); backdrop-filter: blur(16px); border-left: 1px solid rgba(255,255,255,0.13);
-    transform: translateX(102%); transition: transform 0.55s cubic-bezier(0.16,0.84,0.3,1);
-    display: flex; flex-direction: column;
-  }
-  .panel.abierto { transform: none; }
-  @media (max-width: 720px) {
-    .panel { left: 0; width: auto; top: auto; height: 68svh; border-left: none; border-top: 1px solid rgba(255,255,255,0.13); border-radius: 20px 20px 0 0; transform: translateY(102%); }
-    .panel.abierto { transform: none; }
-    .fichas { bottom: 0; }
-    .escena.abierta .fichas { opacity: 0; pointer-events: none; }
-    .escena.abierta ~ .wa-float, body:has(.panel.abierto) .wa-float { display: none; }
-  }
-  .p-top { padding: 20px 22px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); }
-  .p-cerrar { position: absolute; right: 14px; top: 14px; width: 32px; height: 32px; border-radius: 99px; background: rgba(255,255,255,0.1); border: none; color: #fff; font-size: 17px; cursor: pointer; }
-  .p-cerrar:hover { background: rgba(255,255,255,0.2); }
-  .p-top .pais { color: var(--agua); }
-  .p-top h2 { font-size: 30px; font-weight: 900; letter-spacing: -0.03em; margin-top: 4px; text-transform: uppercase; }
-  .p-top .desde { color: rgba(255,255,255,0.66); font-size: 14px; margin-top: 6px; }
-  .p-top .desde b { color: var(--oro); font-size: 19px; }
-  .tabs { display: flex; gap: 6px; padding: 12px 22px 0; }
-  .tab { flex: 1; background: transparent; border: none; color: rgba(255,255,255,0.5); font-size: 13px; font-weight: 600; padding: 9px 4px; border-bottom: 2px solid transparent; cursor: pointer; }
-  .tab.act { color: #fff; border-bottom-color: var(--coral); }
-  .p-cuerpo { flex: 1; overflow-y: auto; padding: 16px 22px 22px; }
-  .bloque { display: none; }
-  .bloque.act { display: block; animation: entra 0.4s ease; }
-  @keyframes entra { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
-  .dato { display: flex; justify-content: space-between; gap: 12px; padding: 11px 0; border-bottom: 1px solid rgba(255,255,255,0.09); font-size: 14px; color: rgba(255,255,255,0.78); }
-  .dato b { color: #fff; text-align: right; }
-  .incluye { margin-top: 16px; }
-  .incluye li { list-style: none; font-size: 14px; color: rgba(255,255,255,0.78); padding: 6px 0 6px 22px; position: relative; }
-  .incluye li::before { content: '✓'; position: absolute; left: 0; color: var(--agua); font-weight: 800; }
-  .hotel { border: 1px solid rgba(255,255,255,0.12); border-radius: 13px; padding: 14px; margin-bottom: 10px; background: rgba(255,255,255,0.03); transition: border-color 0.22s ease, transform 0.22s ease; }
-  .hotel:hover { border-color: rgba(88,224,216,0.5); transform: translateY(-2px); }
-  .hotel .fila { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
-  .hotel h4 { font-size: 15.5px; font-weight: 700; }
-  .hotel .est { color: var(--oro); font-size: 12px; letter-spacing: 1px; }
-  .hotel p { font-size: 13px; color: rgba(255,255,255,0.62); margin-top: 4px; }
-  .hotel .precio { font-size: 14px; color: var(--agua); font-weight: 700; margin-top: 6px; }
-  .paseo { display: flex; gap: 12px; align-items: flex-start; padding: 11px 0; border-bottom: 1px solid rgba(255,255,255,0.09); }
-  .paseo .n { width: 26px; height: 26px; border-radius: 99px; background: rgba(255,106,61,0.18); color: var(--coral); display: grid; place-items: center; font-size: 12px; font-weight: 800; flex: none; }
-  .paseo h4 { font-size: 14.5px; font-weight: 600; }
-  .paseo p { font-size: 12.5px; color: rgba(255,255,255,0.6); }
-  .p-pie { padding: 14px 22px 20px; border-top: 1px solid rgba(255,255,255,0.1); }
-  .btn-wa { display: flex; align-items: center; justify-content: center; gap: 9px; background: var(--wa); color: #062d13; font-weight: 700; border-radius: 999px; padding: 14px; font-size: 14.5px; }
-  .btn-wa:hover { filter: brightness(1.06); }
-
-  /* ================= SECCIONES CLARAS ================= */
-  .claro { background: linear-gradient(180deg, var(--cielo-1) 0%, var(--cielo-2) 100%); }
-  .wrap { max-width: 1060px; margin: 0 auto; padding: 0 5vw; }
-  section.blk { padding: 92px 0; }
-  .h-sec { font-size: clamp(30px, 5.4vw, 58px); font-weight: 900; letter-spacing: -0.04em; text-transform: uppercase; line-height: 0.94; }
-  .sub-sec { color: var(--gris); font-size: 16.5px; margin-top: 14px; max-width: 520px; }
-  .grid-p { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 18px; margin-top: 40px; }
-  .paq { background: rgba(255,255,255,0.72); border: 1px solid var(--linea); border-radius: 18px; padding: 22px; display: flex; flex-direction: column; gap: 8px; transition: transform 0.25s ease, box-shadow 0.25s ease; }
-  .paq:hover { transform: translateY(-5px); box-shadow: 0 18px 40px rgba(20,30,70,0.14); }
-  .paq .ciudad { font-size: 21px; font-weight: 900; letter-spacing: -0.02em; text-transform: uppercase; }
-  .paq .pais2 { color: var(--gris); font-size: 13px; }
-  .paq .pr { font-size: 24px; font-weight: 900; letter-spacing: -0.03em; margin-top: 6px; }
-  .paq .pr small { font-size: 12.5px; font-weight: 500; color: var(--gris); }
-  .paq .noc { color: var(--gris); font-size: 13.5px; }
-  .paq .ver { margin-top: 10px; font-size: 13px; font-weight: 700; color: var(--coral); cursor: pointer; }
-  .pasos3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 26px; margin-top: 42px; counter-reset: q; }
-  .p3 h3 { font-size: 18px; font-weight: 800; margin-top: 6px; }
-  .p3 p { color: var(--gris); font-size: 14.5px; margin-top: 5px; }
-  .p3::before { counter-increment: q; content: '0' counter(q); font-size: 13px; font-weight: 800; color: var(--coral); letter-spacing: 0.1em; }
-  .cierre2 { text-align: center; padding: 96px 0 110px; }
-  .cierre2 .h-sec { text-align: center; }
-  .btn-oscuro { display: inline-flex; align-items: center; gap: 9px; background: var(--tinta); color: #fff; border-radius: 999px; padding: 15px 30px; font-weight: 700; font-size: 15px; margin-top: 26px; transition: transform 0.2s ease; }
-  .btn-oscuro:hover { transform: translateY(-2px); }
-  footer { background: var(--tinta); color: rgba(255,255,255,0.6); padding: 34px 0; font-size: 13.5px; }
-  .foot { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
-  footer a:hover { color: #fff; }
-  .wa-float { position: fixed; right: 16px; bottom: 16px; width: 54px; height: 54px; border-radius: 99px; background: var(--wa); color: #062d13; display: grid; place-items: center; font-size: 25px; box-shadow: 0 8px 24px rgba(37,211,102,0.4); z-index: 90; }
-
-  .rev { opacity: 0; transform: translateY(24px); transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.16,0.84,0.3,1); }
-  .rev.visible { opacity: 1; transform: none; }
-  @media (prefers-reduced-motion: reduce) { * { animation-duration: 0.01ms !important; } .rev { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important } }
 </style>
 </head>
 <body>
 
-<!-- ============ LOADER ============ -->
 <div id="load">
   <div class="load-row">
     <div class="txt cond">Cargando</div>
     <div class="pista"><div class="bolita" id="bolita"></div></div>
-    <div class="load-pct"><span id="pct">0</span><sup>%</sup></div>
+    <div class="load-pct"><span id="pct">0</span><sup style="font-size:.45em">%</sup></div>
   </div>
   <div class="load-pie">
-    <button class="son-tog off" id="sonLoad" aria-label="Activar sonido">
-      <span class="onda"><i></i><i></i><i></i><i></i><i></i></span>
-      <span class="mono" id="sonLoadTxt">OFF</span>
-    </button>
+    <button class="son-tog off" id="sonLoad"><span class="onda"><i></i><i></i><i></i><i></i><i></i></span><span class="mono" id="sonLoadTxt">OFF</span></button>
     <p class="mono">Para que la experiencia sea más inmersiva usamos sonido</p>
   </div>
 </div>
 
-<!-- ============ ESCENA INMERSIVA ============ -->
-<div class="escena" id="escena">
+<div id="escena">
   <canvas id="cielo"></canvas>
-  <canvas id="globo"></canvas>
-
-  <div class="barra">
-    <div class="logo"><i></i> MUNDO ABIERTO</div>
-    <div class="der">
-      <button class="mini son-tog off" id="sonTog" aria-label="Sonido">
-        <span class="onda"><i></i><i></i><i></i><i></i><i></i></span>
-        <span class="mono" id="sonTxt">OFF</span>
-      </button>
-      <a class="mini" href="#paquetes">Ver paquetes</a>
-    </div>
-  </div>
-
-  <div class="titulo-esc">
-    <h1>Elegí<br>tu próximo<br><em>destino</em></h1>
-    <p>Girá el globo con el dedo y tocá un punto: te mostramos el paquete completo,
-    los hoteles y los paseos, con precio desde Asunción.</p>
-  </div>
-
-  <div class="pista-hint mono">Arrastrá para girar · tocá un destino</div>
-
-  <div class="fichas" id="fichas"></div>
-
-  <aside class="panel" id="panel" aria-live="polite">
-    <button class="p-cerrar" id="cerrarPanel" aria-label="Cerrar">✕</button>
-    <div class="p-top">
-      <div class="pais mono" id="pPais">—</div>
-      <h2 id="pCiudad">—</h2>
-      <div class="desde">Paquete desde <b id="pPrecio">—</b> por persona</div>
-    </div>
-    <div class="tabs">
-      <button class="tab act" data-b="paquete">Paquete</button>
-      <button class="tab" data-b="hoteles">Hoteles</button>
-      <button class="tab" data-b="paseos">Paseos</button>
-    </div>
-    <div class="p-cuerpo">
-      <div class="bloque act" id="bPaquete"></div>
-      <div class="bloque" id="bHoteles"></div>
-      <div class="bloque" id="bPaseos"></div>
-    </div>
-    <div class="p-pie">
-      <a class="btn-wa" id="pWa" href="#" target="_blank" rel="noopener">Pedir este viaje por WhatsApp</a>
-    </div>
-  </aside>
+  <canvas id="mapa"></canvas>
 </div>
 
-<!-- ============ SECCIONES ============ -->
-<div class="claro">
-  <section class="blk" id="paquetes">
-    <div class="wrap">
-      <h2 class="h-sec rev">Salidas del mes</h2>
-      <p class="sub-sec rev">Precios por persona en base doble, con aéreo desde Asunción,
-      traslados y asistencia al viajero. Financiación hasta 12 cuotas.</p>
-      <div class="grid-p" id="gridPaq"></div>
-    </div>
-  </section>
+<div class="ruta"><i id="rutaBar"></i></div>
 
-  <section class="blk" style="padding-top:0">
-    <div class="wrap">
-      <h2 class="h-sec rev">Cómo trabajamos</h2>
-      <div class="pasos3">
-        <div class="p3 rev"><h3>Contanos tu idea</h3><p>Fecha aproximada, cuántos van y qué presupuesto manejás. Con eso ya armamos opciones.</p></div>
-        <div class="p3 rev"><h3>Te armamos 3 opciones</h3><p>Distintos hoteles y aerolíneas, con el precio final en guaraníes. Sin sorpresas después.</p></div>
-        <div class="p3 rev"><h3>Reservás con seña</h3><p>30% para bloquear tarifa y el resto hasta 30 días antes de salir. Cuotas sin interés con tarjeta.</p></div>
-        <div class="p3 rev"><h3>Viajás acompañado</h3><p>Grupo de WhatsApp con la agencia durante todo el viaje, por si algo se complica allá.</p></div>
-      </div>
-    </div>
-  </section>
-
-  <div class="cierre2">
-    <div class="wrap">
-      <h2 class="h-sec rev">¿A dónde te llevamos?</h2>
-      <p class="sub-sec rev" style="margin:14px auto 0; text-align:center">Contanos el destino que tenés en la cabeza
-      y te pasamos las tres mejores opciones hoy mismo.</p>
-      <a class="btn-oscuro rev" href="https://wa.me/595983518856?text=Hola!%20Quiero%20cotizar%20un%20viaje">Escribinos por WhatsApp</a>
-    </div>
+<div class="barra">
+  <div class="logo"><i></i> MUNDO ABIERTO</div>
+  <div class="der">
+    <button class="mini son-tog off" id="sonTog"><span class="onda"><i></i><i></i><i></i><i></i><i></i></span><span class="mono" id="sonTxt">OFF</span></button>
+    <a class="mini" href="#cierre">Pedir presupuesto</a>
   </div>
+</div>
+
+<div class="etapas" id="etapas"></div>
+
+<div class="capa" data-acto="0"><div class="caja" id="c0">
+  <div class="kicker mono">Salidas desde Asunción</div>
+  <h1>Elegí<br>tu próximo<br><em>destino</em></h1>
+  <p class="sub">Tocá un país y bajá: vas a ver el avión salir de Asunción, aterrizar,
+  y después las ciudades, los hoteles y los paseos que te esperan.</p>
+  <div class="paises" id="paises"></div>
+</div></div>
+
+<div class="capa" data-acto="1"><div class="caja" id="c1">
+  <div class="kicker mono">En vuelo</div>
+  <h2 id="t1">Asunción → Río de Janeiro</h2>
+  <p class="sub" id="p1">Vuelo directo · 3 h 20 min</p>
+</div></div>
+
+<div class="capa der-lado" data-acto="2"><div class="caja" id="c2">
+  <div class="kicker mono">Destinos</div>
+  <h2 id="t2">Todo Brasil</h2>
+  <p class="sub" id="p2">Estas son las ciudades a las que te llevamos.</p>
+  <div class="lista" id="lCiudades"></div>
+</div></div>
+
+<div class="capa der-lado" data-acto="3"><div class="caja" id="c3">
+  <div class="kicker p mono">Dónde dormís</div>
+  <h2>Hoteles con vista</h2>
+  <p class="sub">Elegidos por lo que se ve desde la ventana, no solo por las estrellas.</p>
+  <div class="lista" id="lHoteles"></div>
+</div></div>
+
+<div class="capa der-lado" data-acto="4"><div class="caja" id="c4">
+  <div class="kicker l mono">Qué hacés allá</div>
+  <h2>Puntos turísticos</h2>
+  <p class="sub">Los paseos que armamos con guía en español.</p>
+  <div class="lista" id="lPaseos"></div>
+  <a class="cta-wa" id="waActo" href="#" target="_blank" rel="noopener">Pedir este viaje por WhatsApp</a>
+</div></div>
+
+<div class="baja mono" id="baja">Bajá para viajar<i></i></div>
+
+<div id="riel"></div>
+
+<div class="cierre" id="cierre">
+  <h2>¿A dónde te llevamos?</h2>
+  <p>Contanos el destino que tenés en la cabeza y te pasamos las tres mejores opciones hoy mismo,
+  con precio final en guaraníes y cuotas.</p>
+  <a class="cta-wa" href="https://wa.me/595983518856?text=Hola!%20Quiero%20cotizar%20un%20viaje">Escribinos por WhatsApp</a>
 </div>
 
 <footer>
-  <div class="wrap foot">
-    <div>MUNDO ABIERTO · Av. España 1234, Asunción</div>
-    <div>Lun a Vie 8:30–18:00 · Sáb 8:30–12:00</div>
-    <div><a href="https://wa.me/595983518856">WhatsApp</a> · Demostración — diseño: KatuWeb</div>
-  </div>
+  <div>MUNDO ABIERTO · Av. España 1234, Asunción</div>
+  <div>Lun a Vie 8:30–18:00 · Sáb 8:30–12:00</div>
+  <div><a href="https://wa.me/595983518856">WhatsApp</a> · Demostración — diseño: KatuWeb</div>
 </footer>
 
 <a class="wa-float" href="https://wa.me/595983518856?text=Hola!%20Quiero%20cotizar%20un%20viaje" aria-label="WhatsApp">✆</a>
@@ -277,122 +208,178 @@
   'use strict';
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var WA = '595983518856';
+  var ORIGEN = { lat: -25.3, lon: -57.6 };
 
-  /* ============ DATOS DE DESTINOS ============ */
-  var DESTINOS = [
-    { id: 'rio', ciudad: 'Río de Janeiro', pais: 'Brasil', lat: -22.9, lon: -43.2, usd: 890, noches: 5,
-      vuelo: 'Directo · 3 h 20 min', temporada: 'Marzo a noviembre',
-      incluye: ['Aéreo ida y vuelta desde Asunción', 'Traslado aeropuerto–hotel', 'Desayuno diario', 'Asistencia al viajero'],
-      hoteles: [ {n:'Praia Copacabana', e:4, d:'Frente al mar, a 2 cuadras del Copacabana Palace', p:'US$ 96 / noche'},
-                 {n:'Ipanema Boutique', e:4, d:'Zona de bares y restaurantes, piscina en la terraza', p:'US$ 118 / noche'},
-                 {n:'Centro Executive', e:3, d:'Opción económica, cerca del metro', p:'US$ 62 / noche'} ],
-      paseos: [ {n:'Cristo Redentor + Corcovado', d:'Medio día, con tren cremallera'},
-                {n:'Pan de Azúcar en teleférico', d:'Atardecer, 3 horas'},
-                {n:'Favela tour con guía local', d:'Vidigal, mitad de día'},
-                {n:'Día de playa en Ipanema', d:'Sombrilla y transporte incluidos'} ] },
-    { id: 'bue', ciudad: 'Buenos Aires', pais: 'Argentina', lat: -34.6, lon: -58.4, usd: 620, noches: 4,
-      vuelo: 'Directo · 2 h 10 min', temporada: 'Todo el año',
-      incluye: ['Aéreo ida y vuelta', 'Hotel céntrico con desayuno', 'Traslados', 'City tour de bienvenida'],
-      hoteles: [ {n:'Recoleta Grand', e:4, d:'A pasos del cementerio de Recoleta', p:'US$ 78 / noche'},
-                 {n:'Palermo Soho Loft', e:3, d:'Barrio de diseño, ideal para caminar', p:'US$ 54 / noche'},
-                 {n:'Puerto Madero Río', e:5, d:'Vista al dique, spa y piscina climatizada', p:'US$ 142 / noche'} ],
-      paseos: [ {n:'Cena show de tango', d:'San Telmo, con cena de tres pasos'},
-                {n:'Tigre y Delta en lancha', d:'Día completo'},
-                {n:'Tour de compras en Avellaneda', d:'Medio día con guía'},
-                {n:'La Bombonera y el Caminito', d:'Media jornada en La Boca'} ] },
-    { id: 'can', ciudad: 'Cancún', pais: 'México', lat: 21.2, lon: -86.8, usd: 1750, noches: 7,
-      vuelo: 'Con escala en Panamá · 9 h', temporada: 'Diciembre a abril',
-      incluye: ['Aéreo con impuestos', 'Hotel all inclusive 7 noches', 'Traslados privados', 'Asistencia médica'],
-      hoteles: [ {n:'Riviera All Inclusive', e:5, d:'Todo incluido, 4 restaurantes y parque acuático', p:'US$ 215 / noche'},
-                 {n:'Zona Hotelera Playa', e:4, d:'Frente al mar, media pensión', p:'US$ 132 / noche'},
-                 {n:'Downtown Cancún', e:3, d:'Céntrico, a 15 min de la playa', p:'US$ 68 / noche'} ],
-      paseos: [ {n:'Chichén Itzá', d:'Día completo con almuerzo y cenote'},
-                {n:'Isla Mujeres en catamarán', d:'Snorkel y barra libre'},
-                {n:'Xcaret o Xel-Há', d:'Parque ecológico, día completo'},
-                {n:'Tulum y playa Paraíso', d:'Ruinas frente al Caribe'} ] },
-    { id: 'pun', ciudad: 'Punta Cana', pais: 'Rep. Dominicana', lat: 18.6, lon: -68.4, usd: 1590, noches: 7,
-      vuelo: 'Con escala en Panamá · 8 h 30 min', temporada: 'Todo el año',
-      incluye: ['Aéreo ida y vuelta', 'Resort all inclusive', 'Traslados', 'Asistencia al viajero'],
-      hoteles: [ {n:'Bávaro Beach Resort', e:5, d:'Todo incluido con spa y 6 piscinas', p:'US$ 198 / noche'},
-                 {n:'Cana Family Club', e:4, d:'Ideal para ir con chicos, club infantil', p:'US$ 156 / noche'},
-                 {n:'Palma Real Suites', e:4, d:'Suites amplias, a 10 min de la playa', p:'US$ 121 / noche'} ],
-      paseos: [ {n:'Isla Saona', d:'Catamarán y piscina natural, día completo'},
-                {n:'Buggies por la selva', d:'Medio día, incluye cenote'},
-                {n:'Santo Domingo colonial', d:'Día completo con guía'},
-                {n:'Snorkel en arrecife', d:'Tres horas'} ] },
-    { id: 'cus', ciudad: 'Cusco', pais: 'Perú', lat: -13.5, lon: -71.9, usd: 1150, noches: 5,
-      vuelo: 'Con escala en Lima · 6 h', temporada: 'Abril a octubre',
-      incluye: ['Aéreo con impuestos', 'Hotel con desayuno', 'Tren a Machu Picchu', 'Guía en español'],
-      hoteles: [ {n:'Plaza de Armas Colonial', e:4, d:'Casona restaurada en pleno centro', p:'US$ 88 / noche'},
-                 {n:'San Blas Andino', e:3, d:'Barrio de artesanos, vista a la ciudad', p:'US$ 52 / noche'},
-                 {n:'Valle Sagrado Lodge', e:5, d:'En Urubamba, con jardines y spa', p:'US$ 176 / noche'} ],
-      paseos: [ {n:'Machu Picchu', d:'Día completo en tren panorámico'},
-                {n:'Valle Sagrado de los Incas', d:'Pisac y Ollantaytambo'},
-                {n:'Montaña de 7 colores', d:'Día completo, salida 4 a.m.'},
-                {n:'City tour Cusco', d:'Sacsayhuamán y Qorikancha'} ] },
-    { id: 'orl', ciudad: 'Orlando', pais: 'Estados Unidos', lat: 28.5, lon: -81.4, usd: 1980, noches: 7,
-      vuelo: 'Con escala en Panamá · 10 h', temporada: 'Todo el año',
-      incluye: ['Aéreo ida y vuelta', 'Hotel con desayuno', 'Auto de alquiler 7 días', 'Asistencia al viajero'],
-      hoteles: [ {n:'International Drive Suites', e:4, d:'Cerca de los parques, con cocina', p:'US$ 148 / noche'},
-                 {n:'Lake Buena Vista Resort', e:4, d:'Shuttle gratis a Disney', p:'US$ 172 / noche'},
-                 {n:'Kissimmee Family Inn', e:3, d:'Económico, ideal para familias grandes', p:'US$ 92 / noche'} ],
-      paseos: [ {n:'Magic Kingdom', d:'Día completo en Disney'},
-                {n:'Universal Studios', d:'Incluye el mundo de Harry Potter'},
-                {n:'Outlets de Orlando', d:'Medio día de compras'},
-                {n:'Kennedy Space Center', d:'Día completo en Cabo Cañaveral'} ] },
-    { id: 'mad', ciudad: 'Madrid', pais: 'España', lat: 40.4, lon: -3.7, usd: 2100, noches: 8,
-      vuelo: 'Con escala en São Paulo · 14 h', temporada: 'Abril a octubre',
-      incluye: ['Aéreo con impuestos', 'Hotel céntrico con desayuno', 'Traslados', 'Seguro Schengen obligatorio'],
-      hoteles: [ {n:'Gran Vía Central', e:4, d:'En plena Gran Vía, todo a pie', p:'US$ 128 / noche'},
-                 {n:'Malasaña Design', e:4, d:'Barrio joven, terrazas y bares', p:'US$ 112 / noche'},
-                 {n:'Atocha Classic', e:3, d:'Junto a la estación, cerca del Prado', p:'US$ 76 / noche'} ],
-      paseos: [ {n:'Museo del Prado y Retiro', d:'Medio día con entradas'},
-                {n:'Toledo medieval', d:'Día completo en tren'},
-                {n:'Segovia y su acueducto', d:'Día completo'},
-                {n:'Tapeo por La Latina', d:'Noche gastronómica con guía'} ] },
-    { id: 'par', ciudad: 'París', pais: 'Francia', lat: 48.9, lon: 2.4, usd: 2450, noches: 8,
-      vuelo: 'Con escala en São Paulo · 15 h', temporada: 'Mayo a septiembre',
-      incluye: ['Aéreo con impuestos', 'Hotel con desayuno', 'Traslados privados', 'Seguro Schengen'],
-      hoteles: [ {n:'Montmartre Vue', e:4, d:'Vista a la ciudad desde la colina', p:'US$ 164 / noche'},
-                 {n:'Latin Quarter Hotel', e:3, d:'A 10 min de Notre Dame caminando', p:'US$ 118 / noche'},
-                 {n:'Champs Boutique', e:5, d:'A dos cuadras de los Campos Elíseos', p:'US$ 246 / noche'} ],
-      paseos: [ {n:'Torre Eiffel con acceso directo', d:'Segundo piso y cima'},
-                {n:'Louvre con guía en español', d:'Medio día'},
-                {n:'Crucero por el Sena', d:'Atardecer, 1 hora'},
-                {n:'Versalles', d:'Día completo, palacio y jardines'} ] }
+  function rad(d) { return d * Math.PI / 180; }
+  function vectorDe(lat, lon) {
+    var a = rad(lat), b = rad(lon);
+    return { x: Math.cos(a) * Math.cos(b), y: Math.sin(a), z: Math.cos(a) * Math.sin(b) };
+  }
+  function slerp(a, b, t) {
+    var d = Math.max(-1, Math.min(1, a.x*b.x + a.y*b.y + a.z*b.z));
+    var om = Math.acos(d);
+    if (om < 1e-6) return a;
+    var s = Math.sin(om), k0 = Math.sin((1-t)*om)/s, k1 = Math.sin(t*om)/s;
+    return { x: a.x*k0 + b.x*k1, y: a.y*k0 + b.y*k1, z: a.z*k0 + b.z*k1 };
+  }
+  function clamp01(v) { return Math.max(0, Math.min(1, v)); }
+  function suave(t) { return t * t * (3 - 2 * t); }
+
+  /* ============ DATOS ============ */
+  var PAISES = [
+    { id:'br', nombre:'Brasil', puerta:'Río de Janeiro', lat:-22.9, lon:-43.2,
+      vuelo:'Vuelo directo · 3 h 20 min', desde:890,
+      ciudades:[
+        {n:'Río de Janeiro',lat:-22.9,lon:-43.2,d:'Playa, Cristo Redentor y vida nocturna',t:'desde US$ 890'},
+        {n:'Florianópolis',lat:-27.6,lon:-48.5,d:'42 playas en una isla, ideal en verano',t:'desde US$ 760'},
+        {n:'Salvador de Bahía',lat:-12.97,lon:-38.5,d:'Centro histórico y cultura afrobrasileña',t:'desde US$ 980'},
+        {n:'Foz do Iguaçu',lat:-25.5,lon:-54.6,d:'Las cataratas, a 5 horas en micro',t:'desde US$ 210'},
+        {n:'São Paulo',lat:-23.55,lon:-46.6,d:'Compras, gastronomía y shows',t:'desde US$ 640'},
+        {n:'Natal',lat:-5.8,lon:-35.2,d:'Dunas, buggies y agua tibia todo el año',t:'desde US$ 1.050'}],
+      hoteles:[
+        {n:'Praia Copacabana',e:4,v:'v-mar',vis:'Vista al mar',d:'Frente a la playa, desayuno con vista',p:'US$ 96 / noche'},
+        {n:'Ipanema Boutique',e:4,v:'v-ciudad',vis:'Vista a la ciudad',d:'Piscina en la terraza, zona de bares',p:'US$ 118 / noche'},
+        {n:'Santa Teresa Hills',e:5,v:'v-monte',vis:'Vista al morro',d:'Casona en la colina, arte por todos lados',p:'US$ 187 / noche'}],
+      paseos:[
+        {n:'Cristo Redentor',d:'Medio día en tren cremallera hasta el Corcovado'},
+        {n:'Pan de Azúcar',d:'Teleférico al atardecer, 3 horas'},
+        {n:'Cataratas del Iguazú',d:'Día completo, lado brasileño'},
+        {n:'Islas Cagarras en barco',d:'Snorkel y almuerzo a bordo'}] },
+
+    { id:'ar', nombre:'Argentina', puerta:'Buenos Aires', lat:-34.6, lon:-58.4,
+      vuelo:'Vuelo directo · 2 h 10 min', desde:620,
+      ciudades:[
+        {n:'Buenos Aires',lat:-34.6,lon:-58.4,d:'Tango, teatros y compras',t:'desde US$ 620'},
+        {n:'Bariloche',lat:-41.1,lon:-71.3,d:'Lagos, nieve en invierno, chocolate',t:'desde US$ 1.120'},
+        {n:'Mendoza',lat:-32.9,lon:-68.8,d:'Ruta del vino al pie de la cordillera',t:'desde US$ 880'},
+        {n:'Córdoba',lat:-31.4,lon:-64.2,d:'Sierras, ríos y pueblos serranos',t:'desde US$ 690'},
+        {n:'Salta',lat:-24.8,lon:-65.4,d:'Cerro de los 7 colores y quebradas',t:'desde US$ 950'},
+        {n:'Ushuaia',lat:-54.8,lon:-68.3,d:'El fin del mundo y el canal Beagle',t:'desde US$ 1.480'}],
+      hoteles:[
+        {n:'Recoleta Grand',e:4,v:'v-ciudad',vis:'Vista a Recoleta',d:'A pasos del cementerio y los museos',p:'US$ 78 / noche'},
+        {n:'Puerto Madero Río',e:5,v:'v-mar',vis:'Vista al dique',d:'Spa y piscina climatizada',p:'US$ 142 / noche'},
+        {n:'Bariloche Lago Lodge',e:4,v:'v-monte',vis:'Vista al Nahuel Huapi',d:'Cabañas con estufa a leña',p:'US$ 134 / noche'}],
+      paseos:[
+        {n:'Cena show de tango',d:'San Telmo, con cena de tres pasos'},
+        {n:'Tigre y el Delta',d:'Día completo en lancha colectiva'},
+        {n:'Bodegas de Mendoza',d:'Tres bodegas con degustación y almuerzo'},
+        {n:'Cerro Catedral',d:'Día de nieve con equipo incluido'}] },
+
+    { id:'pe', nombre:'Perú', puerta:'Lima', lat:-12.05, lon:-77.05,
+      vuelo:'Con escala en Lima · 6 h', desde:1150,
+      ciudades:[
+        {n:'Cusco',lat:-13.5,lon:-71.9,d:'La puerta a Machu Picchu',t:'desde US$ 1.150'},
+        {n:'Lima',lat:-12.05,lon:-77.05,d:'Capital gastronómica de la región',t:'desde US$ 890'},
+        {n:'Arequipa',lat:-16.4,lon:-71.5,d:'Ciudad blanca y cañón del Colca',t:'desde US$ 1.020'},
+        {n:'Puno · Titicaca',lat:-15.8,lon:-70.0,d:'Islas flotantes de los Uros',t:'desde US$ 1.190'},
+        {n:'Máncora',lat:-4.1,lon:-81.05,d:'Playa y surf en el norte',t:'desde US$ 1.240'}],
+      hoteles:[
+        {n:'Plaza de Armas Colonial',e:4,v:'v-ciudad',vis:'Vista a la plaza',d:'Casona restaurada en pleno centro',p:'US$ 88 / noche'},
+        {n:'Valle Sagrado Lodge',e:5,v:'v-monte',vis:'Vista al valle',d:'Jardines y spa en Urubamba',p:'US$ 176 / noche'},
+        {n:'Miraflores Malecón',e:4,v:'v-mar',vis:'Vista al Pacífico',d:'Sobre el acantilado de Lima',p:'US$ 112 / noche'}],
+      paseos:[
+        {n:'Machu Picchu',d:'Día completo en tren panorámico'},
+        {n:'Valle Sagrado',d:'Pisac y Ollantaytambo con guía'},
+        {n:'Montaña de 7 colores',d:'Día completo, salida 4 a.m.'},
+        {n:'Tour gastronómico en Lima',d:'Mercado, ceviche y pisco sour'}] },
+
+    { id:'mx', nombre:'México', puerta:'Cancún', lat:21.2, lon:-86.8,
+      vuelo:'Con escala en Panamá · 9 h', desde:1750,
+      ciudades:[
+        {n:'Cancún',lat:21.2,lon:-86.8,d:'Caribe, all inclusive y vida nocturna',t:'desde US$ 1.750'},
+        {n:'Playa del Carmen',lat:20.6,lon:-87.1,d:'Quinta Avenida y cenotes cerca',t:'desde US$ 1.690'},
+        {n:'Tulum',lat:20.2,lon:-87.4,d:'Ruinas mayas frente al mar',t:'desde US$ 1.820'},
+        {n:'Ciudad de México',lat:19.4,lon:-99.1,d:'Museos, Teotihuacán y comida',t:'desde US$ 1.480'},
+        {n:'Guadalajara',lat:20.7,lon:-103.3,d:'Tequila, mariachi y centro colonial',t:'desde US$ 1.560'}],
+      hoteles:[
+        {n:'Riviera All Inclusive',e:5,v:'v-mar',vis:'Vista al Caribe',d:'Todo incluido, 4 restaurantes',p:'US$ 215 / noche'},
+        {n:'Tulum Jungle Suites',e:4,v:'v-selva',vis:'Vista a la selva',d:'Cabañas entre árboles, cenote propio',p:'US$ 168 / noche'},
+        {n:'Centro Histórico CDMX',e:4,v:'v-ciudad',vis:'Vista al Zócalo',d:'Terraza mirando la catedral',p:'US$ 96 / noche'}],
+      paseos:[
+        {n:'Chichén Itzá',d:'Día completo con almuerzo y cenote'},
+        {n:'Isla Mujeres en catamarán',d:'Snorkel y barra libre'},
+        {n:'Xcaret o Xel-Há',d:'Parque ecológico, día completo'},
+        {n:'Teotihuacán en globo',d:'Amanecer sobre las pirámides'}] },
+
+    { id:'es', nombre:'España', puerta:'Madrid', lat:40.4, lon:-3.7,
+      vuelo:'Con escala en São Paulo · 14 h', desde:2100,
+      ciudades:[
+        {n:'Madrid',lat:40.4,lon:-3.7,d:'Museos, tapas y vida de barrio',t:'desde US$ 2.100'},
+        {n:'Barcelona',lat:41.4,lon:2.17,d:'Gaudí, playa y Barrio Gótico',t:'desde US$ 2.240'},
+        {n:'Sevilla',lat:37.4,lon:-6.0,d:'Flamenco, Alcázar y naranjos',t:'desde US$ 2.180'},
+        {n:'Valencia',lat:39.47,lon:-0.38,d:'Paella, ciencia y playa urbana',t:'desde US$ 2.150'},
+        {n:'Granada',lat:37.18,lon:-3.6,d:'La Alhambra y Sierra Nevada',t:'desde US$ 2.260'}],
+      hoteles:[
+        {n:'Gran Vía Central',e:4,v:'v-ciudad',vis:'Vista a Gran Vía',d:'Todo el centro caminando',p:'US$ 128 / noche'},
+        {n:'Barceloneta Mar',e:4,v:'v-mar',vis:'Vista al Mediterráneo',d:'Frente a la playa de la Barceloneta',p:'US$ 154 / noche'},
+        {n:'Granada Mirador',e:5,v:'v-monte',vis:'Vista a la Alhambra',d:'Terraza mirando la fortaleza',p:'US$ 198 / noche'}],
+      paseos:[
+        {n:'Museo del Prado y Retiro',d:'Medio día con entradas incluidas'},
+        {n:'Toledo medieval',d:'Día completo en tren de alta velocidad'},
+        {n:'Sagrada Familia y Park Güell',d:'Día completo con guía en español'},
+        {n:'Tablao flamenco en Sevilla',d:'Noche con cena andaluza'}] }
   ];
+  var pais = PAISES[0];
 
-  /* ============ SONIDO SINTETIZADO (sin archivos) ============ */
+  /* ============ MAPAMUNDI (tierra como cajas lat/lon) ============ */
+  var TIERRA = [
+    [-168,-141,55,71],[-141,-95,49,70],[-95,-60,45,70],[-60,-20,60,83],
+    [-125,-95,32,49],[-95,-72,29,47],[-85,-80,25,31],[-115,-97,16,32],[-95,-83,8,18],
+    [-79,-60,-1,12],[-73,-45,-11,4],[-48,-34,-19,-2],[-58,-40,-26,-10],
+    [-79,-58,-21,-2],[-73,-54,-41,-20],[-74,-64,-55,-41],
+    [-10,3,36,44],[-2,20,43,55],[-8,2,50,59],[5,31,55,71],[20,45,44,60],[7,18,37,46],[15,30,35,48],
+    [-17,32,20,35],[-17,40,11,21],[-17,15,4,15],[8,32,-6,11],[30,51,-12,15],[12,36,-35,-6],[43,50,-26,-12],
+    [34,60,12,38],[26,45,36,42],[30,90,50,72],[90,180,50,72],[50,90,35,50],
+    [68,90,8,32],[75,125,22,50],[95,110,5,25],[126,146,30,46],
+    [95,141,-10,6],[117,126,5,19],[113,153,-39,-11],[166,179,-47,-34],
+    [-180,180,-90,-64]
+  ];
+  function esTierra(lat, lon) {
+    for (var i = 0; i < TIERRA.length; i++) {
+      var b = TIERRA[i];
+      if (lon >= b[0] && lon <= b[1] && lat >= b[2] && lat <= b[3]) return true;
+    }
+    return false;
+  }
+  var puntosTierra = [], puntosMar = [];
+  (function generarMapa() {
+    for (var lat = -86; lat <= 86; lat += 2.1) {
+      var paso = 2.1 / Math.max(0.22, Math.cos(rad(lat)));
+      for (var lon = -180; lon < 180; lon += paso) {
+        var v = vectorDe(lat, lon);
+        if (esTierra(lat, lon)) puntosTierra.push(v); else puntosMar.push(v);
+      }
+    }
+  })();
+
+  /* ============ SONIDO ============ */
   var audio = { on: false, ctx: null };
-  function tono(freq, dur, tipo, vol) {
+  function tono(f, dur, tipo, vol) {
     if (!audio.on) return;
     try {
       if (!audio.ctx) audio.ctx = new (window.AudioContext || window.webkitAudioContext)();
       var c = audio.ctx, o = c.createOscillator(), g = c.createGain();
       o.type = tipo || 'sine';
-      o.frequency.setValueAtTime(freq, c.currentTime);
+      o.frequency.setValueAtTime(f, c.currentTime);
       g.gain.setValueAtTime(0, c.currentTime);
-      g.gain.linearRampToValueAtTime(vol || 0.05, c.currentTime + 0.012);
-      g.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + (dur || 0.18));
-      o.connect(g); g.connect(c.destination);
-      o.start(); o.stop(c.currentTime + (dur || 0.18) + 0.02);
+      g.gain.linearRampToValueAtTime(vol || .05, c.currentTime + .012);
+      g.gain.exponentialRampToValueAtTime(.0001, c.currentTime + (dur || .18));
+      o.connect(g); g.connect(c.destination); o.start(); o.stop(c.currentTime + (dur || .18) + .02);
     } catch (e) {}
   }
-  function clic() { tono(760, 0.12, 'sine', 0.045); }
-  function vuelo() { tono(320, 0.32, 'triangle', 0.05); setTimeout(function () { tono(520, 0.26, 'sine', 0.04); }, 110); }
-
+  function clic() { tono(760, .12, 'sine', .045); }
+  function despegue() { tono(220, .5, 'triangle', .05); setTimeout(function(){ tono(440, .4, 'sine', .04); }, 160); }
   function pintarSonido() {
-    [['sonTog', 'sonTxt'], ['sonLoad', 'sonLoadTxt']].forEach(function (par) {
-      var b = document.getElementById(par[0]), t = document.getElementById(par[1]);
+    [['sonTog','sonTxt'],['sonLoad','sonLoadTxt']].forEach(function (p) {
+      var b = document.getElementById(p[0]), t = document.getElementById(p[1]);
       if (!b) return;
       b.classList.toggle('off', !audio.on);
       if (t) t.textContent = audio.on ? 'ON' : 'OFF';
     });
   }
   function alternarSonido() {
-    audio.on = !audio.on;
-    pintarSonido();
-    if (audio.on) { try { if (!audio.ctx) audio.ctx = new (window.AudioContext || window.webkitAudioContext)(); audio.ctx.resume(); } catch (e) {} clic(); }
+    audio.on = !audio.on; pintarSonido();
+    if (audio.on) { try { if (!audio.ctx) audio.ctx = new (window.AudioContext||window.webkitAudioContext)(); audio.ctx.resume(); } catch(e){} clic(); }
   }
   document.getElementById('sonTog').addEventListener('click', alternarSonido);
   document.getElementById('sonLoad').addEventListener('click', alternarSonido);
@@ -401,433 +388,305 @@
   (function () {
     var ld = document.getElementById('load'), bol = document.getElementById('bolita'), pc = document.getElementById('pct');
     var pista = ld.querySelector('.pista');
-    function cerrar() { ld.classList.add('done'); setTimeout(function () { ld.style.display = 'none'; }, 700); }
+    function cerrar() { ld.classList.add('done'); setTimeout(function(){ ld.style.display = 'none'; }, 700); }
     if (reduce) { cerrar(); return; }
     var v = 0;
     var t = setInterval(function () {
       v += Math.random() * 15 + 7;
-      if (v >= 100) { v = 100; clearInterval(t); setTimeout(cerrar, 380); }
+      if (v >= 100) { v = 100; clearInterval(t); setTimeout(cerrar, 360); }
       pc.textContent = Math.round(v);
-      var max = pista.clientWidth - bol.clientWidth - 8;
-      bol.style.left = (4 + max * v / 100) + 'px';
-    }, 120);
-    setTimeout(function () { clearInterval(t); cerrar(); }, 2600);
+      bol.style.left = (4 + (pista.clientWidth - bol.clientWidth - 8) * v / 100) + 'px';
+    }, 115);
+    setTimeout(function(){ clearInterval(t); cerrar(); }, 2600);
   })();
 
-  /* ============ CIELO ESTRELLADO ============ */
-  var cielo = document.getElementById('cielo'), ctxC = cielo.getContext('2d');
-  var estrellas = [];
+  /* ============ CIELO ============ */
+  var cielo = document.getElementById('cielo'), cx = cielo.getContext('2d'), estrellas = [];
   function medirCielo() {
-    var d = window.devicePixelRatio || 1, r = cielo.parentElement.getBoundingClientRect();
-    cielo.width = r.width * d; cielo.height = r.height * d;
-    cielo.style.width = r.width + 'px'; cielo.style.height = r.height + 'px';
-    ctxC.setTransform(d, 0, 0, d, 0, 0);
+    var d = window.devicePixelRatio || 1, w = window.innerWidth, h = window.innerHeight;
+    cielo.width = w*d; cielo.height = h*d; cielo.style.width = w+'px'; cielo.style.height = h+'px';
+    cx.setTransform(d,0,0,d,0,0);
     estrellas = [];
-    var n = Math.round(r.width * r.height / 9000);
-    for (var i = 0; i < n; i++) {
-      estrellas.push({ x: Math.random() * r.width, y: Math.random() * r.height, r: Math.random() * 1.3 + 0.3, f: Math.random() * Math.PI * 2, v: 0.6 + Math.random() });
-    }
+    var n = Math.round(w*h/8000);
+    for (var i=0;i<n;i++) estrellas.push({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.3+.3,f:Math.random()*6.28,v:.6+Math.random()});
   }
   function pintarCielo(t) {
-    var r = cielo.parentElement.getBoundingClientRect();
-    ctxC.clearRect(0, 0, r.width, r.height);
-    for (var i = 0; i < estrellas.length; i++) {
+    var w = window.innerWidth, h = window.innerHeight;
+    cx.clearRect(0,0,w,h);
+    for (var i=0;i<estrellas.length;i++) {
       var e = estrellas[i];
-      var a = 0.35 + 0.45 * Math.sin(t * 0.001 * e.v + e.f);
-      ctxC.globalAlpha = Math.max(0.08, a);
-      ctxC.fillStyle = '#dfe7ff';
-      ctxC.beginPath(); ctxC.arc(e.x, e.y, e.r, 0, 6.284); ctxC.fill();
+      cx.globalAlpha = Math.max(.08, .35 + .45*Math.sin(t*.001*e.v + e.f));
+      cx.fillStyle = '#dfe7ff';
+      cx.beginPath(); cx.arc(e.x,e.y,e.r,0,6.284); cx.fill();
     }
-    ctxC.globalAlpha = 1;
+    cx.globalAlpha = 1;
   }
 
-  /* ============ GLOBO ============ */
-  var cv = document.getElementById('globo'), ctx = cv.getContext('2d');
-  var W = 0, H = 0, CX = 0, CY = 0, R = 0;
-  var yaw = 0.6, pitch = -0.18, yawObj = null, pitchObj = null;
-  var CXobj = 0, CYobj = 0, panelAbierto = false;
-  var autoGirar = true, arrastrando = false, ultX = 0, ultY = 0, movio = false;
-  var puntos = [];
+  /* ============ MAPA ============ */
+  var cv = document.getElementById('mapa'), ctx = cv.getContext('2d');
+  var W=0, H=0, R0=0, yawLibre = 0.9, pitchBase = -0.15;
+  function medirMapa() {
+    var d = window.devicePixelRatio || 1;
+    W = window.innerWidth; H = window.innerHeight;
+    cv.width = W*d; cv.height = H*d; cv.style.width = W+'px'; cv.style.height = H+'px';
+    ctx.setTransform(d,0,0,d,0,0);
+    R0 = Math.min(W*0.29, H*0.33);
+  }
+  function proyectar(p, yw, pt, R, ccx, ccy) {
+    var cy1 = Math.cos(yw), sy1 = Math.sin(yw);
+    var x1 = p.x*cy1 - p.z*sy1, z1 = p.x*sy1 + p.z*cy1;
+    var cp = Math.cos(pt), sp = Math.sin(pt);
+    var y2 = p.y*cp - z1*sp, z2 = p.y*sp + z1*cp;
+    return { sx: ccx + x1*R, sy: ccy - y2*R, z: z2 };
+  }
+  function dibujarAvion(x, y, ang, escala, alpha) {
+    ctx.save();
+    ctx.translate(x, y); ctx.rotate(ang); ctx.scale(escala, escala);
+    ctx.globalAlpha = alpha;
+    ctx.shadowColor = 'rgba(255,196,107,.95)'; ctx.shadowBlur = 15;
+    ctx.fillStyle = '#fff7e6';
+    ctx.beginPath(); ctx.moveTo(14,0); ctx.lineTo(-5,5.5); ctx.lineTo(-1.5,0); ctx.lineTo(-5,-5.5); ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(2,0); ctx.lineTo(-9,9.5); ctx.lineTo(-5,0); ctx.lineTo(-9,-9.5); ctx.closePath(); ctx.fill();
+    ctx.restore();
+    ctx.globalAlpha = 1; ctx.shadowBlur = 0;
+  }
 
-  function gradosARad(d) { return d * Math.PI / 180; }
-  function vectorDe(lat, lon) {
-    var a = gradosARad(lat), b = gradosARad(lon);
-    return { x: Math.cos(a) * Math.cos(b), y: Math.sin(a), z: Math.cos(a) * Math.sin(b) };
+  /* ============ RELATO ============ */
+  var ACTOS = 5, prog = 0, progSuave = 0;
+  var ETAPAS = ['El mundo','El vuelo','Ciudades','Hoteles','Paseos'];
+  var etapasEl = document.getElementById('etapas');
+  ETAPAS.forEach(function (n,i) {
+    var d = document.createElement('div');
+    d.className = 'etapa' + (i===0?' on':'');
+    var s = document.createElement('span'); s.textContent = n;
+    d.appendChild(s); etapasEl.appendChild(d);
+  });
+  function banda(p, ini, fin) {
+    var e = clamp01((p - ini)/0.42);
+    var s = 1 - clamp01((p - (fin - 0.42))/0.42);
+    return Math.min(e, s);
   }
-  function rotar(p) {
-    var cy = Math.cos(yaw), sy = Math.sin(yaw);
-    var x1 = p.x * cy - p.z * sy, z1 = p.x * sy + p.z * cy;
-    var cp = Math.cos(pitch), sp = Math.sin(pitch);
-    var y2 = p.y * cp - z1 * sp, z2 = p.y * sp + z1 * cp;
-    return { x: x1, y: y2, z: z2 };
-  }
-  function proyectar(p) {
-    var r = rotar(p);
-    return { sx: CX + r.x * R, sy: CY - r.y * R, z: r.z };
-  }
-
-  function generarPuntos() {
-    puntos = [];
-    var N = 2600, phi = Math.PI * (3 - Math.sqrt(5));
-    for (var i = 0; i < N; i++) {
-      var y = 1 - (i / (N - 1)) * 2;
-      var rad = Math.sqrt(Math.max(0, 1 - y * y));
-      var th = phi * i;
-      puntos.push({ x: Math.cos(th) * rad, y: y, z: Math.sin(th) * rad });
+  function pintarCapas() {
+    for (var a=0; a<=4; a++) {
+      var caja = document.getElementById('c'+a);
+      if (!caja) continue;
+      var v = banda(progSuave, a-0.5, a+0.62);
+      caja.style.opacity = v.toFixed(3);
+      caja.style.transform = 'translateY(' + ((1-v)*26).toFixed(1) + 'px)';
+      caja.parentElement.style.pointerEvents = v > 0.6 ? 'auto' : 'none';
     }
-  }
-  generarPuntos();
-
-  var ORIGEN = vectorDe(-25.3, -57.6); // Asunción
-  DESTINOS.forEach(function (d) { d.v = vectorDe(d.lat, d.lon); });
-
-  function medirGlobo() {
-    var d = window.devicePixelRatio || 1, r = cv.parentElement.getBoundingClientRect();
-    W = r.width; H = r.height;
-    cv.width = W * d; cv.height = H * d;
-    cv.style.width = W + 'px'; cv.style.height = H + 'px';
-    ctx.setTransform(d, 0, 0, d, 0, 0);
-    calcularCentro(true);
+    var i = Math.round(progSuave);
+    Array.prototype.forEach.call(etapasEl.children, function (d,k) { d.classList.toggle('on', k===i); });
+    document.getElementById('rutaBar').style.width = (progSuave/ACTOS*100) + '%';
+    document.getElementById('baja').style.opacity = progSuave > 0.35 ? 0 : 1;
   }
 
-  function calcularCentro(inmediato) {
-    var angosto = W < 760;
-    if (angosto) {
-      CXobj = W / 2;
-      CYobj = panelAbierto ? H * 0.155 : H * 0.44;
-      R = panelAbierto ? Math.min(W * 0.25, H * 0.115) : Math.min(W * 0.38, H * 0.34);
-    } else {
-      var anchoPanel = Math.min(420, W * 0.92);
-      CXobj = panelAbierto ? (W - anchoPanel) / 2 : W * 0.62;
-      CYobj = H * 0.52;
-      R = Math.min(W * 0.30, H * 0.34);
-      if (panelAbierto) R = Math.min(R, (W - anchoPanel) * 0.40);
+  function pintarMapa(t) {
+    ctx.clearRect(0,0,W,H);
+    var p = progSuave;
+    var vOrigen = vectorDe(ORIGEN.lat, ORIGEN.lon);
+    var vDestino = vectorDe(pais.lat, pais.lon);
+
+    var yawDestino = Math.PI/2 - rad(pais.lon);
+    var pitchDestino = Math.max(-0.75, Math.min(0.75, rad(pais.lat)));
+    var tVuelo = suave(clamp01(p - 0.5));
+    if (p < 0.06 && !reduce) yawLibre += 0.0012;
+    var yw = yawLibre + (yawDestino - yawLibre) * tVuelo;
+    var pt = pitchBase + (pitchDestino - pitchBase) * tVuelo;
+
+    var tZoom = suave(clamp01((p - 0.85)/1.05));
+    var R = R0 * (1 + 1.45*tZoom);
+    var anchoPanel = W > 860 ? Math.min(470, W*0.42) : 0;
+    var ccx = W/2 - anchoPanel*0.55*suave(clamp01((p - 1.35)/0.8));
+    var ccy = H * (W > 860 ? 0.52 : 0.34);
+    var tSalida = suave(clamp01((p - 2.75)/1.0));
+    var aMapa = 1 - 0.70*tSalida;
+
+    var g = ctx.createRadialGradient(ccx,ccy,R*0.25,ccx,ccy,R*1.5);
+    g.addColorStop(0,'rgba(88,224,216,'+(0.13*aMapa)+')');
+    g.addColorStop(1,'rgba(88,224,216,0)');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(ccx,ccy,R*1.5,0,6.284); ctx.fill();
+
+    var g2 = ctx.createRadialGradient(ccx-R*0.35, ccy-R*0.4, R*0.08, ccx, ccy, R);
+    g2.addColorStop(0,'rgba(26,44,96,'+(0.92*aMapa)+')');
+    g2.addColorStop(1,'rgba(7,11,26,'+(0.95*aMapa)+')');
+    ctx.fillStyle = g2; ctx.beginPath(); ctx.arc(ccx,ccy,R,0,6.284); ctx.fill();
+
+    var i2;
+    for (i2 = 0; i2 < puntosMar.length; i2 += 3) {
+      var pm = proyectar(puntosMar[i2], yw, pt, R, ccx, ccy);
+      if (pm.z < 0.02) continue;
+      if (pm.sx < -20 || pm.sx > W + 20 || pm.sy < -20 || pm.sy > H + 20) continue;
+      ctx.globalAlpha = (0.05 + 0.14*pm.z) * aMapa;
+      ctx.fillStyle = '#3f5892';
+      ctx.fillRect(pm.sx, pm.sy, 1.1, 1.1);
     }
-    if (inmediato) { CX = CXobj; CY = CYobj; }
-  }
-
-  function slerp(a, b, t) {
-    var dot = Math.max(-1, Math.min(1, a.x * b.x + a.y * b.y + a.z * b.z));
-    var om = Math.acos(dot);
-    if (om < 1e-5) return a;
-    var s = Math.sin(om);
-    var k0 = Math.sin((1 - t) * om) / s, k1 = Math.sin(t * om) / s;
-    return { x: a.x * k0 + b.x * k1, y: a.y * k0 + b.y * k1, z: a.z * k0 + b.z * k1 };
-  }
-
-  var seleccionado = null, hover = null, pulso = 0;
-
-  function pintarGlobo(t) {
-    ctx.clearRect(0, 0, W, H);
-
-    // halo
-    var g = ctx.createRadialGradient(CX, CY, R * 0.2, CX, CY, R * 1.5);
-    g.addColorStop(0, 'rgba(88,224,216,0.13)');
-    g.addColorStop(1, 'rgba(88,224,216,0)');
-    ctx.fillStyle = g;
-    ctx.beginPath(); ctx.arc(CX, CY, R * 1.5, 0, 6.284); ctx.fill();
-
-    // esfera base
-    var g2 = ctx.createRadialGradient(CX - R * 0.35, CY - R * 0.4, R * 0.08, CX, CY, R);
-    g2.addColorStop(0, 'rgba(30,48,96,0.85)');
-    g2.addColorStop(1, 'rgba(8,12,26,0.92)');
-    ctx.fillStyle = g2;
-    ctx.beginPath(); ctx.arc(CX, CY, R, 0, 6.284); ctx.fill();
-
-    // puntos
-    for (var i = 0; i < puntos.length; i++) {
-      var p = proyectar(puntos[i]);
-      if (p.z < -0.05) continue;
-      var a = 0.14 + 0.78 * Math.max(0, p.z);
-      ctx.globalAlpha = Math.min(1, a);
-      ctx.fillStyle = p.z > 0.68 ? '#bfe3ff' : (p.z > 0.3 ? '#7e9bd8' : '#4a5f92');
-      ctx.beginPath(); ctx.arc(p.sx, p.sy, p.z > 0.68 ? 1.5 : 1.15, 0, 6.284); ctx.fill();
+    // dibujo rápido: fillRect en vez de arc (son miles de puntos por cuadro)
+    var lado = R > R0 * 1.6 ? 2.2 : 1.6;
+    for (i2 = 0; i2 < puntosTierra.length; i2++) {
+      var pl = proyectar(puntosTierra[i2], yw, pt, R, ccx, ccy);
+      if (pl.z < 0.02) continue;
+      if (pl.sx < -20 || pl.sx > W + 20 || pl.sy < -20 || pl.sy > H + 20) continue;
+      ctx.globalAlpha = (0.30 + 0.70*pl.z) * aMapa;
+      ctx.fillStyle = pl.z > 0.68 ? '#b6f0e5' : '#5fa79c';
+      ctx.fillRect(pl.sx, pl.sy, lado, lado);
     }
     ctx.globalAlpha = 1;
 
-    // borde
-    ctx.strokeStyle = 'rgba(140,180,255,0.22)';
-    ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.arc(CX, CY, R, 0, 6.284); ctx.stroke();
+    ctx.strokeStyle = 'rgba(140,180,255,'+(0.20*aMapa)+')';
+    ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(ccx,ccy,R,0,6.284); ctx.stroke();
 
-    // arcos desde Asunción
-    DESTINOS.forEach(function (d) {
-      var act = (seleccionado === d || hover === d);
-      if (!act) return;
+    if (p > 0.35 && p < 3.1) {
+      var aRuta = banda(p, 0.2, 3.1);
+      var avance = suave(clamp01((p - 0.5)/0.9));
+      var s, f, q, alt, pr, empez = false, ultimo = null, antepen = null;
       ctx.beginPath();
-      var empezado = false;
-      for (var s = 0; s <= 60; s++) {
-        var q = slerp(ORIGEN, d.v, s / 60);
-        var alt = 1 + 0.22 * Math.sin(Math.PI * s / 60);
-        var pr = proyectar({ x: q.x * alt, y: q.y * alt, z: q.z * alt });
-        if (pr.z < -0.25) { empezado = false; continue; }
-        if (!empezado) { ctx.moveTo(pr.sx, pr.sy); empezado = true; }
-        else ctx.lineTo(pr.sx, pr.sy);
+      for (s = 0; s <= 70; s++) {
+        f = s/70; if (f > avance) break;
+        q = slerp(vOrigen, vDestino, f);
+        alt = 1 + 0.20*Math.sin(Math.PI*f);
+        pr = proyectar({x:q.x*alt,y:q.y*alt,z:q.z*alt}, yw, pt, R, ccx, ccy);
+        if (pr.z < -0.3) { empez = false; continue; }
+        if (!empez) { ctx.moveTo(pr.sx,pr.sy); empez = true; } else ctx.lineTo(pr.sx,pr.sy);
+        antepen = ultimo; ultimo = pr;
       }
-      ctx.strokeStyle = 'rgba(255,106,61,0.85)';
-      ctx.lineWidth = 1.7;
-      ctx.stroke();
-      // punto de origen
-      var o = proyectar(ORIGEN);
-      if (o.z > -0.05) {
-        ctx.fillStyle = '#ffc46b';
-        ctx.beginPath(); ctx.arc(o.sx, o.sy, 3.4, 0, 6.284); ctx.fill();
-      }
-    });
+      ctx.strokeStyle = 'rgba(255,196,107,'+(0.92*aRuta)+')'; ctx.lineWidth = 1.9; ctx.stroke();
 
-    // marcadores
-    pulso += 0.05;
-    DESTINOS.forEach(function (d) {
-      var p = proyectar(d.v);
-      d._sx = p.sx; d._sy = p.sy; d._z = p.z;
-      if (p.z < -0.02) return;
-      var act = (seleccionado === d);
-      var vis = Math.max(0, Math.min(1, (p.z + 0.02) / 0.35));
-      var rr = 4 + (act ? 2 : 0);
-      // halo pulsante
-      var ph = (Math.sin(pulso + d.lat) + 1) / 2;
-      ctx.globalAlpha = vis * (act ? 0.45 : 0.26) * (0.5 + ph * 0.5);
-      ctx.fillStyle = act ? '#ff6a3d' : '#58e0d8';
-      ctx.beginPath(); ctx.arc(p.sx, p.sy, rr + 6 + ph * 5, 0, 6.284); ctx.fill();
-      // punto
-      ctx.globalAlpha = vis;
-      ctx.fillStyle = act ? '#ff6a3d' : '#58e0d8';
-      ctx.beginPath(); ctx.arc(p.sx, p.sy, rr, 0, 6.284); ctx.fill();
-      ctx.strokeStyle = 'rgba(255,255,255,0.85)'; ctx.lineWidth = 1.2; ctx.stroke();
-      // etiqueta
-      var mostrarEtiqueta = p.z > 0.28 && (R > 150 || act || hover === d);
-      if (mostrarEtiqueta) {
-        ctx.globalAlpha = vis;
-        ctx.font = '600 12.5px system-ui, -apple-system, sans-serif';
-        var tx = d.ciudad, an = ctx.measureText(tx).width;
-        var bx = p.sx + 11, by = p.sy - 9;
-        ctx.fillStyle = act ? 'rgba(255,106,61,0.95)' : 'rgba(9,13,28,0.78)';
-        ctx.beginPath();
-        if (ctx.roundRect) { ctx.roundRect(bx, by, an + 16, 20, 10); } else { ctx.rect(bx, by, an + 16, 20); }
-        ctx.fill();
-        ctx.fillStyle = act ? '#241004' : '#e8eeff';
-        ctx.fillText(tx, bx + 8, by + 14);
+      ctx.setLineDash([3,5]); ctx.beginPath(); empez = false;
+      for (s = 0; s <= 70; s++) {
+        f = s/70; if (f < avance) continue;
+        q = slerp(vOrigen, vDestino, f);
+        alt = 1 + 0.20*Math.sin(Math.PI*f);
+        pr = proyectar({x:q.x*alt,y:q.y*alt,z:q.z*alt}, yw, pt, R, ccx, ccy);
+        if (pr.z < -0.3) { empez = false; continue; }
+        if (!empez) { ctx.moveTo(pr.sx,pr.sy); empez = true; } else ctx.lineTo(pr.sx,pr.sy);
       }
-      ctx.globalAlpha = 1;
-    });
+      ctx.strokeStyle = 'rgba(255,255,255,'+(0.22*aRuta)+')'; ctx.lineWidth = 1; ctx.stroke();
+      ctx.setLineDash([]);
+
+      var po = proyectar(vOrigen, yw, pt, R, ccx, ccy);
+      if (po.z > 0) {
+        ctx.globalAlpha = aRuta;
+        ctx.fillStyle = '#ffc46b';
+        ctx.beginPath(); ctx.arc(po.sx,po.sy,3.6,0,6.284); ctx.fill();
+        ctx.font = '600 11px ui-monospace, monospace';
+        ctx.fillStyle = 'rgba(255,255,255,.75)';
+        ctx.fillText('ASUNCIÓN', po.sx + 8, po.sy + 4);
+        ctx.globalAlpha = 1;
+      }
+      if (ultimo && antepen && avance > 0.015 && avance < 0.995) {
+        var ang = Math.atan2(ultimo.sy - antepen.sy, ultimo.sx - antepen.sx);
+        dibujarAvion(ultimo.sx, ultimo.sy, ang, 1 + tZoom*0.55, aRuta);
+      }
+    }
+
+    var tCiudades = clamp01((p - 1.42)/0.6);
+    if (tCiudades > 0) {
+      pais.ciudades.forEach(function (c, k) {
+        if (!c._v) c._v = vectorDe(c.lat, c.lon);
+        var pc2 = proyectar(c._v, yw, pt, R, ccx, ccy);
+        if (pc2.z < 0.02) return;
+        var ap = clamp01((tCiudades - k*0.07)/0.3);
+        var pul = (Math.sin(t*0.004 + k) + 1)/2;
+        var a = ap * aMapa;
+        ctx.globalAlpha = a*0.30*(0.5 + pul*0.5);
+        ctx.fillStyle = '#ff6a3d';
+        ctx.beginPath(); ctx.arc(pc2.sx,pc2.sy, 8 + pul*5, 0, 6.284); ctx.fill();
+        ctx.globalAlpha = a;
+        ctx.beginPath(); ctx.arc(pc2.sx,pc2.sy,4,0,6.284); ctx.fill();
+        ctx.strokeStyle = 'rgba(255,255,255,.85)'; ctx.lineWidth = 1.1; ctx.stroke();
+        if (pc2.z > 0.3 && a > 0.5) {
+          ctx.font = '600 12px system-ui, sans-serif';
+          var an = ctx.measureText(c.n).width;
+          ctx.fillStyle = 'rgba(9,13,28,.80)';
+          ctx.beginPath();
+          if (ctx.roundRect) ctx.roundRect(pc2.sx+9, pc2.sy-9, an+14, 19, 9); else ctx.rect(pc2.sx+9, pc2.sy-9, an+14, 19);
+          ctx.fill();
+          ctx.fillStyle = '#e8eeff';
+          ctx.fillText(c.n, pc2.sx+16, pc2.sy+4.5);
+        }
+        ctx.globalAlpha = 1;
+      });
+    }
   }
 
-  /* ---- animación ---- */
   function marco(t) {
-    if (yawObj !== null) {
-      yaw += (yawObj - yaw) * 0.075;
-      pitch += (pitchObj - pitch) * 0.075;
-      if (Math.abs(yawObj - yaw) < 0.002) { yaw = yawObj; pitch = pitchObj; yawObj = null; pitchObj = null; }
-    } else if (autoGirar && !arrastrando && !reduce) {
-      yaw += 0.0016;
-    }
-    CX += (CXobj - CX) * 0.09;
-    CY += (CYobj - CY) * 0.09;
-    pintarCielo(t);
-    pintarGlobo(t);
+    progSuave += (prog - progSuave) * 0.10;
+    if (Math.abs(prog - progSuave) < 0.0006) progSuave = prog;
+    pintarCielo(t); pintarMapa(t); pintarCapas();
     requestAnimationFrame(marco);
   }
 
-  function irA(d) {
-    // lleva el destino al frente: resolvemos yaw/pitch objetivo
-    var lon = gradosARad(d.lon), lat = gradosARad(d.lat);
-    yawObj = Math.PI / 2 - lon;   // deja el destino de frente a la cámara
-    while (yawObj - yaw > Math.PI) yawObj -= Math.PI * 2;
-    while (yaw - yawObj > Math.PI) yawObj += Math.PI * 2;
-    pitchObj = Math.max(-0.7, Math.min(0.7, lat));
+  /* ============ SCROLL = TIEMPO ============ */
+  var riel = document.getElementById('riel');
+  function medirRiel() { riel.style.height = ((ACTOS + 1) * 100) + 'vh'; }
+  var ultimoActo = 0;
+  function alScrollear() {
+    var vh = window.innerHeight || 1;
+    var crudo = Math.max(0, Math.min(ACTOS, window.scrollY / vh));
+    var i = Math.floor(crudo), f = crudo - i;
+    prog = Math.min(ACTOS, i + suave(clamp01((f - 0.18)/0.64)));
+    var acto = Math.round(prog);
+    if (acto !== ultimoActo) { if (acto === 1) despegue(); else clic(); ultimoActo = acto; }
+  }
+  window.addEventListener('scroll', alScrollear, { passive: true });
+
+  /* ============ CONTENIDO ============ */
+  function mk(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt) e.textContent = txt; return e; }
+  function estrellas5(n) { return '★★★★★'.slice(0,n) + '☆☆☆☆☆'.slice(0,5-n); }
+
+  function pintarPais() {
+    document.getElementById('t1').textContent = 'Asunción → ' + pais.puerta;
+    document.getElementById('p1').textContent = pais.vuelo + ' · desde US$ ' + pais.desde.toLocaleString('es-PY') + ' por persona';
+    document.getElementById('t2').textContent = 'Todo ' + pais.nombre;
+    document.getElementById('p2').textContent = 'Estas son las ' + pais.ciudades.length + ' ciudades a las que te llevamos.';
+
+    var lc = document.getElementById('lCiudades'); lc.textContent = '';
+    pais.ciudades.forEach(function (c) {
+      var it = mk('div','item'), fila = mk('div','fila');
+      fila.appendChild(mk('h3','',c.n)); fila.appendChild(mk('div','tag',c.t));
+      it.appendChild(fila); it.appendChild(mk('p','',c.d)); lc.appendChild(it);
+    });
+
+    var lh = document.getElementById('lHoteles'); lh.textContent = '';
+    pais.hoteles.forEach(function (h) {
+      var it = mk('div','item');
+      var v = mk('div','vista ' + h.v); v.appendChild(mk('span','',h.vis)); it.appendChild(v);
+      var fila = mk('div','fila');
+      fila.appendChild(mk('h3','',h.n)); fila.appendChild(mk('div','tag oro',estrellas5(h.e)));
+      it.appendChild(fila); it.appendChild(mk('p','',h.d)); it.appendChild(mk('div','tag',h.p));
+      lh.appendChild(it);
+    });
+
+    var lp = document.getElementById('lPaseos'); lp.textContent = '';
+    pais.paseos.forEach(function (s,k) {
+      var it = mk('div','item'), fila = mk('div','fila');
+      fila.appendChild(mk('h3','',(k+1) + ' · ' + s.n));
+      it.appendChild(fila); it.appendChild(mk('p','',s.d)); lp.appendChild(it);
+    });
+
+    document.getElementById('waActo').href = 'https://wa.me/' + WA + '?text=' + encodeURIComponent(
+      'Hola! Vi el mapa de Mundo Abierto y me interesa ' + pais.nombre + ' (entrando por ' + pais.puerta +
+      '), desde US$ ' + pais.desde + ' por persona. ¿Me pasan disponibilidad?');
   }
 
-  /* ---- interacción ---- */
-  function posEvento(e) {
-    var r = cv.getBoundingClientRect();
-    var p = e.touches ? e.touches[0] : e;
-    return { x: p.clientX - r.left, y: p.clientY - r.top };
-  }
-  function destinoEn(x, y) {
-    var mejor = null, dmin = 26;
-    DESTINOS.forEach(function (d) {
-      if (d._z === undefined || d._z < 0) return;
-      var dd = Math.hypot(d._sx - x, d._sy - y);
-      if (dd < dmin) { dmin = dd; mejor = d; }
+  var cont = document.getElementById('paises');
+  PAISES.forEach(function (p, i) {
+    var b = mk('button','pais-b' + (i===0?' on':''), p.nombre);
+    b.addEventListener('click', function () {
+      pais = p;
+      Array.prototype.forEach.call(cont.children, function (x) { x.classList.remove('on'); });
+      b.classList.add('on');
+      pintarPais(); clic();
+      window.scrollTo({ top: window.innerHeight * 0.8, behavior: 'smooth' });
     });
-    return mejor;
-  }
-  cv.addEventListener('pointerdown', function (e) {
-    arrastrando = true; movio = false;
-    ultX = e.clientX; ultY = e.clientY;
-    cv.classList.add('arrastrando');
-    cv.setPointerCapture && cv.setPointerCapture(e.pointerId);
+    cont.appendChild(b);
   });
-  cv.addEventListener('pointermove', function (e) {
-    var p = posEvento(e);
-    if (arrastrando) {
-      var dx = e.clientX - ultX, dy = e.clientY - ultY;
-      if (Math.abs(dx) + Math.abs(dy) > 3) movio = true;
-      yaw += dx * 0.006;
-      pitch = Math.max(-0.9, Math.min(0.9, pitch + dy * 0.005));
-      ultX = e.clientX; ultY = e.clientY;
-      yawObj = null; pitchObj = null;
-    } else {
-      var d = destinoEn(p.x, p.y);
-      if (d !== hover) { hover = d; cv.style.cursor = d ? 'pointer' : 'grab'; }
-    }
-  });
-  function soltar(e) {
-    if (!arrastrando) return;
-    arrastrando = false;
-    cv.classList.remove('arrastrando');
-    if (!movio) {
-      var p = posEvento(e.changedTouches ? { touches: e.changedTouches } : e);
-      var d = destinoEn(p.x, p.y);
-      if (d) abrirDestino(d);
-    }
-  }
-  cv.addEventListener('pointerup', soltar);
-  cv.addEventListener('pointercancel', function () { arrastrando = false; cv.classList.remove('arrastrando'); });
-
-  /* ============ PANEL ============ */
-  var panel = document.getElementById('panel'), escena = document.getElementById('escena');
-  function estrellasTxt(n) { return '★★★★★'.slice(0, n) + '☆☆☆☆☆'.slice(0, 5 - n); }
-
-  function abrirDestino(d) {
-    seleccionado = d;
-    autoGirar = false;
-    irA(d);
-    vuelo();
-    document.getElementById('pPais').textContent = d.pais;
-    document.getElementById('pCiudad').textContent = d.ciudad;
-    document.getElementById('pPrecio').textContent = 'US$ ' + d.usd.toLocaleString('es-PY');
-
-    var bp = document.getElementById('bPaquete');
-    bp.textContent = '';
-    [['Noches', d.noches + ' noches'], ['Vuelo', d.vuelo], ['Mejor época', d.temporada],
-     ['Precio por persona', 'US$ ' + d.usd.toLocaleString('es-PY')], ['En cuotas', '12 × US$ ' + Math.round(d.usd / 12)]
-    ].forEach(function (par) {
-      var f = document.createElement('div'); f.className = 'dato';
-      var s1 = document.createElement('span'); s1.textContent = par[0];
-      var s2 = document.createElement('b'); s2.textContent = par[1];
-      f.appendChild(s1); f.appendChild(s2); bp.appendChild(f);
-    });
-    var inc = document.createElement('div'); inc.className = 'incluye';
-    var h = document.createElement('div'); h.className = 'mono'; h.textContent = 'El paquete incluye';
-    h.style.cssText = 'color:rgba(255,255,255,0.5); margin-bottom:6px';
-    inc.appendChild(h);
-    var ul = document.createElement('ul');
-    d.incluye.forEach(function (i) { var li = document.createElement('li'); li.textContent = i; ul.appendChild(li); });
-    inc.appendChild(ul); bp.appendChild(inc);
-
-    var bh = document.getElementById('bHoteles');
-    bh.textContent = '';
-    d.hoteles.forEach(function (ho) {
-      var c = document.createElement('div'); c.className = 'hotel';
-      var fila = document.createElement('div'); fila.className = 'fila';
-      var t1 = document.createElement('h4'); t1.textContent = ho.n;
-      var es = document.createElement('div'); es.className = 'est'; es.textContent = estrellasTxt(ho.e);
-      fila.appendChild(t1); fila.appendChild(es);
-      var p1 = document.createElement('p'); p1.textContent = ho.d;
-      var pr = document.createElement('div'); pr.className = 'precio'; pr.textContent = ho.p;
-      c.appendChild(fila); c.appendChild(p1); c.appendChild(pr);
-      bh.appendChild(c);
-    });
-
-    var bs = document.getElementById('bPaseos');
-    bs.textContent = '';
-    d.paseos.forEach(function (pa, i) {
-      var f = document.createElement('div'); f.className = 'paseo';
-      var n = document.createElement('div'); n.className = 'n'; n.textContent = (i + 1);
-      var col = document.createElement('div');
-      var t2 = document.createElement('h4'); t2.textContent = pa.n;
-      var p2 = document.createElement('p'); p2.textContent = pa.d;
-      col.appendChild(t2); col.appendChild(p2);
-      f.appendChild(n); f.appendChild(col); bs.appendChild(f);
-    });
-
-    document.getElementById('pWa').href = 'https://wa.me/' + WA + '?text=' +
-      encodeURIComponent('Hola! Vi el globo de Mundo Abierto y me interesa ' + d.ciudad + ' (' + d.pais + '), ' +
-        d.noches + ' noches desde US$ ' + d.usd + '. ¿Me pasan disponibilidad?');
-
-    panelAbierto = true;
-    calcularCentro(false);
-    panel.classList.add('abierto');
-    escena.classList.add('abierta');
-    document.querySelectorAll('.ficha').forEach(function (f) { f.classList.toggle('sel', f.dataset.id === d.id); });
-    pestania('paquete');
-  }
-
-  function cerrarPanel() {
-    panel.classList.remove('abierto');
-    escena.classList.remove('abierta');
-    panelAbierto = false;
-    calcularCentro(false);
-    seleccionado = null;
-    autoGirar = true;
-    document.querySelectorAll('.ficha').forEach(function (f) { f.classList.remove('sel'); });
-    clic();
-  }
-  document.getElementById('cerrarPanel').addEventListener('click', cerrarPanel);
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') cerrarPanel(); });
-
-  function pestania(id) {
-    document.querySelectorAll('.tab').forEach(function (t) { t.classList.toggle('act', t.dataset.b === id); });
-    document.querySelectorAll('.bloque').forEach(function (b) {
-      b.classList.toggle('act', b.id === 'b' + id.charAt(0).toUpperCase() + id.slice(1));
-    });
-  }
-  document.querySelectorAll('.tab').forEach(function (t) {
-    t.addEventListener('click', function () { pestania(t.dataset.b); clic(); });
-  });
-
-  /* ============ FICHAS Y TARJETAS ============ */
-  var fichas = document.getElementById('fichas');
-  DESTINOS.forEach(function (d) {
-    var b = document.createElement('button');
-    b.className = 'ficha'; b.dataset.id = d.id;
-    b.textContent = d.ciudad;
-    b.addEventListener('click', function () { abrirDestino(d); });
-    fichas.appendChild(b);
-  });
-
-  var grid = document.getElementById('gridPaq');
-  DESTINOS.forEach(function (d) {
-    var c = document.createElement('div'); c.className = 'paq rev';
-    var ci = document.createElement('div'); ci.className = 'ciudad'; ci.textContent = d.ciudad;
-    var pa = document.createElement('div'); pa.className = 'pais2'; pa.textContent = d.pais;
-    var pr = document.createElement('div'); pr.className = 'pr';
-    pr.textContent = 'US$ ' + d.usd.toLocaleString('es-PY') + ' ';
-    var sm = document.createElement('small'); sm.textContent = 'por persona';
-    pr.appendChild(sm);
-    var no = document.createElement('div'); no.className = 'noc'; no.textContent = d.noches + ' noches · ' + d.vuelo;
-    var ver = document.createElement('div'); ver.className = 'ver'; ver.textContent = 'Ver en el globo ›';
-    ver.addEventListener('click', function () {
-      document.getElementById('escena').scrollIntoView({ behavior: 'smooth', block: 'start' });
-      setTimeout(function () { abrirDestino(d); }, 550);
-    });
-    [ci, pa, pr, no, ver].forEach(function (x) { c.appendChild(x); });
-    grid.appendChild(c);
-  });
-
-  /* ============ REVELADO ============ */
-  var revs = document.querySelectorAll('.rev');
-  if (!('IntersectionObserver' in window)) {
-    revs.forEach(function (e) { e.classList.add('visible'); });
-  } else {
-    var io = new IntersectionObserver(function (ents) {
-      ents.forEach(function (en, i) {
-        if (en.isIntersecting) {
-          setTimeout(function () { en.target.classList.add('visible'); }, i * 70);
-          io.unobserve(en.target);
-        }
-      });
-    }, { threshold: 0.1 });
-    revs.forEach(function (e) { io.observe(e); });
-    setTimeout(function () { revs.forEach(function (e) { e.classList.add('visible'); }); }, 2800);
-  }
 
   /* ============ ARRANQUE ============ */
-  function medirTodo() { medirCielo(); medirGlobo(); }
+  function medirTodo() { medirCielo(); medirMapa(); medirRiel(); alScrollear(); }
   window.addEventListener('resize', medirTodo);
-  medirTodo();
-  pintarSonido();
+  medirTodo(); pintarPais(); pintarSonido();
   requestAnimationFrame(marco);
 })();
 </script>
