@@ -300,7 +300,7 @@
     '<div class="holo-frame"><iframe id="holoFrame" title="Modelo recomendado en vivo"></iframe></div>' +
     '</div></div>' +
     '<div class="holo-base"></div>' +
-    '<div class="holo-hint">Es la preview de TU proyecto — con tu nombre y tu estilo. Podés hacer scroll adentro.</div>' +
+    '<div class="holo-hint">Es TU proyecto con la funcionalidad 3D que elegiste, funcionando en vivo. Hacé scroll y mové el mouse adentro.</div>' +
     '<div class="holo-acciones">' +
     '<a class="btn" id="holoArmar" href="crea-tu-pagina.html">Quiero mi página así</a>' +
     '<a class="btn sec" id="holoAbrir" href="#" target="_blank" rel="noopener">Ver demo del estilo</a>' +
@@ -430,11 +430,13 @@
     var frame = document.getElementById('holoFrame');
     // preview PERSONALIZADA del proyecto (motor del editor en modo vista)
     var url = 'crea-tu-pagina.html?vista=proyecto&estilo=' + estiloFinal +
-      (nombreNegocio ? '&nombre=' + encodeURIComponent(nombreNegocio) : '');
+      (nombreNegocio ? '&nombre=' + encodeURIComponent(nombreNegocio) : '') +
+      (fxElegido ? '&fx3d=' + fxElegido : '');
     if (frame.getAttribute('src') !== url) frame.src = url;
     document.getElementById('holoAbrir').href = DEMOS[estiloFinal];
     document.getElementById('holoArmar').href = 'crea-tu-pagina.html?estilo=' + estiloFinal +
-      (nombreNegocio ? '&nombre=' + encodeURIComponent(nombreNegocio) : '');
+      (nombreNegocio ? '&nombre=' + encodeURIComponent(nombreNegocio) : '') +
+      (fxElegido ? '&fx3d=' + fxElegido : '');
     irA(7);
   });
   document.getElementById('holoVolver').addEventListener('click', function () { irA(6); });

@@ -281,6 +281,29 @@
   }
   .full-bar .t { font-size: 13.5px; font-weight: 650; }
   .full-bar .t small { display: block; font-weight: 400; font-size: 11.5px; opacity: 0.7; }
+  /* ===== Funcionalidades 3D aplicadas a la página generada (vienen del Modo 3D) ===== */
+  .full-scroll.con3d { perspective: 950px; perspective-origin: 50% 40%; }
+  /* flotante: todo respira en el aire */
+  .fx3d-flotante .pv .hero, .fx3d-flotante .pv section, .fx3d-flotante .pv footer {
+    animation: f3dflot 5.5s ease-in-out infinite;
+  }
+  .fx3d-flotante .pv section:nth-child(odd) { animation-delay: 1.1s; }
+  .fx3d-flotante .pv section:nth-child(3n) { animation-delay: 2.2s; animation-duration: 6.5s; }
+  @keyframes f3dflot { 0%, 100% { transform: translateY(0) rotateZ(0); } 50% { transform: translateY(-9px) rotateZ(0.25deg); } }
+  /* viajera: cada sección vuela a su lugar al scrollear */
+  .fx3d-viajera .pv .hero, .fx3d-viajera .pv section, .fx3d-viajera .pv footer {
+    opacity: 0; transform: translateZ(-240px) translateY(40px);
+    transition: transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1), opacity 0.9s ease;
+  }
+  .fx3d-viajera .pv .hero.v3den, .fx3d-viajera .pv section.v3den, .fx3d-viajera .pv footer.v3den {
+    opacity: 1; transform: none;
+  }
+  /* inmersivo: la página entera se inclina con el mouse */
+  .fx3d-inmersivo { transform-style: preserve-3d; transition: transform 0.16s ease-out; will-change: transform; }
+  /* parallax: las capas del hero se separan en profundidad */
+  .fx3d-parallax .pv .hero { transform-style: preserve-3d; }
+  .fx3d-parallax .pv .hero > * { transition: transform 0.12s linear; will-change: transform; }
+
   .full-scroll { flex: 1; overflow-y: auto; padding: 22px 10px 40px; scrollbar-width: thin; scrollbar-color: #4a4660 transparent; }
   .full-scroll::-webkit-scrollbar { width: 7px; }
   .full-scroll::-webkit-scrollbar-thumb { background: #4a4660; border-radius: 99px; }
@@ -870,6 +893,16 @@
     } else {
       l.push('Efectos elegidos: ninguno extra');
     }
+    if (typeof fx3dParam !== 'undefined' && fx3dParam) {
+      var FX3D_SPECS = {
+        parallax: 'Profundidad viva: parallax de capas del hero siguiendo el mouse (factores 6-30px)',
+        flotante: 'Todo flota: secciones con animacion float 5.5-6.5s, delays escalonados',
+        viajera: 'Camara viajera: secciones vuelan a su lugar con translateZ(-240px) al entrar en viewport',
+        inmersivo: 'Inmersion total: pagina entera inclinandose con el mouse (rotateY ±10, rotateX ±7, perspective 950)'
+      };
+      l.push('— FUNCIONALIDAD 3D (elegida en el Modo 3D) —');
+      l.push(FX3D_SPECS[fx3dParam]);
+    }
     var notas = val('fNotas');
     l.push('— NOTAS DEL CLIENTE —');
     l.push(notas || '(ninguna)');
@@ -920,9 +953,65 @@
 
   render();
 
+  // ===== funcionalidad 3D elegida en el Modo 3D: se APLICA a la página generada =====
+  var qf = location.search.match(/[?&]fx3d=(parallax|flotante|viajera|inmersivo)/);
+  var fx3dParam = qf ? qf[1] : null;
+
+  function aplicarFx3D() {
+    if (!fx3dParam) return;
+    var full = $('full');
+    var scroll = full.querySelector('.full-scroll');
+    var pagina = full.querySelector('.full-page');
+    var pv = $('pvFull');
+    scroll.classList.add('con3d');
+    pagina.classList.add('fx3d-' + fx3dParam);
+
+    if (fx3dParam === 'viajera') {
+      // cámara viajera: las secciones vuelan a su lugar al entrar en pantalla
+      var objetivos = pv.querySelectorAll('.hero, section, footer');
+      var io = new IntersectionObserver(function (es) {
+        es.forEach(function (en) {
+          if (en.isIntersecting) { en.target.classList.add('v3den'); io.unobserve(en.target); }
+        });
+      }, { root: scroll, threshold: 0.12 });
+      objetivos.forEach(function (o) { io.observe(o); });
+      setTimeout(function () { objetivos.forEach(function (o) { o.classList.add('v3den'); }); }, 4000);
+    }
+    if (fx3dParam === 'inmersivo') {
+      // inmersión: la página entera se inclina siguiendo el mouse
+      document.addEventListener('mousemove', function (e) {
+        if (!full.classList.contains('open')) return;
+        var dx = e.clientX / window.innerWidth - 0.5;
+        var dy = e.clientY / window.innerHeight - 0.5;
+        pagina.style.transform = 'rotateY(' + (dx * 10).toFixed(1) + 'deg) rotateX(' + (-dy * 7).toFixed(1) + 'deg)';
+      });
+    }
+    if (fx3dParam === 'parallax') {
+      // profundidad viva: las capas del hero se separan al mover el mouse
+      document.addEventListener('mousemove', function (e) {
+        if (!full.classList.contains('open')) return;
+        var hero = pv.querySelector('.hero');
+        if (!hero) return;
+        var dx = e.clientX / window.innerWidth - 0.5;
+        var dy = e.clientY / window.innerHeight - 0.5;
+        Array.prototype.forEach.call(hero.children, function (ch, i) {
+          if (ch.classList.contains('blob') || ch.classList.contains('spark')) return;
+          var prof = 6 + i * 7;
+          ch.style.transform = 'translate3d(' + (-dx * prof).toFixed(1) + 'px,' + (-dy * prof * 0.7).toFixed(1) + 'px,0)';
+        });
+      });
+    }
+  }
+
   // vista=proyecto: mostrar directo la preview del proyecto a pantalla completa
   if (/[?&]vista=proyecto/.test(location.search)) {
-    setTimeout(function () { $('btnVer').click(); }, 80);
+    setTimeout(function () {
+      $('btnVer').click();
+      aplicarFx3D();
+    }, 80);
+  } else if (fx3dParam) {
+    // si llega fx3d sin vista directa, se aplica cuando abran "Ver mi página"
+    $('btnVer').addEventListener('click', function () { setTimeout(aplicarFx3D, 60); });
   }
 })();
 </script>
