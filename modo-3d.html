@@ -28,7 +28,9 @@
     position: absolute; left: 50%; top: 50%; width: min(88vw, 560px);
     transform-style: preserve-3d; backface-visibility: hidden;
     transition: opacity 0.9s ease;
+    pointer-events: none; /* solo la estación activa recibe clics (lo activa el JS) */
   }
+  .estacion.activa { pointer-events: auto; }
   .tarjeta {
     background: var(--panel); border: 1px solid var(--linea); border-radius: 20px;
     padding: 30px 28px 32px; text-align: center; backdrop-filter: blur(8px);
@@ -103,10 +105,10 @@
   .holo-acciones { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 14px; }
 
   /* Estrellas y objetos del espacio */
-  .estrella { position: absolute; border-radius: 99px; background: #fff; animation: parp 2.6s ease-in-out infinite; }
+  .estrella { position: absolute; border-radius: 99px; background: #fff; animation: parp 2.6s ease-in-out infinite; pointer-events: none; }
   @keyframes parp { 0%, 100% { opacity: 0.12; } 50% { opacity: 0.9; } }
-  .orbe { position: absolute; border-radius: 99px; filter: blur(1px); opacity: 0.5; animation: flotar 8s ease-in-out infinite; }
-  .aro { position: absolute; border: 1.5px solid rgba(23, 195, 178, 0.35); border-radius: 99px; animation: girar 14s linear infinite; }
+  .orbe { position: absolute; border-radius: 99px; filter: blur(1px); opacity: 0.5; animation: flotar 8s ease-in-out infinite; pointer-events: none; }
+  .aro { position: absolute; border: 1.5px solid rgba(23, 195, 178, 0.35); border-radius: 99px; animation: girar 14s linear infinite; pointer-events: none; }
   @keyframes girar { from { transform: rotate3d(1, 0.6, 0, 0deg); } to { transform: rotate3d(1, 0.6, 0, 360deg); } }
 
   /* HUD */
@@ -120,7 +122,7 @@
   .pdot.on { background: var(--fucsia); box-shadow: 0 0 10px rgba(233, 30, 140, 0.7); transform: scale(1.25); }
 
   /* efectos sensoriales temporales sobre la escena */
-  .look.fx-inmersivo { animation: inmersivo 3s ease-in-out; }
+  .look.fx-inmersivo, .dolly.fx-inmersivo { animation: inmersivo 3s ease-in-out; }
   @keyframes inmersivo { 0% { transform: scale(1); } 45% { transform: scale(1.35) rotate3d(0, 0, 1, 2.5deg); } 100% { transform: scale(1); } }
   .dolly.fx-flotante .tarjeta { animation-duration: 2.2s; }
 </style>
@@ -134,8 +136,9 @@
 
 <div class="viewport">
   <div class="look" id="look">
-    <div class="dolly" id="dolly"></div>
+    <div class="dolly" id="dollyBg"></div>
   </div>
+  <div class="dolly" id="dolly"></div>
 </div>
 
 <div class="progreso" id="progreso"></div>
@@ -182,7 +185,12 @@
   var paso = 0;
 
   var dolly = document.getElementById('dolly');
+  var dollyBg = document.getElementById('dollyBg');
   var look = document.getElementById('look');
+  function moverCamara(z) {
+    dolly.style.transform = 'translateZ(' + z + 'px)';
+    dollyBg.style.transform = 'translateZ(' + z + 'px)';
+  }
 
   // ---- construir el espacio: estrellas + objetos a distintas profundidades ----
   function agregarEspacio() {
@@ -195,7 +203,7 @@
       e.style.top = (Math.random() * 100) + 'vh';
       e.style.transform = 'translateZ(' + (-Math.random() * PASO_Z * 6) + 'px)';
       e.style.animationDelay = (Math.random() * 2.6) + 's';
-      dolly.appendChild(e);
+      dollyBg.appendChild(e);
     }
     var cols = ['#e91e8c', '#17c3b2', '#f5e942', '#7b2ff7'];
     for (var j = 0; j < 10; j++) {
@@ -208,7 +216,7 @@
       o.style.top = (Math.random() * 90) + 'vh';
       o.style.transform = 'translateZ(' + (-200 - Math.random() * PASO_Z * 5.5) + 'px)';
       o.style.animationDelay = (Math.random() * 5) + 's';
-      dolly.appendChild(o);
+      dollyBg.appendChild(o);
     }
     for (var k = 0; k < 4; k++) {
       var a = document.createElement('div');
@@ -218,7 +226,7 @@
       a.style.left = (10 + Math.random() * 75) + 'vw';
       a.style.top = (10 + Math.random() * 70) + 'vh';
       a.style.transform = 'translateZ(' + (-500 - k * PASO_Z * 1.3) + 'px)';
-      dolly.appendChild(a);
+      dollyBg.appendChild(a);
     }
   }
 
@@ -289,6 +297,7 @@
     '</div></div>');
 
   agregarEspacio();
+  document.getElementById('est0').classList.add('activa');
 
   // ---- progreso ----
   var prog = document.getElementById('progreso');
@@ -301,13 +310,15 @@
   // ---- cámara ----
   function irA(n) {
     paso = n;
-    dolly.style.transform = 'translateZ(' + (n * PASO_Z) + 'px)';
+    moverCamara(n * PASO_Z);
     var dots = prog.children;
     for (var i = 0; i < dots.length; i++) dots[i].classList.toggle('on', i === n);
-    // desvanecer estaciones que quedaron atrás
+    // desvanecer estaciones pasadas y habilitar clics SOLO en la activa
     for (var j = 0; j < 7; j++) {
       var est = document.getElementById('est' + j);
-      if (est) est.style.opacity = (j < n) ? 0 : 1;
+      if (!est) continue;
+      est.style.opacity = (j < n) ? 0 : 1;
+      est.classList.toggle('activa', j === n);
     }
   }
 
@@ -332,21 +343,26 @@
       demoTimer = setTimeout(function () { dolly.classList.remove('fx-flotante'); }, 3000);
     } else if (k === 'viajera') {
       var base = paso * PASO_Z;
-      dolly.style.transition = 'transform 0.7s cubic-bezier(0.55,0,0.2,1)';
-      dolly.style.transform = 'translateZ(' + (base + 500) + 'px)';
+      dolly.style.transition = dollyBg.style.transition = 'transform 0.7s cubic-bezier(0.55,0,0.2,1)';
+      moverCamara(base + 500);
       demoTimer = setTimeout(function () {
-        dolly.style.transform = 'translateZ(' + base + 'px)';
-        setTimeout(function () { dolly.style.transition = 'transform 1.3s cubic-bezier(0.55,0,0.2,1)'; }, 750);
+        moverCamara(base);
+        setTimeout(function () { dolly.style.transition = dollyBg.style.transition = 'transform 1.3s cubic-bezier(0.55,0,0.2,1)'; }, 750);
       }, 750);
     } else if (k === 'inmersivo') {
       look.classList.add('fx-inmersivo');
-      demoTimer = setTimeout(function () { look.classList.remove('fx-inmersivo'); }, 3100);
+      dolly.classList.add('fx-inmersivo');
+      demoTimer = setTimeout(function () {
+        look.classList.remove('fx-inmersivo');
+        dolly.classList.remove('fx-inmersivo');
+      }, 3100);
     }
   }
   function limpiarFx() {
     factorLook = 1;
     dolly.classList.remove('fx-flotante');
     look.classList.remove('fx-inmersivo');
+    dolly.classList.remove('fx-inmersivo');
   }
   document.querySelectorAll('.fxop').forEach(function (f) {
     f.addEventListener('click', function () {
