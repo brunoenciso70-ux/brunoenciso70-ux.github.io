@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TINTA ROJA — Estudio de tatuajes, Asunción</title>
+<meta name="description" content="Estudio de tatuajes en Asunción. Diseño propio, agenda por WhatsApp, higiene certificada.">
+<style>
+  :root {
+    --papel: #f2f0eb; --tinta: #0a0a0a; --gris: #6f6f6f; --linea: #d8d5cd; --rojo: #e02020;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; background: var(--papel); color: var(--tinta);
+    line-height: 1.45; overflow-x: hidden; -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+  .mono { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; }
+
+  /* ---------- E13 · entrada cinematográfica ---------- */
+  #loader {
+    position: fixed; inset: 0; z-index: 999; background: var(--tinta); color: var(--papel);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px;
+    transition: transform 0.7s cubic-bezier(0.76,0,0.24,1);
+  }
+  #loader.done { transform: translateY(-101%); }
+  #loader .marca { font-size: clamp(38px, 12vw, 110px); font-weight: 900; letter-spacing: -0.05em; line-height: 0.9; text-transform: uppercase; }
+  #loader .marca em { font-style: normal; color: var(--rojo); }
+  #loader .barra { width: min(280px, 62vw); height: 2px; background: rgba(242,240,235,0.2); overflow: hidden; }
+  #loader .barra i { display: block; height: 100%; width: 0; background: var(--rojo); transition: width 0.18s linear; }
+  .entrada { opacity: 0; transition: opacity 0.6s ease 0.25s; }
+  .entrada.listo { opacity: 1; }
+
+  /* ---------- cursor propio (solo escritorio) ---------- */
+  #cur { position: fixed; top: 0; left: 0; width: 34px; height: 34px; border: 1.5px solid var(--tinta); border-radius: 99px; pointer-events: none; z-index: 900; transform: translate(-50%,-50%); transition: width 0.22s ease, height 0.22s ease, background 0.22s ease, border-color 0.22s ease; mix-blend-mode: difference; display: none; }
+  #cur.grande { width: 74px; height: 74px; background: var(--rojo); border-color: var(--rojo); }
+  @media (hover: hover) and (pointer: fine) { #cur { display: block; } body { cursor: none; } a, button, summary { cursor: none; } }
+
+  /* ---------- nav ---------- */
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 80; display: flex; justify-content: space-between; align-items: center; padding: 20px 4vw; mix-blend-mode: difference; color: var(--papel); }
+  nav .n-links { display: flex; gap: 26px; }
+  @media (max-width: 700px) { nav .n-links a:not(:last-child) { display: none; } }
+
+  /* ---------- hero ---------- */
+  .hero { min-height: 100svh; display: flex; flex-direction: column; justify-content: center; padding: 110px 4vw 40px; border-bottom: 1.5px solid var(--tinta); }
+  .hero h1 { font-size: clamp(52px, 17vw, 210px); font-weight: 900; letter-spacing: -0.055em; line-height: 0.82; text-transform: uppercase; }
+  .hero h1 em { font-style: normal; -webkit-text-stroke: 1.5px var(--tinta); color: transparent; }
+  .hero h1 .rj { color: var(--rojo); }
+  .hero-meta { display: flex; justify-content: space-between; align-items: flex-end; gap: 26px; margin-top: 42px; flex-wrap: wrap; border-top: 1.5px solid var(--tinta); padding-top: 18px; }
+  .hero-meta p { max-width: 400px; font-size: 15.5px; color: var(--gris); }
+  .hero-meta p b { color: var(--tinta); }
+
+  /* ---------- cinta ---------- */
+  .cinta { background: var(--tinta); color: var(--papel); padding: 15px 0; overflow: hidden; white-space: nowrap; }
+  .cinta .rueda { display: inline-block; animation: rodar 24s linear infinite; }
+  .cinta span { font-size: 15px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; padding: 0 22px; }
+  .cinta span::after { content: '✱'; color: var(--rojo); margin-left: 22px; }
+  @keyframes rodar { to { transform: translateX(-50%); } }
+  @media (prefers-reduced-motion: reduce) { .cinta .rueda { animation: none; } }
+
+  /* ---------- secciones ---------- */
+  section { padding: 90px 4vw; border-bottom: 1.5px solid var(--tinta); }
+  .encab { display: flex; justify-content: space-between; align-items: baseline; gap: 20px; border-bottom: 1px solid var(--linea); padding-bottom: 12px; margin-bottom: 40px; }
+  .encab h2 { font-size: clamp(26px, 5.5vw, 54px); font-weight: 900; letter-spacing: -0.04em; text-transform: uppercase; line-height: 1; }
+
+  /* trabajos */
+  .obras { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2px; background: var(--tinta); border: 1.5px solid var(--tinta); }
+  .obra { background: var(--papel); aspect-ratio: 3/4; position: relative; overflow: hidden; display: grid; place-items: center; }
+  .obra .art { width: 74%; height: 74%; }
+  .obra .cap { position: absolute; left: 0; right: 0; bottom: 0; background: var(--tinta); color: var(--papel); padding: 11px 14px; display: flex; justify-content: space-between; transform: translateY(101%); transition: transform 0.32s cubic-bezier(0.76,0,0.24,1); }
+  .obra:hover .cap { transform: none; }
+  .obra:hover .art { transform: scale(1.05); }
+  .obra .art { transition: transform 0.5s ease; }
+
+  /* artistas */
+  .artistas { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 34px; }
+  .art-card h3 { font-size: 26px; font-weight: 900; letter-spacing: -0.03em; text-transform: uppercase; }
+  .art-card .rol { color: var(--rojo); margin-top: 2px; }
+  .art-card p { font-size: 14.5px; color: var(--gris); margin-top: 10px; }
+  .retrato { aspect-ratio: 1/1; border: 1.5px solid var(--tinta); margin-bottom: 16px; display: grid; place-items: center; background: repeating-linear-gradient(45deg, #e7e4dd 0 8px, var(--papel) 8px 16px); }
+  .retrato b { font-size: 54px; font-weight: 900; letter-spacing: -0.05em; }
+
+  /* precios */
+  .lista { border-top: 1.5px solid var(--tinta); }
+  .fila { display: flex; justify-content: space-between; align-items: center; gap: 18px; padding: 20px 0; border-bottom: 1px solid var(--linea); transition: padding-left 0.28s ease, background 0.28s ease; }
+  .fila:hover { padding-left: 14px; background: rgba(224,32,32,0.05); }
+  .fila h3 { font-size: clamp(18px, 3vw, 26px); font-weight: 800; letter-spacing: -0.02em; text-transform: uppercase; }
+  .fila small { display: block; font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--gris); font-size: 13.5px; margin-top: 3px; }
+  .fila .val { font-size: clamp(16px, 3vw, 22px); font-weight: 900; white-space: nowrap; }
+
+  /* faq / reglas */
+  details { border-bottom: 1px solid var(--linea); padding: 18px 0; }
+  summary { font-size: 17px; font-weight: 800; text-transform: uppercase; letter-spacing: -0.01em; list-style: none; display: flex; justify-content: space-between; gap: 14px; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: '[ + ]'; font-family: ui-monospace, monospace; font-size: 12px; color: var(--rojo); }
+  details[open] summary::after { content: '[ − ]'; }
+  details p { font-size: 14.5px; color: var(--gris); margin-top: 12px; max-width: 620px; }
+
+  /* contacto */
+  .contacto { text-align: center; padding: 100px 4vw; }
+  .contacto h2 { font-size: clamp(40px, 11vw, 140px); font-weight: 900; letter-spacing: -0.055em; text-transform: uppercase; line-height: 0.86; }
+  .contacto h2 em { font-style: normal; -webkit-text-stroke: 1.5px var(--tinta); color: transparent; }
+  .btn-r { display: inline-block; margin-top: 34px; background: var(--rojo); color: var(--papel); font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; font-size: 15px; padding: 20px 44px; border-radius: 0; transition: transform 0.2s ease; }
+  .btn-r:hover { transform: translate(-3px, -3px); box-shadow: 6px 6px 0 var(--tinta); }
+
+  footer { background: var(--tinta); color: var(--papel); padding: 44px 4vw; display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+  footer a:hover { color: var(--rojo); }
+
+  .wa-float { position: fixed; right: 16px; bottom: 16px; background: var(--rojo); color: var(--papel); padding: 15px 22px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; font-size: 13px; z-index: 90; }
+
+  .rev { opacity: 0; transform: translateY(26px); transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.16,0.84,0.3,1); }
+  .rev.visible { opacity: 1; transform: none; }
+</style>
+</head>
+<body>
+
+<div id="loader">
+  <div class="marca">TINTA <em>ROJA</em></div>
+  <div class="barra"><i id="lbar"></i></div>
+  <div class="mono" id="lpct">0%</div>
+</div>
+
+<div id="cur"></div>
+
+<div class="entrada" id="app">
+
+<nav>
+  <a class="mono" href="#">TINTA ROJA ✱ ASU</a>
+  <div class="n-links mono">
+    <a href="#trabajos">Trabajos</a>
+    <a href="#artistas">Artistas</a>
+    <a href="#precios">Precios</a>
+    <a href="#agenda">Agendar</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <h1>Tinta<br><em>que</em> <span class="rj">dura</span><br>toda<br>la vida</h1>
+  <div class="hero-meta">
+    <p><b>Estudio de tatuajes en Asunción</b> desde 2014. Diseño propio, nada de catálogo repetido.
+    Higiene certificada y agenda por WhatsApp.</p>
+    <div class="mono">Villa Morra · Lun a Sáb 11–20h</div>
+  </div>
+</header>
+
+<div class="cinta">
+  <div class="rueda">
+    <span>Fine line</span><span>Blackwork</span><span>Realismo</span><span>Lettering</span><span>Cover up</span><span>Micro tattoo</span><span>Fine line</span><span>Blackwork</span><span>Realismo</span><span>Lettering</span><span>Cover up</span><span>Micro tattoo</span>
+  </div>
+</div>
+
+<section id="trabajos">
+  <div class="encab rev"><h2>Trabajos</h2><span class="mono">01 — Portfolio</span></div>
+  <div class="obras rev">
+    <div class="obra">
+      <svg class="art" viewBox="0 0 100 130" aria-label="Serpiente en fine line">
+        <path d="M50 12c-16 0-24 12-24 24s10 20 22 24 22 10 22 22-10 22-22 22-20-8-20-18" fill="none" stroke="#0a0a0a" stroke-width="2.2"/>
+        <circle cx="50" cy="12" r="6" fill="none" stroke="#e02020" stroke-width="2.2"/>
+        <path d="M32 108h36" stroke="#0a0a0a" stroke-width="2.2"/>
+      </svg>
+      <div class="cap mono"><span>Serpiente</span><span>Fine line</span></div>
+    </div>
+    <div class="obra">
+      <svg class="art" viewBox="0 0 100 130" aria-label="Polilla en blackwork">
+        <path d="M50 30v70M50 44c-18-18-38-8-32 10s26 18 32 8M50 44c18-18 38-8 32 10s-26 18-32 8" fill="none" stroke="#0a0a0a" stroke-width="2.4"/>
+        <path d="M50 76c-12 10-24 6-20 18s16 12 20 2M50 76c12 10 24 6 20 18s-16 12-20 2" fill="none" stroke="#0a0a0a" stroke-width="2.4"/>
+        <circle cx="50" cy="34" r="4" fill="#e02020"/>
+      </svg>
+      <div class="cap mono"><span>Polilla</span><span>Blackwork</span></div>
+    </div>
+    <div class="obra">
+      <svg class="art" viewBox="0 0 100 130" aria-label="Rosa en realismo">
+        <circle cx="50" cy="46" r="26" fill="none" stroke="#0a0a0a" stroke-width="2.2"/>
+        <circle cx="50" cy="46" r="17" fill="none" stroke="#0a0a0a" stroke-width="2.2"/>
+        <circle cx="50" cy="46" r="8" fill="#e02020"/>
+        <path d="M50 72v44M50 92c-14 0-20-8-20-16 10 0 20 6 20 16zM50 100c14 0 20-8 20-16-10 0-20 6-20 16z" fill="none" stroke="#0a0a0a" stroke-width="2.2"/>
+      </svg>
+      <div class="cap mono"><span>Rosa</span><span>Realismo</span></div>
+    </div>
+    <div class="obra">
+      <svg class="art" viewBox="0 0 100 130" aria-label="Lettering">
+        <text x="50" y="60" text-anchor="middle" font-family="Georgia, serif" font-size="34" font-style="italic" fill="#0a0a0a">Ñande</text>
+        <path d="M18 74h64" stroke="#e02020" stroke-width="2.6"/>
+        <text x="50" y="100" text-anchor="middle" font-family="ui-monospace, monospace" font-size="11" letter-spacing="3" fill="#6f6f6f">ASU · PY</text>
+      </svg>
+      <div class="cap mono"><span>Ñande</span><span>Lettering</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="artistas">
+  <div class="encab rev"><h2>Artistas</h2><span class="mono">02 — El equipo</span></div>
+  <div class="artistas">
+    <div class="art-card rev">
+      <div class="retrato"><b>NB</b></div>
+      <h3>Nico B.</h3>
+      <div class="mono rol">Fine line · Micro</div>
+      <p>Doce años de oficio. Especialista en líneas finas y piezas chicas con mucho detalle.</p>
+    </div>
+    <div class="art-card rev">
+      <div class="retrato"><b>LA</b></div>
+      <h3>Lu Ayala</h3>
+      <div class="mono rol">Blackwork · Ornamental</div>
+      <p>Diseño original para cada cliente. Trabaja piezas grandes en varias sesiones.</p>
+    </div>
+    <div class="art-card rev">
+      <div class="retrato"><b>MR</b></div>
+      <h3>Mati R.</h3>
+      <div class="mono rol">Realismo · Cover up</div>
+      <p>Tapa y rescata tatuajes viejos. Si creés que no tiene arreglo, mostrale la foto.</p>
+    </div>
+  </div>
+</section>
+
+<section id="precios">
+  <div class="encab rev"><h2>Precios</h2><span class="mono">03 — Referencia</span></div>
+  <div class="lista rev">
+    <div class="fila"><h3>Micro tattoo<small>Hasta 5 cm, una sesión corta</small></h3><div class="val">Gs. 250.000</div></div>
+    <div class="fila"><h3>Pieza mediana<small>Antebrazo o pantorrilla, 2 a 3 horas</small></h3><div class="val">Gs. 800.000</div></div>
+    <div class="fila"><h3>Sesión por hora<small>Para piezas grandes o proyectos largos</small></h3><div class="val">Gs. 350.000</div></div>
+    <div class="fila"><h3>Diseño personalizado<small>Se descuenta del tatuaje al confirmarlo</small></h3><div class="val">Gs. 150.000</div></div>
+  </div>
+</section>
+
+<section id="reglas">
+  <div class="encab rev"><h2>Antes de venir</h2><span class="mono">04 — Reglas de la casa</span></div>
+  <div class="rev">
+    <details><summary>¿Cómo reservo?</summary><p>Escribinos por WhatsApp con la idea, el tamaño en centímetros y la zona del cuerpo. Te pasamos presupuesto y fecha. La reserva se confirma con una seña del 30%.</p></details>
+    <details><summary>¿Duele?</summary><p>Depende de la zona y de tu umbral. Costillas y pies son las zonas más sensibles; brazos y muslos, las más llevaderas. Vamos parando cuando lo necesites.</p></details>
+    <details><summary>¿Qué llevo el día de la sesión?</summary><p>Vení comido, descansado y sin alcohol en las últimas 24 horas. Ropa cómoda que deje libre la zona. Traé tu cédula: no tatuamos menores de 18, sin excepción.</p></details>
+    <details><summary>¿Cómo se cuida después?</summary><p>Te damos las instrucciones por escrito y quedamos disponibles por WhatsApp durante la cicatrización. El retoque a los 30 días va sin cargo.</p></details>
+  </div>
+</section>
+
+<div class="contacto" id="agenda">
+  <h2>Contanos<br><em>tu</em> idea</h2>
+  <a class="btn-r" href="https://wa.me/595983518856?text=Hola!%20Quiero%20agendar%20un%20tatuaje">Agendar por WhatsApp</a>
+</div>
+
+<footer>
+  <div class="mono">TINTA ROJA ✱ Villa Morra, Asunción</div>
+  <div class="mono"><a href="https://wa.me/595983518856">WhatsApp</a> · <a href="#">Instagram</a></div>
+  <div class="mono">Demo — diseño: KatuWeb</div>
+</footer>
+
+</div>
+
+<a class="wa-float" href="https://wa.me/595983518856?text=Hola!%20Quiero%20agendar%20un%20tatuaje">Agendar ✱</a>
+
+<script>
+  // ---- E13 · entrada cinematográfica ----
+  (function () {
+    var ld = document.getElementById('loader'), bar = document.getElementById('lbar'),
+        pct = document.getElementById('lpct'), app = document.getElementById('app');
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function abrir() { ld.classList.add('done'); app.classList.add('listo'); }
+    if (reduce) { abrir(); return; }
+    var v = 0;
+    var t = setInterval(function () {
+      v += Math.random() * 15 + 9;
+      if (v >= 100) { v = 100; clearInterval(t); setTimeout(abrir, 240); }
+      bar.style.width = v + '%';
+      pct.textContent = Math.round(v) + '%';
+    }, 110);
+    setTimeout(function () { clearInterval(t); abrir(); }, 2000);
+  })();
+
+  // ---- cursor propio ----
+  (function () {
+    var c = document.getElementById('cur');
+    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+    var x = 0, y = 0, cx = 0, cy = 0;
+    document.addEventListener('mousemove', function (e) { x = e.clientX; y = e.clientY; });
+    (function loop() {
+      cx += (x - cx) * 0.18; cy += (y - cy) * 0.18;
+      c.style.transform = 'translate(' + cx + 'px,' + cy + 'px) translate(-50%,-50%)';
+      requestAnimationFrame(loop);
+    })();
+    document.querySelectorAll('a, summary, .fila, .obra').forEach(function (el) {
+      el.addEventListener('mouseenter', function () { c.classList.add('grande'); });
+      el.addEventListener('mouseleave', function () { c.classList.remove('grande'); });
+    });
+  })();
+
+  // ---- revelado ----
+  (function () {
+    var els = document.querySelectorAll('.rev');
+    if (!('IntersectionObserver' in window)) { els.forEach(function (e) { e.classList.add('visible'); }); return; }
+    var io = new IntersectionObserver(function (ents) {
+      ents.forEach(function (en) {
+        if (en.isIntersecting) { en.target.classList.add('visible'); io.unobserve(en.target); }
+      });
+    }, { threshold: 0.1 });
+    els.forEach(function (e) { io.observe(e); });
+    setTimeout(function () { els.forEach(function (e) { e.classList.add('visible'); }); }, 2600);
+  })();
+</script>
+
+</body>
+</html>
