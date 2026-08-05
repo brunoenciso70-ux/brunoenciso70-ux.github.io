@@ -84,6 +84,24 @@
   .pv-tech { background: radial-gradient(ellipse at 50% 20%, rgba(77,127,255,0.45), #0d0d12 75%); color: #22d3ee; }
   .pv-revista { background: linear-gradient(90deg, #f5e942 40%, #e91e8c 40%, #e91e8c 72%, #17c3b2 72%); color: #101014; text-transform: uppercase; }
 
+  /* Holopantalla: el modelo en 3D */
+  .holo {
+    width: min(92vw, 620px); margin: 0 auto; transform: rotateY(-7deg) rotateX(2deg);
+    transform-style: preserve-3d; animation: flotar 7s ease-in-out infinite;
+  }
+  .holo-frame {
+    border-radius: 16px; overflow: hidden; border: 1.5px solid rgba(23, 195, 178, 0.6);
+    box-shadow: 0 0 44px rgba(23, 195, 178, 0.35), 0 0 90px rgba(233, 30, 140, 0.18), 0 30px 80px rgba(0, 0, 0, 0.7);
+    background: #fff; height: min(62vh, 480px); position: relative;
+  }
+  .holo-frame iframe { width: 100%; height: 100%; border: 0; display: block; }
+  .holo-base {
+    margin: 18px auto 0; width: 60%; height: 10px; border-radius: 99px;
+    background: radial-gradient(ellipse, rgba(23, 195, 178, 0.45), transparent 70%); filter: blur(4px);
+  }
+  .holo-hint { text-align: center; font-size: 12px; color: var(--gris); margin-top: 12px; }
+  .holo-acciones { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 14px; }
+
   /* Estrellas y objetos del espacio */
   .estrella { position: absolute; border-radius: 99px; background: #fff; animation: parp 2.6s ease-in-out infinite; }
   @keyframes parp { 0%, 100% { opacity: 0.12; } 50% { opacity: 0.9; } }
@@ -128,6 +146,12 @@
   var MI_WHATSAPP = '595983518856';
   var PASO_Z = 1400;
 
+  var DEMOS = {
+    clasico: 'ejemplos/clasico-calido-restaurante.html', minimal: 'ejemplos/minimal-moderno-boutique.html',
+    prof: 'ejemplos/profesional-confianza-consultorio.html', bold: 'ejemplos/bold-oscuro-barberia.html',
+    neon: 'ejemplos/neon-creativo-agencia.html', grad: 'ejemplos/degradado-vibrante-eventos.html',
+    tech: 'ejemplos/tech-bento-startup.html', revista: 'ejemplos/revista-collage-tienda.html'
+  };
   var STYLES = {
     clasico: { nombre: 'Clásico Cálido', prev: 'pv-clasico', label: 'Ña Rosa', why: 'Cálido y familiar: la comida y la tradición venden solas.' },
     minimal: { nombre: 'Minimal Moderno', prev: 'pv-minimal', label: 'PALMA', why: 'Limpio y elegante: tus productos son los protagonistas.' },
@@ -248,15 +272,27 @@
     '<div class="tarjeta"><div class="kick">Fin del viaje</div><h2 class="q" id="resTitulo">Tu estilo</h2>' +
     '<div class="res-prev" id="resPrev"></div><p class="sub" id="resWhy"></p><div class="res-fx" id="resFx"></div>' +
     '<div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:6px">' +
-    '<a class="btn" id="resArmar" href="crea-tu-pagina.html">Armá tu página así</a>' +
+    '<button class="btn" id="verModelo">Ver el modelo en 3D ✦</button>' +
+    '<a class="btn sec" id="resArmar" href="crea-tu-pagina.html">Armá tu página así</a>' +
     '<a class="btn sec" id="resWa" href="#" target="_blank" rel="noopener">Enviar a KatuWeb</a>' +
-    '<a class="btn sec" href="index.html">Modo clásico</a></div></div>');
+    '</div></div>');
+
+  estacion(6,
+    '<div class="holo"><div class="kick" style="text-align:center; margin-bottom:14px">Tu modelo, flotando en el espacio</div>' +
+    '<div class="holo-frame"><iframe id="holoFrame" title="Modelo recomendado en vivo"></iframe></div>' +
+    '<div class="holo-base"></div>' +
+    '<div class="holo-hint">Es la página real — podés hacer scroll adentro y tocar sus botones.</div>' +
+    '<div class="holo-acciones">' +
+    '<a class="btn" id="holoArmar" href="crea-tu-pagina.html">Quiero mi página así</a>' +
+    '<a class="btn sec" id="holoAbrir" href="#" target="_blank" rel="noopener">Abrir completa</a>' +
+    '<button class="btn sec" id="holoVolver">← Volver al resultado</button>' +
+    '</div></div>');
 
   agregarEspacio();
 
   // ---- progreso ----
   var prog = document.getElementById('progreso');
-  for (var pi = 0; pi < 6; pi++) {
+  for (var pi = 0; pi < 7; pi++) {
     var pd = document.createElement('div');
     pd.className = 'pdot' + (pi === 0 ? ' on' : '');
     prog.appendChild(pd);
@@ -269,7 +305,7 @@
     var dots = prog.children;
     for (var i = 0; i < dots.length; i++) dots[i].classList.toggle('on', i === n);
     // desvanecer estaciones que quedaron atrás
-    for (var j = 0; j < 6; j++) {
+    for (var j = 0; j < 7; j++) {
       var est = document.getElementById('est' + j);
       if (est) est.style.opacity = (j < n) ? 0 : 1;
     }
@@ -345,8 +381,20 @@
       '\n• Efecto 3D elegido: ' + f.nombre + ' (' + f.spec + ')' +
       '\n• Respuestas: ' + answers.join(', ') + '\n¿Me pasás el presupuesto?';
     document.getElementById('resWa').href = 'https://wa.me/' + MI_WHATSAPP + '?text=' + encodeURIComponent(brief);
+    estiloFinal = best;
     irA(5);
   });
+
+  // ---- estación 6: el modelo flotando en 3D ----
+  var estiloFinal = 'clasico';
+  document.getElementById('verModelo').addEventListener('click', function () {
+    var frame = document.getElementById('holoFrame');
+    if (frame.getAttribute('src') !== DEMOS[estiloFinal]) frame.src = DEMOS[estiloFinal];
+    document.getElementById('holoAbrir').href = DEMOS[estiloFinal];
+    document.getElementById('holoArmar').href = 'crea-tu-pagina.html?estilo=' + estiloFinal;
+    irA(6);
+  });
+  document.getElementById('holoVolver').addEventListener('click', function () { irA(5); });
 
   // ---- mirada con el mouse (parallax de cámara) ----
   var factorLook = 1;
