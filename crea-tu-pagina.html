@@ -200,6 +200,59 @@
   .t-grad .ph, .t-grad .g, .t-grad .mapa { background: linear-gradient(135deg, color-mix(in srgb, var(--acc) 30%, white), color-mix(in srgb, #ff7a1a 35%, white)); color: #9a8fb5; }
   .t-grad footer { background: #2a2140; color: rgba(255,255,255,0.8); }
 
+  /* theme: tech (bento oscuro azulado) */
+  .t-tech { background: #0d0d12; color: #f0f0f6; }
+  .t-tech .hero { background: radial-gradient(ellipse at 50% 0%, color-mix(in srgb, var(--acc) 26%, transparent), transparent 65%); }
+  .t-tech .hero h1 { font-weight: 800; letter-spacing: -0.02em; }
+  .t-tech .hero .kick { color: #22d3ee; }
+  .t-tech .btn { background: var(--acc); color: #fff; box-shadow: 0 0 18px color-mix(in srgb, var(--acc) 40%, transparent); }
+  .t-tech h2 { font-weight: 800; }
+  .t-tech .price { color: #a3e635; }
+  .t-tech .item { border-bottom-color: #262636; }
+  .t-tech .tarj, .t-tech .testi { background: #16161f; border: 1px solid #262636; }
+  .t-tech .tarj h3 { color: #22d3ee; }
+  .t-tech .ph, .t-tech .g, .t-tech .mapa { background: linear-gradient(135deg, color-mix(in srgb, var(--acc) 35%, #16161f), #16161f 75%); color: #8a8aa3; }
+  .t-tech footer { background: #0a0a0e; color: #8a8aa3; }
+  /* theme: revista (paneles collage) */
+  .t-revista { background: #101014; color: #f5f2fa; }
+  .t-revista .hero { background: #f5e942; color: #101014; text-align: left; }
+  .t-revista .hero h1 { font-weight: 900; text-transform: uppercase; line-height: 0.98; }
+  .t-revista .hero .kick { color: #101014; opacity: 0.7; }
+  .t-revista .btn { background: #101014; color: #f5e942; border-radius: 0; }
+  .t-revista h2 { color: var(--acc); font-weight: 900; letter-spacing: 0.25em; text-transform: uppercase; font-size: 12px; }
+  .t-revista .price { color: #f5e942; }
+  .t-revista .item { border-bottom-color: #2c2c3a; }
+  .t-revista .tarj, .t-revista .testi { background: #1d1d26; border: 1px solid #2c2c3a; border-radius: 6px; }
+  .t-revista .tarj h3 { color: #17c3b2; }
+  .t-revista .ph, .t-revista .g, .t-revista .mapa { background: linear-gradient(135deg, var(--acc), color-mix(in srgb, var(--acc) 40%, #101014)); color: rgba(255,255,255,0.6); border-radius: 6px; }
+  .t-revista footer { background: #0b0b0e; color: #8b8798; }
+
+  /* efectos de la biblioteca (preview) */
+  .pv.fx-tilt .liftable { transition: transform 0.15s ease, box-shadow 0.15s ease; }
+  .pv.fx-tilt .liftable:hover { transform: perspective(700px) rotateX(4deg) rotateY(-5deg) translateY(-2px); box-shadow: 0 10px 24px rgba(0,0,0,0.25); }
+  .pv.fx-zoom .g, .pv.fx-zoom .ph { transition: transform 0.45s ease; }
+  .pv.fx-zoom .g:hover, .pv.fx-zoom .ph:hover { transform: scale(1.08) rotate(1deg); }
+  .pv .mstrip { overflow: hidden; background: var(--acc); }
+  .pv .mstrip-in { display: flex; gap: 26px; padding: 8px 13px; white-space: nowrap; width: max-content; animation: pmarq 11s linear infinite; }
+  .pv .mstrip-in span { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #fff; }
+  @keyframes pmarq { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  .pv .lstrip { overflow: hidden; border-top: 1px solid rgba(128,128,128,0.25); }
+  .pv .lstrip-in { display: flex; gap: 30px; padding: 14px; white-space: nowrap; width: max-content; animation: pmarq 14s linear infinite; align-items: center; }
+  .pv .lstrip-in span { font-size: 11px; font-weight: 800; letter-spacing: 0.08em; opacity: 0.45; }
+  .pv .stats { display: flex; justify-content: center; gap: 26px; padding: 16px 10px 4px; flex-wrap: wrap; }
+  .pv .stats .st { text-align: center; }
+  .pv .stats .n { font-size: 20px; font-weight: 900; color: var(--acc); font-variant-numeric: tabular-nums; }
+  .pv .stats .l { font-size: 10px; opacity: 0.65; }
+  .pv .spark { position: absolute; font-size: 12px; animation: psparkle 1.8s ease-in-out infinite; pointer-events: none; }
+  @keyframes psparkle { 0%,100% { opacity: 0; transform: scale(0.4) rotate(0); } 50% { opacity: 1; transform: scale(1.1) rotate(20deg); } }
+  .pv .rotorp { display: inline-block; font-weight: 800; }
+  .pv .rotorp span { display: none; }
+  .pv .rotorp span.on { display: inline; animation: qfade 0.35s ease; }
+  @keyframes qfade { from { opacity: 0; } to { opacity: 1; } }
+  .pv .pdot { position: absolute; width: 10px; height: 10px; border-radius: 99px; background: var(--acc); pointer-events: none; z-index: 8; transition: transform 0.07s linear; }
+  .pv .pdot2 { width: 24px; height: 24px; background: transparent; border: 1.5px solid var(--acc); transition: transform 0.2s ease-out; }
+  @media (hover: none) { .pv .pdot, .pv .pdot2 { display: none; } }
+
   /* motion extras */
   .pv.fx-glow .btn { box-shadow: 0 0 20px color-mix(in srgb, var(--acc) 65%, transparent), 0 0 6px color-mix(in srgb, var(--acc) 45%, transparent); }
   @keyframes floaty { 0%, 100% { transform: translate(0, 0) rotate(0deg); } 50% { transform: translate(10px, -12px) rotate(8deg); } }
@@ -278,6 +331,8 @@
         <div class="estilo" data-v="bold"><div class="prev prev-bold">El Patrón</div><div class="nm">Bold Oscuro</div></div>
         <div class="estilo" data-v="neon"><div class="prev prev-neon">Piraña</div><div class="nm">Neón Creativo</div></div>
         <div class="estilo" data-v="grad"><div class="prev prev-grad">Kapé</div><div class="nm">Degradado Vibrante</div></div>
+        <div class="estilo" data-v="tech"><div class="prev" style="background:radial-gradient(ellipse at 50% 20%, rgba(77,127,255,0.45), #0d0d12 75%); color:#22d3ee;">NUBE_</div><div class="nm">Tech Bento</div></div>
+        <div class="estilo" data-v="revista"><div class="prev" style="background:linear-gradient(90deg,#f5e942 40%,#e91e8c 40%,#e91e8c 72%,#17c3b2 72%); color:#101014; text-transform:uppercase;">Antena*</div><div class="nm">Revista Collage</div></div>
       </div>
 
       <h2>3 · Color principal</h2>
@@ -326,13 +381,24 @@
         <div class="chip sel" data-v="0.6">Normal</div>
         <div class="chip" data-v="1">Suave y lenta</div>
       </div>
-      <div class="h2-sub" style="margin-top:10px">Extras de movimiento</div>
+      <div class="h2-sub" style="margin-top:10px">Efectos de la biblioteca — elegí hasta 3 (se ven en la vista previa)</div>
       <div class="chips" id="ctlExtrasMov">
-        <div class="chip" data-v="hover">Tarjetas que se elevan al tocar</div>
-        <div class="chip" data-v="pulse">Botón que late suavemente</div>
-        <div class="chip" data-v="glow">Botones con brillo neón</div>
-        <div class="chip" data-v="blobs">Formas flotantes en la portada</div>
-        <div class="chip" data-v="gradanim">Degradado animado en la portada</div>
+        <div class="chip" data-v="e1">E1 · Titular que se revela</div>
+        <div class="chip" data-v="e3">E3 · Cinta infinita</div>
+        <div class="chip" data-v="e4">E4 · Palabra que rota</div>
+        <div class="chip" data-v="tilt">E5 · Tarjetas 3D (tilt)</div>
+        <div class="chip" data-v="par">E6 · Fondo que sigue al mouse</div>
+        <div class="chip" data-v="e7">E7 · Números que cuentan</div>
+        <div class="chip" data-v="e8">E8 · Botón magnético</div>
+        <div class="chip" data-v="e9">E9 · Cursor con estela</div>
+        <div class="chip" data-v="e10">E10 · Carrusel de logos</div>
+        <div class="chip" data-v="e11">E11 · Fotos con zoom</div>
+        <div class="chip" data-v="e12">E12 · Destellos</div>
+        <div class="chip" data-v="hover">Tarjetas que se elevan</div>
+        <div class="chip" data-v="pulse">Botón que late</div>
+        <div class="chip" data-v="glow">Brillo neón en botones</div>
+        <div class="chip" data-v="blobs">Formas flotantes</div>
+        <div class="chip" data-v="gradanim">Degradado animado</div>
       </div>
 
       <h2>7 · Algo más que quieras contarme</h2>
@@ -382,13 +448,33 @@
   // ⚠️ CAMBIAR: tu número de WhatsApp con código de país, sin + ni espacios
   var MI_WHATSAPP = '595983518856';
 
-  var NOMBRES = { clasico: 'Clásico Cálido', minimal: 'Minimal Moderno', prof: 'Profesional Confianza', bold: 'Bold Oscuro', neon: 'Neón Creativo', grad: 'Degradado Vibrante' };
+  var NOMBRES = { clasico: 'Clásico Cálido', minimal: 'Minimal Moderno', prof: 'Profesional Confianza', bold: 'Bold Oscuro', neon: 'Neón Creativo', grad: 'Degradado Vibrante', tech: 'Tech Bento', revista: 'Revista Collage' };
+  var ACENTOS = { clasico: '#a8672a', minimal: '#b56a4c', prof: '#2f6fbe', bold: '#c8a24a', neon: '#e91e8c', grad: '#7b2ff7', tech: '#4d7fff', revista: '#17c3b2' };
+  var FX_NOMBRES = {
+    e1: 'E1 titular revelado por líneas (translateY 110%→0, cubic-bezier(0.2,0.7,0.2,1), delay 0.18s por línea)',
+    e3: 'E3 cinta infinita marquee (contenido duplicado, translateX 0→-50%, 11s linear)',
+    e4: 'E4 palabra que rota (setInterval 1.8s, fade 0.35s)',
+    tilt: 'E5 tarjetas con tilt 3D al hover (perspective + rotateX/Y ±6deg)',
+    par: 'E6 fondo parallax que sigue al mouse (capas ×0.02–0.06)',
+    e7: 'E7 contadores animados al entrar en viewport (requestAnimationFrame 1.4s easeOutQuart)',
+    e8: 'E8 botón magnético (radio 90px, translate 25% de la distancia al cursor)',
+    e9: 'E9 cursor con estela (punto 0.08s + aro 0.22s; ocultar en táctiles)',
+    e10: 'E10 carrusel de logos infinito (marquee lento 14s, gris)',
+    e11: 'E11 fotos con zoom al hover (scale 1.1 + rotate 1.5deg, 0.5s)',
+    e12: 'E12 destellos ✦ animados alrededor del titular (1.8s, delays escalonados)',
+    hover: 'tarjetas que se elevan al hover (translateY -3px + sombra)',
+    pulse: 'botón principal con pulso suave (scale 1↔1.045, 2.2s)',
+    glow: 'brillo neón en botones (box-shadow con el color acento)',
+    blobs: 'formas flotantes en la portada (float 7s)',
+    gradanim: 'degradado animado en la portada (background-size 220%, 9s)'
+  };
   var FUENTES = { auto: 'La del estilo base', serif: 'Clásica (serif)', sans: 'Moderna (sans)', black: 'Impacto (sans 900)' };
   var ENTRADAS = { ninguna: 'Sin animación', fade: 'Fundido', slide: 'Deslizar hacia arriba', zoom: 'Zoom suave' };
 
   var estado = {
     estilo: 'clasico', color: '#7c4a21', colorN: 'Marrón tierra', forma: 12, fuente: 'auto',
     entrada: 'fade', vel: 0.6, hover: false, pulse: false, glow: false, blobs: false, gradanim: false,
+    e1: false, e3: false, e4: false, tilt: false, par: false, e7: false, e8: false, e9: false, e10: false, e11: false, e12: false,
     secciones: [
       { id: 'menu', nombre: 'Menú / precios', on: true },
       { id: 'catalogo', nombre: 'Catálogo de productos', on: false },
@@ -401,6 +487,7 @@
     ]
   };
 
+  var fxTimer = null;
   function $(id) { return document.getElementById(id); }
   function val(id) { return $(id).value.trim(); }
 
@@ -420,7 +507,11 @@
       });
     });
   }
-  bindPick('ctlEstilo', false, function (el) { estado.estilo = el.dataset.v; });
+  bindPick('ctlEstilo', false, function (el) {
+    estado.estilo = el.dataset.v;
+    // tinte sutil del editor según el estilo elegido
+    document.documentElement.style.setProperty('--azul', ACENTOS[estado.estilo] || '#2a78d6');
+  });
   bindPick('ctlColor', false, function (el) { estado.color = el.dataset.v; estado.colorN = el.dataset.n; });
   bindPick('ctlForma', false, function (el) { estado.forma = +el.dataset.v; });
   bindPick('ctlFuente', false, function (el) { estado.fuente = el.dataset.v; });
@@ -545,7 +636,9 @@
       + (estado.hover ? ' hover-lift' : '')
       + (estado.pulse ? ' btn-pulse' : '')
       + (estado.glow ? ' fx-glow' : '')
-      + (estado.gradanim ? ' fx-gradanim' : '');
+      + (estado.gradanim ? ' fx-gradanim' : '')
+      + (estado.tilt ? ' fx-tilt' : '')
+      + (estado.e11 ? ' fx-zoom' : '');
     pv.style.setProperty('--acc', estado.color);
     pv.style.setProperty('--rad', estado.forma + 'px');
     pv.style.setProperty('--dur', estado.vel + 's');
@@ -556,8 +649,30 @@
     var h1 = mk('h1', '', datos.nombre || 'Tu Negocio');
     hero.appendChild(h1);
     hero.appendChild(mk('p', '', datos.lema || 'Tu frase que enamora clientes'));
+    // E4: palabra que rota
+    if (estado.e4) {
+      var linea = mk('p', '', 'Eleginos por ');
+      var rotor = mk('span', 'rotorp');
+      ['calidad', 'rapidez', 'confianza'].forEach(function (w, i) {
+        var sp = mk('span', i === 0 ? 'on' : '', w);
+        rotor.appendChild(sp);
+      });
+      linea.appendChild(rotor);
+      hero.appendChild(linea);
+    }
     hero.appendChild(mk('a', 'btn', 'Escribinos por WhatsApp'));
-    if (estado.blobs) {
+    // E12: destellos
+    if (estado.e12) {
+      hero.style.position = 'relative'; hero.style.overflow = 'hidden';
+      [[12, 22], [82, 18], [24, 72], [70, 76], [48, 10]].forEach(function (p, i) {
+        var s = mk('div', 'spark', '✦');
+        s.style.left = p[0] + '%'; s.style.top = p[1] + '%';
+        s.style.color = i % 2 ? '#f5e942' : estado.color;
+        s.style.animationDelay = (i * 0.3) + 's';
+        hero.appendChild(s);
+      });
+    }
+    if (estado.blobs || estado.par) {
       hero.style.position = 'relative';
       hero.style.overflow = 'hidden';
       [
@@ -573,6 +688,36 @@
       });
     }
     pv.appendChild(hero);
+
+    // E1: revelado del hero (aproximación en preview)
+    if (estado.e1) {
+      Array.prototype.forEach.call(hero.children, function (ch, i) {
+        if (ch.classList.contains('blob') || ch.classList.contains('spark')) return;
+        ch.classList.add('ent-slide');
+        ch.style.animationDelay = (i * 0.15) + 's';
+        ch.style.setProperty('--dur', '0.6s');
+      });
+    }
+    // E3: cinta marquee bajo el hero
+    if (estado.e3) {
+      var strip = mk('div', 'mstrip');
+      var sin = mk('div', 'mstrip-in');
+      var stx = [(datos.nombre || 'Tu negocio'), '★', (datos.lema || 'calidad y confianza'), '★'];
+      stx.concat(stx).forEach(function (t) { sin.appendChild(mk('span', '', t)); });
+      strip.appendChild(sin);
+      pv.appendChild(strip);
+    }
+    // E7: contadores
+    if (estado.e7) {
+      var stats = mk('div', 'stats');
+      [['+500', 'clientes felices'], ['10', 'años de experiencia'], ['4.9★', 'en reseñas']].forEach(function (d) {
+        var st = mk('div', 'st');
+        st.appendChild(mk('div', 'n', d[0]));
+        st.appendChild(mk('div', 'l', d[1]));
+        stats.appendChild(st);
+      });
+      pv.appendChild(stats);
+    }
 
     // heading font override
     var famMap = { serif: 'Georgia, serif', sans: 'system-ui, sans-serif', black: 'system-ui, sans-serif' };
@@ -593,8 +738,69 @@
       });
     }
 
+    // E10: carrusel de logos antes del footer
+    if (estado.e10) {
+      var ls = mk('div', 'lstrip');
+      var lsin = mk('div', 'lstrip-in');
+      var lgs = ['CLIENTE UNO', 'MARCA DOS', 'TIENDA TRES', 'RESTO CUATRO'];
+      lgs.concat(lgs).forEach(function (t) { lsin.appendChild(mk('span', '', t)); });
+      ls.appendChild(lsin);
+      pv.appendChild(ls);
+    }
     var foot = mk('footer', 'ent-target', (datos.nombre || 'Tu Negocio') + ' · ' + (datos.dir || 'Asunción'));
     pv.appendChild(foot);
+
+    // ---- efectos con JS en la preview ----
+    if (fxTimer) { clearInterval(fxTimer); fxTimer = null; }
+    if (estado.e4) {
+      var rr = pv.querySelector('.rotorp');
+      if (rr) {
+        var wi = 0;
+        fxTimer = setInterval(function () {
+          if (!rr.isConnected) { clearInterval(fxTimer); return; }
+          rr.children[wi].classList.remove('on');
+          wi = (wi + 1) % rr.children.length;
+          rr.children[wi].classList.add('on');
+        }, 1800);
+      }
+    }
+    // E6: parallax de blobs con el mouse
+    if (estado.par) {
+      hero.addEventListener('mousemove', function (e) {
+        var r = hero.getBoundingClientRect();
+        var x = e.clientX - r.left - r.width / 2, y = e.clientY - r.top - r.height / 2;
+        Array.prototype.forEach.call(hero.querySelectorAll('.blob'), function (b, i) {
+          var f = 0.02 + i * 0.02;
+          b.style.marginLeft = (x * f) + 'px';
+          b.style.marginTop = (y * f) + 'px';
+        });
+      });
+    }
+    // E8: botón magnético en el hero
+    if (estado.e8) {
+      var hb = hero.querySelector('.btn');
+      if (hb) {
+        hero.addEventListener('mousemove', function (e) {
+          var r = hb.getBoundingClientRect();
+          var dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2);
+          hb.style.display = 'inline-block';
+          hb.style.transform = Math.hypot(dx, dy) < 80 ? 'translate(' + dx * 0.22 + 'px,' + dy * 0.22 + 'px)' : 'none';
+        });
+        hero.addEventListener('mouseleave', function () { hb.style.transform = 'none'; });
+      }
+    }
+    // E9: cursor con estela dentro de la preview
+    if (estado.e9) {
+      var d1 = mk('div', 'pdot'), d2 = mk('div', 'pdot pdot2');
+      pv.style.position = 'relative';
+      pv.appendChild(d1); pv.appendChild(d2);
+      pv.addEventListener('mousemove', function (e) {
+        var r = pv.getBoundingClientRect();
+        var x = e.clientX - r.left, y = e.clientY - r.top + pv.parentElement.scrollTop * 0;
+        d1.style.transform = 'translate(' + (x - 5) + 'px,' + (y - 5) + 'px)';
+        d2.style.transform = 'translate(' + (x - 12) + 'px,' + (y - 12) + 'px)';
+      });
+    }
 
     // entrance animation with stagger
     if (estado.entrada !== 'ninguna') {
@@ -654,11 +860,13 @@
     if (apagadas.length) l.push('NO incluir: ' + apagadas.join(', '));
     l.push('— MOVIMIENTO —');
     l.push('Aparicion de secciones: ' + ENTRADAS[estado.entrada] + (estado.entrada !== 'ninguna' ? ' (duracion ' + estado.vel + 's, escalonada)' : ''));
-    l.push('Tarjetas al pasar/tocar: ' + (estado.hover ? 'se elevan con sombra' : 'quietas'));
-    l.push('Boton principal: ' + (estado.pulse ? 'late suavemente (pulse)' : 'fijo'));
-    l.push('Brillo neon en botones: ' + (estado.glow ? 'SI (box-shadow con el color acento)' : 'no'));
-    l.push('Formas flotantes en portada: ' + (estado.blobs ? 'SI (circulos animados float 7s)' : 'no'));
-    l.push('Degradado animado en portada: ' + (estado.gradanim ? 'SI (background-size 220%, 9s loop)' : 'no'));
+    var fxOn = Object.keys(FX_NOMBRES).filter(function (k) { return estado[k]; });
+    if (fxOn.length) {
+      l.push('Efectos elegidos (' + fxOn.length + '):');
+      fxOn.forEach(function (k) { l.push('  • ' + FX_NOMBRES[k]); });
+    } else {
+      l.push('Efectos elegidos: ninguno extra');
+    }
     var notas = val('fNotas');
     l.push('— NOTAS DEL CLIENTE —');
     l.push(notas || '(ninguna)');
@@ -698,6 +906,7 @@
       document.querySelectorAll('#ctlEstilo .estilo').forEach(function (s) { s.classList.remove('sel'); });
       pre.classList.add('sel');
       estado.estilo = qm[1];
+      document.documentElement.style.setProperty('--azul', ACENTOS[estado.estilo] || '#2a78d6');
     }
   }
 
