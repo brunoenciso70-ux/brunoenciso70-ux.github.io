@@ -33,7 +33,7 @@
   nav { position: fixed; inset: 0 0 auto 0; z-index: 80; padding: 14px 0; transition: background .4s ease, border-color .4s ease, color .4s ease; border-bottom: 1px solid transparent; }
   nav.solido { background: rgba(244,242,238,.9); backdrop-filter: blur(14px); border-bottom-color: var(--linea); }
   nav .n-in { max-width: 1180px; margin: 0 auto; padding: 0 clamp(16px,4vw,34px); display: flex; align-items: center; justify-content: space-between; gap: 14px; }
-  .marca { display: flex; align-items: center; gap: 9px; font-weight: 800; letter-spacing: -.02em; font-size: 16px; color: #fff; transition: color .4s ease; white-space: nowrap; }
+  .marca { margin: 0; font-size: 16px; display: flex; align-items: center; gap: 9px; font-weight: 800; letter-spacing: -.02em; font-size: 16px; color: #fff; transition: color .4s ease; white-space: nowrap; }
   nav.solido .marca { color: var(--tinta); }
   .marca i { width: 11px; height: 22px; background: var(--naranja); display: block; transform: skewX(-12deg); }
   .n-links { display: flex; gap: 20px; font-size: 13.5px; color: rgba(255,255,255,.82); transition: color .4s ease; }
@@ -182,7 +182,7 @@
 
 <nav id="barra">
   <div class="n-in">
-    <div class="marca"><i></i> ALTOS DEL SUR</div>
+    <h1 class="marca"><i></i> ALTOS DEL SUR</h1>
     <div class="n-links">
       <a href="#proceso">Cómo trabajamos</a>
       <a href="#obras">Obras</a>
