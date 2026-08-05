@@ -1,0 +1,6 @@
+# KatuWeb — sitio público de demostración
+User-agent: *
+Allow: /
+Disallow: /404.html
+
+Sitemap: https://brunoenciso70-ux.github.io/sitemap.xml

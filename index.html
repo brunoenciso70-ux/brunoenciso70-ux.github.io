@@ -80,6 +80,7 @@
   .pv-darkpro { background: radial-gradient(120% 130% at 20% 0%, #16323a, #0a0b0e 70%); color: #dff5fb; font-weight: 700; letter-spacing: -0.02em; }
   .pv-viajes { background: radial-gradient(120% 90% at 50% 10%, #0d1430, #070b18 65%); color: #58e0d8; font-weight: 900; letter-spacing: -0.03em; }
   .pv-sala { background: radial-gradient(70% 60% at 50% 42%, #2a1a0e, #120b06 72%); color: #d8a657; font-family: Georgia, serif; }
+  .pv-cine { background: linear-gradient(180deg, #7fa8c8 0%, #b9c9cf 52%, #6d7a55 52%, #59653f 100%); color: #fff; font-family: system-ui, sans-serif; }
   .est .info { padding: 13px 16px 15px; }
   .est .nm { font-weight: 700; font-size: 14.5px; }
   .est .para { font-size: 12px; color: var(--gris); margin-top: 2px; }
@@ -276,6 +277,7 @@
     <a href="#estilos">Estilos</a>
     <a href="#planes">Precios</a>
     <a href="motion.html" style="color:var(--amarillo)">Catálogo ✦</a>
+    <a href="catalogo.html">Qué se puede hacer</a>
     <a href="efectos.html">Efectos</a>
     <a href="modo-3d.html" style="color:var(--teal)">Modo 3D ✦</a>
     <a href="crea-tu-pagina.html">Armá tu página</a>
@@ -469,7 +471,7 @@
 
 <footer>
   <strong style="color:var(--blanco)">KatuWeb</strong> · Páginas web para negocios paraguayos · Asunción<br>
-  <a href="https://wa.me/595983518856">WhatsApp +595 983 518 856</a> · <a href="crea-tu-pagina.html">Armá tu página</a> · <a href="motion.html">Catálogo completo</a> · <a href="efectos.html">Biblioteca de efectos</a> · <a href="portadas.html">Portadas</a>
+  <a href="https://wa.me/595983518856">WhatsApp +595 983 518 856</a> · <a href="crea-tu-pagina.html">Armá tu página</a> · <a href="motion.html">Catálogo completo</a> · <a href="catalogo.html">Qué se puede hacer</a> · <a href="efectos.html">Biblioteca de efectos</a> · <a href="portadas.html">Portadas</a>
 </footer>
 
 <a class="wa-float" href="https://wa.me/595983518856" aria-label="WhatsApp">✆</a>
@@ -551,6 +553,7 @@
     darkpro: { nombre: 'Dark Premium', para: 'Corralones e industria', demo: 'ejemplos/dark-premium-ferreteria.html', prev: 'pv-darkpro', label: 'HIERRO SUR', why: 'Estética de empresa grande: panel de pedidos en vivo, metal y resplandor. Para vender a quien compra por volumen.' },
     viajes: { nombre: 'Armador de viajes 3D', para: 'Viajes y turismo', demo: 'ejemplos/inmersivo-agencia-viajes.html', prev: 'pv-viajes', label: 'MUNDO ABIERTO', why: 'Elige mes, toca su país en el mapa, se acerca a la ciudad y arma su viaje con hoteles y precio final.' },
     sala: { nombre: 'Salón 3D navegable', para: 'Restaurantes y locales · extra', demo: 'ejemplos/sala-3d-restaurante.html', prev: 'pv-sala', label: 'Salón 3D', why: 'El cliente entra al local y gira 360°: menú, fotos, horarios y promos en cada pared.' },
+    cine: { nombre: 'Scroll cinematográfico', para: 'Constructoras e inmobiliarias', demo: 'ejemplos/scroll-cine-constructora.html', prev: 'pv-cine', label: 'Cine', why: 'La obra se construye sola mientras el visitante baja: terreno, cimientos, estructura, paredes, techo y entrega.' },
     ar: { nombre: 'Menú 3D con cámara', para: 'Restaurantes · extra', demo: 'ejemplos/extra-menu-3d/menu-3d-ar.html', prev: 'pv-clasico', label: 'Menú 3D', why: '' }
   };
   var QUIZ_KEY = { clasico: 'clasico', minimal: 'minimal', prof: 'prof', bold: 'bold', neon: 'neon', grad: 'grad', tech: 'tech', revista: 'revista' };
@@ -592,7 +595,7 @@
   var TINTES = {
     clasico: ['#a8672a', '#e0b154'], minimal: ['#b56a4c', '#d9c3b4'], prof: ['#2f6fbe', '#22d3ee'],
     bold: ['#c8a24a', '#f5e942'], neon: ['#e91e8c', '#f5e942'], grad: ['#7b2ff7', '#ff7a1a'],
-    tech: ['#4d7fff', '#a3e635'], revista: ['#e91e8c', '#f5e942'], conv: ['#1d6fd6', '#63c8ff'], edit: ['#e02020', '#0a0a0a'], darkpro: ['#a6e5f2', '#ff7a1a'], viajes: ['#58e0d8', '#ff6a3d'], sala: ['#d8a657', '#7c4a21'], ar: ['#a8672a', '#e0b154']
+    tech: ['#4d7fff', '#a3e635'], revista: ['#e91e8c', '#f5e942'], conv: ['#1d6fd6', '#63c8ff'], edit: ['#e02020', '#0a0a0a'], darkpro: ['#a6e5f2', '#ff7a1a'], viajes: ['#58e0d8', '#ff6a3d'], sala: ['#d8a657', '#7c4a21'], ar: ['#a8672a', '#e0b154'], cine: ['#ff6a1f', '#ffc61a']
   };
   function teñir(key) {
     var t = TINTES[key];
