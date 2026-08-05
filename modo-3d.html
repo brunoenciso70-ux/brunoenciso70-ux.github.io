@@ -302,7 +302,8 @@
     '<div class="holo-base"></div>' +
     '<div class="holo-hint">Es TU proyecto con la funcionalidad 3D que elegiste, funcionando en vivo. Hacé scroll y mové el mouse adentro.</div>' +
     '<div class="holo-acciones">' +
-    '<a class="btn" id="holoArmar" href="crea-tu-pagina.html">Quiero mi página así</a>' +
+    '<a class="btn" id="holoInmersiva" href="crea-tu-pagina.html" target="_top">🌌 Entrar a mi página en 3D</a>' +
+    '<a class="btn sec" id="holoArmar" href="crea-tu-pagina.html">Quiero mi página así</a>' +
     '<a class="btn sec" id="holoAbrir" href="#" target="_blank" rel="noopener">Ver demo del estilo</a>' +
     '<button class="btn sec" id="holoVolver">← Volver al resultado</button>' +
     '</div></div>');
@@ -434,9 +435,10 @@
       (fxElegido ? '&fx3d=' + fxElegido : '');
     if (frame.getAttribute('src') !== url) frame.src = url;
     document.getElementById('holoAbrir').href = DEMOS[estiloFinal];
-    document.getElementById('holoArmar').href = 'crea-tu-pagina.html?estilo=' + estiloFinal +
-      (nombreNegocio ? '&nombre=' + encodeURIComponent(nombreNegocio) : '') +
+    var sufijo = (nombreNegocio ? '&nombre=' + encodeURIComponent(nombreNegocio) : '') +
       (fxElegido ? '&fx3d=' + fxElegido : '');
+    document.getElementById('holoArmar').href = 'crea-tu-pagina.html?estilo=' + estiloFinal + sufijo;
+    document.getElementById('holoInmersiva').href = 'crea-tu-pagina.html?vista=inmersiva&estilo=' + estiloFinal + sufijo;
     irA(7);
   });
   document.getElementById('holoVolver').addEventListener('click', function () { irA(6); });
