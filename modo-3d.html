@@ -87,9 +87,12 @@
   .pv-revista { background: linear-gradient(90deg, #f5e942 40%, #e91e8c 40%, #e91e8c 72%, #17c3b2 72%); color: #101014; text-transform: uppercase; }
 
   /* Holopantalla: el modelo en 3D */
-  .holo {
-    width: min(92vw, 620px); margin: 0 auto; transform: rotateY(-7deg) rotateX(2deg);
-    transform-style: preserve-3d; animation: flotar 7s ease-in-out infinite;
+  .holo { width: min(92vw, 620px); margin: 0 auto; }
+  .holo-float { animation: flotar 7s ease-in-out infinite; }
+  .holo-tilt {
+    transform: rotateY(-12deg) rotateX(5deg);
+    transform-style: preserve-3d; transition: transform 0.18s ease-out; will-change: transform;
+    perspective: 900px;
   }
   .holo-frame {
     border-radius: 16px; overflow: hidden; border: 1.5px solid rgba(23, 195, 178, 0.6);
@@ -293,7 +296,9 @@
 
   estacion(7,
     '<div class="holo"><div class="kick" style="text-align:center; margin-bottom:14px">Tu proyecto, flotando en el espacio</div>' +
+    '<div class="holo-float"><div class="holo-tilt" id="holoTilt">' +
     '<div class="holo-frame"><iframe id="holoFrame" title="Modelo recomendado en vivo"></iframe></div>' +
+    '</div></div>' +
     '<div class="holo-base"></div>' +
     '<div class="holo-hint">Es la preview de TU proyecto — con tu nombre y tu estilo. Podés hacer scroll adentro.</div>' +
     '<div class="holo-acciones">' +
@@ -433,6 +438,24 @@
     irA(7);
   });
   document.getElementById('holoVolver').addEventListener('click', function () { irA(6); });
+
+  // la holopantalla se inclina siguiendo el mouse en TODA la pantalla (tarjeta holográfica)
+  var holoTilt = document.getElementById('holoTilt');
+  document.addEventListener('mousemove', function (e) {
+    if (paso !== 7 || !holoTilt) return;
+    var dx = e.clientX / window.innerWidth - 0.5;
+    var dy = e.clientY / window.innerHeight - 0.5;
+    holoTilt.style.transform = 'rotateY(' + (-12 + dx * 30).toFixed(1) + 'deg) rotateX(' + (5 - dy * 18).toFixed(1) + 'deg)';
+  });
+  // móvil: balanceo automático suave
+  if (window.matchMedia('(hover: none)').matches) {
+    var th = 0;
+    setInterval(function () {
+      if (paso !== 7) return;
+      th += 0.03;
+      holoTilt.style.transform = 'rotateY(' + (-10 + Math.sin(th) * 8).toFixed(1) + 'deg) rotateX(' + (4 + Math.cos(th * 0.7) * 4).toFixed(1) + 'deg)';
+    }, 50);
+  }
 
   // ---- mirada con el mouse (parallax de cámara) ----
   var factorLook = 1;
