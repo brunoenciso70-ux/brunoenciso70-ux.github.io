@@ -2,6 +2,9 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; frame-src 'self'; media-src 'self' data:; form-action 'none'; object-src 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Aire Sur — Instalación y service de aire acondicionado en Asunción</title>
 <meta name="description" content="Instalamos, limpiamos y reparamos tu aire acondicionado. Presupuesto por WhatsApp en 10 minutos. Garantía escrita.">
@@ -151,6 +154,20 @@
   .rev { opacity: 0; transform: translateY(22px); transition: opacity 0.6s ease, transform 0.6s ease; }
   .rev.visible { opacity: 1; transform: none; }
 </style>
+<script>
+/* Antimarco: si alguien intenta mostrar esta página dentro de otra web ajena
+   (para hacerse pasar por nosotros), la sacamos del marco. Los iframes propios
+   del mismo dominio —la galería— siguen funcionando. */
+(function () {
+  if (window.top === window.self) return;          // no estamos dentro de ningún marco
+  if (window.location.protocol === 'file:') return; // pruebas locales: los file:// no comparten origen
+  var propio = false;
+  try { propio = (window.top.location.origin === window.location.origin); } catch (e) { propio = false; }
+  if (propio) return;                               // marco del mismo sitio (galería, holograma): permitido
+  try { window.top.location = window.location.href; }
+  catch (e2) { document.documentElement.style.display = 'none'; }
+})();
+</script>
 </head>
 <body>
 
