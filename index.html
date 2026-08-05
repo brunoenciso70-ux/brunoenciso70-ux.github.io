@@ -48,7 +48,8 @@
   .hero { position: relative; overflow: hidden; text-align: center; padding: 84px 5vw 76px;
     background: radial-gradient(ellipse at 50% 0%, rgba(233,30,140,0.16), transparent 60%); }
   .hero .kick { color: var(--teal); font-size: 13px; letter-spacing: 0.3em; text-transform: uppercase; font-weight: 800; }
-  .rev { overflow: hidden; }
+  .hero-h1 { font-size: inherit; font-weight: inherit; margin: 0; }
+  .rev { overflow: hidden; display: block; }
   .rev span { display: block; font-size: clamp(38px, 8vw, 72px); font-weight: 900; text-transform: uppercase; line-height: 1.04; transform: translateY(110%); animation: rev 0.7s cubic-bezier(0.2,0.7,0.2,1) forwards; }
   .rev:nth-of-type(2) span { animation-delay: 0.16s; color: var(--fucsia); }
   .rev:nth-of-type(3) span { animation-delay: 0.32s; color: var(--amarillo); }
@@ -290,11 +291,11 @@
   <div class="blob" style="width:44px;height:44px;left:86%;top:26%;background:var(--amarillo);animation-delay:1.4s"></div>
   <div class="blob" style="width:30px;height:30px;left:74%;top:72%;background:var(--teal);animation-delay:2.6s"></div>
   <div class="kick">Páginas web · Paraguay</div>
-  <div style="margin-top:14px">
-    <div class="rev"><span>Tu negocio,</span></div>
-    <div class="rev"><span>online</span></div>
-    <div class="rev"><span>en 48 horas.</span></div>
-  </div>
+  <h1 class="hero-h1" style="margin-top:14px">
+    <span class="rev"><span>Tu negocio,</span></span>
+    <span class="rev"><span>online</span></span>
+    <span class="rev"><span>en 48 horas.</span></span>
+  </h1>
   <p>Páginas web, menús con QR y catálogos para comercios paraguayos. Rápidas, lindas y con
   WhatsApp al frente — porque ahí es donde se vende.</p>
   <div class="ctas">
