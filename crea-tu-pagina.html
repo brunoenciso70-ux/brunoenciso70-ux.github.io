@@ -472,7 +472,24 @@
         <div class="chip" data-v="gradanim">Degradado animado</div>
       </div>
 
-      <h2>7 · Algo más que quieras contarme</h2>
+      <h2>7 · Tu contenido real (opcional, pero acelera todo)</h2>
+      <div class="h2-sub">Si lo cargás acá, tu página sale con TUS datos desde el día uno — y lo ves en la vista previa.</div>
+      <div class="card">
+        <label class="field">Horarios de atención
+          <input type="text" id="fHorarios" placeholder="Ej: Lun a Sáb 8:00–19:00 · Dom cerrado">
+        </label>
+        <label class="field">Redes sociales
+          <input type="text" id="fRedes" placeholder="Ej: Instagram @lodenarosa · Facebook Lo de Ña Rosa">
+        </label>
+        <label class="field">Productos / platos / servicios con precio (uno por línea)
+          <textarea id="fProductos" placeholder="Ej:
+Milanesa completa — 25.000
+Tallarín casero — 22.000
+Sopa paraguaya — 10.000"></textarea>
+        </label>
+      </div>
+
+      <h2>8 · Algo más que quieras contarme</h2>
       <div class="card">
         <textarea id="fNotas" placeholder="Ej: quiero que se destaque el menú ejecutivo / tengo fotos profesionales / me gusta la página de tal negocio…"></textarea>
       </div>
@@ -610,7 +627,7 @@
   bindPick('ctlExtrasMov', true, function (el) {
     estado[el.dataset.v] = el.classList.contains('sel');
   });
-  ['fNombre', 'fRubro', 'fTel', 'fDir', 'fLema', 'fNotas'].forEach(function (id) {
+  ['fNombre', 'fRubro', 'fTel', 'fDir', 'fLema', 'fHorarios', 'fRedes', 'fProductos', 'fNotas'].forEach(function (id) {
     $(id).addEventListener('input', render);
   });
 
@@ -665,27 +682,44 @@
     sec.className = 'ent-target';
     if (s.id === 'menu') {
       sec.appendChild(mk('h2', '', 'Menú'));
-      sec.appendChild(item('Plato de la casa', 'El favorito de todos', '35.000 Gs'));
-      sec.appendChild(item('Especialidad 2', 'Receta propia', '28.000 Gs'));
-      sec.appendChild(item('Bebida / postre', '', '12.000 Gs'));
+      if (datos.productos) {
+        datos.productos.forEach(function (p) { sec.appendChild(item(p.nombre, '', p.precio || '—')); });
+      } else {
+        sec.appendChild(item('Plato de la casa', 'El favorito de todos', '35.000 Gs'));
+        sec.appendChild(item('Especialidad 2', 'Receta propia', '28.000 Gs'));
+        sec.appendChild(item('Bebida / postre', '', '12.000 Gs'));
+      }
     } else if (s.id === 'catalogo') {
       sec.appendChild(mk('h2', '', 'Productos'));
       var g = mk('div', 'grid2');
-      for (var i = 1; i <= 2; i++) {
-        var p = mk('div', 'prod liftable');
-        p.appendChild(mk('div', 'ph'));
-        p.appendChild(mk('div', 'nm', 'Producto ' + i));
-        p.appendChild(mk('div', 'pr', (i * 150) + '.000 Gs'));
-        g.appendChild(p);
+      if (datos.productos) {
+        datos.productos.slice(0, 4).forEach(function (pr) {
+          var p = mk('div', 'prod liftable');
+          p.appendChild(mk('div', 'ph'));
+          p.appendChild(mk('div', 'nm', pr.nombre));
+          p.appendChild(mk('div', 'pr', pr.precio || '—'));
+          g.appendChild(p);
+        });
+      } else {
+        for (var i = 1; i <= 2; i++) {
+          var p2 = mk('div', 'prod liftable');
+          p2.appendChild(mk('div', 'ph'));
+          p2.appendChild(mk('div', 'nm', 'Producto ' + i));
+          p2.appendChild(mk('div', 'pr', (i * 150) + '.000 Gs'));
+          g.appendChild(p2);
+        }
       }
       sec.appendChild(g);
     } else if (s.id === 'servicios') {
       sec.appendChild(mk('h2', '', 'Servicios'));
       var g2 = mk('div', 'grid2');
-      ['Servicio principal', 'Servicio 2'].forEach(function (n) {
+      var servNombres = datos.productos
+        ? datos.productos.slice(0, 4).map(function (p) { return p.nombre + (p.precio ? ' · ' + p.precio : ''); })
+        : ['Servicio principal', 'Servicio 2'];
+      servNombres.forEach(function (n) {
         var t = mk('div', 'tarj liftable');
         t.appendChild(mk('h3', '', n));
-        t.appendChild(mk('div', '', 'Descripción corta del servicio.'));
+        if (!datos.productos) t.appendChild(mk('div', '', 'Descripción corta del servicio.'));
         g2.appendChild(t);
       });
       sec.appendChild(g2);
@@ -706,8 +740,9 @@
       sec.appendChild(mk('h2', '', 'Horarios y contacto'));
       var t3 = mk('div', 'tarj');
       t3.appendChild(mk('h3', '', 'Horarios'));
-      t3.appendChild(mk('div', '', 'Lun–Sáb 9:00–19:00'));
+      t3.appendChild(mk('div', '', datos.horarios || 'Lun–Sáb 9:00–19:00'));
       t3.appendChild(mk('div', '', 'WhatsApp: ' + (datos.tel || '09xx xxx xxx')));
+      if (datos.redes) t3.appendChild(mk('div', '', datos.redes));
       sec.appendChild(t3);
     } else if (s.id === 'mapa') {
       sec.appendChild(mk('h2', '', 'Cómo llegar'));
@@ -717,7 +752,25 @@
   }
 
   function getDatos() {
-    return { nombre: val('fNombre'), rubro: val('fRubro'), tel: val('fTel'), dir: val('fDir'), lema: val('fLema') };
+    return {
+      nombre: val('fNombre'), rubro: val('fRubro'), tel: val('fTel'), dir: val('fDir'), lema: val('fLema'),
+      horarios: val('fHorarios'), redes: val('fRedes'), productos: parseProductos()
+    };
+  }
+
+  // "Milanesa completa — 25.000" → { nombre, precio } · acepta — – - o :
+  function parseProductos() {
+    var raw = val('fProductos');
+    if (!raw) return null;
+    var lineas = raw.split('\n').map(function (s) { return s.trim(); }).filter(Boolean);
+    if (!lineas.length) return null;
+    return lineas.slice(0, 8).map(function (ln) {
+      var m = ln.match(/^(.+?)\s*(?:[—–:]|\s-\s|-{2,})\s*(.+)$/);
+      var nombre = m ? m[1].trim() : ln;
+      var precio = m ? m[2].trim() : '';
+      if (precio && /^[\d.,\s]+$/.test(precio)) precio = precio.replace(/\s+$/, '') + ' Gs';
+      return { nombre: nombre, precio: precio };
+    });
   }
 
   function buildInto(pv, datos) {
@@ -928,7 +981,7 @@
 
   // ---- brief / export ----
   function armarBrief() {
-    var datos = { nombre: val('fNombre'), rubro: val('fRubro'), tel: val('fTel'), dir: val('fDir'), lema: val('fLema') };
+    var datos = getDatos();
     var activas = estado.secciones.filter(function (s) { return s.on; });
     var l = [];
     l.push('BRIEF DE PAGINA WEB — diseño elegido por el cliente');
@@ -966,6 +1019,15 @@
       };
       l.push('— FUNCIONALIDAD 3D (elegida en el Modo 3D) —');
       l.push(FX3D_SPECS[fx3dParam]);
+    }
+    l.push('— CONTENIDO REAL —');
+    l.push('Horarios: ' + (datos.horarios || '(no cargo — pedir)'));
+    l.push('Redes sociales: ' + (datos.redes || '(no cargo — pedir)'));
+    if (datos.productos) {
+      l.push('Productos/servicios con precio:');
+      datos.productos.forEach(function (p) { l.push('  • ' + p.nombre + (p.precio ? ' — ' + p.precio : '')); });
+    } else {
+      l.push('Productos/precios: (no cargo — usar ejemplo del rubro y pedir la lista)');
     }
     var notas = val('fNotas');
     l.push('— NOTAS DEL CLIENTE —');
