@@ -253,18 +253,24 @@
     '<button class="btn" id="empezar">Iniciar el viaje ✦</button></div>');
 
   estacion(1,
+    '<div class="tarjeta"><div class="kick">Antes de despegar</div><h2 class="q">¿Cómo se llama tu negocio?</h2>' +
+    '<p class="sub">Para que al final veas TU proyecto, no un ejemplo.</p>' +
+    '<input type="text" id="inpNombre" placeholder="Ej: Lo de Ña Rosa" style="width:100%; margin-top:18px; padding:14px 16px; font:inherit; font-size:16px; border-radius:12px; border:1.5px solid var(--linea); background:rgba(255,255,255,0.05); color:var(--blanco); text-align:center; outline:none;">' +
+    '<button class="btn" id="btnNombre">Continuar ✦</button></div>');
+
+  estacion(2,
     '<div class="tarjeta"><div class="kick">Pregunta 1 de 3</div><h2 class="q">¿Qué ofrece tu negocio?</h2>' +
     ops(0, [['comida', '🍽', 'Comida / gastronomía'], ['productos', '🛍', 'Productos para vender'], ['servicios', '🩺', 'Servicios profesionales'], ['creativo', '🎨', 'Estilo, arte o entretenimiento']]) + '</div>');
 
-  estacion(2,
+  estacion(3,
     '<div class="tarjeta"><div class="kick">Pregunta 2 de 3</div><h2 class="q">¿Cómo querés que se sienta?</h2>' +
     ops(1, [['calida', '🔥', 'Cálida y familiar'], ['elegante', '✨', 'Elegante y simple'], ['seria', '🤝', 'Seria y confiable'], ['energia', '⚡', 'Con energía y color']]) + '</div>');
 
-  estacion(3,
+  estacion(4,
     '<div class="tarjeta"><div class="kick">Pregunta 3 de 3</div><h2 class="q">¿Qué tiene que lograr primero?</h2>' +
     ops(2, [['pedidos', '💬', 'Que me pidan por WhatsApp'], ['catalogo', '🛒', 'Que vean mis productos'], ['turnos', '📅', 'Que agenden turno o consulta'], ['impacto', '🚀', 'Que mi marca impacte']]) + '</div>');
 
-  estacion(4,
+  estacion(5,
     '<div class="tarjeta"><div class="kick">El toque final · elegí tu efecto 3D</div><h2 class="q">¿Cómo se tiene que sentir el movimiento?</h2>' +
     '<p class="sub">Tocá cada opción y sentila en la escena. La que quede marcada es la tuya.</p>' +
     '<div class="fxops">' +
@@ -276,7 +282,7 @@
     '</div><div class="hint-fx">Probá todas las veces que quieras — cada toque la demuestra en vivo.</div>' +
     '<button class="btn" id="verResultado" style="display:none">Ver mi resultado ✦</button></div>');
 
-  estacion(5,
+  estacion(6,
     '<div class="tarjeta"><div class="kick">Fin del viaje</div><h2 class="q" id="resTitulo">Tu estilo</h2>' +
     '<div class="res-prev" id="resPrev"></div><p class="sub" id="resWhy"></p><div class="res-fx" id="resFx"></div>' +
     '<div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:6px">' +
@@ -285,14 +291,14 @@
     '<a class="btn sec" id="resWa" href="#" target="_blank" rel="noopener">Enviar a KatuWeb</a>' +
     '</div></div>');
 
-  estacion(6,
-    '<div class="holo"><div class="kick" style="text-align:center; margin-bottom:14px">Tu modelo, flotando en el espacio</div>' +
+  estacion(7,
+    '<div class="holo"><div class="kick" style="text-align:center; margin-bottom:14px">Tu proyecto, flotando en el espacio</div>' +
     '<div class="holo-frame"><iframe id="holoFrame" title="Modelo recomendado en vivo"></iframe></div>' +
     '<div class="holo-base"></div>' +
-    '<div class="holo-hint">Es la página real — podés hacer scroll adentro y tocar sus botones.</div>' +
+    '<div class="holo-hint">Es la preview de TU proyecto — con tu nombre y tu estilo. Podés hacer scroll adentro.</div>' +
     '<div class="holo-acciones">' +
     '<a class="btn" id="holoArmar" href="crea-tu-pagina.html">Quiero mi página así</a>' +
-    '<a class="btn sec" id="holoAbrir" href="#" target="_blank" rel="noopener">Abrir completa</a>' +
+    '<a class="btn sec" id="holoAbrir" href="#" target="_blank" rel="noopener">Ver demo del estilo</a>' +
     '<button class="btn sec" id="holoVolver">← Volver al resultado</button>' +
     '</div></div>');
 
@@ -301,7 +307,7 @@
 
   // ---- progreso ----
   var prog = document.getElementById('progreso');
-  for (var pi = 0; pi < 7; pi++) {
+  for (var pi = 0; pi < 8; pi++) {
     var pd = document.createElement('div');
     pd.className = 'pdot' + (pi === 0 ? ' on' : '');
     prog.appendChild(pd);
@@ -314,7 +320,7 @@
     var dots = prog.children;
     for (var i = 0; i < dots.length; i++) dots[i].classList.toggle('on', i === n);
     // desvanecer estaciones pasadas y habilitar clics SOLO en la activa
-    for (var j = 0; j < 7; j++) {
+    for (var j = 0; j < 8; j++) {
       var est = document.getElementById('est' + j);
       if (!est) continue;
       est.style.opacity = (j < n) ? 0 : 1;
@@ -322,7 +328,19 @@
     }
   }
 
-  document.getElementById('empezar').addEventListener('click', function () { irA(1); });
+  document.getElementById('empezar').addEventListener('click', function () {
+    irA(1);
+    setTimeout(function () { document.getElementById('inpNombre').focus(); }, 1400);
+  });
+  var nombreNegocio = '';
+  function seguirNombre() {
+    nombreNegocio = document.getElementById('inpNombre').value.trim();
+    irA(2);
+  }
+  document.getElementById('btnNombre').addEventListener('click', seguirNombre);
+  document.getElementById('inpNombre').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') seguirNombre();
+  });
 
   document.querySelectorAll('.op').forEach(function (op) {
     op.addEventListener('click', function () {
@@ -393,24 +411,28 @@
     document.getElementById('resWhy').textContent = s.why;
     document.getElementById('resFx').textContent = '✦ Con movimiento "' + f.nombre + '" — ' + f.d;
     document.getElementById('resArmar').href = 'crea-tu-pagina.html?estilo=' + best;
-    var brief = 'Hola! Hice el viaje del Modo 3D de KatuWeb:\n• Estilo recomendado: ' + s.nombre +
+    var brief = 'Hola! Hice el viaje del Modo 3D de KatuWeb:' + (nombreNegocio ? '\n• Mi negocio: ' + nombreNegocio : '') + '' + '\n• Estilo recomendado: ' + s.nombre +
       '\n• Efecto 3D elegido: ' + f.nombre + ' (' + f.spec + ')' +
       '\n• Respuestas: ' + answers.join(', ') + '\n¿Me pasás el presupuesto?';
     document.getElementById('resWa').href = 'https://wa.me/' + MI_WHATSAPP + '?text=' + encodeURIComponent(brief);
     estiloFinal = best;
-    irA(5);
+    irA(6);
   });
 
   // ---- estación 6: el modelo flotando en 3D ----
   var estiloFinal = 'clasico';
   document.getElementById('verModelo').addEventListener('click', function () {
     var frame = document.getElementById('holoFrame');
-    if (frame.getAttribute('src') !== DEMOS[estiloFinal]) frame.src = DEMOS[estiloFinal];
+    // preview PERSONALIZADA del proyecto (motor del editor en modo vista)
+    var url = 'crea-tu-pagina.html?vista=proyecto&estilo=' + estiloFinal +
+      (nombreNegocio ? '&nombre=' + encodeURIComponent(nombreNegocio) : '');
+    if (frame.getAttribute('src') !== url) frame.src = url;
     document.getElementById('holoAbrir').href = DEMOS[estiloFinal];
-    document.getElementById('holoArmar').href = 'crea-tu-pagina.html?estilo=' + estiloFinal;
-    irA(6);
+    document.getElementById('holoArmar').href = 'crea-tu-pagina.html?estilo=' + estiloFinal +
+      (nombreNegocio ? '&nombre=' + encodeURIComponent(nombreNegocio) : '');
+    irA(7);
   });
-  document.getElementById('holoVolver').addEventListener('click', function () { irA(5); });
+  document.getElementById('holoVolver').addEventListener('click', function () { irA(6); });
 
   // ---- mirada con el mouse (parallax de cámara) ----
   var factorLook = 1;

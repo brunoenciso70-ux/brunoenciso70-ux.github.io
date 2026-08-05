@@ -898,7 +898,7 @@
 
   renderSecList();
 
-  // preselección por URL: crea-tu-pagina.html?estilo=neon
+  // preselección por URL: crea-tu-pagina.html?estilo=neon&nombre=Mi%20Negocio&vista=proyecto
   var qm = location.search.match(/[?&]estilo=([a-z]+)/);
   if (qm && NOMBRES[qm[1]]) {
     var pre = document.querySelector('#ctlEstilo .estilo[data-v="' + qm[1] + '"]');
@@ -909,8 +909,18 @@
       document.documentElement.style.setProperty('--azul', ACENTOS[estado.estilo] || '#2a78d6');
     }
   }
+  // nombre del negocio por URL (viene del Modo 3D)
+  var qn = location.search.match(/[?&]nombre=([^&]+)/);
+  if (qn) {
+    try { $('fNombre').value = decodeURIComponent(qn[1].replace(/\+/g, ' ')); } catch (e) {}
+  }
 
   render();
+
+  // vista=proyecto: mostrar directo la preview del proyecto a pantalla completa
+  if (/[?&]vista=proyecto/.test(location.search)) {
+    setTimeout(function () { $('btnVer').click(); }, 80);
+  }
 })();
 </script>
 </body>
