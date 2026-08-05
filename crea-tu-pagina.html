@@ -1095,8 +1095,13 @@
     });
 
     var panelIdx = 0;
+    var ultimoWrap = null;
     hijos.forEach(function (h, i) {
-      if (h.classList.contains('pdot') || h.classList.contains('mstrip') && false) return;
+      // las cintas decorativas se pegan a la sección anterior, no flotan solas
+      if (ultimoWrap && (h.classList.contains('mstrip') || h.classList.contains('stats') || h.classList.contains('lstrip'))) {
+        ultimoWrap.appendChild(h);
+        return;
+      }
       var panel = document.createElement('div');
       panel.className = 'inm-panel' + (panelIdx === 0 ? ' activa' : '');
       panel.style.transform = 'translate(-50%, -50%) translateZ(' + (-panelIdx * INM_Z) + 'px)';
@@ -1111,6 +1116,7 @@
       wrap.style.setProperty('--acc', estado.color);
       wrap.style.setProperty('--rad', estado.forma + 'px');
       wrap.appendChild(h);
+      ultimoWrap = wrap;
       caja.appendChild(wrap);
       panel.appendChild(etiq);
       panel.appendChild(caja);

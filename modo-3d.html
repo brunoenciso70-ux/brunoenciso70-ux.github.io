@@ -186,11 +186,17 @@
   };
   var SCORES = {
     comida: { clasico: 2, grad: 1 }, productos: { minimal: 2, revista: 2 },
-    servicios: { prof: 2, tech: 1 }, creativo: { neon: 2, bold: 2, revista: 1 },
+    servicios: { prof: 3, tech: 2 }, creativo: { neon: 2, bold: 2, revista: 1 },
     calida: { clasico: 2, grad: 1 }, elegante: { minimal: 2, prof: 1 },
     seria: { prof: 2, tech: 2 }, energia: { neon: 2, grad: 2, revista: 1 },
     pedidos: { clasico: 1, grad: 1, revista: 1 }, catalogo: { minimal: 2, revista: 1, tech: 1 },
     turnos: { prof: 2, bold: 1 }, impacto: { neon: 2, bold: 1, tech: 1 }
+  };
+  var RESP_LEGIBLE = {
+    comida: 'Comida / gastronomía', productos: 'Productos para vender', servicios: 'Servicios profesionales',
+    creativo: 'Estilo, arte o entretenimiento', calida: 'Cálida y familiar', elegante: 'Elegante y simple',
+    seria: 'Seria y confiable', energia: 'Con energía y color', pedidos: 'Que le pidan por WhatsApp',
+    catalogo: 'Que vean sus productos', turnos: 'Que agenden turno', impacto: 'Que su marca impacte'
   };
   var FX3D = {
     parallax: { nombre: 'Profundidad viva', d: 'la página reacciona al mouse', spec: 'parallax de capas que siguen el cursor (factores 0.02–0.08)' },
@@ -469,7 +475,7 @@
     document.getElementById('resArmar').href = 'crea-tu-pagina.html?estilo=' + best;
     var brief = 'Hola! Hice el viaje del Modo 3D de KatuWeb:' + (nombreNegocio ? '\n• Mi negocio: ' + nombreNegocio : '') + '' + '\n• Estilo recomendado: ' + s.nombre +
       '\n• Efecto 3D elegido: ' + f.nombre + ' (' + f.spec + ')' +
-      '\n• Respuestas: ' + answers.join(', ') + '\n¿Me pasás el presupuesto?';
+      '\n• Qué ofrece: ' + (RESP_LEGIBLE[answers[0]] || answers[0]) + '\n• Cómo debe sentirse: ' + (RESP_LEGIBLE[answers[1]] || answers[1]) + '\n• Objetivo principal: ' + (RESP_LEGIBLE[answers[2]] || answers[2]) + '\n¿Me pasás el presupuesto?';
     document.getElementById('resWa').href = 'https://wa.me/' + MI_WHATSAPP + '?text=' + encodeURIComponent(brief);
     estiloFinal = best;
     irA(6);
