@@ -114,6 +114,21 @@
   .aro { position: absolute; border: 1.5px solid rgba(23, 195, 178, 0.35); border-radius: 99px; animation: girar 14s linear infinite; pointer-events: none; }
   @keyframes girar { from { transform: rotate3d(1, 0.6, 0, 0deg); } to { transform: rotate3d(1, 0.6, 0, 360deg); } }
 
+  /* Sensación al responder: destello + partículas */
+  #wash {
+    position: fixed; inset: 0; pointer-events: none; z-index: 40; opacity: 0;
+    transition: opacity 0.9s ease;
+  }
+  #wash.flash { transition: none; opacity: 0.38; }
+  .partic {
+    position: fixed; pointer-events: none; z-index: 45; font-size: 22px;
+    animation: partir 1.15s cubic-bezier(0.2, 0.7, 0.3, 1) forwards;
+  }
+  @keyframes partir {
+    0% { transform: translate(0, 0) scale(0.7) rotate(0deg); opacity: 1; }
+    100% { transform: translate(var(--px), var(--py)) scale(1.7) rotate(var(--pr)); opacity: 0; }
+  }
+
   /* HUD */
   .hud { position: fixed; top: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; z-index: 10; }
   .hud .marca { font-weight: 900; font-size: 17px; }
@@ -144,6 +159,7 @@
   <div class="dolly" id="dolly"></div>
 </div>
 
+<div id="wash"></div>
 <div class="progreso" id="progreso"></div>
 
 <script>
@@ -348,9 +364,43 @@
     if (e.key === 'Enter') seguirNombre();
   });
 
+  // ---- cada respuesta se SIENTE: destello con su color + lluvia de su emoji ----
+  var COLOR_RESP = {
+    comida: '#ff8a3d', productos: '#c98fff', servicios: '#4d7fff', creativo: '#e91e8c',
+    calida: '#ff8a3d', elegante: '#e8e2ff', seria: '#4d7fff', energia: '#f5e942',
+    pedidos: '#25d366', catalogo: '#17c3b2', turnos: '#4d7fff', impacto: '#e91e8c'
+  };
+  function sensacionRespuesta(op) {
+    var color = COLOR_RESP[op.dataset.v] || '#17c3b2';
+    var icono = (op.querySelector('.ico') || {}).textContent || '✦';
+    // destello de color con la personalidad de la respuesta
+    var wash = document.getElementById('wash');
+    wash.style.background = 'radial-gradient(ellipse at 50% 55%, ' + color + ' 0%, transparent 65%)';
+    wash.classList.add('flash');
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () { wash.classList.remove('flash'); });
+    });
+    // lluvia del emoji elegido
+    var r = op.getBoundingClientRect();
+    for (var i = 0; i < 8; i++) {
+      var p = document.createElement('div');
+      p.className = 'partic';
+      p.textContent = icono;
+      p.style.left = (r.left + r.width * (0.15 + Math.random() * 0.7)) + 'px';
+      p.style.top = (r.top + r.height / 2) + 'px';
+      p.style.setProperty('--px', ((Math.random() - 0.5) * 260).toFixed(0) + 'px');
+      p.style.setProperty('--py', (-90 - Math.random() * 220).toFixed(0) + 'px');
+      p.style.setProperty('--pr', ((Math.random() - 0.5) * 220).toFixed(0) + 'deg');
+      p.style.animationDelay = (i * 0.03) + 's';
+      document.body.appendChild(p);
+      (function (el) { setTimeout(function () { el.remove(); }, 1500); })(p);
+    }
+  }
+
   document.querySelectorAll('.op').forEach(function (op) {
     op.addEventListener('click', function () {
       answers[+op.dataset.q] = op.dataset.v;
+      sensacionRespuesta(op);
       irA(paso + 1);
     });
   });
