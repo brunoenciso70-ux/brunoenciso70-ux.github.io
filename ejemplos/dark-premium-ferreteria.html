@@ -644,6 +644,7 @@
         if (p < 1) requestAnimationFrame(paso);
       }
       requestAnimationFrame(paso);
+      setTimeout(function () { n.textContent = Math.round(fin) + suf; }, 2000);
     });
   }
   window.addEventListener('scroll', contar, { passive: true });
@@ -665,6 +666,7 @@
       if (p < 1) requestAnimationFrame(paso);
     }
     requestAnimationFrame(paso);
+    setTimeout(function () { totalEl.textContent = 'Gs. ' + fin.toLocaleString('es-PY'); }, 2100);
   }
   window.addEventListener('scroll', totalizar, { passive: true });
   totalizar();

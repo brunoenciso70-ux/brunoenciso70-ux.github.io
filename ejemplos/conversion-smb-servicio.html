@@ -383,6 +383,7 @@
           if (p < 1) requestAnimationFrame(paso);
         }
         requestAnimationFrame(paso);
+        setTimeout(function () { n.textContent = Math.round(fin) + suf; }, 1900);
       });
     }
     window.addEventListener('scroll', correr, { passive: true });

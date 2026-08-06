@@ -646,6 +646,7 @@
         if (k < 1) requestAnimationFrame(paso);
       }
       requestAnimationFrame(paso);
+      setTimeout(function () { e.textContent = n.toLocaleString('es-PY'); }, 2000);
     });
   }
   window.addEventListener('scroll', contar, { passive: true });
