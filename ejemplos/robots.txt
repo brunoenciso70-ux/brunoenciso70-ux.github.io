@@ -1,0 +1,7 @@
+# KatuWeb — sitio público de demostración
+User-agent: *
+Allow: /
+Disallow: /404.html
+Disallow: /clientes/ferreteria-cm/
+
+Sitemap: https://brunoenciso70-ux.github.io/sitemap.xml
