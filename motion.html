@@ -497,6 +497,7 @@
         if (p < 1) requestAnimationFrame(paso);
       }
       requestAnimationFrame(paso);
+      setTimeout(function () { n.textContent = Math.round(fin).toLocaleString('es-PY'); }, 1900);
     });
   }, 3200);
 

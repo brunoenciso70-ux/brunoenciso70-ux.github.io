@@ -470,6 +470,7 @@
       if (k < 1) requestAnimationFrame(paso);
     }
     requestAnimationFrame(paso);
+    setTimeout(function () { el.textContent = n; }, 1400);
   });
 
   pintar();
