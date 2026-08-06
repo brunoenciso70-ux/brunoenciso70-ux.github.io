@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; frame-src 'self'; media-src 'self' data:; form-action 'none'; object-src 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catálogo de capacidades — KatuWeb</title>
+<meta name="description" content="Todo lo que KatuWeb puede construir: lo que ya está hecho y se puede mostrar hoy, y lo que se puede construir a pedido. Con tiempos, requisitos y estado real de cada cosa.">
+<style>
+  :root {
+    --papel: #fbfaf8; --blanco: #fff; --tinta: #0d0e11; --tinta2: #4a4d55; --gris: #8a8d95;
+    --linea: #e6e4de; --linea2: #d3d0c8;
+    --listo: #17845a; --listo-b: #e4f4ec;
+    --pedido: #1d6fd6; --pedido-b: #e7f0fb;
+    --paga: #b4700a; --paga-b: #fbf1de;
+    --wa: #128c4a; --acento: #e05a1c;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: var(--papel); color: var(--tinta); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; text-decoration: none; }
+  .wrap { max-width: 1160px; margin: 0 auto; padding: 0 clamp(16px, 4vw, 30px); }
+  .mono { font-family: ui-monospace, "SF Mono", Menlo, monospace; text-transform: uppercase; letter-spacing: .16em; font-size: 10.5px; }
+
+  nav { position: sticky; top: 0; z-index: 50; background: rgba(251,250,248,.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--linea); }
+  .n-in { max-width: 1160px; margin: 0 auto; padding: 13px clamp(16px,4vw,30px); display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+  .marca { font-weight: 900; font-size: 17px; letter-spacing: -.02em; white-space: nowrap; }
+  .marca s { color: var(--acento); text-decoration: none; }
+  .n-links { display: flex; gap: 18px; font-size: 13.5px; color: var(--tinta2); }
+  .n-links a:hover { color: var(--acento); }
+  @media (max-width: 820px) { .n-links { display: none; } }
+  .btn { display: inline-flex; align-items: center; gap: 7px; padding: 9px 17px; font-size: 13px; font-weight: 700; border: none; cursor: pointer; font-family: inherit; border-radius: 7px; white-space: nowrap; }
+  .btn-w { background: var(--wa); color: #fff; }
+  .btn-t { background: var(--tinta); color: #fff; }
+  .btn-o { background: transparent; border: 1px solid var(--linea2); color: var(--tinta); }
+
+  header { padding: clamp(44px,7vw,78px) 0 26px; }
+  header h1 { font-size: clamp(28px, 5.4vw, 52px); font-weight: 900; letter-spacing: -.04em; line-height: 1.02; max-width: 17ch; text-wrap: balance; }
+  header p { color: var(--tinta2); margin-top: 16px; max-width: 62ch; font-size: 16px; }
+  .kick { color: var(--acento); margin-bottom: 12px; }
+  .resumen { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 34px; }
+  @media (max-width: 720px) { .resumen { grid-template-columns: 1fr 1fr; } }
+  .resumen div { background: var(--blanco); border: 1px solid var(--linea); border-radius: 11px; padding: 16px 16px 18px; }
+  .resumen b { display: block; font-size: clamp(24px,4vw,34px); font-weight: 900; letter-spacing: -.04em; line-height: 1; }
+  .resumen span { font-size: 12.5px; color: var(--gris); }
+
+  .filtros { position: sticky; top: 52px; z-index: 40; background: rgba(251,250,248,.94); backdrop-filter: blur(10px); padding: 14px 0 12px; border-bottom: 1px solid var(--linea); margin-bottom: 30px; }
+  .tabs { display: flex; gap: 7px; overflow-x: auto; scrollbar-width: none; }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tabs button { flex: 0 0 auto; background: var(--blanco); border: 1px solid var(--linea2); color: var(--tinta2); font-size: 13px; padding: 8px 15px; border-radius: 99px; cursor: pointer; font-family: inherit; white-space: nowrap; transition: all .18s ease; }
+  .tabs button:hover { border-color: var(--gris); }
+  .tabs button.on { background: var(--tinta); border-color: var(--tinta); color: #fff; font-weight: 700; }
+  .conteo { color: var(--gris); font-size: 12.5px; margin-top: 10px; }
+
+  .grupo { margin-bottom: 44px; }
+  .grupo > h2 { font-size: clamp(19px,2.8vw,26px); font-weight: 900; letter-spacing: -.03em; }
+  .grupo > p { color: var(--tinta2); font-size: 14.5px; margin-top: 6px; max-width: 70ch; }
+  .grilla { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; margin-top: 20px; }
+  .it { background: var(--blanco); border: 1px solid var(--linea); border-radius: 12px; padding: 18px 18px 20px; display: flex; flex-direction: column; }
+  .it .top { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; }
+  .it h3 { font-size: 16px; font-weight: 800; letter-spacing: -.02em; line-height: 1.2; }
+  .it .rub { font-size: 12px; color: var(--gris); margin-top: 3px; }
+  .est { flex: none; font-size: 9.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; padding: 4px 8px; border-radius: 5px; white-space: nowrap; }
+  .e-listo { background: var(--listo-b); color: var(--listo); }
+  .e-pedido { background: var(--pedido-b); color: var(--pedido); }
+  .e-paga { background: var(--paga-b); color: var(--paga); }
+  .it .desc { font-size: 14px; color: var(--tinta2); margin-top: 11px; flex: 1; }
+  .it dl { margin-top: 14px; border-top: 1px solid var(--linea); padding-top: 12px; display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; font-size: 12.5px; }
+  .it dt { color: var(--gris); white-space: nowrap; }
+  .it dd { color: var(--tinta); }
+  .it .acc { margin-top: 14px; display: flex; gap: 7px; flex-wrap: wrap; }
+  .it .acc a { font-size: 12.5px; font-weight: 700; padding: 7px 12px; border-radius: 6px; border: 1px solid var(--linea2); }
+  .it .acc a:hover { border-color: var(--tinta); }
+  .it .acc a.pr { background: var(--tinta); color: #fff; border-color: var(--tinta); }
+
+  .fuentes { background: var(--blanco); border-top: 1px solid var(--linea); border-bottom: 1px solid var(--linea); padding: clamp(44px,7vw,78px) 0; margin-top: 20px; }
+  table { width: 100%; border-collapse: collapse; margin-top: 22px; font-size: 13.5px; }
+  th, td { text-align: left; padding: 11px 12px; border-bottom: 1px solid var(--linea); vertical-align: top; }
+  th { font-size: 11px; text-transform: uppercase; letter-spacing: .1em; color: var(--gris); font-weight: 700; }
+  td b { font-weight: 700; }
+  .ok { color: var(--listo); font-weight: 700; }
+  .no { color: #c0392b; font-weight: 700; }
+  .tabla-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .nota { background: #fdf6e8; border: 1px solid #f0e2c2; border-radius: 10px; padding: 16px 18px; margin-top: 24px; font-size: 13.5px; color: #6b5726; }
+  .nota b { color: #4a3c15; }
+
+  .cierre { text-align: center; padding: clamp(48px,8vw,88px) 0; }
+  .cierre h2 { font-size: clamp(24px,4.4vw,40px); font-weight: 900; letter-spacing: -.04em; }
+  .cierre p { color: var(--tinta2); margin: 12px auto 0; max-width: 52ch; }
+  .cierre .acc { display: flex; gap: 9px; justify-content: center; margin-top: 22px; flex-wrap: wrap; }
+  footer { border-top: 1px solid var(--linea); padding: 26px 0 40px; font-size: 13px; color: var(--gris); }
+  footer .f { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  footer a:hover { color: var(--tinta); }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } html { scroll-behavior: auto; } }
+</style>
+<script>
+(function () {
+  if (window.top === window.self) return;
+  if (window.location.protocol === 'file:') return;
+  var propio = false;
+  try { propio = (window.top.location.origin === window.location.origin); } catch (e) { propio = false; }
+  if (propio) return;
+  try { window.top.location = window.location.href; }
+  catch (e2) { document.documentElement.style.display = 'none'; }
+})();
+</script>
+</head>
+<body>
+
+<nav>
+  <div class="n-in">
+    <div class="marca">Katu<s>Web</s> · Catálogo</div>
+    <div class="n-links">
+      <a href="index.html">Inicio</a>
+      <a href="motion.html">KatuMotion</a>
+      <a href="portadas.html">Portadas</a>
+      <a href="efectos.html">Efectos</a>
+      <a href="clientes/index.html">Clientes</a>
+      <a href="crea-tu-pagina.html">Armá tu página</a>
+    </div>
+    <a class="btn btn-w" href="https://wa.me/595983518856?text=Hola!%20Vi%20el%20cat%C3%A1logo%20de%20capacidades%20de%20KatuWeb" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+  </div>
+</nav>
+
+<header>
+  <div class="wrap">
+    <div class="kick mono">Catálogo de capacidades</div>
+    <h1>Todo lo que se puede construir, y qué hay listo hoy.</h1>
+    <p>Esta página separa dos cosas que suelen mezclarse: lo que <strong>ya está construido y se puede mostrar
+    ahora mismo</strong>, y lo que <strong>se puede construir a pedido</strong>. Cada ítem dice qué necesita del
+    cliente, cuánto tarda y qué se entrega. Sin promesas vagas.</p>
+    <div class="resumen">
+      <div><b id="nListo">0</b><span>listos para mostrar</span></div>
+      <div><b id="nPedido">0</b><span>a pedido</span></div>
+      <div><b id="nPaga">0</b><span>necesitan herramienta paga</span></div>
+      <div><b id="nTotal">0</b><span>capacidades en total</span></div>
+    </div>
+  </div>
+</header>
+
+<div class="filtros">
+  <div class="wrap">
+    <div class="tabs" id="tabs"></div>
+    <div class="conteo" id="conteo"></div>
+  </div>
+</div>
+
+<div class="wrap" id="lista"></div>
+
+<!-- ============ FUENTES DE MATERIAL ============ -->
+<section class="fuentes" id="fuentes">
+  <div class="wrap">
+    <div class="kick mono">De dónde sale el material</div>
+    <h2 style="font-size:clamp(21px,3.2vw,30px);font-weight:900;letter-spacing:-.03em">Fotos, videos y animaciones que se pueden usar sin riesgo.</h2>
+    <p style="color:var(--tinta2);margin-top:10px;max-width:70ch;font-size:15px">Verificado en las páginas de licencia, no en blogs. La columna que importa es la
+    última: si dice que hay que dar crédito, hay que darlo sí o sí, y en la web de un cliente eso queda feo.</p>
+
+    <div class="tabla-scroll">
+    <table>
+      <thead><tr><th>Fuente</th><th>Qué da</th><th>Uso comercial</th><th>Cuenta</th><th>La letra chica</th></tr></thead>
+      <tbody>
+        <tr><td><b>Pexels</b></td><td>Fotos y video hasta 4K</td><td class="ok">Sí, sin crédito</td><td>No hace falta</td><td>No se puede revender el archivo tal cual ni usarlo como logo. Nada de sugerir que una persona de la foto recomienda el negocio.</td></tr>
+        <tr><td><b>Pixabay</b></td><td>Fotos y video hasta 4K</td><td class="ok">Sí, sin crédito</td><td class="no">Obligatoria</td><td>Ojo: con personas o marcas reconocibles NO permite uso comercial. Justo los clips de "gente en oficina" caen ahí.</td></tr>
+        <tr><td><b>Coverr</b></td><td>Video de fondo para hero</td><td class="ok">Sí, sin crédito</td><td>No hace falta</td><td>Sus propios términos se contradicen un poco entre la página de licencia y la de términos. Para un cliente grande, mejor Pexels.</td></tr>
+        <tr><td><b>Videvo</b></td><td>Video</td><td>Depende del clip</td><td>No hace falta</td><td>Cada clip tiene su licencia. Hay varios que exigen crédito. Hay que mirar la etiqueta clip por clip.</td></tr>
+        <tr><td><b>Mixkit</b></td><td>Video HD y 4K</td><td class="ok">Sí, sin crédito</td><td>No hace falta</td><td>No se pudo confirmar el texto legal completo por cómo está armado el sitio. Antes de usarlo en algo grande, leerlo a mano.</td></tr>
+        <tr><td><b>unDraw · Blush · Open Peeps · IRA Design</b></td><td>Ilustración SVG</td><td class="ok">Sí, sin crédito</td><td>No hace falta</td><td>Solo prohíben armar un banco de ilustraciones competidor. Para webs de clientes, libres.</td></tr>
+        <tr><td><b>Storyset</b></td><td>Ilustración animada</td><td>Con condiciones</td><td>No hace falta</td><td class="no">Exige crédito visible y restringe el trabajo para terceros. Evitarlo: hay alternativas sin ataduras.</td></tr>
+        <tr><td><b>Lucide · Heroicons · Phosphor · Tabler</b></td><td>Íconos SVG</td><td class="ok">Sí, sin crédito</td><td>No hace falta</td><td>Licencia MIT o ISC. Es la categoría con menos riesgo de todas: se copian como SVG dentro del HTML.</td></tr>
+        <tr><td><b>LottieFiles</b></td><td>Animaciones JSON</td><td class="ok">Sí, sin crédito</td><td class="no">Obligatoria</td><td>La licencia es libre, pero la cuenta gratis tiene un tope de 10 subidas de por vida que no se resetea.</td></tr>
+        <tr><td><b>Lordicon</b></td><td>Íconos animados</td><td>Con crédito</td><td>No hace falta</td><td class="no">El plan gratis obliga a poner "Animated icons by Lordicon.com" en el pie. Para sacarlo hay que pagar.</td></tr>
+        <tr><td><b>Google Fonts</b></td><td>Tipografías</td><td class="ok">Sí, sin crédito</td><td>No hace falta</td><td>Licencia OFL o Apache. Conviene descargarlas y servirlas desde el propio sitio en vez de llamar al CDN de Google.</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h3 style="font-size:19px;font-weight:800;letter-spacing:-.02em;margin-top:40px">Cuando no alcanza con el stock: generar con IA</h3>
+    <div class="tabla-scroll">
+    <table>
+      <thead><tr><th>Herramienta</th><th>Para qué</th><th>Costo</th><th>Derechos comerciales</th></tr></thead>
+      <tbody>
+        <tr><td><b>Stable Diffusion / Flux schnell</b> (local)</td><td>Imágenes, sin límite de cantidad</td><td class="ok">Gratis (necesita placa de video)</td><td class="ok">Libres hasta facturar USD 1.000.000 al año</td></tr>
+        <tr><td><b>Adobe Firefly</b></td><td>Imágenes con estilo consistente</td><td>Desde USD 9,99 al mes</td><td class="ok">Sí, y Adobe se para en que entrenó con material licenciado</td></tr>
+        <tr><td><b>Pika</b></td><td>Video corto para fondo de hero</td><td>Desde USD 8 al mes</td><td class="ok">Sí desde el plan más barato. El gratis no permite uso comercial</td></tr>
+        <tr><td><b>Kling · Hailuo · Runway</b></td><td>Video de más calidad</td><td>USD 10 a 28 al mes</td><td>Solo en los planes pagos. El gratis pone marca de agua y prohíbe uso comercial</td></tr>
+        <tr><td><b>Recraft</b></td><td>Vectores SVG generados</td><td>Plan pago</td><td class="no">El plan gratis deja las imágenes públicas y sin derechos comerciales</td></tr>
+        <tr><td><b>Upscayl</b></td><td>Agrandar y limpiar la foto fea del celular del cliente</td><td class="ok">Gratis, corre en la compu</td><td class="ok">Sin restricciones</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <div class="nota">
+      <b>Las tres reglas que no se rompen.</b> Primero: nunca sacar fotos de Google Imágenes ni del Instagram de otro
+      negocio — es la forma más rápida de que le llegue una carta documento al cliente. Segundo: nada de caras
+      reconocibles de banco de imágenes haciéndose pasar por el equipo o los clientes del negocio; si la foto tiene
+      que mostrar personas del local, las pone el cliente. Tercero: toda foto de stock que entra a una página es
+      provisional — se reemplaza por la del cliente apenas la manda, y eso se le avisa desde el principio.
+    </div>
+  </div>
+</section>
+
+<section class="cierre">
+  <div class="wrap">
+    <h2>¿Querés algo de esta lista?</h2>
+    <p>Mandame el número o el nombre del ítem por WhatsApp. Si es de los que están listos, te paso el enlace para
+    que lo veas funcionando hoy mismo.</p>
+    <div class="acc">
+      <a class="btn btn-w" href="https://wa.me/595983518856?text=Hola!%20Vi%20el%20cat%C3%A1logo%20de%20capacidades%20y%20quiero%20consultar%20por%20un%20%C3%ADtem" target="_blank" rel="noopener noreferrer">Escribir por WhatsApp</a>
+      <a class="btn btn-o" href="motion.html">Ver el catálogo visual</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap f">
+    <div><strong style="color:var(--tinta)">KatuWeb</strong> · Asunción, Paraguay</div>
+    <div><a href="index.html">Inicio</a> · <a href="motion.html">KatuMotion</a> · <a href="portadas.html">Portadas</a></div>
+    <div><a href="https://wa.me/595983518856" target="_blank" rel="noopener noreferrer">+595 983 518 856</a></div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+  var WA = '595983518856';
+
+  /* estado: listo | pedido | paga */
+  /* código interno de la pieza — solo viaja en el mensaje de WhatsApp */
+  var ALF = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+  var TABLA = {};
+  function cod(nombre) {
+    if (TABLA[nombre]) return TABLA[nombre];
+    var h = 5381, txt = 'katuweb-recetas-2026|CAT|' + nombre;
+    for (var i = 0; i < txt.length; i++) { h = ((h * 33) ^ txt.charCodeAt(i)) >>> 0; }
+    var s = '';
+    for (var j = 0; j < 5; j++) { s += ALF.charAt(h % ALF.length); h = Math.floor(h / ALF.length) + 7919; }
+    TABLA[nombre] = 'KTW-' + s;
+    return TABLA[nombre];
+  }
+
+  var ITEMS = [
+
+    /* ============ YA CONSTRUIDO — estilos completos ============ */
+    { g:'hecho', cat:'Páginas completas', n:'Clásico Cálido', r:'Restaurantes y parrillas', e:'listo',
+      d:'Menú con precios, galería y pedido directo por WhatsApp. Marrones y serif, se siente de barrio pero prolijo.',
+      req:'Logo, menú con precios, 4 a 6 fotos, horarios', t:'48 h', v:'ejemplos/clasico-calido-restaurante.html' },
+    { g:'hecho', cat:'Páginas completas', n:'Minimal Moderno', r:'Boutiques y tiendas de ropa', e:'listo',
+      d:'Blanco, mucho aire y tipografía grande. La ropa manda y no compite con nada.',
+      req:'Fotos de producto parejas, temporada actual', t:'48 h', v:'ejemplos/minimal-moderno-boutique.html' },
+    { g:'hecho', cat:'Páginas completas', n:'Profesional Confianza', r:'Consultorios y estudios', e:'listo',
+      d:'Azul y blanco, credenciales al frente y turno por WhatsApp. Pensado para que el paciente confíe antes de escribir.',
+      req:'Título profesional, especialidades, dirección', t:'48 h', v:'ejemplos/profesional-confianza-consultorio.html' },
+    { g:'hecho', cat:'Páginas completas', n:'Bold Oscuro', r:'Barberías y gimnasios', e:'listo',
+      d:'Negro y dorado, mayúsculas grandes. Reserva de turno arriba de todo.',
+      req:'Lista de servicios con precios, fotos del local', t:'48 h', v:'ejemplos/bold-oscuro-barberia.html' },
+    { g:'hecho', cat:'Páginas completas', n:'Neón Creativo', r:'Agencias y estudios', e:'listo',
+      d:'Formas geométricas y colores fuertes. Para el que vende creatividad y tiene que demostrarla en la propia web.',
+      req:'Trabajos hechos, lista de servicios', t:'48 h', v:'ejemplos/neon-creativo-agencia.html' },
+    { g:'hecho', cat:'Páginas completas', n:'Degradado Vibrante', r:'Eventos y fiestas', e:'listo',
+      d:'Degradados intensos y tarjetas de servicios. Cotización rápida por WhatsApp.',
+      req:'Tipos de evento, fotos de fiestas hechas', t:'48 h', v:'ejemplos/degradado-vibrante-eventos.html' },
+    { g:'hecho', cat:'Páginas completas', n:'Tech Bento', r:'Software y servicios digitales', e:'listo',
+      d:'Grilla tipo bento con módulos de distinto tamaño. Se ve moderno sin necesitar una sola foto.',
+      req:'Qué hace el producto y para quién', t:'48 h', v:'ejemplos/tech-bento-startup.html' },
+    { g:'hecho', cat:'Páginas completas', n:'Revista Collage', r:'Tiendas y marcas jóvenes', e:'listo',
+      d:'Bloques de color tipo revista, mucha personalidad. Funciona muy bien en celular.',
+      req:'Colección actual, tono de la marca', t:'48 h', v:'ejemplos/revista-collage-tienda.html' },
+    { g:'hecho', cat:'Páginas completas', n:'Editorial 90s', r:'Tatuajes, ropa, estudios', e:'listo',
+      d:'Blanco y negro con un solo acento y titulares gigantes. Se ve carísimo sin una sola foto profesional.',
+      req:'Solo el nombre y qué hace. Sin fotos funciona', t:'48 h', v:'ejemplos/editorial-90s-tatuajes.html' },
+    { g:'hecho', cat:'Páginas completas', n:'Conversión SMB', r:'Servicios y oficios', e:'listo',
+      d:'El molde que más vende: simulación de conversación de WhatsApp, números, casos, testimonios y precios en orden.',
+      req:'Servicios, zona de cobertura, precios de referencia', t:'48 h', v:'ejemplos/conversion-smb-servicio.html' },
+    { g:'hecho', cat:'Páginas completas', n:'Dark Premium', r:'Corralones, ferreterías, industria', e:'listo',
+      d:'Panel de pedidos en vivo, metal y resplandor que sigue al mouse. Hace ver grande a una empresa chica.',
+      req:'Rubros que vende, zona de entrega', t:'48 h', v:'ejemplos/dark-premium-ferreteria.html' },
+    { g:'hecho', cat:'Páginas completas', n:'Scroll cinematográfico', r:'Constructoras e inmobiliarias', e:'listo',
+      d:'La obra se construye sola mientras el visitante baja: terreno, cimientos, estructura, paredes, techo y entrega. Incluye simulador de cuotas.',
+      req:'Etapas del proceso, precio por m², plazos', t:'4 a 5 días', v:'ejemplos/scroll-cine-constructora.html' },
+
+    /* ============ YA CONSTRUIDO — extras 3D ============ */
+    { g:'hecho', cat:'Extras premium', n:'Salón 3D navegable', r:'Restaurantes y locales', e:'listo',
+      d:'El visitante queda parado adentro del local y gira 360° con el dedo. Cada pared es una sección: menú, fotos, horarios, promos.',
+      req:'Fotos del local, menú, horarios', t:'5 a 7 días', v:'ejemplos/sala-3d-restaurante.html' },
+    { g:'hecho', cat:'Extras premium', n:'Menú 3D con cámara', r:'Restaurantes', e:'listo',
+      d:'El cliente apunta la cámara del celular y ve el plato apoyado en su mesa, a tamaño real.',
+      req:'Escaneo del plato real con la app del celular', t:'7 a 10 días', v:'ejemplos/extra-menu-3d/menu-3d-ar.html' },
+    { g:'hecho', cat:'Extras premium', n:'Armador de viajes 3D', r:'Agencias de turismo', e:'listo',
+      d:'Elige el mes, toca su país en el mapamundi, se acerca a la ciudad y arma el viaje con hoteles y precio final en guaraníes.',
+      req:'Destinos, hoteles y precios reales', t:'7 a 10 días', v:'ejemplos/inmersivo-agencia-viajes.html' },
+    { g:'hecho', cat:'Extras premium', n:'Modo 3D del sitio', r:'Cualquier rubro', e:'listo',
+      d:'El visitante viaja por el espacio respondiendo tres preguntas y sale con su página recomendada.',
+      req:'Nada del cliente: es una experiencia de KatuWeb', t:'Ya hecho', v:'modo-3d.html' },
+
+    /* ============ YA CONSTRUIDO — piezas sueltas ============ */
+    { g:'hecho', cat:'Piezas sueltas', n:'6 portadas numeradas', r:'Se aplican sobre cualquier estilo', e:'listo',
+      d:'Objeto luminoso, anillo de neón, terreno topográfico, revelado con máscara, niebla de ensueño y split editorial. Cambian la primera pantalla sin tocar el resto.',
+      req:'Elegir el número', t:'Se suma a cualquier página', v:'portadas.html' },
+    { g:'hecho', cat:'Piezas sueltas', n:'8 efectos catalogados', r:'Se aplican sobre cualquier estilo', e:'listo',
+      d:'Revelado de texto, cinta infinita, tarjetas con inclinación 3D, números que cuentan, carrusel de logos, destellos, entrada cinematográfica y botón con pulso.',
+      req:'Elegir el número', t:'Se suma a cualquier página', v:'efectos.html' },
+    { g:'hecho', cat:'Piezas sueltas', n:'Editor visual para el cliente', r:'Cualquier rubro', e:'listo',
+      d:'El cliente arma su propia página eligiendo estilo, color, secciones y efectos, y me la manda por WhatsApp con todos los datos cargados.',
+      req:'Nada: la usa el cliente solo', t:'Ya hecho', v:'crea-tu-pagina.html' },
+
+    /* ============ SE PUEDE CONSTRUIR — tiendas ============ */
+    { g:'nuevo', cat:'Tiendas online', n:'Tienda monoproducto', r:'Un solo producto con variantes', e:'pedido',
+      d:'La página entera es la ficha del producto. Todo el peso va al relato y a una sola conversión. Ideal para el que fabrica una cosa y la vende bien.',
+      req:'Fotos del producto en 5 tomas, precio, variantes, forma de envío', t:'5 a 7 días', wa:'tienda monoproducto' },
+    { g:'nuevo', cat:'Tiendas online', n:'Catálogo chico con carrito', r:'De 2 a 20 productos', e:'pedido',
+      d:'Inicio con destacados, una o dos colecciones y ficha por producto. Carrito lateral con subtotal y cierre de compra por WhatsApp.',
+      req:'Lista de productos con precio y stock, fotos parejas', t:'7 a 10 días', wa:'catálogo chico con carrito' },
+    { g:'nuevo', cat:'Tiendas online', n:'Catálogo grande con filtros', r:'Más de 20 productos', e:'pedido',
+      d:'Colecciones, filtros y buscador. Acá la arquitectura de la información pesa más que la estética: si no se encuentra, no se vende.',
+      req:'Planilla de productos con categorías y atributos', t:'2 a 3 semanas', wa:'catálogo grande con filtros' },
+    { g:'nuevo', cat:'Tiendas online', n:'Ficha de producto reutilizable', r:'Cualquier tienda', e:'pedido',
+      d:'La plantilla que se repite en todos los productos: precio, cuotas, variantes, envío, preguntas y relacionados. Incluye los datos estructurados que Google necesita para mostrar precio y stock en los resultados.',
+      req:'Un producto de ejemplo cargado completo', t:'2 a 3 días', wa:'ficha de producto reutilizable' },
+    { g:'nuevo', cat:'Tiendas online', n:'Set de fotografía de producto', r:'Cualquier tienda', e:'pedido',
+      d:'Las cinco tomas que necesita cada producto: sobre fondo blanco, macro de textura, referencia de tamaño, en uso y en grupo. Con la misma luz y el mismo encuadre en todos, que es lo que separa una grilla profesional de una amateur.',
+      req:'El producto físico, o fotos crudas para retocar', t:'2 a 4 días', wa:'set de fotografía de producto' },
+
+    /* ============ SE PUEDE CONSTRUIR — movimiento con IA ============ */
+    { g:'nuevo', cat:'Movimiento generado', n:'Hero con video en bucle', r:'Cualquier rubro', e:'paga',
+      d:'Dos imágenes del mismo momento con un instante de diferencia, y un video de 5 a 7 segundos que va de una a la otra. Se reproduce de ida y de vuelta, así el corte no se nota nunca.',
+      req:'Definir el objeto protagonista y el mood', t:'3 a 4 días', wa:'hero con video en bucle' },
+    { g:'nuevo', cat:'Movimiento generado', n:'Fondo conducido por scroll', r:'Constructoras, industria, autos', e:'pedido',
+      d:'El video de fondo avanza cuadro a cuadro con el scroll, como en las páginas de Apple. El visitante controla el tiempo con el dedo.',
+      req:'Un video del proceso, o se arma por computadora', t:'4 a 6 días', wa:'fondo conducido por scroll' },
+    { g:'nuevo', cat:'Movimiento generado', n:'Producto 3D que gira', r:'Productos físicos', e:'pedido',
+      d:'El producto rota sobre su eje mientras el visitante baja. Sin video: se arma con una secuencia de fotos tomadas en círculo.',
+      req:'24 a 36 fotos del producto girando sobre una base', t:'4 a 5 días', wa:'producto 3D que gira' },
+    { g:'nuevo', cat:'Movimiento generado', n:'Fotos del cliente rescatadas', r:'Cualquier rubro', e:'listo',
+      d:'Las fotos borrosas de celular se agrandan, se limpian y se emparejan de color para que entren en la página sin bajar el nivel.',
+      req:'Las fotos como estén', t:'1 día', wa:'rescate de fotos' },
+
+    /* ============ SE PUEDE CONSTRUIR — servicios ============ */
+    { g:'nuevo', cat:'Servicios sueltos', n:'De Instagram a página web', r:'Comercios con Instagram activo', e:'pedido',
+      d:'El perfil de Instagram se convierte en una página propia: los posteos pasan a ser secciones, los destacados a menú, y el link de la bio deja de ser el único lugar donde vive el negocio.',
+      req:'Usuario de Instagram, horarios, dirección, WhatsApp', t:'2 a 3 días', wa:'Instagram a página web' },
+    { g:'nuevo', cat:'Servicios sueltos', n:'Auditoría de la web actual', r:'El que ya tiene web y no le funciona', e:'pedido',
+      d:'Informe con semáforo: título y descripción, encabezados, textos alternativos, peso de las imágenes, velocidad, ficha de Google y datos de negocio local. Cada hallazgo con su prioridad y qué hacer.',
+      req:'La dirección de la web', t:'2 días', wa:'auditoría de la web' },
+    { g:'nuevo', cat:'Servicios sueltos', n:'Ficha de Google al día', r:'Cualquier comercio con local', e:'pedido',
+      d:'En Paraguay mucha gente busca en Google Maps antes que en la web. Dejar la ficha completa, con horarios, fotos y categoría correcta, suele traer más llamadas que la página misma.',
+      req:'Acceso a la ficha o crearla de cero', t:'1 a 2 días', wa:'ficha de Google' },
+    { g:'nuevo', cat:'Servicios sueltos', n:'Presupuestos automáticos', r:'Uso interno de KatuWeb', e:'pedido',
+      d:'Genera el presupuesto en PDF con alcance, qué incluye, qué no incluye, plazo, forma de pago y validez. Numeración correlativa y montos en guaraníes.',
+      req:'Los datos del cliente y el alcance', t:'Al momento', wa:'presupuestos automáticos' },
+    { g:'nuevo', cat:'Servicios sueltos', n:'Lista de prospección', r:'Uso interno de KatuWeb', e:'pedido',
+      d:'Busca comercios paraguayos sin web o con web vieja, los ordena por prioridad y arma el mensaje de primer contacto. Sin spam: uno por uno y con motivo.',
+      req:'Rubro y zona a buscar', t:'1 día', wa:'lista de prospección' },
+    { g:'nuevo', cat:'Servicios sueltos', n:'Menú con QR imprimible', r:'Restaurantes y bares', e:'listo',
+      d:'El menú online más el código QR listo para imprimir y plastificar para las mesas. Se actualiza el precio sin reimprimir nada.',
+      req:'Menú con precios', t:'24 h', wa:'menú con QR' },
+    { g:'nuevo', cat:'Servicios sueltos', n:'Turnos por WhatsApp', r:'Barberías, consultorios, estética', e:'pedido',
+      d:'El cliente elige servicio, día y hora en la página, y el mensaje llega a WhatsApp ya escrito con todo cargado. Sin sistema de reservas ni costo mensual.',
+      req:'Servicios, duración y horarios de atención', t:'2 días', wa:'turnos por WhatsApp' }
+  ];
+
+  var GRUPOS = [
+    { k:'hecho', t:'Ya construido', p:'Existe, funciona y se puede mostrar hoy mismo. Los enlaces abren la versión real, no una maqueta.' },
+    { k:'nuevo', t:'Se puede construir', p:'Todavía no está armado, pero la técnica está resuelta. El tiempo indicado empieza a contar desde que llega el material del cliente.' }
+  ];
+
+  var TABS = [
+    { k:'todo', n:'Todo' },
+    { k:'listo', n:'Listos para mostrar' },
+    { k:'pedido', n:'A pedido' },
+    { k:'Tiendas online', n:'Tiendas online' },
+    { k:'Movimiento generado', n:'Movimiento' },
+    { k:'Extras premium', n:'Extras 3D' },
+    { k:'Servicios sueltos', n:'Servicios' }
+  ];
+
+  var filtro = 'todo';
+  var tabsEl = document.getElementById('tabs');
+  var listaEl = document.getElementById('lista');
+
+  TABS.forEach(function (t, i) {
+    var b = document.createElement('button');
+    b.textContent = t.n;
+    if (i === 0) b.className = 'on';
+    b.addEventListener('click', function () {
+      filtro = t.k;
+      Array.prototype.forEach.call(tabsEl.children, function (x) { x.classList.remove('on'); });
+      b.classList.add('on');
+      pintar();
+    });
+    tabsEl.appendChild(b);
+  });
+
+  function pasa(it) {
+    if (filtro === 'todo') return true;
+    if (filtro === 'listo') return it.e === 'listo';
+    if (filtro === 'pedido') return it.e === 'pedido' || it.e === 'paga';
+    return it.cat === filtro;
+  }
+
+  var NOMBRE_EST = { listo: 'Listo', pedido: 'A pedido', paga: 'Herramienta paga' };
+
+  function tarjeta(it) {
+    var c = document.createElement('article');
+    c.className = 'it';
+
+    var top = document.createElement('div');
+    top.className = 'top';
+    var izq = document.createElement('div');
+    var h = document.createElement('h3'); h.textContent = it.n;
+    var r = document.createElement('div'); r.className = 'rub'; r.textContent = it.r;
+    izq.appendChild(h); izq.appendChild(r);
+    var e = document.createElement('span');
+    e.className = 'est e-' + it.e;
+    e.textContent = NOMBRE_EST[it.e];
+    top.appendChild(izq); top.appendChild(e);
+
+    var d = document.createElement('p'); d.className = 'desc'; d.textContent = it.d;
+
+    var dl = document.createElement('dl');
+    [['Necesito', it.req], ['Tarda', it.t]].forEach(function (par) {
+      var dt = document.createElement('dt'); dt.textContent = par[0];
+      var dd = document.createElement('dd'); dd.textContent = par[1];
+      dl.appendChild(dt); dl.appendChild(dd);
+    });
+
+    var acc = document.createElement('div'); acc.className = 'acc';
+    if (it.v) {
+      var a = document.createElement('a');
+      a.className = 'pr'; a.href = it.v; a.target = '_blank'; a.rel = 'noopener noreferrer';
+      a.textContent = 'Verlo funcionando';
+      acc.appendChild(a);
+    }
+    var w = document.createElement('a');
+    w.href = 'https://wa.me/' + WA + '?text=' + encodeURIComponent(
+      'Hola! Del catálogo de KatuWeb me interesa: ' + it.n + ' (' + it.r + ') [' + cod(it.n) + ']. ¿Me contás cómo sería?');
+    w.target = '_blank'; w.rel = 'noopener noreferrer';
+    w.textContent = it.v ? 'Consultar' : 'Pedir presupuesto';
+    acc.appendChild(w);
+
+    c.appendChild(top); c.appendChild(d); c.appendChild(dl); c.appendChild(acc);
+    return c;
+  }
+
+  function pintar() {
+    listaEl.textContent = '';
+    var visibles = ITEMS.filter(pasa);
+    document.getElementById('conteo').textContent =
+      visibles.length + ' de ' + ITEMS.length + ' capacidades' +
+      (filtro === 'todo' ? '' : ' · filtro activo');
+
+    GRUPOS.forEach(function (g) {
+      var delGrupo = visibles.filter(function (i) { return i.g === g.k; });
+      if (!delGrupo.length) return;
+      var sec = document.createElement('section');
+      sec.className = 'grupo';
+      var h2 = document.createElement('h2'); h2.textContent = g.t + ' · ' + delGrupo.length;
+      var p = document.createElement('p'); p.textContent = g.p;
+      var gr = document.createElement('div'); gr.className = 'grilla';
+      delGrupo.forEach(function (it) { gr.appendChild(tarjeta(it)); });
+      sec.appendChild(h2); sec.appendChild(p); sec.appendChild(gr);
+      listaEl.appendChild(sec);
+    });
+  }
+
+  /* resumen de arriba */
+  function cuenta(f) { return ITEMS.filter(f).length; }
+  var res = {
+    nListo: cuenta(function (i) { return i.e === 'listo'; }),
+    nPedido: cuenta(function (i) { return i.e === 'pedido'; }),
+    nPaga: cuenta(function (i) { return i.e === 'paga'; }),
+    nTotal: ITEMS.length
+  };
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  Object.keys(res).forEach(function (id) {
+    var el = document.getElementById(id), n = res[id];
+    if (reduce) { el.textContent = n; return; }
+    var t0 = null;
+    function paso(ts) {
+      if (!t0) t0 = ts;
+      var k = Math.min(1, (ts - t0) / 900);
+      el.textContent = Math.round(n * (1 - Math.pow(1 - k, 3)));
+      if (k < 1) requestAnimationFrame(paso);
+    }
+    requestAnimationFrame(paso);
+    setTimeout(function () { el.textContent = n; }, 1400);
+  });
+
+  pintar();
+})();
+</script>
+</body>
+</html>

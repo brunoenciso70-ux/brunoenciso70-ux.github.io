@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; frame-src 'self'; media-src 'self' data:; form-action 'none'; object-src 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KatuWeb — Páginas web para negocios paraguayos</title>
+<meta name="description" content="Tu negocio online en 48 horas: páginas web, menús con QR y catálogos para comercios de Paraguay. Elegí tu estilo y armá tu página vos mismo.">
+<style>
+  :root {
+    --negro: #14121c; --panel: #1d1a29; --linea: #322d45;
+    --fucsia: #e91e8c; --amarillo: #f5e942; --teal: #17c3b2;
+    --blanco: #f2f0fa; --gris: #8d87a5; --wa: #25d366;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background: var(--negro); color: var(--blanco); line-height: 1.6; overflow-x: hidden; }
+  a { color: inherit; }
+
+  /* cinta (E3) */
+  .cinta { background: var(--fucsia); overflow: hidden; }
+  .cinta-in { display: flex; gap: 30px; padding: 9px 15px; white-space: nowrap; animation: marq 12s linear infinite; width: max-content; }
+  .cinta-in span { font-size: 12.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; }
+  @keyframes marq { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  nav { display: flex; justify-content: space-between; align-items: center; padding: 18px 5vw; position: sticky; top: 0; background: rgba(20,18,28,0.88); backdrop-filter: blur(10px); z-index: 40; border-bottom: 1px solid var(--linea); }
+  .brand { font-weight: 900; font-size: 21px; letter-spacing: 0.04em; }
+  .brand span { color: var(--teal); }
+  nav .links { display: flex; gap: 20px; font-size: 13.5px; color: var(--gris); }
+  nav .links a { text-decoration: none; }
+  nav .links a:hover { color: var(--blanco); }
+  @media (max-width: 640px) { nav .links { display: none; } }
+  .btn {
+    display: inline-block; background: var(--fucsia); color: var(--negro); text-decoration: none;
+    padding: 13px 26px; font-weight: 800; font-size: 14px; border-radius: 8px;
+    box-shadow: 0 0 22px rgba(233,30,140,0.45); border: none; cursor: pointer;
+  }
+  .btn:hover { background: var(--amarillo); box-shadow: 0 0 22px rgba(245,233,66,0.5); }
+  /* tinte dinámico según estilo elegido */
+  .btn, .cinta, .plan.destacado, .qopt.sel { transition: background 0.7s ease, border-color 0.7s ease, box-shadow 0.7s ease, color 0.3s ease; }
+  h2, .brand span, .hero .kick { transition: color 0.7s ease; }
+  .btn.wa { background: var(--wa); color: #fff; box-shadow: 0 0 22px rgba(37,211,102,0.35); }
+  .btn.ghost { background: transparent; border: 1px solid var(--linea); color: var(--gris); box-shadow: none; }
+
+  /* hero con reveal (E1) */
+  .hero { position: relative; overflow: hidden; text-align: center; padding: 84px 5vw 76px;
+    background: radial-gradient(ellipse at 50% 0%, rgba(233,30,140,0.16), transparent 60%); }
+  .hero .kick { color: var(--teal); font-size: 13px; letter-spacing: 0.3em; text-transform: uppercase; font-weight: 800; }
+  .hero-h1 { font-size: inherit; font-weight: inherit; margin: 0; }
+  .rev { overflow: hidden; display: block; }
+  .rev span { display: block; font-size: clamp(38px, 8vw, 72px); font-weight: 900; text-transform: uppercase; line-height: 1.04; transform: translateY(110%); animation: rev 0.7s cubic-bezier(0.2,0.7,0.2,1) forwards; }
+  .rev:nth-of-type(2) span { animation-delay: 0.16s; color: var(--fucsia); }
+  .rev:nth-of-type(3) span { animation-delay: 0.32s; color: var(--amarillo); }
+  @keyframes rev { to { transform: translateY(0); } }
+  .hero p { color: var(--gris); font-size: 17px; margin-top: 18px; max-width: 54ch; margin-inline: auto; }
+  .hero .ctas { display: flex; gap: 12px; justify-content: center; margin-top: 28px; flex-wrap: wrap; }
+  .blob { position: absolute; border-radius: 99px; opacity: 0.4; animation: floaty 7s ease-in-out infinite; pointer-events: none; }
+  @keyframes floaty { 0%,100% { transform: translate(0,0) rotate(0); } 50% { transform: translate(12px,-14px) rotate(8deg); } }
+
+  section { padding: 64px 5vw; max-width: 1060px; margin: 0 auto; }
+  h2 { font-size: 14px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--fucsia); font-weight: 800; }
+  .h2-big { font-size: clamp(22px, 4vw, 32px); font-weight: 900; margin-top: 6px; }
+  .sub { color: var(--gris); margin-top: 8px; margin-bottom: 30px; max-width: 60ch; }
+
+  /* galería de estilos */
+  .estilos { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
+  .est { text-decoration: none; border-radius: 12px; overflow: hidden; border: 1px solid var(--linea); background: var(--panel); transition: transform 0.18s ease, border-color 0.18s ease; }
+  .est:hover { transform: translateY(-4px); border-color: var(--fucsia); }
+  .est .prev { height: 92px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 17px; }
+  .pv-clasico { background: linear-gradient(150deg, #7c4a21, #5a3416); color: #fff; font-family: Georgia, serif; font-weight: 400; font-size: 20px; }
+  .pv-minimal { background: #fafafa; color: #111; letter-spacing: 0.3em; }
+  .pv-prof { background: linear-gradient(150deg, #eaf1f9, #fff); color: #1d4f8b; }
+  .pv-bold { background: #121212; color: #c8a24a; text-transform: uppercase; }
+  .pv-neon { background: linear-gradient(125deg, #17141f 55%, #e91e8c 55.5%, #e91e8c 78%, #f5e942 78.5%); color: #f5e942; text-transform: uppercase; }
+  .pv-grad { background: linear-gradient(120deg, #7b2ff7, #ff7a1a); color: #fff; }
+  .pv-tech { background: radial-gradient(ellipse at 50% 20%, rgba(77,127,255,0.4), #0d0d12 75%); color: #22d3ee; }
+  .pv-revista { background: linear-gradient(90deg, #f5e942 40%, #e91e8c 40%, #e91e8c 72%, #17c3b2 72%); color: #101014; text-transform: uppercase; }
+  .pv-edit { background: #f2f0eb; color: #0a0a0a; font-weight: 900; letter-spacing: -0.04em; text-transform: uppercase; }
+  .pv-darkpro { background: radial-gradient(120% 130% at 20% 0%, #16323a, #0a0b0e 70%); color: #dff5fb; font-weight: 700; letter-spacing: -0.02em; }
+  .pv-viajes { background: radial-gradient(120% 90% at 50% 10%, #0d1430, #070b18 65%); color: #58e0d8; font-weight: 900; letter-spacing: -0.03em; }
+  .pv-sala { background: radial-gradient(70% 60% at 50% 42%, #2a1a0e, #120b06 72%); color: #d8a657; font-family: Georgia, serif; }
+  .pv-cine { background: linear-gradient(180deg, #7fa8c8 0%, #b9c9cf 52%, #6d7a55 52%, #59653f 100%); color: #fff; font-family: system-ui, sans-serif; }
+  .est .info { padding: 13px 16px 15px; }
+  .est .nm { font-weight: 700; font-size: 14.5px; }
+  .est .para { font-size: 12px; color: var(--gris); margin-top: 2px; }
+
+  /* quiz */
+  .quiz { background: var(--panel); border: 1px solid var(--linea); border-radius: 16px; padding: 26px 24px; margin-bottom: 34px; }
+  .quiz .preg { margin-top: 18px; }
+  .quiz .preg:first-of-type { margin-top: 6px; }
+  .quiz .q { font-size: 14.5px; font-weight: 700; margin-bottom: 10px; }
+  .quiz .q .qn { color: var(--amarillo); margin-right: 6px; }
+  .qopts { display: flex; flex-wrap: wrap; gap: 8px; }
+  .qopt {
+    border: 1.5px solid var(--linea); border-radius: 99px; padding: 8px 16px; font-size: 13px;
+    cursor: pointer; color: var(--gris); user-select: none; transition: all 0.12s;
+  }
+  .qopt:hover { border-color: var(--gris); }
+  .qopt.sel { border-color: var(--teal); color: var(--blanco); background: rgba(23,195,178,0.1); font-weight: 650; }
+  .qres { display: none; margin-top: 22px; border-top: 1px solid var(--linea); padding-top: 20px; }
+  .qres.on { display: grid; grid-template-columns: 130px 1fr; gap: 18px; align-items: center; animation: qin 0.5s ease; }
+  @media (max-width: 560px) { .qres.on { grid-template-columns: 1fr; } }
+  @keyframes qin { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  .qres .qprev { height: 90px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 800; }
+  .qres h4 { font-size: 17px; }
+  .qres h4 span { color: var(--teal); }
+  .qres p { font-size: 13.5px; color: var(--gris); margin-top: 4px; }
+  .qres .qbtns { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+  .qres .btn { font-size: 12.5px; padding: 10px 18px; }
+
+  /* minis vivas */
+  .minis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; perspective: 1200px; }
+  @media (max-width: 860px) { .minis { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 540px) { .minis { grid-template-columns: 1fr; } }
+  .mini {
+    position: relative; border-radius: 12px; overflow: hidden; border: 1px solid var(--linea);
+    aspect-ratio: 4/3; cursor: pointer; background: var(--panel);
+    transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease; will-change: transform;
+  }
+  .mini:hover { border-color: var(--fucsia); box-shadow: 0 14px 40px rgba(233,30,140,0.25); }
+  .mini iframe {
+    width: 400%; height: 400%; transform: scale(0.25); transform-origin: 0 0;
+    border: 0; pointer-events: none; background: #fff;
+  }
+  .mini .mlabel {
+    position: absolute; left: 0; right: 0; bottom: 0; padding: 26px 12px 10px;
+    background: linear-gradient(transparent, rgba(10,9,16,0.92) 42%); font-size: 13px; font-weight: 700;
+    display: flex; flex-direction: column; align-items: flex-start; gap: 1px; line-height: 1.25;
+  }
+  .mini .mlabel small { font-weight: 400; font-size: 11px; color: var(--gris); line-height: 1.3; }
+  .mini .lupa {
+    position: absolute; top: 10px; right: 10px; width: 30px; height: 30px; border-radius: 99px;
+    background: rgba(20,18,28,0.75); border: 1px solid var(--linea); color: var(--blanco);
+    display: flex; align-items: center; justify-content: center; font-size: 14px;
+  }
+
+  /* lightbox */
+  .lb { position: fixed; inset: 0; z-index: 90; background: rgba(10,9,16,0.92); display: none; flex-direction: column; opacity: 0; transition: opacity 0.25s ease; }
+  .lb.on { display: flex; }
+  .lb.vis { opacity: 1; }
+  .lb-bar { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 12px 16px; flex-wrap: wrap; }
+  .lb-bar .t { font-weight: 800; font-size: 15px; }
+  .lb-bar .t small { display: block; font-weight: 400; font-size: 12px; color: var(--gris); }
+  .lb-bar .acts { display: flex; gap: 8px; flex-wrap: wrap; }
+  .lb-bar .btn { font-size: 12.5px; padding: 10px 16px; }
+  .lb-frame { flex: 1; margin: 0 16px 16px; border-radius: 14px; overflow: hidden; border: 1px solid var(--linea); background: #fff; transform: scale(0.96); transition: transform 0.3s cubic-bezier(0.2,0.7,0.2,1); }
+  .lb.vis .lb-frame { transform: scale(1); }
+  .lb-frame iframe { width: 100%; height: 100%; border: 0; }
+
+  /* personalizador CTA */
+  .builder { background: linear-gradient(140deg, var(--panel), #221d33); border: 1px solid var(--linea); border-radius: 18px; padding: 40px 28px; display: grid; grid-template-columns: 1.3fr 1fr; gap: 26px; align-items: center; }
+  @media (max-width: 760px) { .builder { grid-template-columns: 1fr; } }
+  .builder h3 { font-size: clamp(22px, 3.5vw, 30px); font-weight: 900; }
+  .builder h3 span { color: var(--teal); }
+  .builder p { color: var(--gris); margin-top: 10px; font-size: 15px; }
+  .builder .btn { margin-top: 18px; }
+  .mini-mock { background: var(--negro); border: 1px solid var(--linea); border-radius: 14px; padding: 14px; }
+  .mm-bar { height: 10px; border-radius: 99px; background: var(--fucsia); width: 60%; margin-bottom: 8px; }
+  .mm-bar.b2 { background: var(--amarillo); width: 40%; }
+  .mm-bar.b3 { background: var(--teal); width: 75%; }
+  .mm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+  .mm-cell { height: 44px; border-radius: 8px; background: var(--panel); border: 1px solid var(--linea); }
+
+  /* pasos */
+  .pasos { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+  .paso { background: var(--panel); border: 1px solid var(--linea); border-radius: 12px; padding: 22px; }
+  .paso .n { font-size: 26px; font-weight: 900; color: var(--amarillo); }
+  .paso h3 { font-size: 16px; margin-top: 8px; }
+  .paso p { font-size: 13.5px; color: var(--gris); margin-top: 6px; }
+
+  /* precios */
+  .planes { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; }
+  .plan { background: var(--panel); border: 1px solid var(--linea); border-radius: 14px; padding: 26px 22px; position: relative; }
+  .plan.destacado { border-color: var(--fucsia); }
+  .plan .tag { position: absolute; top: -11px; left: 20px; background: var(--fucsia); color: var(--negro); font-size: 11px; font-weight: 800; padding: 3px 12px; border-radius: 99px; text-transform: uppercase; }
+  .plan h3 { font-size: 16px; }
+  .plan .precio { font-size: 26px; font-weight: 900; color: var(--amarillo); margin-top: 8px; }
+  .plan .det { font-size: 12.5px; color: var(--gris); }
+  .plan ul { list-style: none; margin-top: 14px; }
+  .plan li { font-size: 13.5px; color: var(--gris); padding-left: 22px; position: relative; margin-top: 7px; }
+  .plan li::before { content: "✓"; position: absolute; left: 0; color: var(--teal); font-weight: 800; }
+  .plan .btn { margin-top: 18px; width: 100%; text-align: center; font-size: 13px; }
+
+  .cta-final { text-align: center; background: linear-gradient(125deg, #17141f 55%, #b2166c 55.5%, var(--fucsia) 84%, var(--amarillo) 84.5%); border-radius: 18px; padding: 52px 24px; position: relative; overflow: hidden; }
+  .cta-final .big { font-size: clamp(26px, 5vw, 42px); font-weight: 900; text-transform: uppercase; }
+  .cta-final p { margin-top: 8px; opacity: 0.9; }
+  .cta-final .btn { margin-top: 24px; background: var(--wa); color: #fff; }
+
+  footer { border-top: 1px solid var(--linea); text-align: center; padding: 30px 5vw; color: var(--gris); font-size: 13px; }
+  footer a { color: var(--blanco); }
+  .wa-float {
+    position: fixed; right: 18px; bottom: 18px; width: 58px; height: 58px; border-radius: 99px;
+    background: var(--wa); color: #fff; display: flex; align-items: center; justify-content: center;
+    font-size: 29px; text-decoration: none; box-shadow: 0 6px 18px rgba(0,0,0,0.4); z-index: 50;
+  }
+  .reveal { opacity: 0; transform: translateY(22px); transition: opacity 0.55s ease, transform 0.55s ease; }
+  .reveal.vis { opacity: 1; transform: none; }
+
+  /* ===== Portal de entrada: 2 modos (Idea #1) ===== */
+  .portal { position: fixed; inset: 0; z-index: 300; display: flex; }
+  @media (max-width: 700px) { .portal { flex-direction: column; } }
+  .portal.oculto { display: none; }
+  .portal .mitad {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 30px 24px; cursor: pointer; position: relative; overflow: hidden;
+    transition: flex 0.55s cubic-bezier(0.2, 0.7, 0.2, 1), opacity 0.4s ease;
+  }
+  .portal.decidido .mitad { pointer-events: none; }
+  .portal .mitad.elegida { flex: 14; }
+  .portal .mitad.descartada { flex: 0.001; opacity: 0; }
+  .m-clasico { background: #f4f2ec; color: #1c1a24; }
+  .m-3d { background: radial-gradient(ellipse at 50% 30%, #221d3a 0%, #0a0a14 70%); color: #f2f0fa; }
+  .portal .kick2 { font-size: 12px; letter-spacing: 0.3em; text-transform: uppercase; font-weight: 800; opacity: 0.7; }
+  .portal h2.pt { font-size: clamp(26px, 4.5vw, 44px); font-weight: 900; text-transform: uppercase; margin-top: 10px; letter-spacing: 0.01em; }
+  .m-3d h2.pt { color: var(--teal); text-shadow: 0 0 24px rgba(23,195,178,0.5); }
+  .portal p.pd { font-size: 14.5px; opacity: 0.75; margin-top: 10px; max-width: 34ch; }
+  .portal .pbtn {
+    margin-top: 24px; padding: 13px 30px; border-radius: 99px; font-weight: 800; font-size: 14px;
+    border: 2px solid currentColor; background: transparent; color: inherit; cursor: pointer;
+  }
+  .m-clasico .pbtn:hover { background: #1c1a24; color: #f4f2ec; }
+  .m-3d .pbtn:hover { background: var(--teal); border-color: var(--teal); color: #0a0a14; }
+  .portal .divisor {
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 2;
+    background: var(--fucsia); color: #fff; font-weight: 900; font-size: 12px; letter-spacing: 0.15em;
+    padding: 10px 16px; border-radius: 99px; pointer-events: none; box-shadow: 0 0 30px rgba(233,30,140,0.6);
+  }
+  .m-3d .estrella-p { position: absolute; width: 3px; height: 3px; border-radius: 99px; background: #fff; animation: parp 2.4s ease-in-out infinite; }
+  @keyframes parp { 0%,100% { opacity: 0.15; } 50% { opacity: 0.9; } }
+  .m-3d .cubo {
+    position: absolute; width: 54px; height: 54px; border: 1.5px solid rgba(23,195,178,0.5); border-radius: 8px;
+    animation: girocubo 9s linear infinite; pointer-events: none;
+  }
+  @keyframes girocubo { from { transform: rotate3d(1, 1, 0, 0deg); } to { transform: rotate3d(1, 1, 0, 360deg); } }
+</style>
+<script>
+/* Antimarco: si alguien intenta mostrar esta página dentro de otra web ajena
+   (para hacerse pasar por nosotros), la sacamos del marco. Los iframes propios
+   del mismo dominio —la galería— siguen funcionando. */
+(function () {
+  if (window.top === window.self) return;          // no estamos dentro de ningún marco
+  if (window.location.protocol === 'file:') return; // pruebas locales: los file:// no comparten origen
+  var propio = false;
+  try { propio = (window.top.location.origin === window.location.origin); } catch (e) { propio = false; }
+  if (propio) return;                               // marco del mismo sitio (galería, holograma): permitido
+  try { window.top.location = window.location.href; }
+  catch (e2) { document.documentElement.style.display = 'none'; }
+})();
+</script>
+</head>
+<body>
+
+<div class="portal" id="portal">
+  <div class="mitad m-clasico" id="mClasico">
+    <div class="kick2">Directo al grano</div>
+    <h2 class="pt">Modo clásico</h2>
+    <p class="pd">El sitio completo: estilos, precios y tu página en 5 minutos.</p>
+    <button class="pbtn">Entrar así</button>
+  </div>
+  <div class="divisor">ELEGÍ TU MODO</div>
+  <div class="mitad m-3d" id="m3d">
+    <div class="cubo" style="left:14%; top:18%"></div>
+    <div class="cubo" style="right:12%; bottom:16%; width:34px; height:34px; animation-duration:6s"></div>
+    <div class="kick2" style="color:var(--teal)">Una experiencia</div>
+    <h2 class="pt">Modo 3D</h2>
+    <p class="pd">Viajá por el espacio, respondé flotando y descubrí tu página ideal.</p>
+    <button class="pbtn">Entrar al viaje</button>
+  </div>
+</div>
+
+<div class="cinta"><div class="cinta-in" id="cinta"></div></div>
+
+<nav>
+  <div class="brand">Katu<span>Web</span></div>
+  <div class="links">
+    <a href="#estilos">Estilos</a>
+    <a href="#planes">Precios</a>
+    <a href="motion.html" style="color:var(--amarillo)">Catálogo ✦</a>
+    <a href="catalogo.html">Qué se puede hacer</a>
+    <a href="efectos.html">Efectos</a>
+    <a href="modo-3d.html" style="color:var(--teal)">Modo 3D ✦</a>
+    <a href="clientes/index.html">Clientes</a>
+    <a href="crea-tu-pagina.html">Armá tu página</a>
+  </div>
+  <a class="btn wa" href="https://wa.me/595983518856?text=Hola!%20Quiero%20una%20p%C3%A1gina%20para%20mi%20negocio">WhatsApp</a>
+</nav>
+
+<div class="hero">
+  <div class="blob" style="width:80px;height:80px;left:8%;top:20%;background:var(--fucsia)"></div>
+  <div class="blob" style="width:44px;height:44px;left:86%;top:26%;background:var(--amarillo);animation-delay:1.4s"></div>
+  <div class="blob" style="width:30px;height:30px;left:74%;top:72%;background:var(--teal);animation-delay:2.6s"></div>
+  <div class="kick">Páginas web · Paraguay</div>
+  <h1 class="hero-h1" style="margin-top:14px">
+    <span class="rev"><span>Tu negocio,</span></span>
+    <span class="rev"><span>online</span></span>
+    <span class="rev"><span>en 48 horas.</span></span>
+  </h1>
+  <p>Páginas web, menús con QR y catálogos para comercios paraguayos. Rápidas, lindas y con
+  WhatsApp al frente — porque ahí es donde se vende.</p>
+  <div class="ctas">
+    <a class="btn" href="crea-tu-pagina.html">✨ Armá tu página vos mismo</a>
+    <a class="btn ghost" href="#estilos">Ver los estilos</a>
+  </div>
+</div>
+
+<section id="estilos">
+  <h2>Encontrá tu estilo</h2>
+  <div class="h2-big">3 preguntas y te digo cuál va con tu negocio</div>
+  <p class="sub">Respondé las tres y aparece tu estilo recomendado. O saltá directo a la galería
+  de abajo y explorá las 14 páginas en miniatura — están vivas, tocá cualquiera para agrandarla.</p>
+
+  <div class="quiz reveal">
+    <div class="preg">
+      <div class="q"><span class="qn">1.</span>¿Qué ofrece tu negocio?</div>
+      <div class="qopts" data-q="0">
+        <span class="qopt" data-v="comida">Comida / gastronomía</span>
+        <span class="qopt" data-v="productos">Productos para vender</span>
+        <span class="qopt" data-v="servicios">Servicios profesionales</span>
+        <span class="qopt" data-v="creativo">Estilo, arte o entretenimiento</span>
+      </div>
+    </div>
+    <div class="preg">
+      <div class="q"><span class="qn">2.</span>¿Cómo querés que se sienta tu página?</div>
+      <div class="qopts" data-q="1">
+        <span class="qopt" data-v="calida">Cálida y familiar</span>
+        <span class="qopt" data-v="elegante">Elegante y simple</span>
+        <span class="qopt" data-v="seria">Seria y confiable</span>
+        <span class="qopt" data-v="energia">Con energía y color</span>
+      </div>
+    </div>
+    <div class="preg">
+      <div class="q"><span class="qn">3.</span>¿Qué tiene que lograr primero?</div>
+      <div class="qopts" data-q="2">
+        <span class="qopt" data-v="pedidos">Que me pidan por WhatsApp</span>
+        <span class="qopt" data-v="catalogo">Que vean mis productos</span>
+        <span class="qopt" data-v="turnos">Que agenden turno o consulta</span>
+        <span class="qopt" data-v="impacto">Que mi marca impacte</span>
+      </div>
+    </div>
+    <div class="qres" id="qres">
+      <div class="qprev" id="qprev"></div>
+      <div>
+        <h4>Tu estilo: <span id="qnombre"></span></h4>
+        <p id="qwhy"></p>
+        <div class="qbtns">
+          <a class="btn" id="qarmar" href="crea-tu-pagina.html">Armá tu página con este estilo</a>
+          <a class="btn ghost" id="qver" href="#" data-mini="">Ver en grande</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="h2-big" style="font-size:20px">La galería — 14 páginas vivas</div>
+  <p class="sub">Cada cuadro es una página real funcionando en miniatura. Pasá el mouse y se inclina;
+  tocá y se agranda.</p>
+  <div class="minis" id="minis"></div>
+</section>
+
+<div class="lb" id="lb">
+  <div class="lb-bar">
+    <div class="t" id="lbTitulo">Estilo<small id="lbPara"></small></div>
+    <div class="acts">
+      <a class="btn" id="lbArmar" href="crea-tu-pagina.html">Armá tu página así</a>
+      <a class="btn ghost" id="lbAbrir" href="#" target="_blank" rel="noopener">Abrir completa</a>
+      <button class="btn ghost" id="lbCerrar">✕ Cerrar</button>
+    </div>
+  </div>
+  <div class="lb-frame"><iframe id="lbFrame" title="Vista ampliada del ejemplo"></iframe></div>
+</div>
+
+<section>
+  <div class="builder reveal">
+    <div>
+      <h3>Armá tu página <span>vos mismo</span>, en 5 minutos</h3>
+      <p>Elegí estilo, color, secciones y efectos con nuestro editor visual. Ves tu página en vivo,
+      la moldeás a tu gusto, y cuando te guste me la enviás con un toque. Yo la construyo y en
+      48 horas está online.</p>
+      <a class="btn" href="crea-tu-pagina.html">Abrir el editor visual</a>
+    </div>
+    <div class="mini-mock">
+      <div class="mm-bar"></div>
+      <div class="mm-bar b2"></div>
+      <div class="mm-bar b3"></div>
+      <div class="mm-grid"><div class="mm-cell"></div><div class="mm-cell"></div><div class="mm-cell"></div><div class="mm-cell"></div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="builder reveal" style="background:linear-gradient(140deg,#12111c,#1c1526)">
+    <div>
+      <h3>El catálogo <span style="color:var(--amarillo)">KatuMotion</span></h3>
+      <p>Veintinueve piezas numeradas: seis portadas, ocho efectos, once estilos completos y cuatro
+      extras en 3D. Cada una con su demo funcionando. Mirala, anotá los números
+      que te gusten y mandámelos por WhatsApp — con eso ya arranco tu página.</p>
+      <a class="btn" href="motion.html">Ver el catálogo completo</a>
+    </div>
+    <div class="mini-mock" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;background:transparent;border:0;padding:0">
+      <div style="height:52px;border-radius:9px;background:radial-gradient(circle at 40% 40%,#e91e8c,#f5e942 70%,transparent)"></div>
+      <div style="height:52px;border-radius:9px;background:linear-gradient(120deg,#17c3b2,#5b6dff)"></div>
+      <div style="height:52px;border-radius:9px;background:repeating-linear-gradient(115deg,#2a2340 0 6px,#151322 6px 12px)"></div>
+      <div style="height:52px;border-radius:9px;background:linear-gradient(120deg,#ff6a3d,#e91e8c)"></div>
+      <div style="height:52px;border-radius:9px;background:#f2f0eb"></div>
+      <div style="height:52px;border-radius:9px;background:conic-gradient(from 0deg,#5b6dff,#e91e8c,#f5e942,#5b6dff)"></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Cómo funciona</h2>
+  <div class="h2-big">Tres pasos, cero complicaciones</div>
+  <p class="sub"></p>
+  <div class="pasos">
+    <div class="paso reveal"><div class="n">01</div><h3>Elegís tu estilo</h3><p>Mirás los ejemplos o armás tu página en el editor visual.</p></div>
+    <div class="paso reveal"><div class="n">02</div><h3>Me pasás tus datos</h3><p>Fotos, precios, horarios — todo por WhatsApp, sin reuniones.</p></div>
+    <div class="paso reveal"><div class="n">03</div><h3>En 48h estás online</h3><p>Con tu QR listo para imprimir y tu página en Google.</p></div>
+  </div>
+</section>
+
+<section id="planes">
+  <h2>Precios</h2>
+  <div class="h2-big">Claros y sin sorpresas</div>
+  <p class="sub">Seña del 50% para empezar, saldo contra entrega. Dos rondas de cambios incluidas.</p>
+  <div class="planes">
+    <div class="plan reveal">
+      <h3>Menú Digital + QR</h3>
+      <div class="precio">Gs. 500.000</div>
+      <div class="det">entrega en 48 horas</div>
+      <ul>
+        <li>Tu menú como página web</li>
+        <li>Código QR listo para imprimir</li>
+        <li>Botón de pedidos por WhatsApp</li>
+      </ul>
+      <a class="btn" href="https://wa.me/595983518856?text=Hola!%20Quiero%20el%20Men%C3%BA%20Digital%20con%20QR">Lo quiero</a>
+    </div>
+    <div class="plan destacado reveal">
+      <span class="tag">El más pedido</span>
+      <h3>Página Presencia</h3>
+      <div class="precio">Gs. 1.200.000</div>
+      <div class="det">entrega en 1 semana</div>
+      <ul>
+        <li>Página completa de tu negocio</li>
+        <li>Dominio propio el primer año</li>
+        <li>Mapa, horarios y WhatsApp</li>
+        <li>Ficha de Google optimizada</li>
+      </ul>
+      <a class="btn" href="https://wa.me/595983518856?text=Hola!%20Quiero%20la%20P%C3%A1gina%20Presencia">Lo quiero</a>
+    </div>
+    <div class="plan reveal">
+      <h3>Catálogo Online</h3>
+      <div class="precio">Gs. 1.800.000</div>
+      <div class="det">entrega en 2 semanas</div>
+      <ul>
+        <li>Todo lo de Presencia</li>
+        <li>Hasta 30 productos con fotos</li>
+        <li>Pedidos por WhatsApp por producto</li>
+      </ul>
+      <a class="btn" href="https://wa.me/595983518856?text=Hola!%20Quiero%20el%20Cat%C3%A1logo%20Online">Lo quiero</a>
+    </div>
+  </div>
+  <p class="sub" style="margin-top:16px; margin-bottom:0">¿Cambios frecuentes? <strong style="color:var(--blanco)">Mantenimiento: Gs. 150.000/mes</strong> — hasta 4 actualizaciones mensuales de precios, fotos o menú.</p>
+</section>
+
+<section>
+  <div class="cta-final reveal">
+    <div class="big">¿Arrancamos hoy?</div>
+    <p>Contame de tu negocio y en 48 horas lo ve todo Paraguay.</p>
+    <a class="btn" href="https://wa.me/595983518856?text=Hola!%20Quiero%20mi%20p%C3%A1gina%20web">Escribime por WhatsApp</a>
+  </div>
+</section>
+
+<footer>
+  <strong style="color:var(--blanco)">KatuWeb</strong> · Páginas web para negocios paraguayos · Asunción<br>
+  <a href="https://wa.me/595983518856">WhatsApp +595 983 518 856</a> · <a href="crea-tu-pagina.html">Armá tu página</a> · <a href="motion.html">Catálogo completo</a> · <a href="catalogo.html">Qué se puede hacer</a> · <a href="efectos.html">Biblioteca de efectos</a> · <a href="portadas.html">Portadas</a> · <a href="clientes/index.html">Clientes</a>
+</footer>
+
+<a class="wa-float" href="https://wa.me/595983518856" aria-label="WhatsApp">✆</a>
+
+<script>
+(function () {
+  'use strict';
+  // ===== Portal de 2 modos (Idea #1): expansión por selección =====
+  var portal = document.getElementById('portal');
+  try {
+    if (sessionStorage.getItem('katuweb_modo')) portal.classList.add('oculto');
+  } catch (e) {}
+  // estrellas del lado 3D
+  var m3d = document.getElementById('m3d');
+  for (var si = 0; si < 26; si++) {
+    var st = document.createElement('div');
+    st.className = 'estrella-p';
+    st.style.left = (Math.random() * 96) + '%';
+    st.style.top = (Math.random() * 94) + '%';
+    st.style.animationDelay = (Math.random() * 2.4) + 's';
+    m3d.appendChild(st);
+  }
+  document.getElementById('mClasico').addEventListener('click', function () {
+    portal.classList.add('decidido');
+    this.classList.add('elegida');
+    m3d.classList.add('descartada');
+    try { sessionStorage.setItem('katuweb_modo', 'clasico'); } catch (e) {}
+    setTimeout(function () {
+      portal.style.transition = 'opacity 0.5s ease';
+      portal.style.opacity = 0;
+      setTimeout(function () { portal.classList.add('oculto'); }, 500);
+    }, 550);
+  });
+  m3d.addEventListener('click', function () {
+    portal.classList.add('decidido');
+    this.classList.add('elegida');
+    document.getElementById('mClasico').classList.add('descartada');
+    try { sessionStorage.setItem('katuweb_modo', '3d'); } catch (e) {}
+    setTimeout(function () { window.location.href = 'modo-3d.html'; }, 650);
+  });
+
+  // cinta E3
+  var items = ['Tu negocio online en 48h', '★', 'Menú con QR', '★', 'Catálogos con WhatsApp', '★', 'Diseño que vende', '★'];
+  var c = document.getElementById('cinta');
+  items.concat(items).forEach(function (t) {
+    var s = document.createElement('span');
+    s.textContent = t;
+    c.appendChild(s);
+  });
+  // reveal E2 + fallback
+  var revs = document.querySelectorAll('.reveal');
+  var io = new IntersectionObserver(function (es) {
+    es.forEach(function (en) {
+      if (en.isIntersecting) { en.target.classList.add('vis'); io.unobserve(en.target); }
+    });
+  }, { threshold: 0.12 });
+  revs.forEach(function (el, i) {
+    el.style.transitionDelay = (i % 4) * 0.08 + 's';
+    io.observe(el);
+  });
+  setTimeout(function () { revs.forEach(function (el) { el.classList.add('vis'); }); }, 2500);
+})();
+</script>
+<script>
+(function () {
+  'use strict';
+
+  var STYLES = {
+    clasico: { nombre: 'Clásico Cálido', para: 'Restaurantes · comida casera', demo: 'ejemplos/clasico-calido-restaurante.html', prev: 'pv-clasico', label: 'Ña Rosa', why: 'Cálido y con el menú como protagonista: ideal para que la comida venda sola.' },
+    minimal: { nombre: 'Minimal Moderno', para: 'Boutiques · marcas', demo: 'ejemplos/minimal-moderno-boutique.html', prev: 'pv-minimal', label: 'PALMA', why: 'Limpio y elegante: tus productos brillan sin distracciones.' },
+    prof: { nombre: 'Profesional Confianza', para: 'Consultorios · estudios', demo: 'ejemplos/profesional-confianza-consultorio.html', prev: 'pv-prof', label: 'Dra. Benítez', why: 'Transmite seriedad y trayectoria, con el turno siempre a un toque.' },
+    bold: { nombre: 'Bold Oscuro', para: 'Barberías · gyms', demo: 'ejemplos/bold-oscuro-barberia.html', prev: 'pv-bold', label: 'EL PATRÓN', why: 'Carácter puro: precios claros y actitud que se nota desde el primer scroll.' },
+    neon: { nombre: 'Neón Creativo', para: 'Agencias · creativos', demo: 'ejemplos/neon-creativo-agencia.html', prev: 'pv-neon', label: 'PIRAÑA', why: 'Energía y creatividad: para marcas que no quieren pasar desapercibidas.' },
+    grad: { nombre: 'Degradado Vibrante', para: 'Eventos · fiestas', demo: 'ejemplos/degradado-vibrante-eventos.html', prev: 'pv-grad', label: 'Kapé', why: 'Alegría en movimiento: perfecto para vender momentos felices.' },
+    tech: { nombre: 'Tech Bento', para: 'Software · servicios', demo: 'ejemplos/tech-bento-startup.html', prev: 'pv-tech', label: 'NUBE_', why: 'Moderno y sólido: comunica que detrás hay un sistema serio.' },
+    revista: { nombre: 'Revista Collage', para: 'Tiendas urbanas · drops', demo: 'ejemplos/revista-collage-tienda.html', prev: 'pv-revista', label: 'ANTENA*', why: 'Formato revista con novedades al frente: ideal para drops y promos.' },
+    conv: { nombre: 'Conversión SMB', para: 'Servicios y oficios', demo: 'ejemplos/conversion-smb-servicio.html', prev: 'pv-prof', label: 'Aire Sur', why: 'Armada para vender: presupuesto por WhatsApp, precios claros y prueba social.' },
+    edit: { nombre: 'Editorial 90s', para: 'Tatuajes, ropa y estudios', demo: 'ejemplos/editorial-90s-tatuajes.html', prev: 'pv-edit', label: 'TINTA ROJA', why: 'Tipografía enorme y actitud: se ve carísimo sin una sola foto.' },
+    darkpro: { nombre: 'Dark Premium', para: 'Corralones e industria', demo: 'ejemplos/dark-premium-ferreteria.html', prev: 'pv-darkpro', label: 'HIERRO SUR', why: 'Estética de empresa grande: panel de pedidos en vivo, metal y resplandor. Para vender a quien compra por volumen.' },
+    viajes: { nombre: 'Armador de viajes 3D', para: 'Viajes y turismo', demo: 'ejemplos/inmersivo-agencia-viajes.html', prev: 'pv-viajes', label: 'MUNDO ABIERTO', why: 'Elige mes, toca su país en el mapa, se acerca a la ciudad y arma su viaje con hoteles y precio final.' },
+    sala: { nombre: 'Salón 3D navegable', para: 'Restaurantes y locales · extra', demo: 'ejemplos/sala-3d-restaurante.html', prev: 'pv-sala', label: 'Salón 3D', why: 'El cliente entra al local y gira 360°: menú, fotos, horarios y promos en cada pared.' },
+    cine: { nombre: 'Scroll cinematográfico', para: 'Constructoras e inmobiliarias', demo: 'ejemplos/scroll-cine-constructora.html', prev: 'pv-cine', label: 'Cine', why: 'La obra se construye sola mientras el visitante baja: terreno, cimientos, estructura, paredes, techo y entrega.' },
+    ar: { nombre: 'Menú 3D con cámara', para: 'Restaurantes · extra', demo: 'ejemplos/extra-menu-3d/menu-3d-ar.html', prev: 'pv-clasico', label: 'Menú 3D', why: '' }
+  };
+  var QUIZ_KEY = { clasico: 'clasico', minimal: 'minimal', prof: 'prof', bold: 'bold', neon: 'neon', grad: 'grad', tech: 'tech', revista: 'revista' };
+
+  // ---- build minis (live iframes) ----
+  var ORDER = ['clasico', 'minimal', 'prof', 'bold', 'neon', 'grad', 'tech', 'revista', 'conv', 'edit', 'darkpro', 'viajes', 'sala', 'ar'];
+  var minisEl = document.getElementById('minis');
+  ORDER.forEach(function (key) {
+    var s = STYLES[key];
+    var tile = document.createElement('div');
+    tile.className = 'mini';
+    tile.dataset.key = key;
+    var ifr = document.createElement('iframe');
+    ifr.src = s.demo;
+    ifr.loading = 'lazy';
+    ifr.setAttribute('title', 'Miniatura: ' + s.nombre);
+    ifr.setAttribute('tabindex', '-1');
+    var label = document.createElement('div');
+    label.className = 'mlabel';
+    var nm = document.createElement('span'); nm.textContent = s.nombre;
+    var sm = document.createElement('small'); sm.textContent = s.para;
+    label.appendChild(nm); label.appendChild(sm);
+    var lupa = document.createElement('div'); lupa.className = 'lupa'; lupa.textContent = '⤢';
+    tile.appendChild(ifr); tile.appendChild(label); tile.appendChild(lupa);
+
+    // tilt 3D (efecto E5, estilo portfolios creative-dev)
+    tile.addEventListener('mousemove', function (e) {
+      var r = tile.getBoundingClientRect();
+      var x = (e.clientX - r.left - r.width / 2) / (r.width / 2);
+      var y = (e.clientY - r.top - r.height / 2) / (r.height / 2);
+      tile.style.transform = 'perspective(900px) rotateX(' + (-y * 6).toFixed(1) + 'deg) rotateY(' + (x * 6).toFixed(1) + 'deg) scale(1.02)';
+    });
+    tile.addEventListener('mouseleave', function () { tile.style.transform = 'none'; });
+    tile.addEventListener('click', function () { openLb(key); });
+    minisEl.appendChild(tile);
+  });
+
+  // ---- tinte sutil de la página según el estilo elegido ----
+  var TINTES = {
+    clasico: ['#a8672a', '#e0b154'], minimal: ['#b56a4c', '#d9c3b4'], prof: ['#2f6fbe', '#22d3ee'],
+    bold: ['#c8a24a', '#f5e942'], neon: ['#e91e8c', '#f5e942'], grad: ['#7b2ff7', '#ff7a1a'],
+    tech: ['#4d7fff', '#a3e635'], revista: ['#e91e8c', '#f5e942'], conv: ['#1d6fd6', '#63c8ff'], edit: ['#e02020', '#0a0a0a'], darkpro: ['#a6e5f2', '#ff7a1a'], viajes: ['#58e0d8', '#ff6a3d'], sala: ['#d8a657', '#7c4a21'], ar: ['#a8672a', '#e0b154'], cine: ['#ff6a1f', '#ffc61a']
+  };
+  function teñir(key) {
+    var t = TINTES[key];
+    if (!t) return;
+    document.documentElement.style.setProperty('--fucsia', t[0]);
+    document.documentElement.style.setProperty('--teal', t[1]);
+  }
+
+  // ---- lightbox ----
+  var lb = document.getElementById('lb');
+  var lbFrame = document.getElementById('lbFrame');
+  function openLb(key) {
+    var s = STYLES[key];
+    document.getElementById('lbTitulo').childNodes[0].textContent = s.nombre;
+    document.getElementById('lbPara').textContent = s.para;
+    document.getElementById('lbAbrir').href = s.demo;
+    document.getElementById('lbArmar').href = 'crea-tu-pagina.html' + (QUIZ_KEY[key] ? '?estilo=' + key : '');
+    lbFrame.src = s.demo;
+    teñir(key);
+    lb.classList.add('on');
+    requestAnimationFrame(function () { requestAnimationFrame(function () { lb.classList.add('vis'); }); });
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLb() {
+    lb.classList.remove('vis');
+    setTimeout(function () {
+      lb.classList.remove('on');
+      lbFrame.src = 'about:blank';
+      document.body.style.overflow = '';
+    }, 260);
+  }
+  document.getElementById('lbCerrar').addEventListener('click', closeLb);
+  lb.addEventListener('click', function (e) { if (e.target === lb) closeLb(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && lb.classList.contains('on')) closeLb(); });
+
+  // ---- quiz de 3 preguntas ----
+  var answers = [null, null, null];
+  var SCORES = {
+    comida: { clasico: 2, grad: 1 },
+    productos: { minimal: 2, revista: 2 },
+    servicios: { prof: 3, tech: 2 },
+    creativo: { neon: 2, bold: 2, revista: 1 },
+    calida: { clasico: 2, grad: 1 },
+    elegante: { minimal: 2, prof: 1 },
+    seria: { prof: 2, tech: 2 },
+    energia: { neon: 2, grad: 2, revista: 1 },
+    pedidos: { clasico: 1, grad: 1, revista: 1 },
+    catalogo: { minimal: 2, revista: 1, tech: 1 },
+    turnos: { prof: 2, bold: 1 },
+    impacto: { neon: 2, bold: 1, tech: 1 }
+  };
+  document.querySelectorAll('.qopts').forEach(function (grp) {
+    var qi = +grp.dataset.q;
+    Array.prototype.forEach.call(grp.children, function (opt) {
+      opt.addEventListener('click', function () {
+        Array.prototype.forEach.call(grp.children, function (o) { o.classList.remove('sel'); });
+        opt.classList.add('sel');
+        answers[qi] = opt.dataset.v;
+        evalQuiz();
+      });
+    });
+  });
+  function evalQuiz() {
+    if (answers.some(function (a) { return !a; })) return;
+    var totals = {};
+    answers.forEach(function (a) {
+      var sc = SCORES[a] || {};
+      for (var k in sc) totals[k] = (totals[k] || 0) + sc[k];
+    });
+    var best = null, bestV = -1;
+    ['clasico','minimal','prof','bold','neon','grad','tech','revista'].forEach(function (k) {
+      if ((totals[k] || 0) > bestV) { bestV = totals[k] || 0; best = k; }
+    });
+    var s = STYLES[best];
+    var prev = document.getElementById('qprev');
+    prev.className = 'qprev ' + s.prev;
+    prev.textContent = s.label;
+    document.getElementById('qnombre').textContent = s.nombre;
+    document.getElementById('qwhy').textContent = s.why;
+    document.getElementById('qarmar').href = 'crea-tu-pagina.html?estilo=' + best;
+    var ver = document.getElementById('qver');
+    ver.onclick = function (e) { e.preventDefault(); openLb(best); };
+    document.getElementById('qres').classList.add('on');
+    teñir(best);
+  }
+})();
+</script>
+</body>
+</html>

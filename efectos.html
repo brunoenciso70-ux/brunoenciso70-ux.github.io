@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; frame-src 'self'; media-src 'self' data:; form-action 'none'; object-src 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Biblioteca de efectos de KatuWeb: 14 animaciones web con su demo en vivo. Elegí por número el movimiento de tu página y pedilo por WhatsApp.">
+<title>Biblioteca de efectos — pedilos por nombre</title>
+<style>
+  :root {
+    --bg: #f9f9f7; --surface: #ffffff; --ink: #0b0b0b; --ink-2: #52514e; --muted: #898781;
+    --linea: #e1e0d9; --azul: #2a78d6; --border: rgba(11,11,11,0.10);
+    --fucsia: #e91e8c; --amarillo: #f5e942; --violeta: #7b2ff7; --naranja: #ff7a1a; --oscuro: #14121c;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background: var(--bg); color: var(--ink); line-height: 1.6; padding: 32px 16px 64px; }
+  .wrap { max-width: 900px; margin: 0 auto; }
+  h1 { font-size: 25px; font-weight: 700; }
+  .sub { color: var(--ink-2); margin-top: 8px; max-width: 72ch; font-size: 14.5px; }
+  .fx { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; margin-top: 18px; overflow: hidden; }
+  .fx-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 16px 20px 0; flex-wrap: wrap; }
+  .fx-head h2 { font-size: 16px; }
+  .fx-head .num { color: var(--azul); font-weight: 800; margin-right: 6px; }
+  .fx-head .uso { font-size: 12px; color: var(--muted); }
+  .demo { margin: 14px 20px; border-radius: 10px; min-height: 120px; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
+  .para { font-size: 13.5px; color: var(--ink-2); background: var(--bg); border-top: 1px solid var(--linea); padding: 12px 20px; }
+  .pedir { font-size: 13px; background: var(--bg); border-top: 1px solid var(--linea); padding: 11px 20px; }
+  .pedir a { color: #128c4a; font-weight: 700; text-decoration: none; }
+  .pedir a:hover { text-decoration: underline; }
+  .spec { font-size: 12.5px; color: var(--ink-2); background: var(--bg); border-top: 1px solid var(--linea); padding: 12px 20px; }
+  .spec b { color: var(--ink); }
+
+  /* E1 reveal por líneas */
+  .d1 { background: var(--oscuro); color: #fff; flex-direction: column; padding: 26px; }
+  .linea-rev { overflow: hidden; }
+  .linea-rev span { display: block; font-size: 26px; font-weight: 900; text-transform: uppercase; transform: translateY(110%); animation: rev 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) forwards; }
+  .linea-rev:nth-child(2) span { animation-delay: 0.18s; color: var(--fucsia); }
+  .linea-rev:nth-child(3) span { animation-delay: 0.36s; color: var(--amarillo); }
+  @keyframes rev { to { transform: translateY(0); } }
+
+  /* E2 scroll reveal */
+  .d2 { background: #eef3fa; gap: 10px; padding: 20px; flex-wrap: wrap; }
+  .srv { background: #fff; border: 1px solid var(--linea); border-radius: 10px; padding: 16px 18px; font-size: 13px; font-weight: 600; opacity: 0; transform: translateY(24px); transition: all 0.6s ease; }
+  .srv.vis { opacity: 1; transform: none; }
+
+  /* E3 marquee */
+  .d3 { background: var(--oscuro); padding: 0; min-height: 90px; }
+  .marquee { display: flex; overflow: hidden; width: 100%; }
+  .marquee-in { display: flex; gap: 34px; padding: 30px 17px; white-space: nowrap; animation: marq 12s linear infinite; }
+  .marquee-in span { font-size: 24px; font-weight: 900; text-transform: uppercase; color: var(--amarillo); }
+  .marquee-in span:nth-child(even) { color: transparent; -webkit-text-stroke: 1.5px var(--fucsia); }
+  @keyframes marq { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  /* E4 palabra rotante */
+  .d4 { background: linear-gradient(120deg, var(--violeta), var(--naranja)); color: #fff; font-size: 24px; font-weight: 800; gap: 8px; }
+  .rotor { display: inline-block; min-width: 150px; text-align: left; }
+  .rotor span { display: none; }
+  .rotor span.on { display: inline-block; animation: rev 0.4s ease; }
+
+  /* E5 tilt 3D */
+  .d5 { background: #eef3fa; }
+  .tilt {
+    width: 200px; height: 120px; border-radius: 14px; background: linear-gradient(135deg, var(--violeta), var(--fucsia));
+    color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800;
+    transition: transform 0.12s ease; will-change: transform; box-shadow: 0 14px 30px rgba(123,47,247,0.3);
+  }
+
+  /* E6 parallax capas */
+  .d6 { background: linear-gradient(#0a0a1c, #1d1a3a); min-height: 160px; }
+  .capa { position: absolute; border-radius: 99px; }
+  .estrella { width: 4px; height: 4px; background: #fff; animation: parpadeo 2.2s ease-in-out infinite; }
+  @keyframes parpadeo { 0%,100% { opacity: 0.25; } 50% { opacity: 1; } }
+  .luna { width: 60px; height: 60px; background: radial-gradient(circle at 35% 35%, #ffe9a8, #d8a93c); right: 14%; top: 20%; }
+  .d6 .txt { position: relative; color: #fff; font-weight: 800; font-size: 20px; }
+
+  /* E7 contador */
+  .d7 { background: #14121c; color: #fff; gap: 34px; padding: 24px; flex-wrap: wrap; }
+  .cnt { text-align: center; }
+  .cnt .n { font-size: 34px; font-weight: 900; color: var(--amarillo); font-variant-numeric: tabular-nums; }
+  .cnt .l { font-size: 12px; color: #8d87a5; }
+
+  /* E8 botón magnético */
+  .d8 { background: #eef3fa; }
+  .magnet { padding: 15px 34px; border-radius: 99px; background: var(--ink); color: #fff; font-weight: 800; border: none; cursor: pointer; transition: transform 0.15s ease; font-size: 15px; }
+
+  /* E9 cursor estela */
+  .d9 { background: #fff; border: 1px dashed var(--linea); cursor: none; }
+  .d9 .txt-c { font-weight: 800; font-size: 18px; color: var(--ink-2); }
+  .dot { position: absolute; width: 14px; height: 14px; border-radius: 99px; background: var(--fucsia); pointer-events: none; transition: transform 0.08s linear; z-index: 3; }
+  .dot2 { width: 34px; height: 34px; background: transparent; border: 1.5px solid var(--fucsia); transition: transform 0.22s ease-out; z-index: 2; }
+
+  /* E10 logos infinitos */
+  .d10 { background: #fff; padding: 0; min-height: 80px; }
+  .logos { display: flex; overflow: hidden; width: 100%; }
+  .logos-in { display: flex; gap: 44px; padding: 26px 22px; white-space: nowrap; animation: marq 14s linear infinite; align-items: center; }
+  .logos-in span { font-size: 15px; font-weight: 800; color: var(--muted); letter-spacing: 0.08em; }
+
+  /* E11 zoom imagen */
+  .d11 { background: #eef3fa; gap: 12px; }
+  .zoomimg { width: 150px; height: 110px; border-radius: 12px; overflow: hidden; }
+  .zoomimg > div { width: 100%; height: 100%; background: linear-gradient(135deg, #17c3b2, #0a5a52); transition: transform 0.5s ease; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 12px; }
+  .zoomimg:hover > div { transform: scale(1.12) rotate(1.5deg); }
+
+  /* E12 sparkles */
+  .d12 { background: var(--oscuro); color: #fff; font-weight: 800; font-size: 20px; }
+  .spark { position: absolute; font-size: 14px; animation: sparkle 1.8s ease-in-out infinite; }
+  @keyframes sparkle { 0%,100% { opacity: 0; transform: scale(0.4) rotate(0); } 50% { opacity: 1; transform: scale(1.1) rotate(20deg); } }
+
+  /* E13 entrada cinematográfica */
+  .d13 { background: #eef3fa; overflow: hidden; }
+  .d13 .ld { position: absolute; inset: 0; background: #0d1626; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; z-index: 2; transition: transform 0.7s cubic-bezier(0.76,0,0.24,1); }
+  .d13 .ld.done { transform: translateY(-101%); }
+  .d13 .ld-marca { font-size: 20px; font-weight: 800; letter-spacing: -0.02em; }
+  .d13 .ld-barra { width: 140px; height: 3px; background: rgba(255,255,255,0.18); border-radius: 99px; overflow: hidden; }
+  .d13 .ld-barra i { display: block; height: 100%; width: 0; background: #57a8ff; transition: width 0.18s linear; }
+  .d13 .ld-pct { font-size: 10px; letter-spacing: 0.25em; color: #7f9ec4; }
+  .d13 .ld-pag { font-weight: 800; font-size: 17px; color: var(--oscuro); transform: scale(1.06); opacity: 0; transition: transform 0.9s cubic-bezier(0.16,0.84,0.3,1), opacity 0.7s ease; }
+  .d13 .ld-pag.listo { transform: none; opacity: 1; }
+</style>
+<script>
+/* Antimarco: si alguien intenta mostrar esta página dentro de otra web ajena
+   (para hacerse pasar por nosotros), la sacamos del marco. Los iframes propios
+   del mismo dominio —la galería— siguen funcionando. */
+(function () {
+  if (window.top === window.self) return;          // no estamos dentro de ningún marco
+  if (window.location.protocol === 'file:') return; // pruebas locales: los file:// no comparten origen
+  var propio = false;
+  try { propio = (window.top.location.origin === window.location.origin); } catch (e) { propio = false; }
+  if (propio) return;                               // marco del mismo sitio (galería, holograma): permitido
+  try { window.top.location = window.location.href; }
+  catch (e2) { document.documentElement.style.display = 'none'; }
+})();
+</script>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>Biblioteca de efectos — pedilos por nombre</h1>
+  <p class="sub">Cada efecto tiene número y nombre, y abajo de cada demo dice para qué sirve. Cuando quieras "algo con movimiento" en tu página, mirá esta lista, anotá los números que te gusten y mandámelos por WhatsApp.</p>
+
+  <div class="fx">
+    <div class="fx-head"><h2><span class="num">E1</span>Titular que se revela por líneas</h2><span class="uso">Heros con impacto · cualquier estilo</span></div>
+    <div class="demo d1">
+      <div class="linea-rev"><span>Tu marca</span></div>
+      <div class="linea-rev"><span>puede</span></div>
+      <div class="linea-rev"><span>más.</span></div>
+    </div>
+    
+    <div class="para">Es el primer segundo de la página. El titular aparece de a una línea y el visitante se queda a leer en vez de irse.</div>
+    <div class="pedir"><a href="https://wa.me/595983518856?text=Hola%21%20Quiero%20el%20efecto%20E1%20%E2%80%94%20Titular%20que%20se%20revela%20por%20l%C3%ADneas%20%5BKTW-7GSGV%5D%20en%20mi%20p%C3%A1gina.%20%C2%BFCu%C3%A1nto%20sale%3F" target="_blank" rel="noopener noreferrer">Pedir el E1 por WhatsApp →</a></div>
+  </div>
+
+  <div class="fx">
+    <div class="fx-head"><h2><span class="num">E2</span>Aparición al hacer scroll</h2><span class="uso">Cualquier estilo · el más versátil</span></div>
+    <div class="demo d2" id="d2">
+      <div class="srv">Servicio 1</div><div class="srv">Servicio 2</div><div class="srv">Servicio 3</div>
+    </div>
+    
+    <div class="para">El más versátil de todos. Cada bloque aparece cuando el visitante llega a él, así la página se siente viva y no un muro de texto.</div>
+    <div class="pedir"><a href="https://wa.me/595983518856?text=Hola%21%20Quiero%20el%20efecto%20E2%20%E2%80%94%20Aparici%C3%B3n%20al%20hacer%20scroll%20%5BKTW-43SK9%5D%20en%20mi%20p%C3%A1gina.%20%C2%BFCu%C3%A1nto%20sale%3F" target="_blank" rel="noopener noreferrer">Pedir el E2 por WhatsApp →</a></div>
+  </div>
+
+  <div class="fx">
+    <div class="fx-head"><h2><span class="num">E3</span>Cinta infinita (marquee)</h2><span class="uso">Servicios, marcas y promos en movimiento</span></div>
+    <div class="demo d3">
+      <div class="marquee"><div class="marquee-in" id="mq"></div></div>
+    </div>
+    
+    <div class="para">Una banda que no para de correr con tus servicios o tus marcas. Llena de vida la parte de arriba sin ocupar lugar.</div>
+    <div class="pedir"><a href="https://wa.me/595983518856?text=Hola%21%20Quiero%20el%20efecto%20E3%20%E2%80%94%20Cinta%20infinita%20%28marquee%29%20%5BKTW-8FHDQ%5D%20en%20mi%20p%C3%A1gina.%20%C2%BFCu%C3%A1nto%20sale%3F" target="_blank" rel="noopener noreferrer">Pedir el E3 por WhatsApp →</a></div>
+  </div>
+
+  <div class="fx">
+    <div class="fx-head"><h2><span class="num">E4</span>Palabra que rota</h2><span class="uso">Heros de servicios múltiples</span></div>
+    <div class="demo d4">Hacemos&nbsp;<span class="rotor" id="rotor"><span class="on">páginas web</span><span>menús QR</span><span>catálogos</span><span>marcas</span></span></div>
+    
+    <div class="para">Una palabra del titular va cambiando sola. Sirve cuando ofrecés varias cosas y no querés elegir una sola para el encabezado.</div>
+    <div class="pedir"><a href="https://wa.me/595983518856?text=Hola%21%20Quiero%20el%20efecto%20E4%20%E2%80%94%20Palabra%20que%20rota%20%5BKTW-JHX5Q%5D%20en%20mi%20p%C3%A1gina.%20%C2%BFCu%C3%A1nto%20sale%3F" target="_blank" rel="noopener noreferrer">Pedir el E4 por WhatsApp →</a></div>
+  </div>
+
+  <div class="fx">
+    <div class="fx-head"><h2><span class="num">E5</span>Tarjeta con inclinación 3D (tilt)</h2><span class="uso">Portfolios y productos destacados</span></div>
+    <div class="demo d5"><div class="tilt" id="tilt">Mové el mouse</div></div>
+    
+    <div class="para">Las tarjetas se inclinan al pasar el mouse y se sienten como objetos. Sirve para destacar productos o trabajos hechos.</div>
+    <div class="pedir"><a href="https://wa.me/595983518856?text=Hola%21%20Quiero%20el%20efecto%20E5%20%E2%80%94%20Tarjeta%20con%20inclinaci%C3%B3n%203D%20%28tilt%29%20%5BKTW-KXBD6%5D%20en%20mi%20p%C3%A1gina.%20%C2%BFCu%C3%A1nto%20sale%3F" target="_blank" rel="noopener noreferrer">Pedir el E5 por WhatsApp →</a></div>
+  </div>
+
+  <div class="fx">
+    <div class="fx-head"><h2><span class="num">E6</span>Cielo con capas (parallax simple)</h2><span class="uso">Páginas que cuentan una historia</span></div>
+    <div class="demo d6" id="d6"><div class="capa luna"></div><div class="txt">Mové el mouse por acá</div></div>
+    
+    <div class="para">El fondo se mueve más lento que el frente y aparece profundidad. Le queda a las páginas que cuentan una historia.</div>
+    <div class="pedir"><a href="https://wa.me/595983518856?text=Hola%21%20Quiero%20el%20efecto%20E6%20%E2%80%94%20Cielo%20con%20capas%20%28parallax%20simple%29%20%5BKTW-2ZGUP%5D%20en%20mi%20p%C3%A1gina.%20%C2%BFCu%C3%A1nto%20sale%3F" target="_blank" rel="noopener noreferrer">Pedir el E6 por WhatsApp →</a></div>
+  </div>
+
+  <div class="fx">
+    <div class="fx-head"><h2><span class="num">E7</span>Números que cuentan solos</h2><span class="uso">Credenciales y respaldo</span></div>
+    <div class="demo d7">
+      <div class="cnt"><div class="n" data-meta="1200">0</div><div class="l">clientes atendidos</div></div>
+      <div class="cnt"><div class="n" data-meta="14">0</div><div class="l">años de experiencia</div></div>
+      <div class="cnt"><div class="n" data-meta="98">0</div><div class="l">% recomiendan</div></div>
+    </div>
+    
+    <div class="para">Los años de experiencia y los clientes atendidos suben solos cuando el visitante llega. Es la forma más rápida de mostrar respaldo.</div>
+    <div class="pedir"><a href="https://wa.me/595983518856?text=Hola%21%20Quiero%20el%20efecto%20E7%20%E2%80%94%20N%C3%BAmeros%20que%20cuentan%20solos%20%5BKTW-KDZ77%5D%20en%20mi%20p%C3%A1gina.%20%C2%BFCu%C3%A1nto%20sale%3F" target="_blank" rel="noopener noreferrer">Pedir el E7 por WhatsApp →</a></div>
+  </div>
+
+  <div class="fx">
+    <div class="fx-head"><h2><span class="num">E8</span>Botón magnético</h2><span class="uso">Botones principales · sube los clics</span></div>
+    <div class="demo d8" id="d8"><button class="magnet" id="magnet">Escribinos</button></div>
+    
+    <div class="para">El botón se acerca al cursor antes de que lo toques. Detalle chico que hace que la gente lo apriete más.</div>
+    <div class="pedir"><a href="https://wa.me/595983518856?text=Hola%21%20Quiero%20el%20efecto%20E8%20%E2%80%94%20Bot%C3%B3n%20magn%C3%A9tico%20%5BKTW-FXW8A%5D%20en%20mi%20p%C3%A1gina.%20%C2%BFCu%C3%A1nto%20sale%3F" target="_blank" rel="noopener noreferrer">Pedir el E8 por WhatsApp →</a></div>
+  </div>
+
+  <div class="fx">
+    <div class="fx-head"><h2><span class="num">E9</span>Cursor con estela</h2><span class="uso">Marcas creativas · solo en computadora</span></div>
+    <div class="demo d9" id="d9"><div class="txt-c">Mové el mouse por acá</div></div>
+    
+    <div class="para">Una estela suave sigue al mouse. Solo en computadora, y solo para marcas creativas que pueden permitírselo.</div>
+    <div class="pedir"><a href="https://wa.me/595983518856?text=Hola%21%20Quiero%20el%20efecto%20E9%20%E2%80%94%20Cursor%20con%20estela%20%5BKTW-43BF8%5D%20en%20mi%20p%C3%A1gina.%20%C2%BFCu%C3%A1nto%20sale%3F" target="_blank" rel="noopener noreferrer">Pedir el E9 por WhatsApp →</a></div>
+  </div>
+
+  <div class="fx">
+    <div class="fx-head"><h2><span class="num">E10</span>Carrusel de logos infinito</h2><span class="uso">Confianza · marcas con las que trabajás</span></div>
+    <div class="demo d10">
+      <div class="logos"><div class="logos-in" id="lg"></div></div>
+    </div>
+    
+    <div class="para">Las marcas con las que trabajás pasando en fila. Genera confianza en tres segundos, sin decir una palabra.</div>
+    <div class="pedir"><a href="https://wa.me/595983518856?text=Hola%21%20Quiero%20el%20efecto%20E10%20%E2%80%94%20Carrusel%20de%20logos%20infinito%20%5BKTW-PQ28V%5D%20en%20mi%20p%C3%A1gina.%20%C2%BFCu%C3%A1nto%20sale%3F" target="_blank" rel="noopener noreferrer">Pedir el E10 por WhatsApp →</a></div>
+  </div>
+
+  <div class="fx">
+    <div class="fx-head"><h2><span class="num">E11</span>Foto con zoom al pasar</h2><span class="uso">Galerías y catálogos · todos los estilos</span></div>
+    <div class="demo d11">
+      <div class="zoomimg"><div>Foto A</div></div>
+      <div class="zoomimg"><div style="background:linear-gradient(135deg,var(--fucsia),#6b1044)">Foto B</div></div>
+    </div>
+    
+    <div class="para">La foto se agranda apenas al pasar por encima. Hace que una galería común se sienta cuidada.</div>
+    <div class="pedir"><a href="https://wa.me/595983518856?text=Hola%21%20Quiero%20el%20efecto%20E11%20%E2%80%94%20Foto%20con%20zoom%20al%20pasar%20%5BKTW-7KDWW%5D%20en%20mi%20p%C3%A1gina.%20%C2%BFCu%C3%A1nto%20sale%3F" target="_blank" rel="noopener noreferrer">Pedir el E11 por WhatsApp →</a></div>
+  </div>
+
+  <div class="fx">
+    <div class="fx-head"><h2><span class="num">E12</span>Destellos (sparkles)</h2><span class="uso">Detalles de fiesta · eventos</span></div>
+    <div class="demo d12" id="d12">Fiestas que se recuerdan</div>
+    
+    <div class="para">Chispitas alrededor del titular. Un detalle chico que le da aire de fiesta a eventos y lanzamientos.</div>
+    <div class="pedir"><a href="https://wa.me/595983518856?text=Hola%21%20Quiero%20el%20efecto%20E12%20%E2%80%94%20Destellos%20%28sparkles%29%20%5BKTW-ZNHGR%5D%20en%20mi%20p%C3%A1gina.%20%C2%BFCu%C3%A1nto%20sale%3F" target="_blank" rel="noopener noreferrer">Pedir el E12 por WhatsApp →</a></div>
+  </div>
+
+  <div class="fx">
+    <div class="fx-head"><h2><span class="num">E13</span>Entrada cinematográfica</h2><span class="uso">Sube el valor percibido de toda la página</span></div>
+    <div class="demo d13" id="d13">
+      <div class="ld" id="ld13">
+        <div class="ld-marca">TU NEGOCIO</div>
+        <div class="ld-barra"><i></i></div>
+        <div class="ld-pct">0%</div>
+      </div>
+      <div class="ld-pag" id="ldpag">Tu página, entrando en escena</div>
+    </div>
+    
+    <div class="para">La página se presenta antes de mostrarse. Sube mucho el valor percibido: es lo que separa una web común de una que parece cara.</div>
+    <div class="pedir"><a href="https://wa.me/595983518856?text=Hola%21%20Quiero%20el%20efecto%20E13%20%E2%80%94%20Entrada%20cinematogr%C3%A1fica%20%5BKTW-PT6JC%5D%20en%20mi%20p%C3%A1gina.%20%C2%BFCu%C3%A1nto%20sale%3F" target="_blank" rel="noopener noreferrer">Pedir el E13 por WhatsApp →</a></div>
+  </div>
+
+  <p class="sub" style="margin-top:22px"><strong>Regla de oro:</strong> máximo 2–3 efectos por página. El movimiento
+  dirige la mirada; si todo se mueve, nada se destaca. Los efectos E1, E2 y E10 combinan con todo;
+  E9 y E6 son solo para páginas de marca con personalidad fuerte.</p>
+
+</div>
+
+<script>
+(function () {
+  'use strict';
+  // E2: re-trigger reveal
+  var srvs = document.querySelectorAll('#d2 .srv');
+  function reveal() {
+    srvs.forEach(function (s, i) {
+      s.classList.remove('vis');
+      setTimeout(function () { s.classList.add('vis'); }, 150 + i * 140);
+    });
+  }
+  reveal(); setInterval(reveal, 3200);
+
+  // E3 + E10: fill marquees (duplicated content)
+  function fill(id, items, stroke) {
+    var el = document.getElementById(id);
+    var twice = items.concat(items);
+    twice.forEach(function (t) {
+      var s = document.createElement('span');
+      s.textContent = t;
+      el.appendChild(s);
+    });
+  }
+  fill('mq', ['Tu negocio', '★', 'Tu negocio', '★', 'Tu negocio', '★']);
+  fill('lg', ['CLIENTE UNO', 'MARCA DOS', 'TIENDA TRES', 'RESTO CUATRO', 'ESTUDIO CINCO']);
+
+  // E4: rotor
+  var rotor = document.getElementById('rotor');
+  var words = rotor.children, wi = 0;
+  setInterval(function () {
+    words[wi].classList.remove('on');
+    wi = (wi + 1) % words.length;
+    words[wi].classList.add('on');
+  }, 1800);
+
+  // E5: tilt
+  var tilt = document.getElementById('tilt');
+  tilt.parentElement.addEventListener('mousemove', function (e) {
+    var r = tilt.getBoundingClientRect();
+    var x = (e.clientX - r.left - r.width / 2) / (r.width / 2);
+    var y = (e.clientY - r.top - r.height / 2) / (r.height / 2);
+    tilt.style.transform = 'perspective(600px) rotateX(' + (-y * 8).toFixed(1) + 'deg) rotateY(' + (x * 8).toFixed(1) + 'deg)';
+  });
+  tilt.parentElement.addEventListener('mouseleave', function () { tilt.style.transform = 'none'; });
+
+  // E6: stars + parallax
+  var d6 = document.getElementById('d6');
+  for (var i = 0; i < 16; i++) {
+    var st = document.createElement('div');
+    st.className = 'capa estrella';
+    st.style.left = (Math.floor(Math.abs(Math.sin(i * 999)) * 96)) + '%';
+    st.style.top = (Math.floor(Math.abs(Math.cos(i * 777)) * 90)) + '%';
+    st.style.animationDelay = (i % 5) * 0.4 + 's';
+    d6.appendChild(st);
+  }
+  var luna = d6.querySelector('.luna');
+  d6.addEventListener('mousemove', function (e) {
+    var r = d6.getBoundingClientRect();
+    var x = e.clientX - r.left - r.width / 2, y = e.clientY - r.top - r.height / 2;
+    luna.style.transform = 'translate(' + x * 0.06 + 'px,' + y * 0.06 + 'px)';
+  });
+
+  // E7: counters
+  function ease(t) { return 1 - Math.pow(1 - t, 4); }
+  function count(el) {
+    var end = +el.dataset.meta, t0 = null;
+    function step(ts) {
+      if (!t0) t0 = ts;
+      var p = Math.min((ts - t0) / 1400, 1);
+      el.textContent = Math.round(end * ease(p)).toLocaleString('en-US');
+      if (p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  var counted = false;
+  var io = new IntersectionObserver(function (es) {
+    es.forEach(function (en) {
+      if (en.isIntersecting && !counted) {
+        counted = true;
+        document.querySelectorAll('.cnt .n').forEach(count);
+      }
+    });
+  });
+  io.observe(document.querySelector('.d7'));
+
+  // E8: magnetic button
+  var d8 = document.getElementById('d8'), magnet = document.getElementById('magnet');
+  d8.addEventListener('mousemove', function (e) {
+    var r = magnet.getBoundingClientRect();
+    var cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+    var dx = e.clientX - cx, dy = e.clientY - cy;
+    var dist = Math.hypot(dx, dy);
+    if (dist < 90) magnet.style.transform = 'translate(' + dx * 0.25 + 'px,' + dy * 0.25 + 'px)';
+    else magnet.style.transform = 'none';
+  });
+  d8.addEventListener('mouseleave', function () { magnet.style.transform = 'none'; });
+
+  // E9: cursor trail
+  var d9 = document.getElementById('d9');
+  var dot = document.createElement('div'); dot.className = 'dot';
+  var dot2 = document.createElement('div'); dot2.className = 'dot dot2';
+  d9.appendChild(dot); d9.appendChild(dot2);
+  d9.addEventListener('mousemove', function (e) {
+    var r = d9.getBoundingClientRect();
+    var x = e.clientX - r.left, y = e.clientY - r.top;
+    dot.style.transform = 'translate(' + (x - 7) + 'px,' + (y - 7) + 'px)';
+    dot2.style.transform = 'translate(' + (x - 17) + 'px,' + (y - 17) + 'px)';
+  });
+
+  // E12: sparkles
+  var d12 = document.getElementById('d12');
+  [[12, 20], [80, 16], [22, 70], [68, 74], [46, 10], [90, 55]].forEach(function (p, i) {
+    var s = document.createElement('div');
+    s.className = 'spark';
+    s.textContent = '✦';
+    s.style.left = p[0] + '%'; s.style.top = p[1] + '%';
+    s.style.color = i % 2 ? 'var(--amarillo)' : 'var(--fucsia)';
+    s.style.animationDelay = (i * 0.3) + 's';
+    d12.appendChild(s);
+  });
+
+  // E13: entrada cinematográfica (se repite en bucle para poder mostrarla)
+  var ld13 = document.getElementById('ld13'), pag13 = document.getElementById('ldpag');
+  var bar13 = ld13.querySelector('.ld-barra i'), pct13 = ld13.querySelector('.ld-pct');
+  function correrLoader() {
+    var v = 0;
+    ld13.classList.remove('done'); pag13.classList.remove('listo');
+    bar13.style.width = '0%'; pct13.textContent = '0%';
+    var t = setInterval(function () {
+      v += Math.random() * 16 + 8;
+      if (v >= 100) {
+        v = 100; clearInterval(t);
+        setTimeout(function () { ld13.classList.add('done'); pag13.classList.add('listo'); }, 220);
+        setTimeout(correrLoader, 3600);
+      }
+      bar13.style.width = v + '%';
+      pct13.textContent = Math.round(v) + '%';
+    }, 110);
+  }
+  correrLoader();
+})();
+</script>
+</body>
+</html>
