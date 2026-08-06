@@ -113,6 +113,44 @@
   .d6 .img::after { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(0deg, rgba(255,255,255,.05) 0 1px, transparent 1px 5px); }
   .d6 .img .marca { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%) rotate(-90deg); font-family: ui-monospace, monospace; font-size: 10px; letter-spacing: .4em; color: rgba(255,255,255,.55); white-space: nowrap; }
   @media (max-width: 620px) { .d6 { grid-template-columns: 1fr; } .d6 .img { display: none; } }
+
+  /* ---------- capa de imagen sobre cada portada ---------- */
+  .demo .foto { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0; transition: opacity .55s ease; z-index: 1; pointer-events: none; }
+  .con-foto .demo .foto { opacity: 1; }
+  .con-foto .demo .blob, .con-foto .demo .anillo, .con-foto .demo .nube, .con-foto .demo canvas, .con-foto .demo .rev-img { opacity: 0; transition: opacity .45s ease; }
+  .demo .blob, .demo .anillo, .demo .nube, .demo canvas, .demo .rev-img { transition: opacity .45s ease; }
+  .d1 .foto { background-position: center 22%; }
+  .d3 .foto { background-position: center 34%; }
+  .d5 .foto { background-position: center 40%; }
+  .con-foto .d1 .foto { animation: respirarF 14s ease-in-out infinite; }
+  .con-foto .d2 .foto { animation: latirF 16s ease-in-out infinite; }
+  .con-foto .d3 .foto { animation: derivarF 26s ease-in-out infinite; }
+  .con-foto .d4 .foto { clip-path: inset(0 100% 0 0); animation: revelar 1.6s cubic-bezier(0.76,0,0.24,1) forwards, acercarF 24s ease-in-out 1.6s infinite; }
+  .con-foto .d5 .foto { animation: flotarF 24s ease-in-out infinite; }
+  .d6 .img .foto { opacity: 1; }
+  .con-foto .d6 .img .foto { animation: acercarF 26s ease-in-out infinite; }
+  .con-foto .d1 .velo-f { position: absolute; inset: 0; z-index: 2; background: linear-gradient(to bottom, rgba(8,6,15,.74) 0%, rgba(8,6,15,.2) 42%, rgba(8,6,15,0) 64%); }
+  .con-foto .d4 .velo-f { position: absolute; inset: 0; z-index: 2; background: radial-gradient(ellipse at 50% 50%, rgba(12,8,20,.58), rgba(12,8,20,.12) 70%); }
+  .demo .velo-f { display: none; }
+  .con-foto .demo .velo-f { display: block; }
+  @keyframes respirarF { 0%,100% { transform: scale(1) rotate(0); filter: saturate(1) brightness(1); } 50% { transform: scale(1.055) rotate(1.6deg); filter: saturate(1.12) brightness(1.08); } }
+  @keyframes latirF { 0%,100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+  @keyframes derivarF { 0%,100% { transform: scale(1.06) translateX(-1.4%); } 50% { transform: scale(1.06) translateX(1.4%); } }
+  @keyframes acercarF { 0%,100% { transform: scale(1.02); } 50% { transform: scale(1.1); } }
+  @keyframes flotarF { 0%,100% { transform: scale(1.04) translate(-1%,0); } 50% { transform: scale(1.09) translate(1%,-1.4%); } }
+  .con-foto .d3 .bajada { color: rgba(255,255,255,.9); text-shadow: 0 1px 10px rgba(0,0,0,.95); }
+  .d5 .navpill span { color: #5a4a6b; }
+  .d5 .navpill span.on { background: #2b1c3d; color: #fff; }
+  .interruptor { display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 11px 15px; margin-bottom: 18px; font-size: 13.5px; flex-wrap: wrap; }
+  .interruptor b { color: var(--ink); }
+  .interruptor span { color: var(--muted); }
+  .llave { position: relative; width: 46px; height: 26px; border-radius: 999px; background: #d8d6cd; border: none; cursor: pointer; transition: background .3s ease; flex: none; padding: 0; }
+  .llave::after { content: ''; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.25); transition: transform .3s cubic-bezier(0.2,0.7,0.2,1); }
+  .llave[aria-pressed="true"] { background: var(--azul); }
+  .llave[aria-pressed="true"]::after { transform: translateX(20px); }
+  .llave:focus-visible { outline: 2px solid var(--azul); outline-offset: 3px; }
+  @media (max-width: 620px) { .tarjeta-f { display: none; } }
+  @media (prefers-reduced-motion: reduce) { .demo .foto { animation: none !important; clip-path: none !important; } }
 </style>
 <script>
 (function () {
@@ -142,10 +180,17 @@
   <h1>Biblioteca de portadas — pedilas por número</h1>
   <p class="sub">Seis modelos de <strong>primera pantalla</strong>, que es lo que el visitante ve antes de bajar. Se aplican sobre cualquiera de los estilos: cambian el color y la tipografía, no la estructura. Mirá cuál te gusta y pedila por número.</p>
 
+  <div class="interruptor">
+    <button class="llave" id="llaveFoto" aria-pressed="true" aria-label="Mostrar u ocultar la imagen de fondo"></button>
+    <b>Con imagen de fondo</b>
+    <span>Apagalo y mirá cómo queda cada portada sin ninguna foto. Cuatro de las seis se sostienen solas.</span>
+  </div>
+
   <!-- P1 -->
   <div class="p">
     <div class="p-head"><h2><span class="num">P1</span>Objeto luminoso</h2><span class="uso">Marca única · producto · servicio premium</span></div>
     <div class="demo d1">
+      <div class="foto" style="background-image:url(img/portadas/p1.jpg)"></div><div class="velo-f"></div>
       <div class="navpill"><span class="on">Inicio</span><span>Servicios</span><span>Contacto</span></div>
       <div class="blob"></div>
       <div class="escena">
@@ -163,6 +208,7 @@
   <div class="p">
     <div class="p-head"><h2><span class="num">P2</span>Anillo de neón</h2><span class="uso">Tecnología · gimnasios · nocturno</span></div>
     <div class="demo d2">
+      <div class="foto" style="background-image:url(img/portadas/p2.jpg)"></div>
       <div class="navpill"><span class="on">Inicio</span><span>Planes</span><span>Nosotros</span></div>
       <div class="anillo anillo2"></div>
       <div class="anillo"></div>
@@ -180,6 +226,7 @@
   <div class="p">
     <div class="p-head"><h2><span class="num">P3</span>Terreno topográfico</h2><span class="uso">Datos · construcción · turismo de naturaleza</span></div>
     <div class="demo d3">
+      <div class="foto" style="background-image:url(img/portadas/p3.jpg)"></div>
       <canvas id="cv3"></canvas>
       <div class="navpill"><span class="on">Inicio</span><span>Rutas</span><span>Contacto</span></div>
       <div class="escena">
@@ -196,6 +243,7 @@
   <div class="p">
     <div class="p-head"><h2><span class="num">P4</span>Revelado con máscara</h2><span class="uso">Fotografía · moda · antes-y-después</span></div>
     <div class="demo d4">
+      <div class="foto" style="background-image:url(img/portadas/p4.jpg)"></div><div class="velo-f"></div>
       <div class="rev-img"></div>
       <div class="navpill"><span class="on">Inicio</span><span>Galería</span><span>Turnos</span></div>
       <div class="escena">
@@ -212,6 +260,7 @@
   <div class="p">
     <div class="p-head"><h2><span class="num">P5</span>Niebla de ensueño</h2><span class="uso">Eventos · spa · turismo · infantil</span></div>
     <div class="demo d5">
+      <div class="foto" style="background-image:url(img/portadas/p5.jpg)"></div>
       <div class="nube n1"></div><div class="nube n2"></div><div class="nube n3"></div>
       <div class="navpill" style="background:rgba(255,255,255,.45); border-color:rgba(255,255,255,.7)"><span class="on">Inicio</span><span>Fiestas</span><span>Precios</span></div>
       <div class="tarjeta-f tf1">Salón techado<br><b>hasta 200</b></div>
@@ -236,20 +285,30 @@
         <p>Media pantalla para la palabra y media para la imagen. El más sobrio de los seis y el que mejor envejece.</p>
         <a class="cta" href="#p6" style="align-self:flex-start; background:#17140f; color:#f4efe6">Ver el menú</a>
       </div>
-      <div class="img"><div class="marca">FOTO DEL LOCAL O DEL PLATO</div></div>
+      <div class="img"><div class="foto" style="background-image:url(img/portadas/p6.jpg)"></div><div class="marca">FOTO DEL LOCAL O DEL PLATO</div></div>
     </div>
-    
-  </div>
-
-  <p class="sub" style="margin-top:22px"><strong>Cómo usarlas:</strong> el cliente elige el número y el resto de la página sigue con
-  su estilo de siempre. P1, P2 y P3 no necesitan ninguna foto — son ideales para arrancar el mismo día.
-  P4 y P6 sí piden una imagen buena. P5 funciona bien cuando el negocio vende un momento, no un producto.</p>
-
-  <div class="para">La pantalla partida en dos: de un lado la palabra, del otro la imagen. Se ve de revista y le queda bien a restaurantes, joyerías y arquitectura.</div>
+    <div class="para">La pantalla partida en dos: de un lado la palabra, del otro la imagen. Se ve de revista y le queda bien a restaurantes, joyerías y arquitectura.</div>
     <div class="pedir"><a href="https://wa.me/595983518856?text=Hola%21%20Quiero%20la%20portada%20P6%20%E2%80%94%20Split%20editorial%20%5BKTW-QB75F%5D%20para%20mi%20p%C3%A1gina.%20%C2%BFCu%C3%A1nto%20sale%3F" target="_blank" rel="noopener noreferrer">Pedir la P6 por WhatsApp →</a></div>
   </div>
 
+  <p class="sub" style="margin-top:22px"><strong>Cómo usarlas:</strong> el cliente elige el número y el resto de la página sigue con
+  su estilo de siempre. P1, P2, P3 y P5 no piden ninguna foto del negocio — son ideales para arrancar el mismo día.
+  P4 y P6 sí necesitan una imagen buena. Con el interruptor de arriba podés ver cada una con y sin imagen de fondo.</p>
+
 <script>
+(function () {
+  'use strict';
+  var llave = document.getElementById('llaveFoto');
+  var raiz = document.querySelector('.wrap');
+  if (llave && raiz) {
+    raiz.classList.add('con-foto');
+    llave.addEventListener('click', function () {
+      var puesto = llave.getAttribute('aria-pressed') === 'true';
+      llave.setAttribute('aria-pressed', puesto ? 'false' : 'true');
+      raiz.classList.toggle('con-foto', !puesto);
+    });
+  }
+})();
 (function () {
   'use strict';
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
