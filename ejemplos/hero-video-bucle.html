@@ -6,12 +6,13 @@
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta http-equiv="X-Content-Type-Options" content="nosniff">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Parrilla Tatakua — asado a la brasa en Asunción</title>
-<meta name="description" content="Parrilla Tatakua: asado a la leña, costilla al tatakua y chipa guasu en Asunción. Reservá tu mesa por WhatsApp y llegá con la brasa en su punto.">
+<title>Pizzería Tatatĩ — pizza a la piedra en horno de leña, Asunción</title>
+<meta name="description" content="Pizzería Tatatĩ: pizza a la piedra en horno de leña, masa de fermentación lenta y mozzarella de verdad. Pedí por WhatsApp y retirala recién salida del horno.">
 <!--
-  DEMO KatuWeb · Hero con video en bucle
-  Negocio y datos de ejemplo. Al usarla con un cliente real, reemplazar
-  todo por sus productos, precios y fotos verdaderas.
+  DEMO KatuWeb · Portada con dos fotos que se alternan
+  Negocio, precios y horarios de ejemplo. Las fotos de la portada están
+  generadas con inteligencia artificial: en la página de un cliente real
+  van las fotos de su propio local.
 -->
 <style>
   :root{
@@ -39,21 +40,45 @@
   /* ================= PORTADA ================= */
   .hero{
     position:relative; overflow:hidden;
-    min-height:660px; min-height:max(660px, 82svh);
+    min-height:620px; min-height:max(620px, 82svh);
     display:flex; flex-direction:column;
     background:#0a0706;
     isolation:isolate;
   }
-  #lienzo-hero{position:absolute; inset:0; width:100%; height:100%; z-index:0}
-  /* velo de legibilidad: garantiza contraste del texto pase lo que pase en el canvas */
+  /* las dos fotos, una encima de la otra y alineadas al píxel */
+  .fotos{position:absolute; inset:0; z-index:0}
+  .fotos img{
+    position:absolute; inset:0; width:100%; height:100%;
+    object-fit:cover;
+    /* en celular el recorte es angosto: se corre a la derecha para que el
+       horno y la pizza no queden fuera de cuadro */
+    object-position:78% 50%;
+  }
+  #foto-b{opacity:0; will-change:opacity}
+  @media (min-width:900px){
+    .fotos img{object-position:55% 50%}
+  }
+  /* el canvas va exactamente sobre las fotos y usa su misma geometría */
+  #lienzo-hero{position:absolute; inset:0; width:100%; height:100%; z-index:1}
+  /* velo de legibilidad: de izquierda (oscuro) a derecha (limpio), para que el
+     titular tenga contraste sin taparle el fuego al horno */
   .velo{
-    position:absolute; inset:0; z-index:1; pointer-events:none;
+    position:absolute; inset:0; z-index:2; pointer-events:none;
     background:
-      linear-gradient(180deg, rgba(8,6,5,.88) 0%, rgba(8,6,5,.66) 26%, rgba(8,6,5,.24) 52%, rgba(8,6,5,0) 72%),
-      radial-gradient(120% 80% at 50% 105%, rgba(0,0,0,0) 40%, rgba(0,0,0,.45) 100%);
+      linear-gradient(180deg, rgba(7,5,4,.80) 0%, rgba(7,5,4,.44) 30%, rgba(7,5,4,0) 62%),
+      linear-gradient(100deg, rgba(7,5,4,.94) 0%, rgba(7,5,4,.88) 24%, rgba(7,5,4,.62) 46%, rgba(7,5,4,.22) 70%, rgba(7,5,4,0) 92%),
+      radial-gradient(120% 80% at 50% 108%, rgba(0,0,0,0) 42%, rgba(0,0,0,.50) 100%);
+  }
+  @media (min-width:900px){
+    .velo{
+      background:
+        linear-gradient(180deg, rgba(7,5,4,.55) 0%, rgba(7,5,4,.20) 26%, rgba(7,5,4,0) 52%),
+        linear-gradient(100deg, rgba(7,5,4,.92) 0%, rgba(7,5,4,.84) 26%, rgba(7,5,4,.52) 48%, rgba(7,5,4,.14) 72%, rgba(7,5,4,0) 92%),
+        radial-gradient(120% 80% at 50% 108%, rgba(0,0,0,0) 42%, rgba(0,0,0,.46) 100%);
+    }
   }
   .hero-cont{
-    position:relative; z-index:2; width:100%; max-width:1000px;
+    position:relative; z-index:3; width:100%; max-width:1000px;
     margin:0 auto; padding:26px 14px 14px;
     display:flex; flex-direction:column; flex:1 1 auto;
   }
@@ -73,9 +98,9 @@
   .marca-nom{font-weight:800; letter-spacing:-.2px; font-size:15px}
   .marca-sub{font-size:11.5px; color:var(--tx3); letter-spacing:.14em; text-transform:uppercase; font-weight:700}
 
-  /* el texto arriba y el fuego abajo: si el bloque se centrara, en un celular
-     el precio caería justo encima de las brasas y perdería contraste */
-  .hero-medio{flex:1 1 auto; display:flex; flex-direction:column; justify-content:flex-start; padding:22px 0 16px}
+  /* el texto arriba y a la izquierda: la mitad izquierda de la foto es
+     ladrillo en penumbra, así que el titular nunca cae sobre el horno */
+  .hero-medio{flex:1 1 auto; display:flex; flex-direction:column; justify-content:flex-start; padding:22px 0 16px; text-align:left; align-items:flex-start}
   .pill-estado{
     display:inline-flex; align-items:center; gap:8px; align-self:flex-start;
     background:rgba(14,10,8,.62); border:1px solid var(--linea2);
@@ -88,16 +113,16 @@
   .punto.no{background:#f0724f; box-shadow:0 0 0 3px rgba(240,114,79,.20)}
 
   h1{
-    font-size:clamp(32px, 9.2vw, 62px); line-height:1.02; letter-spacing:-.028em;
-    font-weight:800; margin:14px 0 0; text-wrap:balance;
-    text-shadow:0 2px 26px rgba(0,0,0,.55);
+    font-size:clamp(32px, 8.8vw, 60px); line-height:1.03; letter-spacing:-.028em;
+    font-weight:800; margin:14px 0 0; max-width:14ch; text-wrap:balance;
+    text-shadow:0 2px 26px rgba(0,0,0,.72);
   }
   h1 em{font-family:Georgia,serif; font-style:italic; font-weight:400; color:var(--brasa2); letter-spacing:-.01em}
   .bajada{
-    margin-top:13px; max-width:33ch; font-size:clamp(14.5px,3.9vw,17px);
-    color:#ded2c6; text-shadow:0 1px 14px rgba(0,0,0,.6);
+    margin-top:13px; max-width:31ch; font-size:clamp(14.5px,3.9vw,17px);
+    color:#ded2c6; text-shadow:0 1px 14px rgba(0,0,0,.75);
   }
-  .acciones{display:flex; flex-direction:column; gap:10px; margin-top:18px; max-width:400px}
+  .acciones{display:flex; flex-direction:column; gap:10px; margin-top:18px; max-width:400px; width:100%}
   .btn{
     display:inline-flex; align-items:center; justify-content:center; gap:9px;
     min-height:52px; padding:0 20px; border-radius:13px; border:0;
@@ -108,9 +133,11 @@
   .btn:active{transform:scale(.985)}
   .btn-wa{background:var(--wa); color:#fff; box-shadow:0 8px 26px rgba(11,122,60,.34)}
   .btn-wa:hover{background:var(--wa2)}
-  .btn-fan{background:rgba(16,11,9,.62); color:var(--tx); border:1px solid rgba(255,255,255,.22); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px)}
-  .btn-fan:hover{background:rgba(30,22,18,.78)}
-  .precio-linea{margin-top:14px; font-size:13.5px; color:var(--tx2); text-shadow:0 1px 12px rgba(0,0,0,.85), 0 0 22px rgba(0,0,0,.7)}
+  /* bastante opaco: en celular este botón cae sobre la corteza de la pizza,
+     que es la parte más clara de la foto */
+  .btn-fan{background:rgba(14,10,8,.82); color:var(--tx); border:1px solid rgba(255,255,255,.24); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px)}
+  .btn-fan:hover{background:rgba(32,23,19,.90)}
+  .precio-linea{margin-top:14px; font-size:13.5px; color:var(--tx2); text-shadow:0 1px 12px rgba(0,0,0,.9), 0 0 22px rgba(0,0,0,.75)}
   .precio-linea b{color:var(--brasa2); font-weight:800}
 
   .hero-pie{ background:var(--neg2); border-bottom:1px solid var(--linea) }
@@ -144,6 +171,7 @@
     font-size:12.8px; color:var(--tx3); line-height:1.65;
   }
   .aviso b{color:var(--tx2); font-weight:700}
+  .aviso + .aviso{padding-top:0}
 
   /* ================= SECCIONES ================= */
   section.bloque{padding:34px 0 6px}
@@ -168,8 +196,8 @@
   /* --------- cuadros A y B --------- */
   .par{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:22px}
   .cuadro{background:var(--panel); border:1px solid var(--linea); border-radius:var(--r2); overflow:hidden}
-  .cuadro-lienzo{position:relative}
-  .cuadro canvas{width:100%; aspect-ratio:4/3; height:auto; background:#0a0706}
+  .cuadro-lienzo{position:relative; line-height:0}
+  .cuadro img{width:100%; height:auto; aspect-ratio:16/10; object-fit:cover; background:#0a0706}
   .cuadro-tit{
     display:flex; align-items:baseline; gap:7px; padding:8px 10px 9px; flex-wrap:wrap;
     border-top:1px solid var(--linea);
@@ -178,7 +206,7 @@
   .cuadro-tit span{font-size:11.5px; color:var(--tx3)}
   /* anillo hueco: rodea lo que cambia sin taparlo */
   .marca{
-    position:absolute; z-index:2; width:36px; height:36px; border-radius:50%;
+    position:absolute; z-index:2; width:40px; height:40px; border-radius:50%;
     transform:translate(-50%,-50%);
     background:transparent; border:2px solid var(--brasa2);
     box-shadow:0 0 0 2px rgba(0,0,0,.55), inset 0 0 14px rgba(0,0,0,.30);
@@ -202,13 +230,16 @@
   }
   .difs i{font-style:normal; color:var(--tx); font-weight:700}
 
-  /* --------- línea de tiempo --------- */
+  /* --------- mezclador de dos fotos (línea de tiempo y ping-pong) --------- */
+  .mezcla{position:relative; width:100%; aspect-ratio:16/10; overflow:hidden; background:#0a0706}
+  .mezcla img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover}
+  .mezcla .arriba{opacity:0; will-change:opacity}
+
   .linea-tiempo{
     margin-top:22px; background:var(--panel); border:1px solid var(--linea);
     border-radius:var(--r); padding:14px 14px 16px;
   }
   .lt-lienzo{position:relative; border-radius:10px; overflow:hidden; border:1px solid var(--linea2)}
-  #lienzo-scrub{width:100%; aspect-ratio:16/10; height:auto; background:#0a0706}
   .lt-badge{
     position:absolute; left:10px; top:10px; z-index:2;
     background:rgba(11,9,8,.74); border:1px solid rgba(255,255,255,.16);
@@ -217,10 +248,12 @@
     font-variant-numeric:tabular-nums;
   }
   .lt-badge em{font-style:normal; color:var(--brasa2)}
-  .lt-fila{display:flex; align-items:center; gap:10px; margin-top:14px}
+  /* en pantalla angosta el control se va a su propia fila: si compartiera
+     línea con el botón quedaría un riel de 160 px, imposible de arrastrar */
+  .lt-fila{display:flex; align-items:center; gap:10px; margin-top:14px; flex-wrap:wrap}
   .pista{
     -webkit-appearance:none; appearance:none; width:100%; height:44px;
-    background:transparent; margin:0; display:block; cursor:pointer; flex:1 1 auto;
+    background:transparent; margin:0; display:block; cursor:pointer; flex:1 1 240px; min-width:0;
   }
   .pista:focus{outline:none}
   .pista:focus-visible{outline:3px solid var(--brasa2); outline-offset:2px; border-radius:10px}
@@ -259,7 +292,6 @@
   .pp-caja{margin-top:20px; background:var(--panel); border:1px solid var(--linea); border-radius:var(--r); padding:14px}
   .pp-ctrl{display:flex; flex-wrap:wrap; gap:9px; align-items:center; margin-bottom:13px}
   .pp-lienzo{position:relative; border-radius:10px; overflow:hidden; border:1px solid var(--linea2)}
-  #lienzo-pp{width:100%; aspect-ratio:16/10; height:auto; background:#0a0706}
   .pp-flash{
     position:absolute; inset:0; z-index:2; pointer-events:none; opacity:0;
     box-shadow:inset 0 0 0 3px rgba(232,86,58,.95), inset 0 0 60px rgba(232,86,58,.45);
@@ -277,14 +309,23 @@
     border-radius:9px; padding:6px 10px; font-size:11.5px; font-weight:800; color:#ffc3b3;
     font-variant-numeric:tabular-nums;
   }
-  .pp-lect{
-    display:grid; gap:9px; margin-top:13px;
-  }
+  .pp-lect{display:grid; gap:9px; margin-top:13px}
   @media (min-width:620px){ .pp-lect{grid-template-columns:1fr 1fr} }
   .lect{border:1px solid var(--linea); border-radius:var(--r2); padding:11px 12px; background:var(--panel2)}
   .lect h3{font-size:13.5px; font-weight:800; display:flex; align-items:center; gap:7px}
   .lect p{font-size:13px; color:var(--tx2); margin-top:5px}
   .tick{color:#5cd694} .cruz{color:#f0724f}
+
+  /* --------- comparación sin video / con video --------- */
+  .comp{display:grid; gap:10px; margin-top:20px}
+  @media (min-width:700px){ .comp{grid-template-columns:1fr 1fr} }
+  .col{background:var(--panel); border:1px solid var(--linea); border-radius:var(--r2); padding:15px}
+  .col.dest{border-color:rgba(255,154,60,.36); background:linear-gradient(180deg, rgba(255,154,60,.07), rgba(255,154,60,0) 60%), var(--panel)}
+  .col h3{font-size:15px; font-weight:800; letter-spacing:-.01em}
+  .col .sub{font-size:11.5px; letter-spacing:.13em; text-transform:uppercase; font-weight:800; color:var(--tx3); margin-bottom:6px}
+  .col ul{list-style:none; margin-top:10px; display:grid; gap:7px}
+  .col li{font-size:13.2px; color:var(--tx2); display:flex; gap:8px; align-items:flex-start}
+  .col li span:first-child{flex:none; width:15px; color:var(--brasa2); font-weight:800}
 
   /* --------- ficha técnica --------- */
   .fichas{display:grid; gap:10px; margin-top:20px}
@@ -298,6 +339,13 @@
     background:rgba(255,154,60,.14); color:var(--brasa2);
     border:1px solid rgba(255,154,60,.28); border-radius:8px; padding:5px 10px;
   }
+  .balanza{display:grid; gap:8px; margin-top:12px}
+  .bar-fila{display:grid; grid-template-columns:minmax(0,1fr); gap:4px}
+  .bar-tit{display:flex; justify-content:space-between; gap:10px; font-size:12.2px; font-weight:700; color:var(--tx2)}
+  .bar-tit b{color:var(--brasa2); font-variant-numeric:tabular-nums; font-weight:800}
+  .bar{height:10px; border-radius:99px; background:rgba(255,255,255,.07); border:1px solid var(--linea2); overflow:hidden}
+  .bar i{display:block; height:100%; border-radius:99px; background:linear-gradient(90deg,#c9601f,#ffb457)}
+  .bar.gris i{background:linear-gradient(90deg,#4b4038,#8b7a6c)}
   pre{
     margin-top:12px; background:#0a0806; border:1px solid var(--linea2); border-radius:10px;
     padding:12px; overflow-x:auto; font-family:ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
@@ -312,6 +360,17 @@
     background:rgba(255,255,255,.07); border:1px solid var(--linea2); border-radius:6px;
     padding:2px 6px; color:var(--brasa2);
   }
+
+  /* --------- carta --------- */
+  .carta{list-style:none; margin-top:18px; display:grid; gap:8px}
+  .carta li{
+    display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;
+    background:var(--panel); border:1px solid var(--linea); border-radius:var(--r2);
+    padding:11px 13px;
+  }
+  .carta b{font-size:14px; font-weight:800; letter-spacing:-.01em}
+  .carta span{font-size:12.8px; color:var(--tx3); flex:1 1 160px; min-width:0}
+  .carta em{font-style:normal; font-size:13.5px; font-weight:800; color:var(--brasa2); white-space:nowrap; font-variant-numeric:tabular-nums}
 
   /* ================= PIE ================= */
   .katu-pie{
@@ -331,6 +390,9 @@
   @media (prefers-reduced-motion: reduce){
     html{scroll-behavior:auto}
     *,*::before,*::after{transition-duration:.001ms !important; animation-duration:.001ms !important}
+    /* una sola foto quieta: la de arriba no aparece nunca */
+    #foto-b{opacity:0 !important}
+    #lienzo-hero{display:none}
   }
 </style>
 </head>
@@ -339,6 +401,11 @@
 
   <!-- ============ PORTADA ============ -->
   <header class="hero" id="hero">
+    <div class="fotos">
+      <img id="foto-a" src="img/pizzeria-a.jpg" width="1600" height="1000" decoding="async"
+           alt="Pizza margarita recién salida del horno de leña, sobre una pala de madera, con el fuego prendido atrás.">
+      <img id="foto-b" src="img/pizzeria-b.jpg" width="1600" height="1000" decoding="async" alt="" aria-hidden="true">
+    </div>
     <canvas id="lienzo-hero" aria-hidden="true"></canvas>
     <div class="velo" aria-hidden="true"></div>
 
@@ -346,8 +413,8 @@
       <div class="marca-top">
         <div class="logo" aria-hidden="true"></div>
         <div>
-          <div class="marca-nom">Parrilla Tatakua</div>
-          <div class="marca-sub">Asado a la brasa · Asunción</div>
+          <div class="marca-nom">Pizzería Tatatĩ</div>
+          <div class="marca-sub">A la piedra · horno de leña · Asunción</div>
         </div>
       </div>
 
@@ -357,16 +424,16 @@
           <span id="estado-tx">Consultando el horario…</span>
         </p>
 
-        <h1>El fuego ya está <em>prendido</em></h1>
+        <h1>El horno ya está <em>a punto</em></h1>
 
-        <p class="bajada">Asado a la leña, costilla al tatakua y chipa guasu recién hecha. Llegá con la brasa en su punto.</p>
+        <p class="bajada">Pizza a la piedra, masa de fermentación lenta de dos días y leña de verdad. Pedila y llevatela recién salida.</p>
 
-        <p class="precio-linea">Asado completo para dos · <b>Gs. 145.000</b> · Barrio [barrio], Asunción</p>
+        <p class="precio-linea">Pizza grande a la piedra · desde <b>Gs. 55.000</b> · Barrio [barrio], Asunción</p>
 
         <div class="acciones">
           <a class="btn btn-wa" id="wa-hero" href="https://wa.me/595983518856" target="_blank" rel="noopener noreferrer">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.6-6.1c-.3-.1-1.5-.7-1.7-.8s-.4-.1-.6.2-.7.8-.8 1-.3.2-.5 0a6.7 6.7 0 0 1-2-1.2 7.4 7.4 0 0 1-1.3-1.7c-.2-.3 0-.4.1-.6l.4-.5.3-.4v-.4l-.8-1.9c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4 12 12 0 0 0 1.5.5 3.6 3.6 0 0 0 1.7.1 2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .2-1.2c-.1-.2-.3-.3-.5-.4Z"/></svg>
-            Reservar por WhatsApp
+            Pedir por WhatsApp
           </a>
           <a class="btn btn-fan" href="#explicador">Ver cómo se hizo</a>
         </div>
@@ -383,12 +450,18 @@
         <button type="button" class="chip modo" data-modo="una" aria-pressed="false">Una sola pasada</button>
       </span>
       <span class="chip-corte" id="corte-hero" aria-hidden="true">sin cortes: no se nota nunca</span>
-      <span class="hp-nota" id="hp-nota" hidden>Tenés activado “reducir movimiento”: la portada queda en un cuadro fijo.</span>
+      <span class="hp-nota" id="hp-nota" hidden>Tenés activado “reducir movimiento”: la portada queda en una sola foto fija.</span>
     </div>
   </div>
 
   <p class="aviso">
-    <b>Cómo está hecha esta demo:</b> el movimiento de arriba está dibujado por computadora, cuadro por cuadro, para mostrarte cómo se comporta la pieza. En tu página va un video de verdad, generado a partir de dos fotos de tu local. Acá simulamos el resultado porque una demo tiene que pesar poco y cargar en cualquier lado.
+    <b>Cómo está hecha esta demo:</b> arriba no hay ningún video. Son <b>dos fotos reales</b> del mismo momento, sacadas con un instante de diferencia, puestas una encima de la otra: la de arriba se desvanece y vuelve a aparecer cada seis segundos. Como lo único que cambió entre una y otra es el fuego del horno y el vapor de la pizza, el ojo lo lee como fuego que respira. Encima va una capa liviana de humo dibujado, nada más que para que el movimiento no se sienta mecánico.
+  </p>
+  <p class="aviso">
+    <b>Lo que se gana con el video:</b> con una herramienta paga, esas mismas dos fotos se convierten en un video de 5 a 7 segundos. Ahí el movimiento es <b>continuo</b> —la llama nunca vuelve a la misma forma— en vez de ir y venir entre dos estados. A cambio pesa bastante más y hay que pagar la herramienta. Esta demo es la versión sin video, que ya resuelve el 80% del efecto.
+  </p>
+  <p class="aviso">
+    <b>Sobre las fotos:</b> las dos fotos de esta demo están <b>generadas con inteligencia artificial</b>, porque es una demo. En la página de un cliente real van las fotos de su propio local, sacadas con el celular en el momento del servicio.
   </p>
 
   <div class="caja">
@@ -396,70 +469,73 @@
     <!-- ============ EXPLICADOR A / B ============ -->
     <section class="bloque" id="explicador">
       <p class="rotulo">Cómo funciona</p>
-      <h2>Dos fotos, un video de seis segundos, y una vuelta que nadie nota</h2>
-      <p class="parr">La pieza no es una animación programada: son dos fotos del mismo momento sacadas con un instante de diferencia, y una herramienta paga que arma el video que va de una a la otra. Después se reproduce de ida y de vuelta.</p>
+      <h2>Dos fotos reales, cruzadas una sobre la otra, y una vuelta que nadie nota</h2>
+      <p class="parr">No hay animación programada ni escena dibujada: son dos fotos del mismo horno sacadas con un instante de diferencia. La de arriba pasa de invisible a visible con una curva suave, y después vuelve por el mismo camino. Todo lo demás de la escena está quieto y alineado al píxel, así que lo único que se mueve es lo que realmente se movió.</p>
 
       <div class="pasos">
         <div class="paso">
           <span class="paso-n">1</span>
           <h3>Sacamos el cuadro A y el cuadro B</h3>
-          <p>Misma escena, mismo encuadre, un instante de diferencia. La brasa respiró, el humo subió un poco. Nada más.</p>
+          <p>Mismo encuadre, celular apoyado, un instante de diferencia. La llama creció y el vapor subió. Nada más se movió.</p>
         </div>
         <div class="paso">
           <span class="paso-n">2</span>
-          <h3>La herramienta rellena el medio</h3>
-          <p>Genera los 5 a 7 segundos que van de A a B. El movimiento sale de las dos fotos, no se inventa una escena nueva.</p>
+          <h3>Se cruzan una sobre la otra</h3>
+          <p>La foto B va de opacidad 0 a 1 con una curva suave, no lineal. Arranca despacio, acelera al medio y frena al llegar. Eso es lo que hace que parezca fuego y no una transición.</p>
         </div>
         <div class="paso">
           <span class="paso-n">3</span>
-          <h3>Se monta de ida y de vuelta</h3>
-          <p>A → B y después B → A, en un solo archivo. Como termina exactamente donde empezó, el bucle no tiene costura.</p>
+          <h3>La vuelta se hace por el mismo camino</h3>
+          <p>De A a B y de B a A. Como termina exactamente donde empezó, el bucle no tiene costura: podés dejarlo horas y nunca se nota.</p>
         </div>
       </div>
 
       <div class="par">
         <div class="cuadro">
           <div class="cuadro-lienzo">
-            <canvas id="lienzo-a" aria-hidden="true"></canvas>
-            <span class="marca" style="left:28.5%; top:87.8%" aria-hidden="true"><i>1</i></span>
-            <span class="marca" style="left:66.5%; top:90.5%" aria-hidden="true"><i>2</i></span>
-            <span class="marca" style="left:45.8%; top:70.8%" aria-hidden="true"><i>3</i></span>
+            <img src="img/pizzeria-a-chica.jpg" width="800" height="500" loading="lazy" decoding="async"
+                 alt="Cuadro A: la llama del horno está baja y sobre la pizza se ve apenas un hilo de vapor.">
+            <span class="marca" style="left:86.5%; top:26%" aria-hidden="true"><i>1</i></span>
+            <span class="marca" style="left:82.5%; top:66%" aria-hidden="true"><i>2</i></span>
           </div>
           <p class="cuadro-tit"><b>Cuadro A</b> <span>segundo 0</span></p>
         </div>
         <div class="cuadro">
           <div class="cuadro-lienzo">
-            <canvas id="lienzo-b" aria-hidden="true"></canvas>
-            <span class="marca" style="left:28.5%; top:87.8%" aria-hidden="true"><i>1</i></span>
-            <span class="marca" style="left:66.5%; top:90.5%" aria-hidden="true"><i>2</i></span>
-            <span class="marca" style="left:37.3%; top:20.2%" aria-hidden="true"><i>3</i></span>
+            <img src="img/pizzeria-b-chica.jpg" width="800" height="500" loading="lazy" decoding="async"
+                 alt="Cuadro B: la misma escena un instante después, con la llama alta y el vapor mucho más grande y corrido.">
+            <span class="marca" style="left:88.5%; top:22%" aria-hidden="true"><i>1</i></span>
+            <span class="marca" style="left:84%; top:59%" aria-hidden="true"><i>2</i></span>
           </div>
-          <p class="cuadro-tit"><b>Cuadro B</b> <span>segundo 6</span></p>
+          <p class="cuadro-tit"><b>Cuadro B</b> <span>segundo 3</span></p>
         </div>
       </div>
 
       <ul class="difs">
-        <li><b aria-hidden="true">1</b><span><i>La brasa grande se apaga.</i> En A está al rojo vivo; en B quedó casi en ceniza. Es el latido del carbón, no un efecto.</span></li>
-        <li><b aria-hidden="true">2</b><span><i>Esta otra hace lo contrario.</i> En A está dormida y en B se prendió. Ese cruce es lo que da sensación de fuego vivo.</span></li>
-        <li><b aria-hidden="true">3</b><span><i>El penacho de humo viaja.</i> En A recién asoma sobre la parrilla; en B ya se fue arriba y se abrió. Es el movimiento que más se nota.</span></li>
+        <li><b aria-hidden="true">1</b><span><i>La llama del horno crece y cambia de forma.</i> En A es un resplandor bajo sobre la leña; en B se levanta y lame el techo del horno. Es el latido del fuego, no un efecto.</span></li>
+        <li><b aria-hidden="true">2</b><span><i>El vapor de la pizza se agranda y se corre.</i> En A es un hilo fino; en B ya se abrió y subió hasta la boca del horno. Es el movimiento que más se nota.</span></li>
+        <li><b aria-hidden="true">3</b><span><i>Todo lo demás está quieto.</i> El ladrillo, el mesón, la pala y la pizza no se mueven ni un píxel entre una foto y la otra. Por eso el cruce no se lee como una transición.</span></li>
       </ul>
 
       <!-- línea de tiempo -->
       <div class="linea-tiempo">
         <div class="lt-lienzo">
-          <canvas id="lienzo-scrub" aria-hidden="true"></canvas>
+          <div class="mezcla" id="lt-mezcla">
+            <img src="img/pizzeria-a-chica.jpg" width="800" height="500" loading="lazy" decoding="async" alt="" aria-hidden="true">
+            <img class="arriba" id="lt-b" src="img/pizzeria-b-chica.jpg" width="800" height="500" loading="lazy" decoding="async" alt="" aria-hidden="true">
+          </div>
           <p class="lt-badge" id="lt-badge" aria-hidden="true"><em>Cuadro A</em> · 0,0 s</p>
         </div>
 
         <div class="lt-fila">
           <button type="button" class="btn-mini" id="btn-play" aria-label="Reproducir la línea de tiempo">▶ Reproducir</button>
           <input type="range" class="pista" id="scrub" min="0" max="200" step="1" value="0"
-                 aria-label="Línea de tiempo del bucle, de 0 a 12 segundos">
+                 aria-label="Línea de tiempo del bucle, de 0 a 6 segundos">
         </div>
         <div class="lt-marcas" aria-hidden="true">
-          <span>A · 0 s</span><span>B · 6 s</span><span>A · 12 s</span>
+          <span>A · 0 s</span><span>B · 3 s</span><span>A · 6 s</span>
         </div>
-        <p class="nota">Arrastrá el control (o movelo con las flechas del teclado). De 0 a 6 segundos va de A a B; de 6 a 12 vuelve de B a A por el mismo camino. Cuando llega otra vez a A, arranca de nuevo sin ningún salto: por eso no se ve la costura.</p>
+        <p class="nota">Arrastrá el control (o movelo con las flechas del teclado). De 0 a 3 segundos va de A a B; de 3 a 6 vuelve de B a A por el mismo camino. Cuando llega otra vez a A, arranca de nuevo sin ningún salto: por eso no se ve la costura.</p>
         <p class="sr" id="lt-vivo" aria-live="polite"></p>
       </div>
     </section>
@@ -468,7 +544,7 @@
     <section class="bloque" id="pingpong">
       <p class="rotulo">El interruptor</p>
       <h2>Ida y vuelta, o una sola pasada con el corte a la vista</h2>
-      <p class="parr">Es el mismo video en los dos casos. Lo único que cambia es cómo vuelve al principio. Probá los dos botones y mirá el momento en que reinicia.</p>
+      <p class="parr">Son las mismas dos fotos en los dos casos. Lo único que cambia es cómo vuelve al principio. Probá los dos botones y mirá el momento en que reinicia. Con video pasa exactamente lo mismo: si el video no vuelve por donde vino, el corte se ve.</p>
 
       <div class="pp-caja">
         <div class="pp-ctrl">
@@ -480,7 +556,10 @@
         </div>
 
         <div class="pp-lienzo">
-          <canvas id="lienzo-pp" aria-hidden="true"></canvas>
+          <div class="mezcla" id="pp-mezcla">
+            <img src="img/pizzeria-a-chica.jpg" width="800" height="500" loading="lazy" decoding="async" alt="" aria-hidden="true">
+            <img class="arriba" id="pp-b" src="img/pizzeria-b-chica.jpg" width="800" height="500" loading="lazy" decoding="async" alt="" aria-hidden="true">
+          </div>
           <span class="pp-etiq" aria-hidden="true">acelerado ×2</span>
           <span class="pp-marcador" id="pp-marcador" aria-hidden="true">cortes: 0</span>
           <span class="pp-flash" id="pp-flash" aria-hidden="true"></span>
@@ -489,11 +568,11 @@
         <div class="pp-lect">
           <div class="lect">
             <h3><span class="tick" aria-hidden="true">✓</span> Ida y vuelta (ping-pong)</h3>
-            <p>El video termina exactamente en el cuadro con el que empezó, así que el salto no existe. Podés dejarlo horas y nunca se nota. Cuesta el doble de segundos de video: 12 en vez de 6.</p>
+            <p>La foto de arriba se desvanece y vuelve a aparecer por el mismo camino. Termina exactamente en el estado con el que empezó, así que el salto no existe. Podés dejarlo horas y nunca se nota.</p>
           </div>
           <div class="lect">
             <h3><span class="cruz" aria-hidden="true">✕</span> Una sola pasada (loop común)</h3>
-            <p>Al volver del segundo 6 al 0, la brasa cambia de golpe y el humo se teletransporta para abajo. Se ve un parpadeo, y el ojo lo agarra aunque el visitante no sepa explicarlo.</p>
+            <p>Al llegar a B vuelve a A de un golpe: la llama cambia de forma en un solo cuadro y el vapor se achica de repente. Se ve un parpadeo, y el ojo lo agarra aunque el visitante no sepa explicarlo.</p>
           </div>
         </div>
         <p class="nota" id="pp-nota">Estás viendo el modo <b>ida y vuelta</b>. Cambiá el interruptor para ver el problema que resuelve.</p>
@@ -501,23 +580,70 @@
       </div>
     </section>
 
+    <!-- ============ SIN VIDEO / CON VIDEO ============ -->
+    <section class="bloque" id="con-video">
+      <p class="rotulo">Con video y sin video</p>
+      <h2>Qué se gana cuando en vez de dos fotos va un video</h2>
+      <p class="parr">Las dos versiones salen de las mismas dos fotos de tu local. La diferencia es si se cruzan en el navegador o si antes pasan por una herramienta que arma el video del medio.</p>
+
+      <div class="comp">
+        <div class="col">
+          <p class="sub">Esta demo</p>
+          <h3>Dos fotos que se alternan</h3>
+          <ul>
+            <li><span aria-hidden="true">·</span><span>El movimiento va y viene entre <b>dos estados</b>. La llama tiene dos formas y las repite.</span></li>
+            <li><span aria-hidden="true">·</span><span>Pesa <b>unos 280 KB</b> entre las dos fotos. Carga en cualquier conexión.</span></li>
+            <li><span aria-hidden="true">·</span><span>No necesita ninguna herramienta paga. Se hace con las fotos y doce líneas de código.</span></li>
+            <li><span aria-hidden="true">·</span><span>Si el visitante se queda mirando un rato largo, puede llegar a notar que son dos estados.</span></li>
+          </ul>
+        </div>
+        <div class="col dest">
+          <p class="sub">Con herramienta paga</p>
+          <h3>Un video de 5 a 7 segundos</h3>
+          <ul>
+            <li><span aria-hidden="true">·</span><span>El movimiento es <b>continuo</b>: la llama nunca vuelve a la misma forma dos veces.</span></li>
+            <li><span aria-hidden="true">·</span><span>Pesa <b>entre 1 y 2 MB</b>. Hay que cuidar más la carga y siempre lleva imagen de respaldo.</span></li>
+            <li><span aria-hidden="true">·</span><span>Necesita una herramienta paga que genera el video a partir de tus dos fotos. Se cobra aparte.</span></li>
+            <li><span aria-hidden="true">·</span><span>El ida y vuelta se hornea dentro del archivo: A → B → A en un solo video.</span></li>
+          </ul>
+        </div>
+      </div>
+      <p class="nota">Si recién arrancás, la versión de dos fotos alcanza y sobra. El video conviene cuando la portada es <em>la</em> pieza del negocio y querés que aguante que la miren fijo.</p>
+    </section>
+
     <!-- ============ FICHA TÉCNICA ============ -->
     <section class="bloque" id="ficha">
       <p class="rotulo">Ficha técnica en criollo</p>
-      <h2>Qué hay que saber antes de poner un video de fondo</h2>
+      <h2>Qué hay que saber antes de poner movimiento en la portada</h2>
 
       <div class="fichas">
         <div class="ficha">
-          <h3>Cuánto pesa</h3>
-          <p>Un video de 6 segundos, sin sonido y bien comprimido, entra cómodo entre 800 KB y 2 MB. Con el ida y vuelta son 12 segundos, así que calculá el doble.</p>
-          <p>Se suben dos versiones: una vertical y liviana para el celular y una ancha para la computadora. Nadie descarga la que no le toca.</p>
-          <span class="dato">Objetivo: que la portada esté visible antes que el video</span>
+          <h3>Cuánto pesa cada opción</h3>
+          <p>Las dos fotos de esta demo, ya comprimidas, suman <b>unos 280 KB</b>. Un video de 6 segundos, sin sonido y bien comprimido, arranca en <b>1 MB</b> y se va cómodo a <b>2 MB</b>: entre cuatro y siete veces más.</p>
+          <div class="balanza" aria-hidden="true">
+            <div class="bar-fila">
+              <div class="bar-tit"><span>Dos fotos (esta demo)</span><b>≈ 280 KB</b></div>
+              <div class="bar gris"><i style="width:14%"></i></div>
+            </div>
+            <div class="bar-fila">
+              <div class="bar-tit"><span>Video de 6 s, mudo</span><b>1 a 2 MB</b></div>
+              <div class="bar"><i style="width:100%"></i></div>
+            </div>
+          </div>
+          <p>Con video se suben dos versiones: una vertical y liviana para el celular y una ancha para la computadora. Nadie descarga la que no le toca.</p>
+          <span class="dato">Objetivo: que el titular y el botón estén antes que el fondo</span>
         </div>
 
         <div class="ficha">
-          <h3>Por qué va sin sonido</h3>
-          <p>No es una decisión de gusto: ningún navegador deja que un video arranque solo con audio. Si lleva sonido, no se reproduce y el visitante ve un cuadro quieto.</p>
+          <h3>Por qué el video va mudo</h3>
+          <p>No es una decisión de gusto: ningún navegador deja que un video arranque solo con audio. Si lleva sonido, no se reproduce y el visitante ve un cuadro quieto donde iba tu horno.</p>
           <p>Aparte, el que abre tu página en la parada del colectivo no quiere que le suene el celular. Un fondo es fondo: se mira, no se escucha.</p>
+        </div>
+
+        <div class="ficha">
+          <h3>Por qué va en bucle</h3>
+          <p>Un fondo que se reproduce una vez y queda congelado envejece la página en cinco segundos: el visitante que llega tarde ve una foto fija y no entiende qué pasó. El bucle infinito hace que la portada esté siempre viva, entre a la hora que entre.</p>
+          <p>Y el bucle tiene que ser de ida y vuelta, o exportado para que el último cuadro sea igual al primero. Si no, cada vuelta trae un parpadeo.</p>
         </div>
 
         <div class="ficha">
@@ -526,24 +652,26 @@
           <p>Hace falta más seguido de lo que parece: datos justos, señal mala, ahorro de batería prendido (en iPhone el modo de bajo consumo directamente no reproduce solo), o el visitante pidió menos movimiento en la configuración del teléfono. En todos esos casos queda la foto fija.</p>
           <span class="dato">Sin respaldo, un rectángulo negro donde iba tu local</span>
         </div>
-
-        <div class="ficha">
-          <h3>El ida y vuelta se hornea en el archivo</h3>
-          <p>Pedirle al navegador que reproduzca un video al revés no anda bien en celulares: se traba y come batería. Por eso el ping-pong se exporta ya armado, A → B → A en un solo archivo, y el navegador nada más lo repite.</p>
-          <p>Lo mismo con el recorte: el video se sube ya en el tamaño final. Nada de bajar un archivo grande para después achicarlo con CSS.</p>
-        </div>
       </div>
 
       <div class="ficha" style="margin-top:10px">
-        <h3>La etiqueta, tal cual va</h3>
+        <h3>Así está hecha esta demo (sin video)</h3>
+<pre><code>&lt;div class="portada"&gt;
+  &lt;img src="pizzeria-a.jpg" <b>width</b>="1600" <b>height</b>="1000" alt="…"&gt;
+  &lt;img src="pizzeria-b.jpg" <b>width</b>="1600" <b>height</b>="1000" alt="" <b>id</b>="foto-b"&gt;
+&lt;/div&gt;
+<i>&lt;!-- las dos apiladas con position:absolute. Lo único que se anima es
+     la opacidad de foto-b, de 0 a 1 y de vuelta, con curva suave --&gt;</i></code></pre>
+
+        <h3 style="margin-top:16px">Y así queda con el video (herramienta paga)</h3>
 <pre><code>&lt;video <b>autoplay muted loop playsinline</b>
        <b>preload</b>="metadata"
-       <b>poster</b>="portada-brasas.jpg"
+       <b>poster</b>="pizzeria-a.jpg"
        aria-hidden="true"&gt;
-  &lt;source src="brasas-pingpong.webm" type="video/webm"&gt;
-  &lt;source src="brasas-pingpong.mp4"  type="video/mp4"&gt;
+  &lt;source src="horno-pingpong.webm" type="video/webm"&gt;
+  &lt;source src="horno-pingpong.mp4"  type="video/mp4"&gt;
 &lt;/video&gt;
-<i>&lt;!-- el poster es un cuadro del propio video: si algo falla, queda eso --&gt;</i></code></pre>
+<i>&lt;!-- el poster es el cuadro A: si algo falla, queda la misma foto --&gt;</i></code></pre>
         <ul class="atrib">
           <li><code>autoplay</code><span>Arranca solo, sin que el visitante toque nada.</span></li>
           <li><code>muted</code><span>Sin sonido. Es la condición para que el <code style="display:inline">autoplay</code> funcione.</span></li>
@@ -552,14 +680,42 @@
           <li><code>preload="metadata"</code><span>Baja lo mínimo primero. El texto y el botón de WhatsApp aparecen antes que el video.</span></li>
           <li><code>poster</code><span>La imagen de respaldo que se ve mientras carga, o para siempre si el video no puede reproducirse.</span></li>
         </ul>
-        <p class="nota">Si el visitante tiene activado “reducir movimiento” en su teléfono, el video no arranca: queda el poster fijo. Eso también viene resuelto de fábrica en las páginas que hacemos.</p>
+        <p class="nota">Si el visitante tiene activado “reducir movimiento” en su teléfono, no se mueve nada: en la versión con video queda el poster, y en esta versión de dos fotos queda el cuadro A quieto. Probalo vos: prendé “reducir movimiento” y recargá.</p>
+      </div>
+    </section>
+
+    <!-- ============ LA CARTA (datos de ejemplo) ============ -->
+    <section class="bloque" id="carta">
+      <p class="rotulo">Datos de ejemplo</p>
+      <h2>Lo que iría en la página de la pizzería</h2>
+      <p class="parr">Precios, horarios y carta de ejemplo, para que veas cómo queda la pieza acompañada del resto del contenido. En una página real van los tuyos.</p>
+
+      <ul class="carta">
+        <li><b>Mozzarella</b> <span>salsa de tomate, mozzarella y orégano</span> <em>Gs. 55.000</em></li>
+        <li><b>Napolitana</b> <span>tomate en rodajas, ajo y albahaca fresca</span> <em>Gs. 65.000</em></li>
+        <li><b>Cuatro quesos</b> <span>mozzarella, provolone, azul y parmesano</span> <em>Gs. 78.000</em></li>
+        <li><b>Tatatĩ especial</b> <span>panceta ahumada al horno, cebolla morada y rúcula</span> <em>Gs. 82.000</em></li>
+        <li><b>Media pizza + gaseosa</b> <span>para uno, de lunes a jueves</span> <em>Gs. 38.000</em></li>
+      </ul>
+
+      <div class="fichas" style="margin-top:16px">
+        <div class="ficha">
+          <h3>Horarios</h3>
+          <p>Martes a jueves y domingo, de 18:30 a 23:30. Viernes y sábado, de 18:30 a 00:30. <b>Lunes cerrado.</b></p>
+          <p>El cartelito verde de la portada se calcula con la hora del propio visitante: si entra un lunes ve “cerrado” y cuándo abrís de nuevo. No hay que tocar nada a mano.</p>
+        </div>
+        <div class="ficha">
+          <h3>Cómo se pide</h3>
+          <p>Todo por WhatsApp: elegís, mandás el mensaje y pasás a retirar. El botón de la portada abre el chat con el pedido ya escrito.</p>
+          <p>Delivery en la zona de [barrio] y alrededores, con un recargo de [monto]. Los datos entre corchetes se completan con los del negocio.</p>
+        </div>
       </div>
     </section>
   </div>
 
   <div class="katu-pie">
     Demo de <strong>KatuWeb</strong> · <a href="../catalogo.html">Volver al catálogo</a> ·
-    <a href="https://wa.me/595983518856?text=Hola!%20Vi%20la%20demo%20del%20hero%20con%20video%20en%20bucle.%20%C2%BFCu%C3%A1nto%20sale%20para%20mi%20negocio%3F" target="_blank" rel="noopener noreferrer">Quiero esto para mi negocio</a>
+    <a href="https://wa.me/595983518856?text=Hola!%20Vi%20la%20demo%20de%20la%20portada%20con%20dos%20fotos%20que%20se%20alternan%20(pizzer%C3%ADa).%20%C2%BFCu%C3%A1nto%20sale%20para%20mi%20negocio%3F" target="_blank" rel="noopener noreferrer">Quiero esto para mi negocio</a>
   </div>
 
 </main>
@@ -574,116 +730,46 @@
   try { reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
   function $(s){ return document.querySelector(s); }
 
+  /* medidas reales de las dos fotos: el canvas de humo las necesita para
+     ubicar la pizza y el horno aunque el recorte cambie de tamaño */
+  var IMW = 1600, IMH = 1000;
+
+  /* dónde está cada cosa dentro de la foto, en fracciones de 0 a 1 */
+  var PIZZA = { x: .66, y: .79 };   /* justo arriba del borde de la pizza */
+  var HORNO = { x: .86, y: .28 };   /* la boca del horno, donde está el fuego */
+
+  /* object-position de las fotos. Se define acá y se aplica por JS para que
+     el canvas y las fotos usen exactamente el mismo recorte, sin adivinar. */
+  var anchaMQ = null;
+  try { anchaMQ = window.matchMedia('(min-width:900px)'); } catch (e2) {}
+  function objX(){ return (anchaMQ && anchaMQ.matches) ? .55 : .78; }
+  var OBJY = .5;
+
+  /* curva suave: arranca despacio, acelera y frena. Sin esto el cruce
+     se lee como una transición de diapositivas. */
+  function suave(p){
+    if (p <= 0) return 0;
+    if (p >= 1) return 1;
+    return p * p * (3 - 2 * p);
+  }
+
   /* ==================================================================
-     1. DATOS DE LA ESCENA
-     Se generan una sola vez con una semilla fija, así TODAS las canvas
-     (portada, cuadro A, cuadro B, línea de tiempo, ping-pong) dibujan
-     exactamente la misma parrilla. Todo está en coordenadas 0..1.
+     1. LAS DOS FOTOS DE LA PORTADA
      ================================================================== */
-  var semilla = 20250806;
-  function rnd(){ semilla = (semilla * 1664525 + 1013904223) % 4294967296; return semilla / 4294967296; }
-  function ent(a, b){ return a + (b - a) * rnd(); }
+  var fotoA = $('#foto-a'), fotoB = $('#foto-b');
 
-  var BRASAS = [], CLAVE_A, CLAVE_B;
-  (function(){
-    /* las dos brasas protagonistas: una se apaga de A a B, la otra se prende.
-       Se guardan aparte porque después el arreglo se ordena por profundidad. */
-    CLAVE_A = { x:.268, y:.888, r:42, base:.09, amp:.91, f:.5, ph:0, ceniza:0, clave:1 };
-    CLAVE_B = { x:.688, y:.914, r:46, base:.07, amp:.93, f:.5, ph:Math.PI, ceniza:0, clave:2 };
-    BRASAS.push(CLAVE_A); BRASAS.push(CLAVE_B);
-    /* pocos carbones y grandes: leen mejor que muchos chiquitos.
-       Adelante quedan más apagados y con más ceniza, como en una parrilla real. */
-    var filas = [
-      { y:.804, r:16, n:12, cal:1.00, cen:.28 },
-      { y:.844, r:20, n:10, cal:1.00, cen:.30 },
-      { y:.888, r:25, n:9,  cal:.92,  cen:.38 },
-      { y:.940, r:30, n:8,  cal:.72,  cen:.52 },
-      { y:.998, r:36, n:7,  cal:.52,  cen:.66 }
-    ];
-    for (var i = 0; i < filas.length; i++){
-      var fl = filas[i], m = .05 + i * .002;
-      for (var j = 0; j < fl.n; j++){
-        BRASAS.push({
-          x: m + (1 - 2 * m) * ((j + .5) / fl.n) + ent(-.045, .045),
-          y: fl.y + ent(-.016, .016),
-          r: fl.r * ent(.70, 1.45),
-          base: ent(.20, .44) * fl.cal, amp: ent(.24, .52) * fl.cal,
-          f: ent(.45, 1.55), ph: rnd() * TAU,
-          ceniza: rnd() < fl.cen ? 1 : 0, clave: 0
-        });
-      }
-    }
-    /* forma irregular de cada carbón */
-    for (var q = 0; q < BRASAS.length; q++){
-      var p = [];
-      for (var v = 0; v < 9; v++) p.push(ent(.84, 1.14));
-      BRASAS[q].poli = p;
-      BRASAS[q].rot = rnd() * TAU;
-    }
-    /* de atrás hacia adelante, para que los de adelante tapen a los de atrás */
-    BRASAS.sort(function(a, b){ return a.y - b.y; });
-  })();
-
-  /* escalas de color del carbón: de ceniza fría a naranja al rojo vivo.
-     Se arman una vez para no crear cadenas de color en cada cuadro. */
-  var PAL_FUEGO = [], PAL_CENIZA = [];
-  (function(){
-    for (var i = 0; i < 10; i++){
-      var v = i / 9;
-      PAL_FUEGO.push('rgb(' +
-        Math.round(24 + 231 * Math.pow(v, 1.10)) + ',' +
-        Math.round(17 + 152 * Math.pow(v, 2.05)) + ',' +
-        Math.round(13 + 68 * Math.pow(v, 3.6)) + ')');
-      PAL_CENIZA.push('rgb(' +
-        Math.round(28 + 62 * Math.pow(v, 1.30)) + ',' +
-        Math.round(24 + 51 * Math.pow(v, 1.50)) + ',' +
-        Math.round(21 + 42 * Math.pow(v, 1.75)) + ')');
-    }
-  })();
-
-  var HUMOS = [];
-  (function(){
-    /* el penacho marcado con el número 3: viaja de abajo a arriba, sin dar la vuelta */
-    HUMOS.push({ x0:.415, amp:.045, freq:1.1, ph:.6, r0:34, grow:110, op:.50, lineal:1 });
-    for (var i = 0; i < 26; i++){
-      HUMOS.push({
-        x0: ent(.12, .88), amp: ent(.02, .075), freq: ent(.6, 1.6), ph: rnd() * TAU,
-        vel: ent(.55, 1.35), off: rnd(),
-        r0: ent(18, 38), grow: ent(60, 125), op: ent(.15, .32)
-      });
-    }
-  })();
-
-  var CHISPAS = [];
-  (function(){
-    for (var i = 0; i < 14; i++){
-      CHISPAS.push({
-        x0: ent(.14, .86), amp: ent(.01, .05), freq: ent(1, 2.4), ph: rnd() * TAU,
-        vel: ent(1.4, 3.1), off: rnd(), r: ent(1.7, 3.4), sube: ent(.28, .56)
-      });
-    }
-  })();
-
-  /* cortes de carne sobre la parrilla */
-  var CARNES = [
-    { x:.228, y:.836, w:172, h:40, ph:.4,  f:1.0 },
-    { x:.552, y:.862, w:206, h:48, ph:2.2, f:.55 },
-    { x:.808, y:.828, w:138, h:35, ph:4.1, f:1.4 }
-  ];
-
-  /* barras de la parrilla, con perspectiva (más gruesas y separadas abajo) */
-  var BARRAS = [];
-  (function(){
-    for (var i = 0; i < 5; i++){
-      var p = i / 4;
-      BARRAS.push({ y: .786 + .082 * Math.pow(p, 1.30), th: 6 + 7 * p });
-    }
-  })();
+  function aplicarObj(){
+    var v = (objX() * 100).toFixed(1) + '% ' + (OBJY * 100) + '%';
+    fotoA.style.objectPosition = v;
+    fotoB.style.objectPosition = v;
+  }
+  aplicarObj();
 
   /* ==================================================================
-     2. SPRITES
-     Un degradado radial por partícula y por cuadro sería carísimo.
-     Se dibujan una sola vez en canvas chiquitos y después se copian.
+     2. CAPA DE HUMO Y PARPADEO (canvas)
+     Es el agregado, no el plato principal: el trabajo pesado lo hacen
+     las fotos. Acá sólo va un hilo de humo sobre la pizza y un
+     parpadeo cálido sobre la boca del horno.
      ================================================================== */
   function esfera(size, paradas){
     var c = document.createElement('canvas');
@@ -694,317 +780,109 @@
     x.fillStyle = g; x.fillRect(0, 0, size, size);
     return c;
   }
-  var SP = {
-    calido: esfera(128, [[0,'rgba(255,238,196,.95)'],[.16,'rgba(255,178,74,.62)'],[.44,'rgba(226,86,16,.20)'],[1,'rgba(180,40,0,0)']]),
-    tibio:  esfera(128, [[0,'rgba(255,148,66,.72)'],[.20,'rgba(214,72,18,.40)'],[.54,'rgba(150,30,4,.13)'],[1,'rgba(90,14,0,0)']]),
-    nucleo: esfera(64,  [[0,'rgba(255,250,232,1)'],[.34,'rgba(255,202,112,.80)'],[.74,'rgba(255,120,30,.22)'],[1,'rgba(255,90,0,0)']]),
-    humoC:  esfera(128, [[0,'rgba(255,198,144,.50)'],[.40,'rgba(190,132,92,.20)'],[1,'rgba(120,80,60,0)']]),
-    humoF:  esfera(128, [[0,'rgba(198,202,216,.40)'],[.44,'rgba(140,146,160,.15)'],[1,'rgba(90,95,110,0)']]),
-    amb:    esfera(256, [[0,'rgba(255,140,45,.52)'],[.34,'rgba(210,80,18,.21)'],[.70,'rgba(120,40,8,.07)'],[1,'rgba(60,20,0,0)']]),
-    chispa: esfera(32,  [[0,'rgba(255,248,222,1)'],[.30,'rgba(255,190,90,.68)'],[1,'rgba(255,120,20,0)']]),
-    /* al revés que las demás: transparente en el centro y oscura en el borde */
-    hueco:  esfera(96,  [[0,'rgba(0,0,0,0)'],[.50,'rgba(0,0,0,.05)'],[.82,'rgba(0,0,0,.46)'],[.94,'rgba(0,0,0,.26)'],[1,'rgba(0,0,0,0)']])
-  };
-
-  /* ==================================================================
-     3. LA ESCENA
-     pintar(t) con t de 0 a 1 es una función pura: el mismo t da siempre
-     el mismo cuadro. Eso es lo que permite el ida y vuelta y el control
-     deslizable sin guardar ningún estado.
-     ================================================================== */
-  function rectRedondo(c, x, y, w, h, r){
-    c.beginPath();
-    c.moveTo(x + r, y);
-    c.lineTo(x + w - r, y); c.quadraticCurveTo(x + w, y, x + w, y + r);
-    c.lineTo(x + w, y + h - r); c.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-    c.lineTo(x + r, y + h); c.quadraticCurveTo(x, y + h, x, y + h - r);
-    c.lineTo(x, y + r); c.quadraticCurveTo(x, y, x + r, y);
-    c.closePath();
+  var SP = null;
+  function sprites(){
+    if (SP) return SP;
+    SP = {
+      humoC: esfera(128, [[0,'rgba(255,206,158,.42)'],[.42,'rgba(196,142,102,.16)'],[1,'rgba(120,84,62,0)']]),
+      humoF: esfera(128, [[0,'rgba(206,208,214,.34)'],[.46,'rgba(146,150,160,.12)'],[1,'rgba(92,96,108,0)']]),
+      calido: esfera(256, [[0,'rgba(255,214,142,.60)'],[.22,'rgba(255,150,52,.30)'],[.56,'rgba(206,74,12,.10)'],[1,'rgba(150,36,0,0)']])
+    };
+    return SP;
   }
 
-  function crearEscena(cv, cfg){
-    cfg = cfg || {};
-    var ctx = cv.getContext('2d', { alpha: false });
-    var fondo = document.createElement('canvas'), fc = fondo.getContext('2d');
-    var frente = document.createElement('canvas'), rc = frente.getContext('2d');
-    var W = 1, H = 1, k = 1, yFrente = 0, hFrente = 1;
-    var hCama = 1, yCama = 0, yReja = 0, yPie = 0, gPie = null;
-    var nHumo = HUMOS.length, nChispa = CHISPAS.length;
-    var ultimoT = 0, medido = false;
+  /* semilla fija: el humo sale siempre igual, así la demo es reproducible */
+  var semilla = 20260807;
+  function rnd(){ semilla = (semilla * 1664525 + 1013904223) % 4294967296; return semilla / 4294967296; }
+  function ent(a, b){ return a + (b - a) * rnd(); }
 
-    /* La cama de brasas es una franja proporcional al ancho, apoyada abajo.
-       Si midiéramos todo en fracciones del alto, en un celular vertical la
-       parrilla se estiraría y quedaría un peine de líneas separadas. */
-    function mapY(f){ return yCama + (f - .78) / .22 * hCama; }
+  var PUFFS = [];
+  (function(){
+    for (var i = 0; i < 15; i++){
+      PUFFS.push({
+        off: i / 15 + ent(-.02, .02),
+        vel: ent(.55, .85),
+        dx:  ent(-.020, .026),          /* de dónde arranca, en fracción de foto */
+        amp: ent(.010, .034),           /* cuánto se bambolea al subir */
+        freq: ent(.7, 1.6), ph: rnd() * TAU,
+        r0:  ent(20, 40),               /* radio en píxeles de la foto original */
+        gro: ent(90, 190),
+        op:  ent(.30, .62),
+        sube: ent(.30, .44)             /* qué fracción del alto recorre */
+      });
+    }
+  })();
 
+  function crearHumo(cv){
+    var ctx = cv.getContext('2d');
+    var W = 1, H = 1, esc = 1, ox = 0, oy = 0, listo = false;
+
+    /* misma cuenta que hace object-fit:cover, para que el humo caiga
+       exactamente sobre la pizza pase lo que pase con el tamaño */
     function medir(){
       var r = cv.getBoundingClientRect();
       var cw = Math.max(1, Math.round(r.width));
-      var ch = Math.round(r.height);
-      if (!ch || ch < 8) ch = Math.round(cw * (cfg.rel || .625));   /* por si aspect-ratio no está */
+      var ch = Math.max(1, Math.round(r.height));
       var area = cw * ch;
-      var d = window.devicePixelRatio || 1;
-      /* Resolución de dispositivo, pero con presupuesto de píxeles: por más que
-         la pantalla sea 3x, no dibujamos más de ~900.000 píxeles por cuadro.
-         En un celular eso da 2x completos; en una compu grande baja solo un poco
-         y no se nota, porque la escena es toda degradados suaves. */
-      var dpr = Math.min(d, 2);
-      var techo = cfg.estatico ? 1600000 : 900000;
-      if (area * dpr * dpr > techo) dpr = Math.max(1, Math.sqrt(techo / area));
+      var dpr = Math.min(window.devicePixelRatio || 1, 2);
+      if (area * dpr * dpr > 900000) dpr = Math.max(1, Math.sqrt(900000 / area));
       W = Math.max(2, Math.round(cw * dpr));
       H = Math.max(2, Math.round(ch * dpr));
       if (cv.width !== W) cv.width = W;
       if (cv.height !== H) cv.height = H;
-      hCama = Math.min(H * .42, W * .46);
-      yCama = H - hCama;
-      /* el tamaño del carbón sigue al ancho: si sólo siguiera al alto de la cama,
-         en una pantalla ancha quedarían cuatro piedras enormes y separadas */
-      k = Math.max(W / 1000, hCama / 340);
-      yReja = mapY(.80);
-      /* sombra del frente del cajón, cacheada: se pinta encima de los carbones
-         para que la fila de adelante se hunda en la penumbra */
-      yPie = yCama + hCama * .62;
-      gPie = ctx.createLinearGradient(0, yPie, 0, H);
-      gPie.addColorStop(0, 'rgba(0,0,0,0)');
-      gPie.addColorStop(.55, 'rgba(0,0,0,.34)');
-      gPie.addColorStop(1, 'rgba(0,0,0,.66)');
-      /* menos partículas en las canvas chicas: no se notan y ahorran relleno */
-      nHumo   = (cfg.estatico || area >= 130000) ? HUMOS.length : 16;
-      nChispa = (cfg.estatico || area >= 130000) ? CHISPAS.length : 9;
-      capaFondo();
-      capaFrente();
-      medido = true;
+      esc = Math.max(W / IMW, H / IMH);
+      ox = (W - IMW * esc) * objX();
+      oy = (H - IMH * esc) * OBJY;
+      listo = true;
     }
+    function px(fx){ return ox + fx * IMW * esc; }
+    function py(fy){ return oy + fy * IMH * esc; }
 
-    function capaFondo(){
-      fondo.width = W; fondo.height = H;
-      var g = fc.createLinearGradient(0, 0, 0, H);
-      g.addColorStop(0, '#07060a'); g.addColorStop(.40, '#0c0908');
-      g.addColorStop(.70, '#170d09'); g.addColorStop(1, '#2b1409');
-      fc.fillStyle = g; fc.fillRect(0, 0, W, H);
-
-      /* halo cálido de la pared, centrado arriba de la cama: la pared se ilumina,
-         el cajón de carbón queda oscuro y así las brasas resaltan */
-      var rHalo = Math.max(W * .58, hCama * 2.4);
-      var g2 = fc.createRadialGradient(W * .5, yCama, hCama * .08, W * .5, yCama, rHalo);
-      g2.addColorStop(0, 'rgba(255,128,36,.26)');
-      g2.addColorStop(.38, 'rgba(172,56,10,.09)');
-      g2.addColorStop(1, 'rgba(0,0,0,0)');
-      fc.fillStyle = g2; fc.fillRect(0, 0, W, H);
-
-      /* el cajón: oscuro, con un poco de ceniza al frente */
-      var g3 = fc.createLinearGradient(0, yCama - hCama * .10, 0, H);
-      g3.addColorStop(0, 'rgba(0,0,0,0)');
-      g3.addColorStop(.45, 'rgba(0,0,0,.56)');
-      g3.addColorStop(1, 'rgba(0,0,0,.90)');
-      fc.fillStyle = g3; fc.fillRect(0, yCama - hCama * .10, W, hCama * 1.10);
-      var g4 = fc.createLinearGradient(0, yCama + hCama * .3, 0, H);
-      g4.addColorStop(0, 'rgba(70,52,42,0)'); g4.addColorStop(1, 'rgba(72,55,45,.12)');
-      fc.fillStyle = g4; fc.fillRect(0, yCama + hCama * .3, W, hCama * .7);
-    }
-
-    function capaFrente(){
-      /* solo la franja de abajo: es lo único que tapa a las brasas */
-      yFrente = Math.max(0, Math.round(yCama - hCama * .40));
-      hFrente = Math.max(2, H - yFrente);
-      frente.width = W; frente.height = hFrente;
-      rc.clearRect(0, 0, W, hFrente);
-      rc.save(); rc.translate(0, -yFrente);
-
-      /* las barras: varillas redondas, más largas y gruesas cuanto más cerca.
-         La luz les pega por debajo, así que el filo caliente va abajo. */
-      function barra(bb, idx){
-        var y = mapY(bb.y), th = Math.max(2, bb.th * k);
-        var m = .105 - .062 * (idx / (BARRAS.length - 1));     /* perspectiva */
-        var x0 = W * m, an = W * (1 - 2 * m);
-        var g = rc.createLinearGradient(0, y, 0, y + th);
-        g.addColorStop(0, '#171110'); g.addColorStop(.34, '#2b211d');
-        g.addColorStop(.72, '#120c0a'); g.addColorStop(1, '#0a0605');
-        rc.fillStyle = g;
-        rectRedondo(rc, x0, y, an, th, th * .5); rc.fill();
-        rc.fillStyle = 'rgba(255,150,60,.34)';                 /* filo caliente */
-        rc.fillRect(x0 + th * .5, y + th * .74, an - th, Math.max(1, th * .20));
-        rc.fillStyle = 'rgba(255,236,208,.10)';                /* brillo del metal */
-        rc.fillRect(x0 + th * .5, y + th * .18, an - th, Math.max(1, th * .13));
-      }
-      var i;
-      for (i = 0; i < BARRAS.length - 2; i++) barra(BARRAS[i], i);
-
-      /* los cortes de carne, apoyados sobre la parrilla */
-      for (i = 0; i < CARNES.length; i++){
-        var c = CARNES[i];
-        var w = c.w * k, h = c.h * k, x = c.x * W - w / 2, y = mapY(c.y) - h;
-        var gg = rc.createLinearGradient(0, y, 0, y + h);
-        gg.addColorStop(0, '#5a3521'); gg.addColorStop(.42, '#3a2015');
-        gg.addColorStop(.80, '#22120c'); gg.addColorStop(1, '#160c08');
-        rectRedondo(rc, x, y, w, h, h * .44);
-        rc.fillStyle = gg; rc.fill();
-        /* lomo iluminado por arriba */
-        rc.fillStyle = 'rgba(255,206,150,.20)';
-        rectRedondo(rc, x + w * .07, y + h * .09, w * .86, h * .20, h * .10);
-        rc.fill();
-        /* marcas de la parrilla */
-        rc.fillStyle = 'rgba(18,10,7,.62)';
-        for (var mm = 0; mm < 3; mm++){
-          var mx = x + w * (.22 + mm * .26);
-          rc.fillRect(mx, y + h * .16, Math.max(1, w * .035), h * .62);
-        }
-        /* borde de abajo, que es donde pega el fuego */
-        rc.fillStyle = 'rgba(255,146,52,.42)';
-        rectRedondo(rc, x + w * .04, y + h * .80, w * .92, h * .17, h * .085);
-        rc.fill();
-      }
-
-      /* las dos barras de adelante van por encima de la carne: da profundidad */
-      for (i = BARRAS.length - 2; i < BARRAS.length; i++) barra(BARRAS[i], i);
-
-      /* montantes laterales de la parrilla */
-      var yM = mapY(.775), altoM = H - yM;
-      rc.fillStyle = '#0d0908';
-      rc.fillRect(W * .048, yM, Math.max(2, 8 * k), altoM);
-      rc.fillRect(W * .952 - Math.max(2, 8 * k), yM, Math.max(2, 8 * k), altoM);
-      rc.restore();
-    }
-
-    function pintar(t){
-      if (!medido) medir();
-      ultimoT = t;
-      var i, x, y, r, a, u, v;
-
-      ctx.globalCompositeOperation = 'source-over';
-      ctx.globalAlpha = 1;
-      ctx.drawImage(fondo, 0, 0);
-
+    /* seg es el reloj en segundos y siempre crece: así el humo nunca da un
+       salto, por más rato que el visitante se quede en la portada */
+    function pintar(seg){
+      if (!listo) medir();
+      var S = sprites();
+      ctx.clearRect(0, 0, W, H);
       ctx.globalCompositeOperation = 'lighter';
 
-      /* respiración general del fuego */
-      var amb = .78 + .22 * Math.sin(.6 + t * TAU * .5);
-      var R = Math.max(W * .52, hCama * 2.0);
-      ctx.globalAlpha = amb * .34;
-      ctx.drawImage(SP.amb, W * .5 - R, H + hCama * .30 - R, R * 2, R * 2);
+      /* parpadeo de la boca del horno: dos senos desfasados para que no
+         se sienta el pulso regular */
+      var f = .5 + .30 * Math.sin(seg * TAU * .35) + .20 * Math.sin(seg * TAU * .83 + 1.2);
+      var rf = 210 * esc;
+      ctx.globalAlpha = Math.max(0, .045 + .085 * f);
+      ctx.drawImage(S.calido, px(HORNO.x) - rf, py(HORNO.y) - rf, rf * 2, rf * 2);
 
-      /* PASO 1 — el resplandor que se escapa entre los carbones */
-      var b, calor = [];
-      for (i = 0; i < BRASAS.length; i++){
-        b = BRASAS[i];
-        v = b.base + b.amp * (.5 + .5 * Math.cos(b.ph + t * TAU * b.f));
-        calor[i] = v;
-        if (v < .26) continue;
-        x = b.x * W; y = mapY(b.y); r = b.r * k * (.95 + .40 * v);
-        ctx.globalAlpha = (v - .26) * .70;
-        ctx.drawImage(v > .58 ? SP.calido : SP.tibio, x - r * 1.7, y - r * 1.7, r * 3.4, r * 3.4);
-      }
-
-      /* la grasa que cae y se prende debajo de cada corte */
-      for (i = 0; i < CARNES.length; i++){
-        var cc = CARNES[i];
-        v = .25 + .75 * (.5 + .5 * Math.cos(cc.ph + t * TAU * cc.f));
-        r = cc.w * k * .52;
-        ctx.globalAlpha = .16 + .40 * v;
-        ctx.drawImage(SP.calido, cc.x * W - r, mapY(cc.y) - r * .50, r * 2, r);
-      }
-
-      /* PASO 2 — el cuerpo opaco de cada carbón, pintado según su calor */
-      ctx.globalCompositeOperation = 'source-over';
-      ctx.globalAlpha = 1;
-      ctx.strokeStyle = 'rgba(9,5,3,.85)';
-      ctx.lineWidth = Math.max(1.2, k * 3);
-      ctx.lineJoin = 'round';
-      for (i = 0; i < BRASAS.length; i++){
-        b = BRASAS[i]; v = calor[i];
-        x = b.x * W; y = mapY(b.y); r = b.r * k;
-        ctx.beginPath();
-        for (var q = 0; q < 9; q++){
-          var ang = b.rot + q / 9 * TAU, dd = r * b.poli[q];
-          var px = x + Math.cos(ang) * dd, py = y + Math.sin(ang) * dd * .56;
-          if (q === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
-        }
-        ctx.closePath();
-        ctx.fillStyle = (b.ceniza ? PAL_CENIZA : PAL_FUEGO)[Math.round(v * 9)];
-        ctx.fill();
-        ctx.stroke();   /* la juntura oscura entre carbón y carbón */
-        /* sombra en el borde: le da bulto y hunde las junturas */
-        ctx.drawImage(SP.hueco, x - r * 1.30, y - r * 1.00, r * 2.6, r * 2.0);
-      }
-
-      /* la penumbra del frente */
-      ctx.globalCompositeOperation = 'source-over';
-      ctx.globalAlpha = 1;
-      ctx.fillStyle = gPie;
-      ctx.fillRect(0, yPie, W, H - yPie);
-
-      /* PASO 3 — el punto blanco de los que están al rojo vivo */
-      ctx.globalCompositeOperation = 'lighter';
-      for (i = 0; i < BRASAS.length; i++){
-        v = calor[i];
-        if (v < .55 || BRASAS[i].ceniza) continue;
-        b = BRASAS[i];
-        r = b.r * k;
-        ctx.globalAlpha = (v - .55) * 1.5;
-        ctx.drawImage(SP.nucleo, b.x * W - r * .8, mapY(b.y) - r * .5, r * 1.6, r);
-      }
-
-      /* la parrilla y la carne, recortadas contra el fuego */
-      ctx.globalCompositeOperation = 'source-over';
-      ctx.globalAlpha = 1;
-      ctx.drawImage(frente, 0, yFrente);
-
-      /* humo: sube en aditivo, como humo iluminado desde abajo */
-      ctx.globalCompositeOperation = 'lighter';
-      var viaje = yReja + H * .08;
-      for (i = 0; i < nHumo; i++){
-        var hm = HUMOS[i];
-        u = hm.lineal ? (.10 + .55 * t) : ((hm.off + t * hm.vel) % 1);
-        y = yReja - u * viaje;
-        x = (hm.x0 + Math.sin(hm.ph + u * hm.freq * TAU) * hm.amp) * W;
-        r = (hm.r0 + u * hm.grow) * k;
-        a = hm.op * Math.pow(Math.sin(Math.PI * Math.min(1, u)), .75);
+      /* el hilo de humo sobre la pizza */
+      var i, p, u, x, y, r, a;
+      for (i = 0; i < PUFFS.length; i++){
+        p = PUFFS[i];
+        u = (p.off + seg * p.vel * .13) % 1;
+        x = px(PIZZA.x + p.dx + Math.sin(p.ph + u * p.freq * TAU) * p.amp * u);
+        y = py(PIZZA.y - u * p.sube);
+        r = (p.r0 + u * p.gro) * esc;
+        a = p.op * Math.pow(Math.sin(Math.PI * u), .9) * .34;
         if (a <= .004) continue;
         ctx.globalAlpha = a;
-        ctx.drawImage(u < .34 ? SP.humoC : SP.humoF, x - r, y - r, r * 2, r * 2);
-      }
-
-      /* chispas */
-      for (i = 0; i < nChispa; i++){
-        var ch = CHISPAS[i];
-        u = (ch.off + t * ch.vel) % 1;
-        y = mapY(.885) - u * ch.sube * viaje;
-        x = (ch.x0 + Math.sin(ch.ph + u * ch.freq * TAU) * ch.amp) * W;
-        r = ch.r * k * (1 - u * .45) * 3;
-        ctx.globalAlpha = Math.pow(1 - u, 1.6) * .9;
-        ctx.drawImage(SP.chispa, x - r, y - r, r * 2, r * 2);
+        ctx.drawImage(u < .30 ? S.humoC : S.humoF, x - r, y - r, r * 2, r * 2);
       }
 
       ctx.globalCompositeOperation = 'source-over';
       ctx.globalAlpha = 1;
     }
 
-    return {
-      medir: medir,
-      pintar: pintar,
-      repintar: function(){ medir(); pintar(ultimoT); },
-      esta: function(){ return medido; },
-      /* dónde cae un punto de la escena dentro de la caja, en % (para las marcas) */
-      pos: function(xf, yf){ return { x: xf * 100, y: mapY(yf) / H * 100 }; },
-      posHumo: function(t){
-        var hm = HUMOS[0], u = .10 + .55 * t;
-        return {
-          x: (hm.x0 + Math.sin(hm.ph + u * hm.freq * TAU) * hm.amp) * 100,
-          y: (yReja - u * (yReja + H * .08)) / H * 100
-        };
-      }
-    };
+    return { medir: medir, pintar: pintar, esta: function(){ return listo; } };
   }
 
   /* ==================================================================
-     4. MOTOR: un solo requestAnimationFrame para toda la página
+     3. MOTOR: un solo requestAnimationFrame para toda la página
      ================================================================== */
-  var vivos = {}, corriendo = false, hayAlguno = false;
+  var vivos = {}, corriendo = false;
   function bucle(now){
     corriendo = false;
-    hayAlguno = false;
-    for (var id in vivos){ if (vivos.hasOwnProperty(id)){ vivos[id](now); hayAlguno = true; } }
-    if (hayAlguno) arrancar();
+    var hay = false;
+    for (var id in vivos){ if (vivos.hasOwnProperty(id)){ vivos[id](now); hay = true; } }
+    if (hay) arrancar();
   }
   function arrancar(){
     /* con la pestaña en segundo plano el navegador ya no llama a
@@ -1016,13 +894,15 @@
   function vivir(id, fn){ if (reduce) return; vivos[id] = fn; arrancar(); }
   function morir(id){ delete vivos[id]; }
 
-  /* reproductor: convierte el reloj en t (0..1) según el modo, y avisa del corte */
+  /* reproductor: convierte el reloj en t (0..1) según el modo, y avisa del
+     corte. dur = lo que tarda en ir de A a B. En ida y vuelta el ciclo
+     completo es el doble, porque vuelve por el mismo camino. */
   var modo = 'pp';
   function reproductor(dur){
     var t0 = null, prevP = 0;
     return {
       reiniciar: function(){ t0 = null; prevP = 0; },
-      alFinal: function(now){ var c = (modo === 'pp' ? dur * 2 : dur); t0 = now - c * .88; prevP = .88; },
+      alFinal: function(now){ var c = (modo === 'pp' ? dur * 2 : dur); t0 = now - c * .90; prevP = .90; },
       leer: function(now){
         if (t0 === null){ t0 = now; prevP = 0; }
         var ciclo = (modo === 'pp') ? dur * 2 : dur;
@@ -1035,12 +915,13 @@
   }
 
   /* ==================================================================
-     5. PORTADA
+     4. PORTADA
      ================================================================== */
   var cvHero = $('#lienzo-hero');
-  var escHero = crearEscena(cvHero, { rel: .62 });
-  var repHero = reproductor(6000);
+  var humoHero = reduce ? null : crearHumo(cvHero);
+  var repHero = reproductor(3000);              /* 3 s de ida, 6 s el ciclo entero */
   var chipHero = $('#corte-hero'), tmpHero = 0;
+  var opAnt = -1;
 
   var TX_PP = 'sin cortes: no se nota nunca', TX_UNA = 'esperá el corte…';
   function flashHero(){
@@ -1052,72 +933,53 @@
       chipHero.textContent = (modo === 'pp') ? TX_PP : TX_UNA;
     }, 800);
   }
+  function ponerOpacidad(v){
+    /* redondeo a tres decimales: evita escribir estilo si no cambió nada */
+    var r = Math.round(v * 1000) / 1000;
+    if (r === opAnt) return;
+    opAnt = r;
+    fotoB.style.opacity = String(r);
+  }
   function cuadroHero(now){
     var r = repHero.leer(now);
-    escHero.pintar(r.t);
+    ponerOpacidad(suave(r.t));
+    if (humoHero) humoHero.pintar(now / 1000);
     if (r.corte) flashHero();
   }
 
-  escHero.medir();
-  escHero.pintar(reduce ? .42 : 0);
-
-  if (!reduce && 'IntersectionObserver' in window){
-    new IntersectionObserver(function(es){
-      for (var i = 0; i < es.length; i++){
-        /* si la portada no está en pantalla, no se dibuja nada: cero batería */
-        if (es[i].isIntersecting){ repHero.reiniciar(); vivir('hero', cuadroHero); }
-        else morir('hero');
-      }
-    }, { threshold: 0 }).observe($('#hero'));
-  } else if (!reduce){
-    vivir('hero', cuadroHero);
-  }
-
-  /* ==================================================================
-     6. CUADROS A y B + LÍNEA DE TIEMPO (se arman recién al acercarse)
-     ================================================================== */
-  var escA = null, escB = null, escScrub = null;
-  function armarExplicador(){
-    if (escA) return;
-    /* A y B se dibujan una sola vez: pueden darse el lujo de más resolución */
-    escA = crearEscena($('#lienzo-a'), { rel: .75, estatico: true });
-    escB = crearEscena($('#lienzo-b'), { rel: .75, estatico: true });
-    escScrub = crearEscena($('#lienzo-scrub'), { rel: .625 });
-    escA.medir(); escA.pintar(0);
-    escB.medir(); escB.pintar(1);
-    escScrub.medir(); escScrub.pintar(0);
-    marcar();
-  }
-
-  /* las marcas 1, 2 y 3 se colocan con la geometría real de la escena,
-     así siguen a las brasas aunque cambie la proporción de la canvas */
-  function marcar(){
-    if (!escA) return;
-    var pares = [[escA, 0], [escB, 1]];
-    for (var i = 0; i < 2; i++){
-      var esc = pares[i][0], t = pares[i][1];
-      var caja = (i === 0 ? $('#lienzo-a') : $('#lienzo-b')).parentNode;
-      var ms = caja.querySelectorAll('.marca');
-      var p = [ esc.pos(CLAVE_A.x, CLAVE_A.y), esc.pos(CLAVE_B.x, CLAVE_B.y), esc.posHumo(t) ];
-      for (var j = 0; j < ms.length && j < 3; j++){
-        ms[j].style.left = p[j].x.toFixed(2) + '%';
-        ms[j].style.top  = Math.max(6, Math.min(94, p[j].y)).toFixed(2) + '%';
-      }
+  if (reduce){
+    fotoB.style.opacity = '0';
+    if (cvHero && cvHero.parentNode) cvHero.parentNode.removeChild(cvHero);
+  } else {
+    humoHero.medir();
+    humoHero.pintar(0);
+    if ('IntersectionObserver' in window){
+      new IntersectionObserver(function(es){
+        for (var i = 0; i < es.length; i++){
+          /* si la portada no está en pantalla, no se dibuja nada: cero batería */
+          if (es[i].isIntersecting){ repHero.reiniciar(); vivir('hero', cuadroHero); }
+          else morir('hero');
+        }
+      }, { threshold: 0 }).observe($('#hero'));
+    } else {
+      vivir('hero', cuadroHero);
     }
   }
 
-  var scrub = $('#scrub'), badge = $('#lt-badge'), vivoLT = $('#lt-vivo');
+  /* ==================================================================
+     5. LÍNEA DE TIEMPO ARRASTRABLE
+     Mezcla las dos fotos chicas con opacidad, igual que la portada.
+     ================================================================== */
+  var ltB = $('#lt-b'), scrub = $('#scrub'), badge = $('#lt-badge'), vivoLT = $('#lt-vivo');
   var pendiente = false, valorPend = 0;
 
   function tDeValor(val){ return val <= 100 ? val / 100 : (200 - val) / 100; }
 
   function dibujarScrub(){
     pendiente = false;
-    armarExplicador();
     var val = valorPend;
-    var t = tDeValor(val);
-    escScrub.pintar(t);
-    var seg = (val * 12 / 200);
+    ltB.style.opacity = String(Math.round(suave(tDeValor(val)) * 1000) / 1000);
+    var seg = val * 6 / 200;
     var etiqueta;
     if (val === 0 || val === 200) etiqueta = 'Cuadro A';
     else if (val === 100) etiqueta = 'Cuadro B';
@@ -1136,12 +998,13 @@
     requestAnimationFrame(dibujarScrub);
   }
   scrub.addEventListener('input', function(){ pedirScrub(parseInt(scrub.value, 10) || 0); });
+  dibujarScrub();
 
   /* reproducir la línea de tiempo */
   var btnPlay = $('#btn-play'), jugando = false, jT0 = 0;
   function cuadroLT(now){
     if (!jT0) jT0 = now;
-    var p = ((now - jT0) % 12000) / 12000;
+    var p = ((now - jT0) % 6000) / 6000;
     var val = Math.round(p * 200);
     scrub.value = String(val);
     valorPend = val;
@@ -1155,11 +1018,10 @@
   btnPlay.addEventListener('click', function(){
     if (reduce) return;
     if (jugando){ pararLT(); return; }
-    armarExplicador();
     jugando = true; jT0 = 0;
     btnPlay.textContent = '❚❚ Pausar';
     btnPlay.setAttribute('aria-label', 'Pausar la línea de tiempo');
-    vivoLT.textContent = 'Reproduciendo el ciclo completo de doce segundos.';
+    vivoLT.textContent = 'Reproduciendo el ciclo completo de seis segundos.';
     vivir('lt', cuadroLT);
   });
   scrub.addEventListener('pointerdown', function(){ if (jugando) pararLT(); }, { passive: true });
@@ -1171,22 +1033,17 @@
   }
 
   /* ==================================================================
-     7. PING-PONG vs UNA SOLA PASADA
+     6. PING-PONG vs UNA SOLA PASADA
      ================================================================== */
-  var escPP = null;
-  var repPP = reproductor(3000);           /* acelerado ×2 para no hacer esperar */
+  var ppB = $('#pp-b');
+  var repPP = reproductor(1500);           /* acelerado ×2 para no hacer esperar */
   var flashPP = $('#pp-flash'), marcPP = $('#pp-marcador'), notaPP = $('#pp-nota'), vivoPP = $('#pp-vivo');
-  var cortes = 0, tmpPP = 0;
+  var cortes = 0, tmpPP = 0, opPPAnt = -1;
 
-  function armarPP(){
-    if (escPP) return;
-    escPP = crearEscena($('#lienzo-pp'), { rel: .625 });
-    escPP.medir();
-    escPP.pintar(reduce ? .42 : 0);
-  }
   function cuadroPP(now){
     var r = repPP.leer(now);
-    escPP.pintar(r.t);
+    var v = Math.round(suave(r.t) * 1000) / 1000;
+    if (v !== opPPAnt){ opPPAnt = v; ppB.style.opacity = String(v); }
     if (r.corte){
       cortes++;
       marcPP.textContent = 'cortes: ' + cortes;
@@ -1197,11 +1054,10 @@
   }
 
   $('#btn-saltar').addEventListener('click', function(){
-    armarPP();
     var ahora = (window.performance && performance.now) ? performance.now() : Date.now();
     repPP.alFinal(ahora);
     repHero.alFinal(ahora);
-    if (reduce) escPP.pintar(.95);
+    if (reduce){ ppB.style.opacity = '0'; }
   });
 
   function ponerModo(m){
@@ -1213,7 +1069,7 @@
     repHero.reiniciar(); repPP.reiniciar();
     notaPP.textContent = (m === 'pp')
       ? 'Estás viendo el modo ida y vuelta. Cambiá el interruptor para ver el problema que resuelve.'
-      : 'Estás viendo el modo una sola pasada. Mirá el borde rojo: ese es el corte, y pasa cada 3 segundos.';
+      : 'Estás viendo el modo una sola pasada. Mirá el borde rojo: ese es el corte, y pasa cada segundo y medio.';
     vivoPP.textContent = (m === 'pp')
       ? 'Modo ida y vuelta activado: el bucle no tiene corte.'
       : 'Modo una sola pasada activado: el bucle salta al volver al principio.';
@@ -1233,58 +1089,50 @@
   if (reduce){
     $('#hp-nota').hidden = false;
     $('#btn-saltar').disabled = true;
+    ppB.style.opacity = '0';
     notaPP.textContent = 'Tenés activado “reducir movimiento” en tu teléfono, así que nada se mueve solo. Usá el control deslizable de arriba para recorrer el bucle a tu ritmo.';
   }
 
-  /* arranque perezoso y encendido/apagado por visibilidad */
-  if ('IntersectionObserver' in window){
-    var obs = new IntersectionObserver(function(es){
-      for (var i = 0; i < es.length; i++){
-        var e = es[i];
-        if (e.target.id === 'explicador'){
-          if (e.isIntersecting){ armarExplicador(); obs.unobserve(e.target); }
-        } else {
-          if (e.isIntersecting){
-            armarPP();
-            if (!reduce){ repPP.reiniciar(); vivir('pp', cuadroPP); }
-          } else morir('pp');
+  /* encendido y apagado del ping-pong según esté o no en pantalla */
+  if (!reduce){
+    if ('IntersectionObserver' in window){
+      new IntersectionObserver(function(es){
+        for (var i = 0; i < es.length; i++){
+          if (es[i].isIntersecting){ repPP.reiniciar(); vivir('pp', cuadroPP); }
+          else morir('pp');
         }
-      }
-    }, { rootMargin: '300px 0px', threshold: 0 });
-    obs.observe($('#explicador'));
-    obs.observe($('#pingpong'));
-  } else {
-    armarExplicador(); armarPP();
-    if (!reduce) vivir('pp', cuadroPP);
+      }, { rootMargin: '200px 0px', threshold: 0 }).observe($('#pingpong'));
+    } else {
+      vivir('pp', cuadroPP);
+    }
   }
 
   /* ==================================================================
-     8. REDIMENSIONADO
+     7. REDIMENSIONADO
      ================================================================== */
   var tmpRes = 0;
   window.addEventListener('resize', function(){
     /* con retardo: en el celular la barra del navegador dispara resize a cada
-       scroll, y rehacer las capas fijas en cada uno sería un desperdicio */
+       scroll, y rehacer el canvas en cada uno sería un desperdicio */
     clearTimeout(tmpRes);
     tmpRes = setTimeout(function(){
-      escHero.repintar();
-      if (escA){ escA.medir(); escA.pintar(0); escB.medir(); escB.pintar(1); escScrub.repintar(); marcar(); }
-      if (escPP) escPP.repintar();
+      aplicarObj();
+      if (humoHero){ humoHero.medir(); humoHero.pintar(0); }
     }, 200);
   }, { passive: true });
 
   /* ==================================================================
-     9. ABIERTO / CERRADO (se calcula con la hora del visitante)
+     8. ABIERTO / CERRADO (se calcula con la hora del visitante)
      ================================================================== */
   var DIAS = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
   var HORARIO = {
-    0: [[660, 900], [1110, 1410]],   /* domingo  11:00-15:00 y 18:30-23:30 */
-    1: [],                            /* lunes cerrado */
-    2: [[660, 900], [1110, 1410]],
-    3: [[660, 900], [1110, 1410]],
-    4: [[660, 900], [1110, 1410]],
-    5: [[660, 900], [1110, 1470]],   /* viernes hasta 00:30 -> se muestra 24:30 como 00:30 */
-    6: [[660, 900], [1110, 1470]]
+    0: [[1110, 1410]],   /* domingo  18:30-23:30 */
+    1: [],               /* lunes cerrado */
+    2: [[1110, 1410]],
+    3: [[1110, 1410]],
+    4: [[1110, 1410]],
+    5: [[1110, 1470]],   /* viernes hasta 00:30 */
+    6: [[1110, 1470]]    /* sábado  hasta 00:30 */
   };
   function hhmm(min){
     var m = min % 1440;
@@ -1322,9 +1170,9 @@
   })();
 
   /* ==================================================================
-     10. WHATSAPP
+     9. WHATSAPP
      ================================================================== */
-  $('#wa-hero').href = WA + encodeURIComponent('Hola! Quiero reservar una mesa en Parrilla Tatakua. ¿Tienen lugar para hoy a la noche?');
+  $('#wa-hero').href = WA + encodeURIComponent('Hola! Quiero pedir una pizza en Tatatĩ. ¿Cuánto están tardando hoy?');
 
 })();
 </script>
