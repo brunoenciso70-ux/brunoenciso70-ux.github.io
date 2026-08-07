@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; frame-src 'self'; media-src 'self' data:; form-action 'none'; object-src 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rescate de fotos — tus fotos de celular listas para la web</title>
+<meta name="description" content="Las fotos borrosas de celular se agrandan, se limpian y se emparejan de color para que entren en tu página sin bajar el nivel. Listo en 1 día.">
+<!--
+  DEMO KatuWeb · Fotos del cliente rescatadas
+  Negocio y datos de ejemplo. Al usarla con un cliente real, reemplazar
+  todo por sus productos, precios y fotos verdaderas.
+-->
+
+<style>
+  :root{
+    --bg:#f4f6f8; --blanco:#fff; --ink:#11151c; --ink2:#4d586a; --ink3:#66707f;
+    --linea:#e2e7ee; --linea2:#cfd7e2;
+    --acc:#0e4fd1; --acc-osc:#0a3ba1; --acc-suave:#eaf0ff;
+    --ok:#0b7a4b; --ok-suave:#e7f5ee;
+    --alerta:#a83218; --alerta-suave:#fdeeeb;
+    --wa:#15803d;
+    --oscuro:#101319; --oscuro2:#191e28;
+    --r:16px; --r-sm:10px;
+    --sombra:0 1px 2px rgba(17,21,28,.05), 0 10px 30px rgba(17,21,28,.08);
+    --sombra-alta:0 2px 4px rgba(17,21,28,.08), 0 22px 50px rgba(17,21,28,.16);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+    background:var(--bg); color:var(--ink); line-height:1.62;
+    font-size:16px; overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit}
+  button{font-family:inherit;font-size:inherit;color:inherit;background:none;border:0;cursor:pointer}
+  :focus-visible{outline:3px solid var(--acc);outline-offset:3px;border-radius:6px}
+  .env{max-width:1080px;margin:0 auto;padding:0 16px}
+  @media(min-width:760px){ .env{padding:0 24px} }
+  .oculto{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+  /* ================= cabecera ================= */
+  header{background:var(--blanco);border-bottom:1px solid var(--linea);position:sticky;top:0;z-index:50}
+  .head-in{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:62px}
+  .marca{display:flex;align-items:center;gap:10px;min-height:44px;font-weight:800;
+    letter-spacing:-.02em;font-size:17px;text-decoration:none}
+  .marca .logo{width:32px;height:32px;border-radius:9px;flex:0 0 auto;
+    background:conic-gradient(from 210deg,#0e4fd1,#3d86ff,#0a3ba1,#0e4fd1);
+    box-shadow:inset 0 0 0 2px rgba(255,255,255,.35)}
+  .marca small{display:block;font-weight:600;font-size:11.5px;color:var(--ink3);letter-spacing:.02em;line-height:1.2}
+  .btn-wa{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;
+    background:var(--wa);color:#fff;border-radius:999px;font-weight:700;font-size:14.5px;
+    text-decoration:none;white-space:nowrap}
+  .btn-wa:hover{background:#106630}
+  .btn-wa .pt{width:9px;height:9px;border-radius:50%;background:#bdf5d1;flex:0 0 auto}
+  @media(max-width:479px){ .btn-wa span.larga{display:none} }
+
+  /* ================= hero ================= */
+  .hero{background:var(--oscuro);color:#e9edf4;position:relative;overflow:hidden;
+    padding:36px 0 30px;border-bottom:1px solid #000}
+  .hero::before{content:"";position:absolute;inset:-30% -10% auto -10%;height:140%;
+    background:radial-gradient(60% 55% at 22% 0%,rgba(61,134,255,.24),transparent 70%),
+               radial-gradient(50% 45% at 88% 14%,rgba(217,122,31,.20),transparent 70%);
+    pointer-events:none}
+  .hero .env{position:relative}
+  .cinta{display:inline-flex;align-items:center;gap:8px;padding:5px 13px;border-radius:999px;
+    background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.20);
+    font-size:12.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#cfe0ff}
+  .hero h1{font-size:clamp(27px,6.4vw,50px);line-height:1.06;letter-spacing:-.035em;
+    font-weight:900;margin:16px 0 0;max-width:16ch}
+  .hero h1 em{font-style:normal;color:#ffc789}
+  .hero p.baja{margin-top:14px;font-size:clamp(15.5px,3.5vw,19px);color:#c3ccdb;max-width:56ch}
+  .tira{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+  .tira span{display:inline-flex;align-items:center;gap:7px;padding:7px 13px;border-radius:999px;
+    background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);font-size:13px;color:#dbe3ef}
+  .tira span b{color:#fff;font-weight:700}
+
+  /* ================= secciones ================= */
+  section{padding:44px 0}
+  .sec-cab{max-width:62ch}
+  .kicker{font-family:Georgia,serif;font-style:italic;color:var(--acc);font-size:15px;letter-spacing:.01em}
+  h2{font-size:clamp(22px,4.6vw,34px);line-height:1.12;letter-spacing:-.03em;font-weight:900;margin:6px 0 0}
+  .sec-cab p{margin-top:11px;color:var(--ink2);font-size:16px}
+  .fondo-blanco{background:var(--blanco);border-top:1px solid var(--linea);border-bottom:1px solid var(--linea)}
+
+  /* ================= pestañas de casos ================= */
+  .pestanas{display:flex;gap:8px;overflow-x:auto;margin:22px 0 14px;padding-bottom:6px;
+    scrollbar-width:thin;-webkit-overflow-scrolling:touch}
+  .pestanas::-webkit-scrollbar{height:5px}
+  .pestanas::-webkit-scrollbar-thumb{background:var(--linea2);border-radius:9px}
+  .pest{flex:0 0 auto;min-height:44px;padding:0 15px;border-radius:999px;border:1.5px solid var(--linea2);
+    background:var(--blanco);font-weight:700;font-size:14px;color:var(--ink2);white-space:nowrap;
+    display:inline-flex;align-items:center;gap:8px;transition:background .18s,color .18s,border-color .18s}
+  .pest .pto{width:8px;height:8px;border-radius:50%;background:var(--linea2);flex:0 0 auto}
+  .pest[aria-selected="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+  .pest[aria-selected="true"] .pto{background:#ffc789}
+  .pest:hover{border-color:var(--ink3)}
+
+  /* ================= comparador ================= */
+  .comp-caja{position:relative;border-radius:var(--r);overflow:hidden;box-shadow:var(--sombra-alta);
+    background:#0b0d11}
+  .comp{position:relative;width:100%;aspect-ratio:840/560;overflow:hidden;
+    touch-action:pan-y;user-select:none;-webkit-user-select:none;cursor:ew-resize;display:block}
+  .comp canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+  .capa-b{position:absolute;inset:0;overflow:hidden;transform:translate3d(var(--p),0,0);will-change:transform}
+  .capa-b canvas{transform:translate3d(var(--pn),0,0);will-change:transform}
+  .barra{position:absolute;inset:0;transform:translate3d(var(--p),0,0);pointer-events:none;will-change:transform}
+  .barra .linea{position:absolute;top:0;bottom:0;left:-1.5px;width:3px;background:#fff;
+    box-shadow:0 0 0 1px rgba(0,0,0,.30),0 0 16px rgba(0,0,0,.42)}
+  /* franja invisible pegada a la barra: acá el dedo arrastra y la página NO scrollea.
+     Fuera de la franja el gesto vertical sigue haciendo scroll normal. */
+  .barra .zona{position:absolute;top:0;bottom:0;left:-40px;width:80px;
+    pointer-events:auto;touch-action:none;cursor:ew-resize}
+  .barra .knob{position:absolute;top:50%;left:0;width:56px;height:56px;margin:-28px 0 0 -28px;
+    border-radius:50%;background:#fff;box-shadow:0 3px 14px rgba(0,0,0,.45);
+    display:grid;place-items:center;pointer-events:auto;touch-action:none;cursor:grab}
+  .comp.agarrado .barra .knob{cursor:grabbing}
+  .knob svg{width:26px;height:26px;display:block}
+  /* sin backdrop-filter a propósito: encima del comparador que se arrastra sale caro en Android */
+  .etq{position:absolute;top:12px;padding:6px 11px;border-radius:8px;font-size:11.5px;font-weight:800;
+    letter-spacing:.10em;pointer-events:none;will-change:opacity}
+  .etq-a{left:12px;background:rgba(14,17,22,.88);color:#ffd7c4;border:1px solid rgba(255,255,255,.20)}
+  .etq-b{right:12px;background:rgba(255,255,255,.94);color:#0d2c14;border:1px solid rgba(0,0,0,.12)}
+  .comp-pie{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:flex-start;
+    justify-content:space-between;margin-top:14px}
+  .comp-nota{color:var(--ink2);font-size:15px;max-width:62ch;flex:1 1 300px}
+  .comp-nota b{color:var(--ink)}
+  .ayuda{font-size:13px;color:var(--ink3);display:inline-flex;align-items:center;gap:7px;flex:0 0 auto}
+  .ayuda kbd{font-family:ui-monospace,monospace;font-size:11.5px;background:var(--blanco);
+    border:1px solid var(--linea2);border-bottom-width:2px;border-radius:5px;padding:1px 5px;color:var(--ink2)}
+  .cargando{position:absolute;inset:0;display:grid;place-items:center;color:#8a93a3;font-size:13.5px;
+    background:#0b0d11;z-index:3}
+  .cargando.ido{display:none}
+
+  /* ================= fichas de arreglos ================= */
+  .fichas{display:grid;gap:14px;margin-top:24px;grid-template-columns:1fr}
+  @media(min-width:560px){ .fichas{grid-template-columns:1fr 1fr} }
+  @media(min-width:920px){ .fichas{grid-template-columns:repeat(3,1fr)} }
+  .ficha{background:var(--blanco);border:1px solid var(--linea);border-radius:var(--r);
+    overflow:hidden;box-shadow:var(--sombra);display:flex;flex-direction:column}
+  .ficha .mini{position:relative;aspect-ratio:340/230;background:#0b0d11}
+  .ficha .mini canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+  .ficha .mini i{position:absolute;bottom:8px;font-size:10px;font-style:normal;font-weight:800;
+    letter-spacing:.09em;padding:3px 7px;border-radius:6px}
+  .ficha .mini i.a{left:8px;background:rgba(16,19,25,.82);color:#ffd7c4}
+  .ficha .mini i.b{right:8px;background:rgba(255,255,255,.92);color:#0d2c14}
+  .ficha .txt{padding:14px 15px 16px}
+  .ficha h3{font-size:17px;letter-spacing:-.02em;display:flex;align-items:center;gap:9px}
+  .ficha h3 .num{width:24px;height:24px;border-radius:7px;background:var(--acc-suave);color:var(--acc-osc);
+    font-size:12px;font-weight:900;display:grid;place-items:center;flex:0 0 auto}
+  .ficha p{margin-top:7px;color:var(--ink2);font-size:14.5px}
+
+  /* ================= grilla emparejada ================= */
+  .gr-cab{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;margin-top:22px}
+  .interruptor{display:inline-flex;align-items:center;gap:11px;min-height:44px;padding:0 6px 0 0;
+    border-radius:999px;font-weight:700;font-size:14.5px}
+  .interruptor .pista{width:58px;height:32px;border-radius:999px;background:var(--linea2);
+    position:relative;flex:0 0 auto;transition:background .22s}
+  .interruptor .bolita{position:absolute;top:3px;left:3px;width:26px;height:26px;border-radius:50%;
+    background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.30);transition:transform .22s}
+  .interruptor[aria-checked="true"] .pista{background:var(--ok)}
+  .interruptor[aria-checked="true"] .bolita{transform:translateX(26px)}
+  .grilla{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:16px}
+  @media(min-width:560px){ .grilla{grid-template-columns:repeat(3,1fr);gap:12px} }
+  .celda{position:relative;aspect-ratio:1/1;border-radius:12px;overflow:hidden;background:#0b0d11;
+    box-shadow:var(--sombra)}
+  .celda canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+  .celda canvas.par{opacity:0;transition:opacity .40s ease}
+  .grilla.pareja .celda canvas.par{opacity:1}
+  .gr-nota{margin-top:14px;color:var(--ink2);font-size:15px;max-width:68ch}
+
+  /* ================= cómo trabajamos ================= */
+  .cols{display:grid;gap:14px;margin-top:22px;grid-template-columns:1fr}
+  @media(min-width:720px){ .cols{grid-template-columns:1fr 1fr} }
+  .caja{background:var(--blanco);border:1px solid var(--linea);border-radius:var(--r);padding:20px;
+    box-shadow:var(--sombra)}
+  .caja h3{font-size:18.5px;letter-spacing:-.02em;display:flex;align-items:center;gap:10px}
+  .caja h3 .ico{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;flex:0 0 auto}
+  .caja ul{margin-top:12px;list-style:none;display:grid;gap:9px}
+  .caja li{display:flex;gap:10px;font-size:15px;color:var(--ink2);align-items:flex-start}
+  .caja li .tk{flex:0 0 auto;margin-top:5px;width:16px;height:16px;border-radius:50%;display:grid;place-items:center}
+  .caja li b{color:var(--ink)}
+  .verde .ico{background:var(--ok-suave)} .verde li .tk{background:var(--ok-suave)}
+  .roja .ico{background:var(--alerta-suave)} .roja li .tk{background:var(--alerta-suave)}
+  .azul .ico{background:var(--acc-suave)} .azul li .tk{background:var(--acc-suave)}
+  .tk svg{width:10px;height:10px;display:block}
+  .dato{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+  .dato div{flex:1 1 190px;background:var(--bg);border:1px solid var(--linea);border-radius:12px;padding:12px 14px}
+  .dato .k{font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink3);font-weight:800}
+  .dato .v{font-size:19px;font-weight:900;letter-spacing:-.02em;margin-top:2px}
+
+  /* ================= cierre ================= */
+  .cierre{background:var(--oscuro);color:#e9edf4;text-align:center;padding:46px 0}
+  .cierre h2{color:#fff}
+  .cierre p{color:#b9c3d3;margin-top:12px;max-width:52ch;margin-inline:auto;font-size:16px}
+  .cierre .btn-wa{margin-top:22px;min-height:52px;font-size:16px;padding:0 24px}
+  .aclara{margin-top:26px;font-size:12.5px;color:#9aa4b5;max-width:64ch;margin-inline:auto;line-height:1.6}
+
+  /* ================= pie ================= */
+  .katu-pie{background:#0a0c10;color:#93a0b4;font-size:13px;text-align:center;padding:16px;line-height:1.9}
+  .katu-pie strong{color:#fff}
+  .katu-pie a{color:#a8c4ff;text-decoration:underline;text-underline-offset:3px}
+
+  @media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;
+      transition-duration:.001ms!important;scroll-behavior:auto!important}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="env head-in">
+    <a class="marca" href="../catalogo.html">
+      <span class="logo" aria-hidden="true"></span>
+      <span>KatuWeb<small>Rescate de fotos</small></span>
+    </a>
+    <a class="btn-wa" id="wa-head" href="https://wa.me/595983518856" target="_blank" rel="noopener noreferrer">
+      <span class="pt" aria-hidden="true"></span>Mandar mis fotos<span class="larga">&nbsp;por WhatsApp</span>
+    </a>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="env">
+    <span class="cinta">Servicio · listo en 1 día</span>
+    <h1>Tus fotos de celular <em>entran a la página</em> sin bajar el nivel.</h1>
+    <p class="baja">Mandá las 40 fotos como están, con la luz que había y el pulso que tenías.
+      Se agrandan, se limpian y se emparejan de color para que la página se vea de una sola pieza.
+      No hace falta que compres una cámara ni que llames a un fotógrafo.</p>
+    <div class="tira">
+      <span><b>Traés:</b>&nbsp;las fotos como estén</span>
+      <span><b>Tardo:</b>&nbsp;1 día</span>
+      <span><b>Te devuelvo:</b>&nbsp;listas para web y para redes</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============ COMPARADOR PRINCIPAL ============ -->
+<section class="fondo-blanco">
+  <div class="env">
+    <div class="sec-cab">
+      <p class="kicker">Antes y después, sobre la misma foto</p>
+      <h2>Arrastrá la barra y mirá la diferencia.</h2>
+      <p>Cuatro problemas que aparecen en casi todas las fotos de local: poca luz, pulso,
+        luz de tubo y archivos chiquitos de tanto reenviar. Elegí uno.</p>
+    </div>
+
+    <div class="pestanas" role="tablist" aria-label="Casos de rescate">
+      <button class="pest" role="tab" id="tab-0" aria-selected="true" aria-controls="panel-comp"><span class="pto" aria-hidden="true"></span>Local oscuro</button>
+      <button class="pest" role="tab" id="tab-1" aria-selected="false" aria-controls="panel-comp" tabindex="-1"><span class="pto" aria-hidden="true"></span>Producto movido</button>
+      <button class="pest" role="tab" id="tab-2" aria-selected="false" aria-controls="panel-comp" tabindex="-1"><span class="pto" aria-hidden="true"></span>Luz de tubo verdosa</button>
+      <button class="pest" role="tab" id="tab-3" aria-selected="false" aria-controls="panel-comp" tabindex="-1"><span class="pto" aria-hidden="true"></span>Chiquita y pixelada</button>
+    </div>
+
+    <div class="comp-caja" id="panel-comp" role="tabpanel" aria-labelledby="tab-0">
+      <div class="comp" id="comp" role="slider" tabindex="0"
+           aria-label="Comparador: arrastrá para ver la foto como llegó y la foto rescatada"
+           aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" aria-valuetext="50% rescatada"
+           style="--p:50%;--pn:-50%">
+        <div class="cargando" id="cargando">Dibujando la foto…</div>
+        <canvas id="cv-a" width="840" height="560" aria-hidden="true"></canvas>
+        <div class="capa-b"><canvas id="cv-b" width="840" height="560" aria-hidden="true"></canvas></div>
+        <span class="etq etq-a" id="etq-a">COMO LLEGÓ</span>
+        <span class="etq etq-b" id="etq-b">RESCATADA</span>
+        <div class="barra">
+          <span class="linea"></span>
+          <span class="zona"></span>
+          <span class="knob">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6 4.5 12 10 18M14 6l5.5 6L14 18"
+              fill="none" stroke="#11151c" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-pie">
+      <p class="comp-nota" id="comp-nota"></p>
+      <span class="ayuda"><kbd>←</kbd><kbd>→</kbd> mueven la barra de a 2%</span>
+    </div>
+    <p class="oculto" aria-live="polite" id="vivo"></p>
+  </div>
+</section>
+
+<!-- ============ DESGLOSE DE LOS ARREGLOS ============ -->
+<section id="sec-fichas">
+  <div class="env">
+    <div class="sec-cab">
+      <p class="kicker">Qué se toca, una cosa por vez</p>
+      <h2>Cinco arreglos. Ninguno es magia.</h2>
+      <p>En cada ficha se ve un solo problema aislado, para que se entienda qué hace cada paso.
+        En una foto de verdad los cinco pasan juntos.</p>
+    </div>
+    <div class="fichas" id="fichas"></div>
+  </div>
+</section>
+
+<!-- ============ GRILLA EMPAREJADA ============ -->
+<section class="fondo-blanco" id="sec-grilla">
+  <div class="env">
+    <div class="sec-cab">
+      <p class="kicker">El trabajo que nadie ve</p>
+      <h2>Seis fotos sacadas en seis días distintos.</h2>
+      <p>Cada una con su luz, su blanco y su brillo. Sueltas no molestan;
+        juntas en una grilla, la página parece un collage. Tocá el interruptor.</p>
+    </div>
+
+    <div class="gr-cab">
+      <button class="interruptor" id="sw" role="switch" aria-checked="false">
+        <span class="pista" aria-hidden="true"><span class="bolita"></span></span>
+        <span id="sw-txt">Emparejar el color de las seis</span>
+      </button>
+    </div>
+
+    <div class="grilla" id="grilla"></div>
+    <p class="gr-nota" id="gr-nota">Ahora mismo: <b>cada foto con su tono</b>. Una tira a amarillo,
+      otra a azul, otra viene más apagada. Es lo que pasa cuando las fotos se sacaron en distintos momentos.</p>
+  </div>
+</section>
+
+<!-- ============ CÓMO TRABAJAMOS ============ -->
+<section>
+  <div class="env">
+    <div class="sec-cab">
+      <p class="kicker">Sin letra chica</p>
+      <h2>Qué necesito de vos, qué te devuelvo y qué no se puede.</h2>
+    </div>
+
+    <div class="dato">
+      <div><div class="k">Necesito</div><div class="v">Las fotos como estén</div></div>
+      <div><div class="k">Tardo</div><div class="v">1 día</div></div>
+      <div><div class="k">Te devuelvo</div><div class="v">Web + redes</div></div>
+    </div>
+
+    <div class="cols">
+      <div class="caja verde">
+        <h3><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M4 12.5 9.5 18 20 6.5" fill="none" stroke="#0b7a4b" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Esto sí se arregla</h3>
+        <ul>
+          <li><span class="tk" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 12.5 9.5 18 20 6.5" fill="none" stroke="#0b7a4b" stroke-width="3.4" stroke-linecap="round"/></svg></span><span><b>Poca luz.</b> Si la foto tiene algo de información en las sombras, se levanta y se limpia el granulado.</span></li>
+          <li><span class="tk" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 12.5 9.5 18 20 6.5" fill="none" stroke="#0b7a4b" stroke-width="3.4" stroke-linecap="round"/></svg></span><span><b>Color raro.</b> Luz de tubo verdosa, foco amarillo, sombra azul. Se corrige y el blanco vuelve a ser blanco.</span></li>
+          <li><span class="tk" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 12.5 9.5 18 20 6.5" fill="none" stroke="#0b7a4b" stroke-width="3.4" stroke-linecap="round"/></svg></span><span><b>Archivo chico.</b> Fotos de 400 u 800 px que ya pasaron por WhatsApp: se agrandan para portada.</span></li>
+          <li><span class="tk" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 12.5 9.5 18 20 6.5" fill="none" stroke="#0b7a4b" stroke-width="3.4" stroke-linecap="round"/></svg></span><span><b>Encuadre torcido</b> y cosas que sobran en el borde: un cable, una silla, una mano.</span></li>
+          <li><span class="tk" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 12.5 9.5 18 20 6.5" fill="none" stroke="#0b7a4b" stroke-width="3.4" stroke-linecap="round"/></svg></span><span><b>Desparejo entre fotos.</b> Es el arreglo que menos se nota de a una y más cambia la página entera.</span></li>
+        </ul>
+      </div>
+
+      <div class="caja roja">
+        <h3><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="#a83218" stroke-width="2.6" stroke-linecap="round"/></svg></span>Esto no, y te lo digo antes</h3>
+        <ul>
+          <li><span class="tk" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="#a83218" stroke-width="3.4" stroke-linecap="round"/></svg></span><span><b>Movida de verdad.</b> Si el celular se corrió mientras sacaba, el detalle no está en el archivo. Nadie lo puede traer de vuelta: se saca de nuevo y listo.</span></li>
+          <li><span class="tk" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="#a83218" stroke-width="3.4" stroke-linecap="round"/></svg></span><span><b>Negro total.</b> Si la zona quedó completamente oscura, ahí no hay foto que levantar. Sale ruido de color, no producto.</span></li>
+          <li><span class="tk" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="#a83218" stroke-width="3.4" stroke-linecap="round"/></svg></span><span><b>Quemado.</b> Un ventanal blanco puro atrás no se recupera: no hay dato debajo del blanco.</span></li>
+          <li><span class="tk" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="#a83218" stroke-width="3.4" stroke-linecap="round"/></svg></span><span><b>Inventar lo que no está.</b> No le agrego productos al estante ni le cambio la vidriera. Si te la muestro así, después el cliente llega al local y no es.</span></li>
+        </ul>
+        <p style="margin-top:13px;font-size:14.5px;color:var(--ink2)">
+          Cuando una foto no da, te la marco y te digo cómo volver a sacarla: de día, cerca de la puerta,
+          el celular apoyado en algo firme. Son dos minutos y sale mejor que cualquier arreglo.</p>
+      </div>
+    </div>
+
+    <div class="caja azul" style="margin-top:14px">
+      <h3><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M12 7v6m0 4h.01" fill="none" stroke="#0a3ba1" stroke-width="2.6" stroke-linecap="round"/><circle cx="12" cy="12" r="9" fill="none" stroke="#0a3ba1" stroke-width="2"/></svg></span>Cómo es en la práctica</h3>
+      <ul>
+        <li><span class="tk" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 12.5 9.5 18 20 6.5" fill="none" stroke="#0a3ba1" stroke-width="3.4" stroke-linecap="round"/></svg></span><span>Me mandás todo por WhatsApp, sin ordenar nada. Si podés, marcá cuáles son las importantes.</span></li>
+        <li><span class="tk" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 12.5 9.5 18 20 6.5" fill="none" stroke="#0a3ba1" stroke-width="3.4" stroke-linecap="round"/></svg></span><span>Al otro día te devuelvo las que salieron, con la lista de las que conviene volver a sacar.</span></li>
+        <li><span class="tk" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 12.5 9.5 18 20 6.5" fill="none" stroke="#0a3ba1" stroke-width="3.4" stroke-linecap="round"/></svg></span><span>Cada foto va en dos medidas: una grande para la página y una cuadrada para redes.</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<div class="cierre">
+  <div class="env">
+    <h2>Mandá las fotos que te dan vergüenza.</h2>
+    <p>Esas mismas. Las de la despensa a las siete de la tarde, las del mostrador con el tubo prendido,
+      las que reenviaste tres veces. De ahí sale la página.</p>
+    <a class="btn-wa" id="wa-cierre" href="https://wa.me/595983518856" target="_blank" rel="noopener noreferrer">
+      <span class="pt" aria-hidden="true"></span>Mandar mis fotos por WhatsApp
+    </a>
+    <p class="aclara">Las imágenes de esta demo están dibujadas por computadora y después arruinadas
+      a propósito —bajadas de resolución, con ruido, con tinte de tubo y desenfocadas— para mostrar el proceso.
+      El antes y el después salen del mismo dibujo, así la comparación es legítima.
+      Con un cliente real se trabaja sobre sus fotos verdaderas.</p>
+  </div>
+</div>
+
+<div class="katu-pie">
+  Demo de <strong>KatuWeb</strong> · <a href="../catalogo.html">Volver al catálogo</a> ·
+  <a id="wa-pie" href="https://wa.me/595983518856" target="_blank" rel="noopener noreferrer">Quiero esto para mi negocio</a>
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  var WA = 'https://wa.me/595983518856?text=';
+  function wa(el, msg){ var n=document.getElementById(el); if(n) n.href = WA + encodeURIComponent(msg); }
+  wa('wa-head','Hola! Vi la demo de rescate de fotos. Tengo unas fotos de mi local sacadas con celular, ¿las puedo mandar?');
+  wa('wa-cierre','Hola! Vi la demo de rescate de fotos. Quiero mandar las mías, ¿cómo hacemos?');
+  wa('wa-pie','Hola! Vi la demo de las fotos del cliente rescatadas. ¿Cuánto sale para mi negocio?');
+
+  var $ = function(s){ return document.querySelector(s); };
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ==========================================================
+     UTILIDADES DE DIBUJO
+     ========================================================== */
+  function C(w,h){ var c=document.createElement('canvas'); c.width=w; c.height=h; return c; }
+  function rr(x,a,b,w,h,r){
+    if(r>w/2) r=w/2; if(r>h/2) r=h/2; if(r<0) r=0;
+    x.beginPath(); x.moveTo(a+r,b);
+    x.arcTo(a+w,b,a+w,b+h,r); x.arcTo(a+w,b+h,a,b+h,r);
+    x.arcTo(a,b+h,a,b,r); x.arcTo(a,b,a+w,b,r); x.closePath();
+  }
+  /* generador pseudo-aleatorio con semilla: mismo dibujo siempre */
+  function rnd(s){ var t=s>>>0; return function(){ t=(t*1664525+1013904223)>>>0; return t/4294967296; }; }
+  function elipse(x,cx,cy,rx,ry,rot){ x.beginPath(); x.ellipse(cx,cy,rx,ry,rot||0,0,6.2832); }
+
+  /* ==========================================================
+     ESCENAS  (coordenadas relativas: sirven a cualquier tamaño)
+     ========================================================== */
+
+  /* --- mostrador de despensa --- */
+  function escMostrador(x,w,h){
+    var R = rnd(7);
+    var g = x.createLinearGradient(0,0,0,h);
+    g.addColorStop(0,'#f0e5d0'); g.addColorStop(.5,'#e3d3b6'); g.addColorStop(1,'#cbb693');
+    x.fillStyle=g; x.fillRect(0,0,w,h);
+    var rg = x.createRadialGradient(w*.24,-h*.12,w*.02,w*.24,-h*.12,w*.92);
+    rg.addColorStop(0,'rgba(255,246,226,.92)'); rg.addColorStop(1,'rgba(255,246,226,0)');
+    x.fillStyle=rg; x.fillRect(0,0,w,h);
+
+    var cols=['#b8452f','#2f6b8f','#d9a12c','#4a7a45','#8a5a2b','#c96a3a','#3f5b8c','#a8425a','#5d8a6a','#cfae4c','#6d4f8c'];
+    for(var s=0;s<3;s++){
+      var by = h*(.155 + s*.152);
+      var px = w*.05;
+      while(px < w*.95){
+        var pw = w*(.042 + R()*.046), ph = h*(.052 + R()*.058);
+        if(px+pw > w*.96) break;
+        var co = cols[Math.floor(R()*cols.length)];
+        x.fillStyle='rgba(64,45,26,.18)'; rr(x,px+w*.004,by-ph+h*.006,pw,ph,3); x.fill();
+        x.fillStyle=co; rr(x,px,by-ph,pw,ph,3); x.fill();
+        x.fillStyle='rgba(255,255,255,.80)';
+        x.fillRect(px+pw*.13, by-ph*.66, pw*.74, ph*.30);
+        x.fillStyle='rgba(0,0,0,.30)';
+        x.fillRect(px+pw*.20, by-ph*.60, pw*.44, ph*.075);
+        x.fillRect(px+pw*.20, by-ph*.47, pw*.56, ph*.055);
+        var lg = x.createLinearGradient(px,0,px+pw,0);
+        lg.addColorStop(0,'rgba(255,255,255,.26)'); lg.addColorStop(.42,'rgba(255,255,255,0)');
+        lg.addColorStop(1,'rgba(0,0,0,.22)');
+        x.fillStyle=lg; rr(x,px,by-ph,pw,ph,3); x.fill();
+        px += pw + w*.012;
+      }
+      x.fillStyle='#7c5a37'; x.fillRect(w*.03,by,w*.94,h*.017);
+      x.fillStyle='rgba(0,0,0,.26)'; x.fillRect(w*.03,by+h*.017,w*.94,h*.013);
+    }
+
+    /* mostrador */
+    var cy = h*.635;
+    var tg = x.createLinearGradient(0,cy,0,cy+h*.062);
+    tg.addColorStop(0,'#d7b481'); tg.addColorStop(1,'#a97f4c');
+    x.fillStyle=tg; x.fillRect(0,cy,w,h*.062);
+    var fg = x.createLinearGradient(0,cy+h*.062,0,h);
+    fg.addColorStop(0,'#6d4c2d'); fg.addColorStop(1,'#402b1a');
+    x.fillStyle=fg; x.fillRect(0,cy+h*.062,w,h-cy);
+    for(var v=0; v<9; v++){
+      x.fillStyle='rgba(0,0,0,.14)';
+      x.fillRect(w*(.02+v*.113), cy+h*.068, w*.004, h*.30);
+    }
+
+    /* canasta de chipas */
+    var bx=w*.16, byy=cy+h*.005;
+    x.fillStyle='rgba(0,0,0,.22)'; elipse(x,bx,byy+h*.012,w*.10,h*.022); x.fill();
+    for(var ch=0; ch<5; ch++){
+      var ax = bx + (ch-2)*w*.031 + (ch%2? w*.008:0);
+      var ay = byy - h*.034 - (ch%2? h*.014:0);
+      x.fillStyle='#c99a4f'; elipse(x,ax,ay,w*.021,h*.021); x.fill();
+      x.fillStyle='#e6c07d'; elipse(x,ax-w*.004,ay-h*.005,w*.016,h*.014); x.fill();
+      x.fillStyle='#8f6b34'; elipse(x,ax,ay,w*.006,h*.006); x.fill();
+    }
+    var cg = x.createLinearGradient(0,byy-h*.03,0,byy+h*.01);
+    cg.addColorStop(0,'#a97c45'); cg.addColorStop(1,'#7d5729');
+    x.fillStyle=cg; rr(x,bx-w*.098,byy-h*.028,w*.196,h*.040,w*.012); x.fill();
+    for(var wv=0; wv<12; wv++){
+      x.strokeStyle='rgba(0,0,0,.22)'; x.lineWidth=Math.max(1,w*.0018);
+      x.beginPath(); x.moveTo(bx-w*.094+wv*w*.0165, byy-h*.026);
+      x.lineTo(bx-w*.094+wv*w*.0165, byy+h*.010); x.stroke();
+    }
+
+    /* frasco de caramelos */
+    var fx=w*.40, fy=cy;
+    x.fillStyle='rgba(0,0,0,.20)'; elipse(x,fx,fy+h*.010,w*.052,h*.014); x.fill();
+    var jg = x.createLinearGradient(fx-w*.045,0,fx+w*.045,0);
+    jg.addColorStop(0,'rgba(255,255,255,.55)'); jg.addColorStop(.30,'rgba(230,240,238,.28)');
+    jg.addColorStop(.75,'rgba(160,180,178,.30)'); jg.addColorStop(1,'rgba(255,255,255,.50)');
+    var caram=['#d9463c','#f0a92c','#3f8f52','#c74d8e','#3f7bb5'];
+    var Rc = rnd(21);
+    x.save(); rr(x,fx-w*.045,fy-h*.135,w*.090,h*.140,w*.010); x.clip();
+    x.fillStyle='#efe8d8'; x.fillRect(fx-w*.05,fy-h*.14,w*.10,h*.15);
+    for(var k=0;k<44;k++){
+      x.fillStyle=caram[Math.floor(Rc()*5)];
+      elipse(x, fx-w*.040+Rc()*w*.080, fy-h*.010-Rc()*h*.108, w*.009, h*.010);
+      x.fill();
+    }
+    x.restore();
+    x.fillStyle=jg; rr(x,fx-w*.045,fy-h*.135,w*.090,h*.140,w*.010); x.fill();
+    x.strokeStyle='rgba(255,255,255,.55)'; x.lineWidth=Math.max(1,w*.0022);
+    rr(x,fx-w*.045,fy-h*.135,w*.090,h*.140,w*.010); x.stroke();
+    x.fillStyle='#8d949c'; rr(x,fx-w*.050,fy-h*.158,w*.100,h*.026,w*.006); x.fill();
+    x.fillStyle='rgba(255,255,255,.35)'; x.fillRect(fx-w*.048,fy-h*.154,w*.096,h*.006);
+
+    /* cartelito de precio */
+    var sx=w*.63, sy=cy;
+    x.fillStyle='rgba(0,0,0,.20)'; x.fillRect(sx-w*.001, sy-h*.004, w*.11, h*.012);
+    x.fillStyle='#23291f'; rr(x,sx,sy-h*.115,w*.115,h*.115,w*.006); x.fill();
+    x.strokeStyle='#8a6a3c'; x.lineWidth=Math.max(2,w*.005);
+    rr(x,sx,sy-h*.115,w*.115,h*.115,w*.006); x.stroke();
+    x.fillStyle='#f2ecdc'; x.textAlign='center';
+    x.font='700 '+Math.round(h*.030)+'px system-ui, sans-serif';
+    x.fillText('CHIPA', sx+w*.0575, sy-h*.072);
+    x.font='800 '+Math.round(h*.040)+'px system-ui, sans-serif';
+    x.fillText('Gs. 3.500', sx+w*.0575, sy-h*.028);
+    x.textAlign='start';
+
+    /* bolsas apiladas */
+    var gx=w*.845;
+    x.fillStyle='rgba(0,0,0,.20)'; elipse(x,gx,cy+h*.010,w*.075,h*.014); x.fill();
+    for(var bg=0; bg<4; bg++){
+      var byq = cy - h*.012 - bg*h*.015;
+      x.fillStyle = bg%2 ? '#c9b189' : '#d6c19c';
+      rr(x, gx-w*.070+bg*w*.004, byq-h*.018, w*.140, h*.026, w*.004); x.fill();
+      x.fillStyle='rgba(0,0,0,.12)';
+      x.fillRect(gx-w*.070+bg*w*.004, byq+h*.004, w*.140, h*.004);
+    }
+    /* balanza chiquita */
+    x.fillStyle='#b9bec6'; rr(x,gx-w*.045,cy-h*.088,w*.090,h*.052,w*.008); x.fill();
+    x.fillStyle='#eef1f5'; rr(x,gx-w*.030,cy-h*.078,w*.060,h*.026,w*.004); x.fill();
+    x.fillStyle='#2b3038'; x.font='800 '+Math.round(h*.024)+'px ui-monospace, monospace';
+    x.textAlign='center'; x.fillText('1.240', gx, cy-h*.058); x.textAlign='start';
+    x.fillStyle='#9aa1aa'; rr(x,gx-w*.055,cy-h*.100,w*.110,h*.016,w*.005); x.fill();
+  }
+
+  /* --- plato servido --- */
+  function escPlato(x,w,h){
+    var g = x.createLinearGradient(0,0,0,h);
+    g.addColorStop(0,'#8a6039'); g.addColorStop(.4,'#6f4a2b'); g.addColorStop(1,'#4e321c');
+    x.fillStyle=g; x.fillRect(0,0,w,h);
+    for(var p=0;p<7;p++){
+      x.fillStyle='rgba(0,0,0,.10)'; x.fillRect(0,h*(.06+p*.145),w,h*.010);
+      x.fillStyle='rgba(255,255,255,.05)'; x.fillRect(0,h*(.06+p*.145)+h*.010,w,h*.006);
+    }
+    var rg = x.createRadialGradient(w*.30,h*.02,w*.02,w*.35,h*.10,w*.95);
+    rg.addColorStop(0,'rgba(255,242,215,.55)'); rg.addColorStop(1,'rgba(255,242,215,0)');
+    x.fillStyle=rg; x.fillRect(0,0,w,h);
+
+    /* servilleta */
+    x.save(); x.translate(w*.13,h*.74); x.rotate(-.12);
+    x.fillStyle='rgba(0,0,0,.25)'; x.fillRect(-w*.10,-h*.10,w*.24,h*.20);
+    x.fillStyle='#d8dee6'; x.fillRect(-w*.11,-h*.11,w*.24,h*.20);
+    x.fillStyle='#c2cad4'; x.fillRect(-w*.11,-h*.11,w*.24,h*.020);
+    x.restore();
+    /* tenedor */
+    x.save(); x.translate(w*.145,h*.70); x.rotate(-.10);
+    x.fillStyle='#b9c0c8'; rr(x,-w*.008,-h*.16,w*.016,h*.30,w*.008); x.fill();
+    for(var t=0;t<3;t++){ x.fillStyle='#c8cfd7'; rr(x,-w*.012+t*w*.011,-h*.20,w*.006,h*.055,w*.003); x.fill(); }
+    x.restore();
+
+    /* sombra del plato */
+    x.fillStyle='rgba(0,0,0,.35)'; elipse(x,w*.53,h*.66,w*.35,h*.20); x.fill();
+
+    /* plato */
+    var pg = x.createRadialGradient(w*.44,h*.44,w*.02,w*.53,h*.60,w*.38);
+    pg.addColorStop(0,'#ffffff'); pg.addColorStop(.62,'#f2f3f2'); pg.addColorStop(1,'#d3d7d6');
+    x.fillStyle=pg; elipse(x,w*.53,h*.58,w*.345,h*.305); x.fill();
+    x.strokeStyle='rgba(0,0,0,.10)'; x.lineWidth=Math.max(1,w*.0025);
+    elipse(x,w*.53,h*.58,w*.278,h*.240); x.stroke();
+    x.fillStyle='rgba(0,0,0,.045)'; elipse(x,w*.53,h*.605,w*.262,h*.222); x.fill();
+
+    /* empanadas */
+    function empa(cx,cy,rot,sc){
+      x.save(); x.translate(cx,cy); x.rotate(rot); x.scale(sc,sc);
+      x.fillStyle='rgba(0,0,0,.22)'; elipse(x,w*.004,h*.012,w*.085,h*.048); x.fill();
+      var eg = x.createLinearGradient(0,-h*.05,0,h*.05);
+      eg.addColorStop(0,'#e8bb6c'); eg.addColorStop(.5,'#d59f47'); eg.addColorStop(1,'#a9752c');
+      x.fillStyle=eg; elipse(x,0,0,w*.082,h*.046); x.fill();
+      x.fillStyle='rgba(255,255,255,.22)'; elipse(x,-w*.020,-h*.014,w*.040,h*.016,-.25); x.fill();
+      x.strokeStyle='#9c6a26'; x.lineWidth=Math.max(1,w*.0026);
+      for(var q=0;q<7;q++){
+        var an = -0.95 + q*0.30;
+        x.beginPath();
+        x.arc(w*.062*Math.cos(an*0.55)+w*.010, h*.040*Math.sin(an), w*.011, an-0.7, an+0.7);
+        x.stroke();
+      }
+      x.fillStyle='rgba(120,74,20,.35)'; elipse(x,w*.022,h*.008,w*.020,h*.009,.3); x.fill();
+      x.restore();
+    }
+    empa(w*.44,h*.50,-.16,1.0);
+    empa(w*.62,h*.55,.22,.95);
+    empa(w*.50,h*.66,.05,1.05);
+
+    /* ensalada */
+    var Rs = rnd(31);
+    for(var e=0;e<16;e++){
+      var ex = w*.70 + (Rs()-.5)*w*.15, ey = h*.63 + (Rs()-.5)*h*.13;
+      x.fillStyle = ['#4f8b3d','#5fa14a','#3e7331','#78b45c'][Math.floor(Rs()*4)];
+      elipse(x, ex, ey, w*.020+Rs()*w*.012, h*.014+Rs()*h*.010, Rs()*3); x.fill();
+    }
+    for(var to=0;to<3;to++){
+      var tx = w*.70+(Rs()-.5)*w*.12, ty=h*.62+(Rs()-.5)*h*.10;
+      x.fillStyle='#c93a2c'; elipse(x,tx,ty,w*.017,h*.016); x.fill();
+      x.fillStyle='#e2695a'; elipse(x,tx-w*.004,ty-h*.004,w*.008,h*.007); x.fill();
+    }
+    /* limón */
+    x.fillStyle='#f0d24a'; elipse(x,w*.36,h*.66,w*.040,h*.038); x.fill();
+    x.fillStyle='#fbf0b0'; elipse(x,w*.36,h*.66,w*.031,h*.029); x.fill();
+    x.strokeStyle='#e3c23c'; x.lineWidth=Math.max(1,w*.002);
+    for(var l=0;l<6;l++){
+      x.beginPath(); x.moveTo(w*.36,h*.66);
+      x.lineTo(w*.36+Math.cos(l*1.05)*w*.030, h*.66+Math.sin(l*1.05)*h*.028); x.stroke();
+    }
+
+    /* vaso de tereré */
+    var vx=w*.855, vy=h*.40;
+    x.fillStyle='rgba(0,0,0,.28)'; elipse(x,vx,vy+h*.235,w*.055,h*.020); x.fill();
+    x.save(); rr(x,vx-w*.052,vy-h*.10,w*.104,h*.330,w*.010); x.clip();
+    x.fillStyle='rgba(238,244,246,.30)'; x.fillRect(vx-w*.06,vy-h*.12,w*.12,h*.36);
+    x.fillStyle='#8fb44f'; x.fillRect(vx-w*.06,vy+h*.03,w*.12,h*.24);
+    x.fillStyle='rgba(255,255,255,.35)'; x.fillRect(vx-w*.06,vy+h*.028,w*.12,h*.012);
+    x.restore();
+    x.strokeStyle='rgba(255,255,255,.55)'; x.lineWidth=Math.max(1,w*.0025);
+    rr(x,vx-w*.052,vy-h*.10,w*.104,h*.330,w*.010); x.stroke();
+    x.fillStyle='rgba(255,255,255,.30)'; x.fillRect(vx-w*.040,vy-h*.08,w*.012,h*.29);
+  }
+
+  /* --- vidriera / estante de bebidas --- */
+  function escEstante(x,w,h){
+    var g = x.createLinearGradient(0,0,0,h);
+    g.addColorStop(0,'#3b4450'); g.addColorStop(.5,'#2c333d'); g.addColorStop(1,'#1d222a');
+    x.fillStyle=g; x.fillRect(0,0,w,h);
+    var R = rnd(13);
+
+    for(var s=0;s<3;s++){
+      var sy = h*(.30 + s*.235);
+      /* luz de la balda */
+      var lg = x.createLinearGradient(0,sy-h*.20,0,sy);
+      lg.addColorStop(0,'rgba(255,252,235,.26)'); lg.addColorStop(1,'rgba(255,252,235,0)');
+      x.fillStyle=lg; x.fillRect(0,sy-h*.20,w,h*.20);
+
+      var px = w*.045;
+      while(px < w*.94){
+        var tipo = Math.floor(R()*3);
+        var bw, bh, col;
+        var pal=['#8f2f2c','#2f6a86','#c98a1e','#3e7a46','#7b3f7c','#b6541f','#2f4f8c'];
+        col = pal[Math.floor(R()*pal.length)];
+        if(tipo===0){ /* botella */
+          bw = w*.046; bh = h*.185;
+          if(px+bw>w*.95) break;
+          x.fillStyle='rgba(0,0,0,.35)'; elipse(x,px+bw/2,sy+h*.006,bw*.62,h*.012); x.fill();
+          x.fillStyle=col; rr(x,px,sy-bh*.62,bw,bh*.62,bw*.14); x.fill();
+          x.fillStyle=col; rr(x,px+bw*.34,sy-bh,bw*.32,bh*.45,bw*.10); x.fill();
+          x.fillStyle='rgba(255,255,255,.85)'; x.fillRect(px+bw*.10, sy-bh*.44, bw*.80, bh*.20);
+          x.fillStyle='rgba(0,0,0,.35)'; x.fillRect(px+bw*.22, sy-bh*.40, bw*.50, bh*.045);
+          x.fillRect(px+bw*.22, sy-bh*.32, bw*.36, bh*.032);
+          x.fillStyle='#d8d3c4'; rr(x,px+bw*.32,sy-bh-h*.008,bw*.36,h*.016,bw*.05); x.fill();
+          var sg = x.createLinearGradient(px,0,px+bw,0);
+          sg.addColorStop(0,'rgba(255,255,255,.10)'); sg.addColorStop(.22,'rgba(255,255,255,.42)');
+          sg.addColorStop(.45,'rgba(255,255,255,.02)'); sg.addColorStop(1,'rgba(0,0,0,.30)');
+          x.fillStyle=sg; rr(x,px,sy-bh*.62,bw,bh*.62,bw*.14); x.fill();
+        } else if(tipo===1){ /* frasco */
+          bw = w*.058; bh = h*.115;
+          if(px+bw>w*.95) break;
+          x.fillStyle='rgba(0,0,0,.35)'; elipse(x,px+bw/2,sy+h*.006,bw*.60,h*.012); x.fill();
+          x.fillStyle='rgba(226,236,238,.40)'; rr(x,px,sy-bh,bw,bh,bw*.12); x.fill();
+          x.fillStyle=col; rr(x,px+bw*.06,sy-bh*.72,bw*.88,bh*.64,bw*.08); x.fill();
+          x.fillStyle='#a8adb4'; rr(x,px-bw*.03,sy-bh-h*.014,bw*1.06,h*.020,bw*.06); x.fill();
+          x.fillStyle='rgba(255,255,255,.30)'; x.fillRect(px+bw*.14,sy-bh*.90,bw*.10,bh*.72);
+        } else { /* caja */
+          bw = w*.066; bh = h*.135;
+          if(px+bw>w*.95) break;
+          x.fillStyle='rgba(0,0,0,.35)'; x.fillRect(px+w*.004,sy-bh+h*.006,bw,bh);
+          x.fillStyle=col; x.fillRect(px,sy-bh,bw,bh);
+          x.fillStyle='rgba(255,255,255,.88)'; x.fillRect(px+bw*.12,sy-bh*.78,bw*.76,bh*.34);
+          x.fillStyle='rgba(0,0,0,.40)'; x.fillRect(px+bw*.20,sy-bh*.70,bw*.44,bh*.07);
+          x.fillRect(px+bw*.20,sy-bh*.58,bw*.56,bh*.06);
+          var cg2 = x.createLinearGradient(px,0,px+bw,0);
+          cg2.addColorStop(0,'rgba(255,255,255,.18)'); cg2.addColorStop(.5,'rgba(255,255,255,0)');
+          cg2.addColorStop(1,'rgba(0,0,0,.28)');
+          x.fillStyle=cg2; x.fillRect(px,sy-bh,bw,bh);
+        }
+        px += bw + w*.014;
+      }
+      /* balda de vidrio */
+      x.fillStyle='rgba(212,232,240,.38)'; x.fillRect(w*.02,sy,w*.96,h*.011);
+      x.fillStyle='rgba(255,255,255,.55)'; x.fillRect(w*.02,sy,w*.96,h*.003);
+      x.fillStyle='rgba(0,0,0,.30)'; x.fillRect(w*.02,sy+h*.011,w*.96,h*.010);
+    }
+    /* marco de la vidriera */
+    x.strokeStyle='rgba(180,196,210,.30)'; x.lineWidth=Math.max(2,w*.007);
+    x.strokeRect(w*.012,h*.030,w*.976,h*.945);
+  }
+
+  /* --- termo, guampa y yerba --- */
+  function escTermo(x,w,h){
+    var g = x.createLinearGradient(0,0,0,h);
+    g.addColorStop(0,'#e9e2d4'); g.addColorStop(.52,'#ded4c2'); g.addColorStop(.53,'#b99a72');
+    g.addColorStop(1,'#8f7048');
+    x.fillStyle=g; x.fillRect(0,0,w,h);
+    var rg = x.createRadialGradient(w*.72,h*.02,w*.02,w*.60,h*.12,w*.90);
+    rg.addColorStop(0,'rgba(255,250,232,.70)'); rg.addColorStop(1,'rgba(255,250,232,0)');
+    x.fillStyle=rg; x.fillRect(0,0,w,h);
+
+    /* mantel a rayas (ao po'i) */
+    x.save(); x.beginPath(); x.rect(0,h*.53,w,h*.47); x.clip();
+    x.fillStyle='#f0ece2'; x.fillRect(w*.04,h*.56,w*.92,h*.44);
+    for(var st=0; st<10; st++){
+      x.fillStyle = st%2 ? 'rgba(180,70,60,.28)' : 'rgba(60,110,140,.22)';
+      x.fillRect(w*.04, h*(.58+st*.045), w*.92, h*.010);
+    }
+    x.fillStyle='rgba(0,0,0,.10)'; x.fillRect(w*.04,h*.56,w*.92,h*.008);
+    x.restore();
+
+    /* sombras */
+    x.fillStyle='rgba(60,40,20,.28)'; elipse(x,w*.36,h*.845,w*.15,h*.038); x.fill();
+    x.fillStyle='rgba(60,40,20,.26)'; elipse(x,w*.62,h*.855,w*.085,h*.026); x.fill();
+    x.fillStyle='rgba(60,40,20,.22)'; elipse(x,w*.82,h*.86,w*.11,h*.028); x.fill();
+
+    /* termo */
+    var tx=w*.36, ty=h*.83, tw=w*.175, th=h*.50;
+    var tg = x.createLinearGradient(tx-tw/2,0,tx+tw/2,0);
+    tg.addColorStop(0,'#4a3524'); tg.addColorStop(.24,'#8a6440'); tg.addColorStop(.52,'#a67b4e');
+    tg.addColorStop(.80,'#6c4c30'); tg.addColorStop(1,'#3b2a1c');
+    x.fillStyle=tg; rr(x,tx-tw/2,ty-th,tw,th,tw*.16); x.fill();
+    x.fillStyle='rgba(0,0,0,.28)'; rr(x,tx-tw/2,ty-th*.30,tw,h*.020,tw*.04); x.fill();
+    x.fillStyle='rgba(0,0,0,.28)'; rr(x,tx-tw/2,ty-th*.86,tw,h*.020,tw*.04); x.fill();
+    /* costuras */
+    x.strokeStyle='rgba(240,225,200,.55)'; x.lineWidth=Math.max(1,w*.0022); x.setLineDash([w*.010,w*.010]);
+    x.beginPath(); x.moveTo(tx-tw/2+w*.008, ty-th*.28); x.lineTo(tx+tw/2-w*.008, ty-th*.28); x.stroke();
+    x.beginPath(); x.moveTo(tx-tw/2+w*.008, ty-th*.84); x.lineTo(tx+tw/2-w*.008, ty-th*.84); x.stroke();
+    x.setLineDash([]);
+    /* tapa */
+    x.fillStyle='#2f2a26'; rr(x,tx-tw*.32,ty-th-h*.048,tw*.64,h*.052,tw*.08); x.fill();
+    x.fillStyle='#484039'; rr(x,tx-tw*.32,ty-th-h*.048,tw*.64,h*.014,tw*.06); x.fill();
+    /* correa */
+    x.lineWidth=Math.max(2,w*.008);
+    x.strokeStyle='#5a4128';
+    x.beginPath(); x.moveTo(tx+tw/2-w*.004, ty-th*.80);
+    x.quadraticCurveTo(tx+tw*.85, ty-th*.55, tx+tw/2-w*.004, ty-th*.30); x.stroke();
+
+    /* guampa */
+    var gx=w*.62, gy=h*.85;
+    var gg = x.createLinearGradient(gx-w*.07,0,gx+w*.07,0);
+    gg.addColorStop(0,'#3a2a1a'); gg.addColorStop(.30,'#7a5a33'); gg.addColorStop(.65,'#5e442a');
+    gg.addColorStop(1,'#2e2114');
+    x.fillStyle=gg;
+    x.beginPath();
+    x.moveTo(gx-w*.062, gy-h*.24); x.lineTo(gx+w*.062, gy-h*.24);
+    x.lineTo(gx+w*.042, gy); x.lineTo(gx-w*.042, gy); x.closePath(); x.fill();
+    x.fillStyle='#c9a86a'; rr(x,gx-w*.066,gy-h*.255,w*.132,h*.028,w*.010); x.fill();
+    x.fillStyle='#4f7a2e'; elipse(x,gx,gy-h*.245,w*.056,h*.011); x.fill();
+    /* bombilla */
+    x.strokeStyle='#c4cbd3'; x.lineWidth=Math.max(2,w*.0075); x.lineCap='round';
+    x.beginPath(); x.moveTo(gx+w*.022, gy-h*.245); x.lineTo(gx+w*.075, gy-h*.44); x.stroke();
+    x.strokeStyle='#e6ebf0'; x.lineWidth=Math.max(1,w*.003);
+    x.beginPath(); x.moveTo(gx+w*.020, gy-h*.250); x.lineTo(gx+w*.073, gy-h*.445); x.stroke();
+    x.lineCap='butt';
+
+    /* bolsa de yerba */
+    var yx=w*.82, yy=h*.855;
+    var yg = x.createLinearGradient(yx-w*.10,0,yx+w*.10,0);
+    yg.addColorStop(0,'#1e5a33'); yg.addColorStop(.35,'#2f7f48'); yg.addColorStop(.75,'#276b3d');
+    yg.addColorStop(1,'#123a22');
+    x.fillStyle=yg; rr(x,yx-w*.105,yy-h*.34,w*.210,h*.34,w*.012); x.fill();
+    x.fillStyle='rgba(255,255,255,.92)'; rr(x,yx-w*.082,yy-h*.275,w*.164,h*.145,w*.008); x.fill();
+    x.fillStyle='#1e5a33'; x.textAlign='center';
+    x.font='800 '+Math.round(h*.040)+'px system-ui, sans-serif';
+    x.fillText('YERBA', yx, yy-h*.215);
+    x.font='600 '+Math.round(h*.026)+'px system-ui, sans-serif';
+    x.fillText('elaborada', yx, yy-h*.178);
+    x.fillStyle='#8a6a20';
+    x.font='800 '+Math.round(h*.030)+'px system-ui, sans-serif';
+    x.fillText('1 kg', yx, yy-h*.142);
+    x.textAlign='start';
+    x.fillStyle='rgba(0,0,0,.22)'; x.fillRect(yx-w*.105,yy-h*.34,w*.210,h*.020);
+    x.fillStyle='rgba(255,255,255,.14)'; x.fillRect(yx-w*.060,yy-h*.34,w*.014,h*.34);
+
+    /* yerba suelta */
+    var Ry = rnd(41);
+    for(var q=0;q<70;q++){
+      x.fillStyle = ['#5f7d34','#8a9c52','#43601f','#a8b06a'][Math.floor(Ry()*4)];
+      var qx = w*.50 + (Ry()-.5)*w*.30, qy = h*.895 + (Ry()-.5)*h*.075;
+      x.fillRect(qx, qy, w*.005+Ry()*w*.004, h*.005+Ry()*h*.004);
+    }
+  }
+
+  /* --- escenas chicas para la grilla --- */
+  function escGrid(x,w,h,t){
+    var fondos = [
+      ['#f2ece0','#dcd0bb'], ['#e6ecef','#c9d5db'], ['#f0e9e2','#d8c9b8'],
+      ['#eae9f0','#cfcedd'], ['#edeee6','#d2d4c4'], ['#f1e7e5','#dcc6c2']
+    ];
+    var g = x.createLinearGradient(0,0,0,h);
+    g.addColorStop(0,fondos[t][0]); g.addColorStop(1,fondos[t][1]);
+    x.fillStyle=g; x.fillRect(0,0,w,h);
+    var rg = x.createRadialGradient(w*.32,h*.06,w*.02,w*.42,h*.20,w*.9);
+    rg.addColorStop(0,'rgba(255,255,255,.55)'); rg.addColorStop(1,'rgba(255,255,255,0)');
+    x.fillStyle=rg; x.fillRect(0,0,w,h);
+    x.fillStyle='rgba(90,70,45,.18)'; x.fillRect(0,h*.70,w,h*.30);
+    x.fillStyle='rgba(0,0,0,.20)'; elipse(x,w*.50,h*.80,w*.30,h*.055); x.fill();
+
+    if(t===0){ /* chipa */
+      x.fillStyle='#f6f4ef'; elipse(x,w*.50,h*.72,w*.33,h*.13); x.fill();
+      var cg = x.createRadialGradient(w*.44,h*.52,w*.02,w*.50,h*.60,w*.28);
+      cg.addColorStop(0,'#e0b872'); cg.addColorStop(1,'#a97b36');
+      x.fillStyle=cg; elipse(x,w*.50,h*.60,w*.26,h*.20); x.fill();
+      x.fillStyle='rgba(0,0,0,.30)'; elipse(x,w*.50,h*.60,w*.075,h*.055); x.fill();
+      x.fillStyle='rgba(255,255,255,.28)'; elipse(x,w*.41,h*.52,w*.10,h*.045,-.4); x.fill();
+    } else if(t===1){ /* empanadas */
+      x.fillStyle='#f7f6f2'; elipse(x,w*.50,h*.70,w*.34,h*.15); x.fill();
+      for(var e=0;e<2;e++){
+        x.save(); x.translate(w*(.40+e*.21), h*(.62+e*.055)); x.rotate(e? .25:-.20);
+        var eg = x.createLinearGradient(0,-h*.10,0,h*.10);
+        eg.addColorStop(0,'#e9bd70'); eg.addColorStop(1,'#ac7830');
+        x.fillStyle=eg; elipse(x,0,0,w*.155,h*.085); x.fill();
+        x.strokeStyle='#96662a'; x.lineWidth=Math.max(1,w*.006);
+        x.beginPath(); x.arc(w*.10,0,w*.055,-1.2,1.2); x.stroke();
+        x.fillStyle='rgba(255,255,255,.25)'; elipse(x,-w*.04,-h*.026,w*.075,h*.028,-.25); x.fill();
+        x.restore();
+      }
+    } else if(t===2){ /* termo */
+      var tg2 = x.createLinearGradient(w*.36,0,w*.64,0);
+      tg2.addColorStop(0,'#4a3524'); tg2.addColorStop(.45,'#a67b4e'); tg2.addColorStop(1,'#3b2a1c');
+      x.fillStyle=tg2; rr(x,w*.36,h*.30,w*.28,h*.50,w*.05); x.fill();
+      x.fillStyle='#2f2a26'; rr(x,w*.42,h*.24,w*.16,h*.07,w*.02); x.fill();
+      x.fillStyle='rgba(0,0,0,.28)'; x.fillRect(w*.36,h*.45,w*.28,h*.03);
+      x.fillStyle='rgba(240,225,200,.5)'; x.fillRect(w*.38,h*.62,w*.24,h*.006);
+    } else if(t===3){ /* botella de jugo */
+      x.fillStyle='#b8452f'; rr(x,w*.40,h*.34,w*.20,h*.46,w*.05); x.fill();
+      x.fillStyle='#b8452f'; rr(x,w*.455,h*.20,w*.09,h*.17,w*.03); x.fill();
+      x.fillStyle='#e8e2d2'; rr(x,w*.445,h*.17,w*.11,h*.05,w*.015); x.fill();
+      x.fillStyle='rgba(255,255,255,.90)'; x.fillRect(w*.41,h*.50,w*.18,h*.16);
+      x.fillStyle='rgba(0,0,0,.40)'; x.fillRect(w*.435,h*.535,w*.10,h*.024);
+      x.fillRect(w*.435,h*.575,w*.13,h*.020);
+      var bg2 = x.createLinearGradient(w*.40,0,w*.60,0);
+      bg2.addColorStop(0,'rgba(255,255,255,.10)'); bg2.addColorStop(.25,'rgba(255,255,255,.45)');
+      bg2.addColorStop(.5,'rgba(255,255,255,0)'); bg2.addColorStop(1,'rgba(0,0,0,.28)');
+      x.fillStyle=bg2; rr(x,w*.40,h*.34,w*.20,h*.46,w*.05); x.fill();
+    } else if(t===4){ /* bolsa de yerba */
+      var yg2 = x.createLinearGradient(w*.30,0,w*.70,0);
+      yg2.addColorStop(0,'#1e5a33'); yg2.addColorStop(.4,'#2f7f48'); yg2.addColorStop(1,'#123a22');
+      x.fillStyle=yg2; rr(x,w*.30,h*.34,w*.40,h*.46,w*.035); x.fill();
+      x.fillStyle='rgba(255,255,255,.92)'; rr(x,w*.355,h*.44,w*.29,h*.25,w*.02); x.fill();
+      x.fillStyle='#1e5a33'; x.textAlign='center';
+      x.font='800 '+Math.round(h*.075)+'px system-ui, sans-serif';
+      x.fillText('YERBA', w*.50, h*.545);
+      x.font='600 '+Math.round(h*.050)+'px system-ui, sans-serif';
+      x.fillText('1 kg', w*.50, h*.625);
+      x.textAlign='start';
+      x.fillStyle='rgba(0,0,0,.22)'; x.fillRect(w*.30,h*.34,w*.40,h*.035);
+    } else { /* porción de torta */
+      x.fillStyle='#f7f6f2'; elipse(x,w*.50,h*.72,w*.32,h*.13); x.fill();
+      x.fillStyle='#5c3a22';
+      x.beginPath(); x.moveTo(w*.30,h*.68); x.lineTo(w*.70,h*.68); x.lineTo(w*.60,h*.40);
+      x.lineTo(w*.40,h*.40); x.closePath(); x.fill();
+      x.fillStyle='#f0e2cd'; x.fillRect(w*.325,h*.545,w*.35,h*.045);
+      x.fillStyle='#8a5a35'; x.fillRect(w*.31,h*.60,w*.38,h*.035);
+      x.fillStyle='#e8d6bd';
+      x.beginPath(); x.moveTo(w*.40,h*.40); x.lineTo(w*.60,h*.40); x.lineTo(w*.58,h*.36);
+      x.lineTo(w*.42,h*.36); x.closePath(); x.fill();
+      x.fillStyle='#c93a2c'; elipse(x,w*.50,h*.355,w*.035,h*.030); x.fill();
+    }
+  }
+
+  /* ==========================================================
+     DEGRADACIÓN REAL SOBRE EL MISMO CANVAS
+     ========================================================== */
+  var puedeFiltro = (function(){
+    try{ var c=C(4,4).getContext('2d'); return typeof c.filter === 'string'; }catch(e){ return false; }
+  })();
+
+  function arruinar(src, o){
+    o = o || {};
+    var w = src.width, h = src.height;
+    var cur = C(w,h), c = cur.getContext('2d');
+
+    /* 1) bajar resolución y volver a agrandar */
+    var f = o.esc || 1;
+    if(f < 1){
+      var t = C(Math.max(6,Math.round(w*f)), Math.max(6,Math.round(h*f)));
+      var tc = t.getContext('2d');
+      tc.imageSmoothingEnabled = true;
+      tc.drawImage(src, 0, 0, t.width, t.height);
+      c.imageSmoothingEnabled = !o.bloque;
+      c.drawImage(t, 0, 0, w, h);
+      c.imageSmoothingEnabled = true;
+    } else {
+      c.drawImage(src, 0, 0);
+    }
+
+    /* 2) desenfoque de movimiento */
+    if(o.mov){
+      var snap = C(w,h); snap.getContext('2d').drawImage(cur,0,0);
+      c.clearRect(0,0,w,h);
+      var n = o.mov.n || 7;
+      c.globalAlpha = 1/n;
+      for(var m=0;m<n;m++){
+        var k = (m/(n-1)) - .5;
+        c.drawImage(snap, k*o.mov.dx, k*o.mov.dy);
+      }
+      c.globalAlpha = 1;
+    }
+
+    /* 3) desenfoque suave */
+    if(o.blur && puedeFiltro){
+      var s2 = C(w,h); s2.getContext('2d').drawImage(cur,0,0);
+      c.clearRect(0,0,w,h);
+      c.filter = 'blur(' + o.blur + 'px)';
+      var ov = Math.ceil(o.blur*3);
+      c.drawImage(s2, -ov, -ov, w+ov*2, h+ov*2);
+      c.filter = 'none';
+    }
+
+    /* 4) color, contraste, brillo y ruido — un solo recorrido de píxeles */
+    var br = o.bri || 0;
+    var ct = (o.con == null) ? 1 : o.con;
+    var tn = o.tint || [1,1,1];
+    var nz = o.ruido || 0;
+    if(br || ct !== 1 || nz || tn[0]!==1 || tn[1]!==1 || tn[2]!==1){
+      var id, d;
+      try{ id = c.getImageData(0,0,w,h); d = id.data; }catch(e){ id = null; }
+      if(id){
+        for(var i=0;i<d.length;i+=4){
+          var r = d[i], g2 = d[i+1], b2 = d[i+2];
+          r = (r-128)*ct + 128 + br;
+          g2 = (g2-128)*ct + 128 + br;
+          b2 = (b2-128)*ct + 128 + br;
+          r *= tn[0]; g2 *= tn[1]; b2 *= tn[2];
+          if(nz){
+            var lu = (Math.random()-.5)*nz;
+            r += lu + (Math.random()-.5)*nz*.45;
+            g2 += lu + (Math.random()-.5)*nz*.35;
+            b2 += lu + (Math.random()-.5)*nz*.55;
+          }
+          d[i]   = r<0?0:(r>255?255:r);
+          d[i+1] = g2<0?0:(g2>255?255:g2);
+          d[i+2] = b2<0?0:(b2>255?255:b2);
+        }
+        c.putImageData(id,0,0);
+      }
+    }
+
+    /* 5) sombra del dedo en una esquina */
+    if(o.dedo){
+      c.save();
+      if(puedeFiltro) c.filter = 'blur(' + Math.round(w*.02) + 'px)';
+      var dg = c.createLinearGradient(0,h,w*.34,h*.55);
+      dg.addColorStop(0,'rgba(10,8,6,.80)'); dg.addColorStop(1,'rgba(10,8,6,0)');
+      c.fillStyle = dg;
+      c.beginPath();
+      c.moveTo(0,h); c.lineTo(0,h*.60);
+      c.quadraticCurveTo(w*.12,h*.56, w*.19,h*.74);
+      c.quadraticCurveTo(w*.24,h*.90, w*.16,h);
+      c.closePath(); c.fill();
+      c.restore();
+    }
+
+    /* 6) reflejo / velo de luz */
+    if(o.reflejo){
+      c.save();
+      c.globalCompositeOperation = 'lighter';
+      var rgl = c.createLinearGradient(w*.42,0,w*.92,h);
+      rgl.addColorStop(0,'rgba(255,255,240,0)');
+      rgl.addColorStop(.45,'rgba(255,255,238,.30)');
+      rgl.addColorStop(.60,'rgba(255,255,238,.16)');
+      rgl.addColorStop(1,'rgba(255,255,240,0)');
+      c.fillStyle = rgl;
+      c.beginPath();
+      c.moveTo(w*.30,0); c.lineTo(w*.62,0); c.lineTo(w,h*.72); c.lineTo(w*.70,h);
+      c.closePath(); c.fill();
+      c.restore();
+    }
+
+    /* 7) viñeta del lente barato */
+    if(o.vineta){
+      var vg = c.createRadialGradient(w/2,h/2,Math.min(w,h)*.28,w/2,h/2,Math.max(w,h)*.72);
+      vg.addColorStop(0,'rgba(0,0,0,0)');
+      vg.addColorStop(1,'rgba(0,0,0,'+o.vineta+')');
+      c.fillStyle=vg; c.fillRect(0,0,w,h);
+    }
+    return cur;
+  }
+
+  /* dibuja una escena limpia en un canvas nuevo */
+  function pintar(fn, w, h, extra){
+    var cv = C(w,h), c = cv.getContext('2d');
+    fn(c, w, h, extra);
+    return cv;
+  }
+
+  /* ==========================================================
+     CASOS DEL COMPARADOR
+     ========================================================== */
+  var AN = 840, AL = 560;
+
+  var casos = [
+    { esc: escMostrador,
+      mal: { esc:.52, blur:1.2, bri:-40, con:.70, tint:[.93,.96,1.08], ruido:36, vineta:.42 },
+      nota: '<b>Local a las siete de la tarde.</b> Estaba tan oscura que no se leían las etiquetas ni el cartel de precio. Se levantó la exposición, se recuperó el color de los envases y se sacó el granulado que aparece cuando el celular fuerza la luz.' },
+    { esc: escPlato,
+      mal: { esc:.70, mov:{dx:11,dy:3.5,n:8}, blur:.7, con:.86, bri:8, tint:[1.03,1.00,.97], ruido:16, dedo:true, vineta:.18 },
+      nota: '<b>Se movió la mano al apretar.</b> Se enderezó el contorno, volvió el filo del borde y se limpió la sombra del dedo en la esquina. Ojo: esto se puede hasta cierto punto. Si el movimiento es fuerte, el detalle no está en el archivo y no vuelve.' },
+    { esc: escEstante,
+      mal: { esc:.62, blur:.9, tint:[.86,1.12,.82], con:.78, bri:14, ruido:20, reflejo:true, vineta:.22 },
+      nota: '<b>Luz de tubo.</b> El tubo pinta todo de verde y el blanco deja de ser blanco. Se midió sobre un punto que sabíamos gris —el vidrio del estante— y se corrigió el resto a partir de ahí. También se bajó el reflejo del vidrio.' },
+    { esc: escTermo,
+      mal: { esc:.16, bloque:true, con:.90, bri:-6, tint:[1.04,1.00,.94], ruido:12, vineta:.16 },
+      nota: '<b>Reenviada cuatro veces por WhatsApp.</b> Cada reenvío la achica un poco más: llegó chiquita y con los cuadraditos marcados. Se agrandó y se reconstruyó el borde para que aguante el ancho de la página sin verse como un mosaico.' }
+  ];
+
+  var cvA = $('#cv-a'), cvB = $('#cv-b'), ctxA = cvA.getContext('2d'), ctxB = cvB.getContext('2d');
+  var comp = $('#comp'), notaEl = $('#comp-nota'), vivo = $('#vivo');
+  var etqA = $('#etq-a'), etqB = $('#etq-b'), cargando = $('#cargando');
+  var actual = 0, listo = false;
+
+  function generarCaso(i){
+    var c = casos[i];
+    if(!c.limpio){
+      c.limpio = pintar(c.esc, AN, AL);
+      c.roto = arruinar(c.limpio, c.mal);
+    }
+    return c;
+  }
+
+  function mostrarCaso(i){
+    var c = generarCaso(i);
+    ctxA.clearRect(0,0,AN,AL); ctxA.drawImage(c.roto,0,0);
+    ctxB.clearRect(0,0,AN,AL); ctxB.drawImage(c.limpio,0,0);
+    notaEl.innerHTML = c.nota;   /* texto fijo del código, no viene de ningún input */
+    cargando.classList.add('ido');
+  }
+
+  /* ---- posición de la barra ---- */
+  var pos = 50, pedido = false;
+
+  function aplicar(){
+    pedido = false;
+    comp.style.setProperty('--p', pos.toFixed(2) + '%');
+    comp.style.setProperty('--pn', (-pos).toFixed(2) + '%');
+    var oa = (pos - 13) / 13; oa = oa<0?0:(oa>1?1:oa);
+    var ob = (87 - pos) / 13; ob = ob<0?0:(ob>1?1:ob);
+    etqA.style.opacity = oa;
+    etqB.style.opacity = ob;
+  }
+  function poner(p, anunciar){
+    p = p<0?0:(p>100?100:p);
+    pos = p;
+    if(!pedido){ pedido = true; requestAnimationFrame(aplicar); }
+    var v = Math.round(pos);
+    comp.setAttribute('aria-valuenow', v);
+    comp.setAttribute('aria-valuetext', v + '% rescatada');
+    if(anunciar) vivo.textContent = v + ' por ciento rescatada';
+  }
+  aplicar();
+
+  /* ---- arrastre ---- */
+  var caja = null, arrastrando = false;
+  function desdeX(cx){
+    if(!caja) caja = comp.getBoundingClientRect();
+    return ((cx - caja.left) / caja.width) * 100;
+  }
+  /* apenas el visitante toca algo, el paseo automático se corta y no vuelve */
+  function cortarAuto(){ auto.vivo = false; auto.hecho = true; }
+  function enfocarComp(){
+    try{ comp.focus({ preventScroll:true }); }catch(err){ comp.focus(); }
+  }
+
+  if(window.PointerEvent){
+    comp.addEventListener('pointerdown', function(e){
+      if(e.button !== undefined && e.button !== 0) return;
+      caja = comp.getBoundingClientRect();
+      arrastrando = true;
+      cortarAuto();
+      comp.classList.add('agarrado');
+      try{ comp.setPointerCapture(e.pointerId); }catch(err){}
+      poner(desdeX(e.clientX), false);
+      enfocarComp();
+    });
+    comp.addEventListener('pointermove', function(e){
+      if(!arrastrando) return;
+      poner(desdeX(e.clientX), false);
+    }, { passive:true });
+    var soltar = function(){
+      if(!arrastrando) return;
+      arrastrando = false;
+      comp.classList.remove('agarrado');
+      poner(pos, true);
+    };
+    comp.addEventListener('pointerup', soltar);
+    comp.addEventListener('pointercancel', soltar);
+    comp.addEventListener('lostpointercapture', soltar);
+  } else {
+    comp.addEventListener('mousedown', function(e){
+      caja = comp.getBoundingClientRect(); arrastrando = true; cortarAuto();
+      poner(desdeX(e.clientX), false);
+    });
+    window.addEventListener('mousemove', function(e){
+      if(arrastrando) poner(desdeX(e.clientX), false);
+    }, { passive:true });
+    window.addEventListener('mouseup', function(){
+      if(arrastrando){ arrastrando=false; poner(pos,true); }
+    });
+  }
+  window.addEventListener('resize', function(){ caja = null; }, { passive:true });
+  window.addEventListener('scroll', function(){ if(!arrastrando) caja = null; }, { passive:true });
+
+  /* ---- teclado ---- */
+  comp.addEventListener('keydown', function(e){
+    var k = e.key, p = pos;
+    if(k === 'ArrowLeft' || k === 'ArrowDown') p = pos - 2;
+    else if(k === 'ArrowRight' || k === 'ArrowUp') p = pos + 2;
+    else if(k === 'PageDown') p = pos - 10;
+    else if(k === 'PageUp') p = pos + 10;
+    else if(k === 'Home') p = 0;
+    else if(k === 'End') p = 100;
+    else return;
+    e.preventDefault();
+    cortarAuto();
+    poner(p, true);
+  });
+
+  /* ---- paseo automático al entrar en pantalla, una sola vez ---- */
+  var auto = { hecho:false, vivo:false };
+  function paseo(){
+    if(auto.hecho || reduce) return;
+    auto.hecho = true; auto.vivo = true;
+    var t0 = 0, dur = 1700;
+    var puntos = [[0,50],[.30,30],[.68,72],[1,50]];
+    function ease(t){ return t<.5 ? 4*t*t*t : 1-Math.pow(-2*t+2,3)/2; }
+    function paso(ts){
+      if(!auto.vivo) return;
+      if(!t0) t0 = ts;
+      var t = (ts - t0) / dur;
+      if(t >= 1){ poner(50, false); auto.vivo = false; return; }
+      var seg = 0;
+      while(seg < puntos.length-2 && t > puntos[seg+1][0]) seg++;
+      var a = puntos[seg], b = puntos[seg+1];
+      var lt = (t - a[0]) / (b[0] - a[0]);
+      poner(a[1] + (b[1]-a[1]) * ease(lt), false);
+      requestAnimationFrame(paso);
+    }
+    requestAnimationFrame(paso);
+  }
+
+  /* ---- pestañas ---- */
+  var pests = [].slice.call(document.querySelectorAll('.pest'));
+  function elegir(i, foco){
+    actual = i;
+    for(var k=0;k<pests.length;k++){
+      var sel = (k === i);
+      pests[k].setAttribute('aria-selected', sel ? 'true' : 'false');
+      pests[k].tabIndex = sel ? 0 : -1;
+    }
+    $('#panel-comp').setAttribute('aria-labelledby', 'tab-' + i);
+    mostrarCaso(i);
+    cortarAuto();
+    poner(50, false);
+    if(foco) pests[i].focus();
+    vivo.textContent = 'Caso: ' + pests[i].textContent.trim();
+  }
+  for(var pi=0; pi<pests.length; pi++){
+    (function(idx){
+      pests[idx].addEventListener('click', function(){ elegir(idx, false); });
+    })(pi);
+  }
+  document.querySelector('.pestanas').addEventListener('keydown', function(e){
+    var i = actual;
+    if(e.key === 'ArrowRight') i = (actual+1) % pests.length;
+    else if(e.key === 'ArrowLeft') i = (actual-1+pests.length) % pests.length;
+    else if(e.key === 'Home') i = 0;
+    else if(e.key === 'End') i = pests.length-1;
+    else return;
+    e.preventDefault();
+    elegir(i, true);
+  });
+
+  /* ==========================================================
+     FICHAS DE ARREGLOS
+     ========================================================== */
+  var FW = 340, FH = 230;
+  var fichas = [
+    { t:'Enfoque', esc:escPlato,
+      d:'El borde vuelve a ser un borde. No inventa detalle: recupera el que estaba tapado por el desenfoque suave del celular.',
+      mal:{ esc:.72, blur:2.4, con:.92, ruido:8 } },
+    { t:'Ruido', esc:escMostrador,
+      d:'El granito que aparece cuando hay poca luz se limpia sin dejar la foto de plástico. La textura de la madera sigue estando.',
+      mal:{ ruido:66, bri:-14, con:.88 } },
+    { t:'Color', esc:escEstante,
+      d:'Se busca un punto que en la vida real es blanco o gris y se corrige todo desde ahí. Después el producto tiene el color que tiene.',
+      mal:{ tint:[.84,1.14,.80], con:.80, bri:12, ruido:10 } },
+    { t:'Encuadre', esc:escTermo, torcer:true,
+      d:'Se endereza la línea de la mesa y se recorta para que el producto quede donde tiene que estar, no pegado al borde.',
+      mal:{ esc:.8, blur:.5, con:.94, ruido:10 } },
+    { t:'Tamaño', esc:escGrid, extra:0,
+      d:'De 400 px a 1.600 px sin que se note el estirón. Es lo que permite usar la misma foto de portada y no solo de miniatura.',
+      mal:{ esc:.14, bloque:true, con:.94, ruido:6 } }
+  ];
+
+  function armarFichas(){
+    var cont = $('#fichas');
+    for(var i=0;i<fichas.length;i++){
+      var f = fichas[i];
+      var limpio = pintar(f.esc, FW, FH, f.extra);
+      var base = limpio;
+      if(f.torcer){
+        /* mismo dibujo, mal encuadrado: girado, ampliado y corrido */
+        var tw = C(FW,FH), tc = tw.getContext('2d');
+        tc.translate(FW*.56, FH*.56); tc.rotate(-.075); tc.scale(1.22,1.22);
+        tc.drawImage(limpio, -FW/2, -FH/2);
+        base = tw;
+      }
+      var roto = arruinar(base, f.mal);
+
+      var cv = C(FW,FH), c = cv.getContext('2d');
+      c.drawImage(limpio,0,0);
+      c.save(); c.beginPath(); c.rect(0,0,FW/2,FH); c.clip();
+      c.drawImage(roto,0,0); c.restore();
+      c.fillStyle='#fff'; c.fillRect(FW/2-1.5,0,3,FH);
+      c.fillStyle='rgba(0,0,0,.30)'; c.fillRect(FW/2-2.5,0,1,FH); c.fillRect(FW/2+1.5,0,1,FH);
+
+      var art = document.createElement('div'); art.className='ficha';
+      var mini = document.createElement('div'); mini.className='mini';
+      cv.setAttribute('aria-hidden','true');
+      var la = document.createElement('i'); la.className='a'; la.textContent='COMO LLEGÓ';
+      var lb = document.createElement('i'); lb.className='b'; lb.textContent='RESCATADA';
+      mini.appendChild(cv); mini.appendChild(la); mini.appendChild(lb);
+      var txt = document.createElement('div'); txt.className='txt';
+      var hh = document.createElement('h3');
+      var num = document.createElement('span'); num.className='num'; num.textContent = String(i+1);
+      hh.appendChild(num); hh.appendChild(document.createTextNode(f.t));
+      var pp = document.createElement('p'); pp.textContent = f.d;
+      txt.appendChild(hh); txt.appendChild(pp);
+      art.appendChild(mini); art.appendChild(txt);
+      cont.appendChild(art);
+    }
+  }
+
+  /* ==========================================================
+     GRILLA EMPAREJADA
+     ========================================================== */
+  var GS = 300;
+  var desparejo = [
+    { tint:[1.14,1.00,.84], con:.94, bri:10 },
+    { tint:[.88,.98,1.16], con:1.10, bri:-14 },
+    { tint:[1.06,1.02,.96], con:.78, bri:22 },
+    { tint:[.92,1.10,.88], con:.90, bri:4 },
+    { tint:[1.10,.96,.98], con:1.14, bri:-8 },
+    { tint:[.98,.99,1.02], con:.84, bri:16 }
+  ];
+  var parejo = { tint:[1.02,1.00,.98], con:1.06, bri:5 };
+
+  function armarGrilla(){
+    var g = $('#grilla');
+    for(var i=0;i<6;i++){
+      var base = pintar(escGrid, GS, GS, i);
+      var a = arruinar(base, desparejo[i]);
+      var b = arruinar(base, parejo);
+      var cel = document.createElement('div'); cel.className='celda';
+      a.setAttribute('aria-hidden','true'); b.setAttribute('aria-hidden','true');
+      b.className = 'par';
+      cel.appendChild(a); cel.appendChild(b);
+      g.appendChild(cel);
+    }
+  }
+
+  var sw = $('#sw'), swTxt = $('#sw-txt'), grNota = $('#gr-nota');
+  sw.addEventListener('click', function(){
+    var on = sw.getAttribute('aria-checked') !== 'true';
+    sw.setAttribute('aria-checked', on ? 'true' : 'false');
+    $('#grilla').classList.toggle('pareja', on);
+    swTxt.textContent = on ? 'Volver a como llegaron' : 'Emparejar el color de las seis';
+    grNota.innerHTML = on
+      ? 'Ahora mismo: <b>las seis con el mismo tono</b>. Mismo blanco, mismo brillo, mismo contraste. Ninguna foto cambió de contenido: cambió el criterio. Es lo que hace que una grilla se lea como una sola página y no como seis capturas sueltas.'
+      : 'Ahora mismo: <b>cada foto con su tono</b>. Una tira a amarillo, otra a azul, otra viene más apagada. Es lo que pasa cuando las fotos se sacaron en distintos momentos.';
+  });
+
+  /* ==========================================================
+     ARRANQUE PEREZOSO
+     ========================================================== */
+  function cuandoSeVe(el, fn){
+    if(!('IntersectionObserver' in window)){ fn(); return; }
+    var io = new IntersectionObserver(function(ents){
+      for(var i=0;i<ents.length;i++){
+        if(ents[i].isIntersecting){ io.disconnect(); fn(); return; }
+      }
+    }, { rootMargin: '300px 0px' });
+    io.observe(el);
+  }
+
+  function pronto(fn){
+    if(window.requestIdleCallback) window.requestIdleCallback(fn, { timeout: 900 });
+    else setTimeout(fn, 60);
+  }
+
+  /* el primer caso se dibuja enseguida; el paseo espera a que el comparador se vea */
+  pronto(function(){
+    mostrarCaso(0);
+    listo = true;
+    cuandoSeVe(comp, function(){ setTimeout(paseo, 350); });
+  });
+
+  cuandoSeVe($('#sec-fichas'), function(){ pronto(armarFichas); });
+  cuandoSeVe($('#sec-grilla'), function(){ pronto(armarGrilla); });
+
+})();
+</script>
+</body>
+</html>

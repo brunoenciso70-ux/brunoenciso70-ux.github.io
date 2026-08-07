@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; frame-src 'self'; media-src 'self' data:; form-action 'none'; object-src 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ña Lucía — Cosas para la casa y la mesa, en Asunción</title>
+<meta name="description" content="Manteles, vajilla de barro, canastos, velas y jabones hechos a mano. Elegí lo tuyo, armá el carrito y cerrá el pedido por WhatsApp en un minuto.">
+<!--
+  DEMO KatuWeb · Catálogo chico con carrito
+  Negocio y datos de ejemplo. Al usarla con un cliente real, reemplazar
+  todo por sus productos, precios y fotos verdaderas.
+-->
+<style>
+  :root{
+    --crema:#faf5ee; --papel:#fffdf9; --tinta:#2c2119; --tinta2:#6b5b4d;
+    --linea:#e7dccb; --terracota:#a8482a; --terracota-osc:#8c3a20;
+    --oliva:#5f6f45; --precio:#97401f; --wa:#128c4a;
+    --r:14px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+  body{
+    font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+    background:var(--crema); color:var(--tinta); line-height:1.6;
+    overflow-x:hidden; -webkit-font-smoothing:antialiased;
+  }
+  body.bloqueado{overflow:hidden}
+  a{color:inherit}
+  svg{display:block;width:100%;height:100%}
+  button{font:inherit;color:inherit}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+  :focus-visible{outline:3px solid var(--terracota);outline-offset:2px;border-radius:6px}
+
+  /* ---------- barra de arriba ---------- */
+  .top{position:sticky;top:0;z-index:40;background:rgba(250,245,238,.95);border-bottom:1px solid var(--linea);backdrop-filter:blur(10px)}
+  .top-in{max-width:1120px;margin:0 auto;padding:8px 14px;display:flex;align-items:center;gap:10px}
+  .marca{display:flex;flex-direction:column;justify-content:center;min-height:44px;line-height:1.05;text-decoration:none}
+  .marca b{font-family:Georgia,serif;font-size:21px;font-weight:700;letter-spacing:.005em}
+  .marca small{font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--tinta2);font-weight:700;margin-top:3px}
+  .links{margin-left:auto;display:flex;gap:2px}
+  .links a{display:flex;align-items:center;min-height:44px;padding:0 12px;font-size:14px;color:var(--tinta2);text-decoration:none;border-radius:9px}
+  .links a:hover{color:var(--tinta);background:#f2e9db}
+  .btn-carrito{
+    position:relative;display:flex;align-items:center;gap:7px;min-height:44px;padding:0 15px 0 12px;
+    background:var(--tinta);color:#fdf8f1;border:0;border-radius:999px;cursor:pointer;font-size:14px;font-weight:600;
+  }
+  .btn-carrito .ic{width:20px;height:20px;flex:0 0 20px}
+  .btn-carrito:hover{background:#3d2e23}
+  .badge{
+    position:absolute;top:-5px;right:-5px;min-width:22px;height:22px;padding:0 6px;border-radius:999px;
+    background:var(--terracota);color:#fff;font-size:12px;font-weight:700;line-height:22px;text-align:center;
+    border:2px solid var(--crema);
+  }
+  .badge[hidden]{display:none}
+  @keyframes pop{0%{transform:scale(1)}38%{transform:scale(1.42)}100%{transform:scale(1)}}
+  .badge.pop{animation:pop .4s ease}
+  @media (max-width:640px){ .links{display:none} .btn-carrito{margin-left:auto} }
+
+  /* ---------- portada corta ---------- */
+  .portada{max-width:1120px;margin:0 auto;padding:22px 14px 6px;display:grid;gap:20px}
+  @media (min-width:880px){ .portada{grid-template-columns:1fr 1.08fr;align-items:center;padding:38px 14px 10px;gap:34px} }
+  .kicker{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--terracota);font-weight:700}
+  h1{font-family:Georgia,serif;font-weight:400;font-size:clamp(27px,7vw,44px);line-height:1.12;letter-spacing:-.01em;margin:10px 0 10px}
+  .bajada{color:var(--tinta2);font-size:15.5px;max-width:44ch}
+  .acciones{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+  .b{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 20px;border-radius:999px;font-size:15px;font-weight:600;text-decoration:none;border:0;cursor:pointer}
+  .b-1{background:var(--terracota);color:#fff}
+  .b-1:hover{background:var(--terracota-osc)}
+  .b-2{background:transparent;color:var(--tinta);border:1.5px solid #d5c6b0}
+  .b-2:hover{background:#f2e9db}
+  .b-wa{background:var(--wa);color:#fff}
+  .b-wa:hover{background:#0f7a41}
+
+  /* colección destacada */
+  .destacada{background:var(--papel);border:1px solid var(--linea);border-radius:18px;padding:14px;box-shadow:0 10px 30px rgba(80,55,30,.06)}
+  .destacada .cab{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:12px}
+  .destacada .cab span{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--tinta2);font-weight:700}
+  .destacada .cab strong{font-family:Georgia,serif;font-size:17px;font-weight:400}
+  .tres{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .mini{position:relative;background:none;border:1px solid var(--linea);border-radius:12px;padding:6px;cursor:pointer;text-align:left;display:flex;flex-direction:column}
+  .mini:hover{border-color:#cdb99c;background:#fdf7ee}
+  .mini .marco{aspect-ratio:1/1;border-radius:8px;overflow:hidden;background:linear-gradient(155deg,#f8f1e5,#eee1cf)}
+  .mini .n{font-size:11.5px;line-height:1.25;margin-top:6px;font-weight:600}
+  .mini .p{font-size:11.5px;color:var(--precio);font-weight:700;margin-top:2px}
+
+  /* ---------- secciones ---------- */
+  section{max-width:1120px;margin:0 auto;padding:30px 14px 6px;scroll-margin-top:70px}
+  .sec-cab{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;border-bottom:1px solid var(--linea);padding-bottom:11px;margin-bottom:16px;flex-wrap:wrap}
+  h2{font-family:Georgia,serif;font-weight:400;font-size:clamp(22px,5.4vw,31px);letter-spacing:-.01em}
+  .sec-cab p{font-size:13.5px;color:var(--tinta2);max-width:40ch}
+
+  .grilla{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:11px}
+  @media (min-width:700px){ .grilla{grid-template-columns:repeat(auto-fill,minmax(212px,1fr));gap:18px} }
+
+  .card{position:relative;background:var(--papel);border:1px solid var(--linea);border-radius:var(--r);padding:8px;display:flex;flex-direction:column;transition:transform .22s ease,border-color .22s ease}
+  .card:hover{transform:translateY(-3px);border-color:#d6c3a6}
+  .card .marco{aspect-ratio:4/3;border-radius:10px;overflow:hidden;background:linear-gradient(155deg,#f8f1e5,#eee1cf)}
+  .abrir{background:none;border:0;padding:0;text-align:left;cursor:pointer;display:block;margin:8px 0 9px}
+  .abrir::after{content:"";position:absolute;inset:0;border-radius:var(--r)}
+  .abrir:focus-visible{outline:none}
+  .abrir:focus-visible::after{outline:3px solid var(--terracota);outline-offset:2px}
+  .card h3{font-size:14px;font-weight:600;line-height:1.3}
+  .card .p{font-size:15px;font-weight:700;color:var(--precio);margin-top:3px}
+  .card .ver{font-size:11.5px;color:var(--tinta2);margin-top:2px}
+  .add{position:relative;z-index:2;margin-top:auto;min-height:44px;width:100%;border:1.5px solid #ddd0bb;background:#fdf7ee;border-radius:10px;font-size:13.5px;font-weight:600;cursor:pointer;transition:background .18s ease,border-color .18s ease}
+  .add:hover{background:var(--terracota);border-color:var(--terracota);color:#fff}
+  .add.hecho{background:var(--oliva);border-color:var(--oliva);color:#fff}
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    .card:hover{transform:none}
+    .badge.pop{animation:none}
+  }
+
+  /* aparición */
+  .rev{opacity:0;transform:translateY(16px);transition:opacity .5s ease,transform .5s cubic-bezier(.2,.7,.3,1)}
+  .rev.on{opacity:1;transform:none}
+  @media (prefers-reduced-motion:reduce){ .rev{opacity:1;transform:none;transition:none} }
+
+  /* ---------- aviso y pie ---------- */
+  .aviso{max-width:1120px;margin:26px auto 0;padding:0 14px;font-size:12.5px;color:var(--tinta2)}
+  .cierre{max-width:1120px;margin:30px auto 0;padding:22px 14px 30px;border-top:1px solid var(--linea);display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between}
+  .cierre p{font-size:14px;color:var(--tinta2);max-width:46ch}
+  .katu-pie{background:#211913;color:#d8cbbb;font-size:12.5px;text-align:center;padding:16px 14px;line-height:1.9}
+  .katu-pie strong{color:#fff}
+  .katu-pie a{color:#f0b79c;text-decoration:underline;text-underline-offset:2px;display:inline-block;padding:4px 2px}
+
+  /* ---------- velo ---------- */
+  .velo{position:fixed;inset:0;background:rgba(40,27,17,.45);opacity:0;visibility:hidden;transition:opacity .28s ease,visibility .28s ease;z-index:60}
+  .velo.on{opacity:1;visibility:visible}
+
+  /* ---------- carrito ---------- */
+  .carrito{
+    position:fixed;top:0;right:0;height:100%;z-index:70;display:flex;flex-direction:column;
+    width:min(392px,calc(100vw - 46px));background:var(--papel);
+    box-shadow:-16px 0 44px rgba(50,32,18,.22);
+    transform:translateX(103%);visibility:hidden;
+    transition:transform .34s cubic-bezier(.22,.7,.3,1),visibility .34s;
+  }
+  .carrito.on{transform:none;visibility:visible}
+  .car-cab{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--linea)}
+  .car-cab h2{font-size:19px}
+  .car-cab .cuenta{font-size:12.5px;color:var(--tinta2)}
+  .cerrar{margin-left:auto;width:44px;height:44px;flex:0 0 44px;border:0;background:#f2e9db;border-radius:50%;cursor:pointer;font-size:18px;line-height:1}
+  .cerrar:hover{background:#e6d9c5}
+  .car-lista{flex:1;overflow-y:auto;padding:0 14px}
+  .vacio{padding:40px 6px;text-align:center}
+  .vacio .dib{width:110px;height:110px;margin:0 auto 12px;opacity:.85}
+  .vacio h3{font-family:Georgia,serif;font-weight:400;font-size:19px;margin-bottom:6px}
+  .vacio p{font-size:13.5px;color:var(--tinta2);max-width:30ch;margin:0 auto}
+  .linea{display:grid;grid-template-columns:52px 1fr;gap:10px;padding:12px 0;border-bottom:1px solid var(--linea)}
+  .linea .mini-img{width:52px;height:52px;border-radius:8px;overflow:hidden;background:linear-gradient(155deg,#f8f1e5,#eee1cf)}
+  .linea .n{font-size:13.5px;font-weight:600;line-height:1.3}
+  .linea .u{font-size:12px;color:var(--tinta2);margin-top:1px}
+  .fila{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:7px}
+  .cant{display:flex;align-items:center;border:1px solid var(--linea);border-radius:999px;background:#fdf8f0}
+  .cant button{width:40px;height:44px;background:none;border:0;cursor:pointer;font-size:19px;line-height:1;border-radius:999px}
+  .cant button:hover{background:#f0e5d3}
+  .cant span{min-width:24px;text-align:center;font-size:14px;font-weight:700}
+  .sub{font-size:14px;font-weight:700;white-space:nowrap}
+  .car-pie{border-top:1px solid var(--linea);padding:14px;background:#fdf8f0}
+  .total{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:4px}
+  .total span{font-size:14px;color:var(--tinta2)}
+  .total b{font-size:21px;font-family:Georgia,serif}
+  .car-pie .envio{font-size:12px;color:var(--tinta2);margin-bottom:12px}
+  .car-pie .b-wa{width:100%;min-height:52px}
+  .car-pie .nota{font-size:11.5px;color:var(--tinta2);margin-top:9px;text-align:center;line-height:1.5}
+
+  /* ---------- ficha ---------- */
+  .ficha{position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;padding:10px;opacity:0;visibility:hidden;transition:opacity .26s ease,visibility .26s}
+  .ficha.on{opacity:1;visibility:visible}
+  .caja{position:relative;background:var(--papel);border-radius:16px;width:min(900px,100%);max-height:calc(100vh - 20px);max-height:calc(100dvh - 20px);overflow-y:auto;box-shadow:0 24px 60px rgba(50,32,18,.3);transform:translateY(16px);transition:transform .3s cubic-bezier(.2,.7,.3,1)}
+  .ficha.on .caja{transform:none}
+  @media (prefers-reduced-motion:reduce){ .caja{transform:none;transition:none} .carrito{transition:none} }
+  .caja .cerrar{position:absolute;top:10px;right:10px;z-index:3;background:rgba(255,253,249,.92);box-shadow:0 2px 10px rgba(50,32,18,.16)}
+  .caja-in{display:grid;gap:16px;padding:14px}
+  @media (min-width:760px){ .caja-in{grid-template-columns:1fr 1fr;padding:20px;gap:24px;align-items:start} }
+  .gal .grande{aspect-ratio:4/3;border-radius:12px;overflow:hidden;background:linear-gradient(155deg,#f8f1e5,#eee1cf)}
+  .thumbs{display:flex;gap:8px;margin-top:8px}
+  .thumbs button{width:60px;height:60px;padding:3px;border-radius:10px;border:1.5px solid var(--linea);background:#fdf8f0;cursor:pointer;overflow:hidden}
+  .thumbs button .marco{width:100%;height:100%;border-radius:7px;overflow:hidden;background:linear-gradient(155deg,#f8f1e5,#eee1cf)}
+  .thumbs button[aria-pressed="true"]{border-color:var(--terracota)}
+  .gal .pie-gal{font-size:11.5px;color:var(--tinta2);margin-top:8px}
+  .info .col{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--terracota);font-weight:700}
+  .info h3{font-family:Georgia,serif;font-weight:400;font-size:clamp(21px,5.6vw,27px);line-height:1.18;margin:7px 0 8px}
+  .info .p{font-size:22px;font-weight:700;color:var(--precio)}
+  .info .d{font-size:14.5px;color:var(--tinta2);margin:12px 0 14px}
+  .datos{list-style:none;border-top:1px solid var(--linea)}
+  .datos li{display:flex;gap:12px;padding:9px 0;border-bottom:1px solid var(--linea);font-size:13.5px}
+  .datos li b{flex:0 0 92px;font-weight:600;color:var(--tinta2)}
+  .info .add{margin-top:16px;width:100%;min-height:52px;font-size:15px;background:var(--terracota);border-color:var(--terracota);color:#fff}
+  .info .add:hover{background:var(--terracota-osc);border-color:var(--terracota-osc)}
+  .info .add.hecho{background:var(--oliva);border-color:var(--oliva)}
+  .info .mini-nota{font-size:12px;color:var(--tinta2);margin-top:9px;text-align:center}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <a class="marca" href="#arriba"><b>Ña Lucía</b><small>Casa y mesa · Asunción</small></a>
+    <nav class="links" aria-label="Colecciones">
+      <a href="#mesa">Para la mesa</a>
+      <a href="#casa">Para la casa</a>
+    </nav>
+    <button class="btn-carrito" id="btnCarrito" type="button" aria-haspopup="dialog">
+      <span class="ic" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5.5 8h13l-1.2 11.2a1.6 1.6 0 0 1-1.6 1.4H8.3a1.6 1.6 0 0 1-1.6-1.4Z"/>
+          <path d="M9 8V6.2a3 3 0 0 1 6 0V8"/>
+        </svg>
+      </span>
+      <span>Carrito</span>
+      <span class="badge" id="badge" hidden>0</span>
+    </button>
+  </div>
+</header>
+
+<main id="arriba">
+
+  <div class="portada">
+    <div>
+      <p class="kicker">Hecho a mano en Paraguay</p>
+      <h1>Cosas lindas y sencillas para la casa y la mesa</h1>
+      <p class="bajada">Manteles de algodón, barro cocido, canastos tejidos, velas y jabones. Elegí lo que te guste, armá el carrito y te lo confirmamos por WhatsApp.</p>
+      <div class="acciones">
+        <a class="b b-1" href="#mesa">Ver la colección</a>
+        <a class="b b-2" href="#casa">Para la casa</a>
+      </div>
+    </div>
+    <div class="destacada rev">
+      <div class="cab">
+        <strong>Colección destacada</strong>
+        <span>Para la mesa</span>
+      </div>
+      <div class="tres" id="destacados"></div>
+    </div>
+  </div>
+
+  <section id="mesa">
+    <div class="sec-cab">
+      <h2>Para la mesa</h2>
+      <p>Lo que se pone y se comparte: mantel, barro y madera para el almuerzo de todos los días.</p>
+    </div>
+    <div class="grilla" id="grillaMesa"></div>
+  </section>
+
+  <section id="casa">
+    <div class="sec-cab">
+      <h2>Para la casa</h2>
+      <p>Canastos, velas y jabones. Cosas de uso diario que además quedan lindas a la vista.</p>
+    </div>
+    <div class="grilla" id="grillaCasa"></div>
+  </section>
+
+  <p class="aviso">Las imágenes de esta demo están dibujadas con código para mostrar cómo funciona la tienda; en tu página van tus fotos reales de los productos.</p>
+
+  <div class="cierre">
+    <p>¿Tenés dudas con una medida o querés algo en otro color? Escribinos y te respondemos por WhatsApp.</p>
+    <a class="b b-wa" id="waConsulta" href="https://wa.me/595983518856" target="_blank" rel="noopener noreferrer">Escribinos por WhatsApp</a>
+  </div>
+</main>
+
+<div class="katu-pie">
+  Demo de <strong>KatuWeb</strong> · <a href="../catalogo.html">Volver al catálogo</a> ·
+  <a id="waPie" href="https://wa.me/595983518856" target="_blank" rel="noopener noreferrer">Quiero esto para mi negocio</a>
+</div>
+
+<div class="velo" id="velo"></div>
+
+<aside class="carrito" id="carrito" role="dialog" aria-modal="true" aria-labelledby="tCarrito">
+  <div class="car-cab">
+    <div>
+      <h2 id="tCarrito">Tu pedido</h2>
+      <p class="cuenta" id="cuentaCar">Todavía no elegiste nada</p>
+    </div>
+    <button class="cerrar" id="cerrarCar" type="button" aria-label="Cerrar el carrito">✕</button>
+  </div>
+  <div class="car-lista" id="carLista"></div>
+  <div class="car-pie" id="carPie" hidden>
+    <div class="total"><span>Total del pedido</span><b id="totalTxt">Gs. 0</b></div>
+    <p class="envio">El envío se coordina por WhatsApp según la zona.</p>
+    <a class="b b-wa" id="btnPedido" href="https://wa.me/595983518856" target="_blank" rel="noopener noreferrer">Cerrar el pedido por WhatsApp</a>
+    <p class="nota">Se abre WhatsApp con el pedido ya escrito. Vos lo revisás antes de enviarlo.</p>
+  </div>
+</aside>
+
+<div class="ficha" id="ficha" role="dialog" aria-modal="true" aria-labelledby="fichaTitulo">
+  <article class="caja" id="fichaCaja">
+    <button class="cerrar" id="cerrarFicha" type="button" aria-label="Cerrar la ficha del producto">✕</button>
+    <div class="caja-in">
+      <div class="gal">
+        <div class="grande" id="galGrande"></div>
+        <div class="thumbs" id="galThumbs"></div>
+        <p class="pie-gal">Tres tomas del mismo producto: entera, el detalle del material y cómo queda en la casa.</p>
+      </div>
+      <div class="info">
+        <p class="col" id="fichaCol"></p>
+        <h3 id="fichaTitulo"></h3>
+        <p class="p" id="fichaPrecio"></p>
+        <p class="d" id="fichaDesc"></p>
+        <ul class="datos" id="fichaDatos"></ul>
+        <button class="add" id="fichaAdd" type="button">Agregar al carrito</button>
+        <p class="mini-nota">Podés seguir mirando: el carrito te espera arriba.</p>
+      </div>
+    </div>
+  </article>
+</div>
+
+<p class="sr" role="status" aria-live="polite" id="aviso"></p>
+
+<script>
+(function(){
+  'use strict';
+
+  /* =============== utilidades =============== */
+  var WA = 'https://wa.me/595983518856?text=';
+  function gs(n){
+    return 'Gs. ' + Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  }
+  function rep(n, f){ var s = '', i; for(i = 0; i < n; i++){ s += f(i); } return s; }
+  function azar(semilla){
+    var s = semilla;
+    return function(){ s = (s * 1664525 + 1013904223) % 4294967296; return s / 4294967296; };
+  }
+  function pecas(cant, cx, cy, rx, ry, color, op, semilla){
+    var r = azar(semilla);
+    return rep(cant, function(){
+      var a = r() * 6.2832, d = Math.sqrt(r());
+      var x = cx + Math.cos(a) * rx * d, y = cy + Math.sin(a) * ry * d;
+      return '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="' + (0.9 + r() * 1.5).toFixed(1) + '" fill="' + color + '" opacity="' + op + '"/>';
+    });
+  }
+  var uid = 0;
+  function nuevoId(){ uid++; return 'k' + uid; }
+
+  /* =============== dibujos (SVG hecho a mano) =============== */
+  function sombra(cx, cy, rx, ry){
+    return '<ellipse cx="' + cx + '" cy="' + cy + '" rx="' + rx + '" ry="' + ry + '" fill="rgba(70,45,25,.11)"/>';
+  }
+
+  var ART = {
+    mantel: function(u){
+      var hem = 'M48 46H272V150q-18.7 15 -37.3 0t-37.3 0t-37.3 0t-37.3 0t-37.3 0t-37.3 0Z';
+      return sombra(160, 196, 106, 12) +
+        '<defs><clipPath id="c' + u + '"><path d="' + hem + '"/></clipPath>' +
+        '<linearGradient id="g' + u + '" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset="1" stop-color="#8a6b4a" stop-opacity=".2"/></linearGradient></defs>' +
+        '<g clip-path="url(#c' + u + ')">' +
+          '<rect x="48" y="46" width="224" height="132" fill="#f6efe3"/>' +
+          rep(3, function(i){ return '<rect x="48" y="' + (64 + i * 32) + '" width="224" height="10" fill="#b5502f" opacity=".72"/>'; }) +
+          rep(4, function(i){ return '<rect x="48" y="' + (57 + i * 32) + '" width="224" height="3.4" fill="#5f6f45" opacity=".6"/>'; }) +
+          '<path d="M133 46V178" stroke="#c9b79c" stroke-width="2.4" opacity=".8"/>' +
+          '<rect x="48" y="46" width="224" height="132" fill="url(#g' + u + ')"/>' +
+        '</g>' +
+        '<path d="' + hem + '" fill="none" stroke="#d6c3a6" stroke-width="2"/>';
+    },
+    individuales: function(u){
+      function mat(id, x, y, w, h, base, hilo){
+        return '<defs><clipPath id="' + id + '"><rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="16"/></clipPath></defs>' +
+          '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="16" fill="' + base + '"/>' +
+          '<g clip-path="url(#' + id + ')">' +
+            rep(Math.ceil(h / 13), function(i){ return '<rect x="' + x + '" y="' + (y + i * 13) + '" width="' + w + '" height="6.5" fill="' + hilo + '" opacity=".5"/>'; }) +
+            rep(Math.ceil(w / 13), function(i){ return '<rect x="' + (x + i * 13) + '" y="' + y + '" width="6.5" height="' + h + '" fill="' + hilo + '" opacity=".34"/>'; }) +
+          '</g>' +
+          '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="16" fill="none" stroke="#a98f60" stroke-width="2.4" opacity=".7"/>';
+      }
+      return sombra(160, 202, 100, 11) +
+        '<g transform="rotate(-8 160 118)">' + mat('a' + u, 58, 60, 172, 100, '#d9c49a', '#b2985f') + '</g>' +
+        '<g transform="rotate(5 160 140)">' + mat('b' + u, 82, 92, 176, 102, '#e6d5b0', '#bda172') + '</g>';
+    },
+    plato: function(u){
+      return sombra(160, 202, 88, 11) +
+        '<defs><radialGradient id="g' + u + '" cx="35%" cy="28%" r="78%"><stop offset="0" stop-color="#d79a6e"/><stop offset="1" stop-color="#a35f38"/></radialGradient></defs>' +
+        '<circle cx="160" cy="120" r="88" fill="url(#g' + u + ')"/>' +
+        '<circle cx="160" cy="120" r="88" fill="none" stroke="#8d4d2b" stroke-width="3" opacity=".55"/>' +
+        '<circle cx="160" cy="120" r="70" fill="none" stroke="#f0d9c2" stroke-width="2.6" opacity=".55"/>' +
+        '<circle cx="160" cy="122" r="60" fill="#b06d43"/>' +
+        '<circle cx="160" cy="122" r="60" fill="none" stroke="#8d4d2b" stroke-width="2" opacity=".45"/>' +
+        '<path d="M112 84a70 70 0 0 1 44-22" stroke="#fff" stroke-width="7" stroke-linecap="round" fill="none" opacity=".28"/>' +
+        pecas(46, 160, 120, 82, 82, '#6d3b1d', '.28', 7);
+    },
+    bowls: function(u){
+      function bowl(x, y, r, c1, c2){
+        return '<path d="M' + (x - r) + ' ' + y + 'a' + r + ' ' + r + ' 0 0 0 ' + (r * 2) + ' 0Z" fill="' + c1 + '"/>' +
+          '<ellipse cx="' + x + '" cy="' + y + '" rx="' + r + '" ry="' + (r * 0.26).toFixed(1) + '" fill="' + c2 + '"/>' +
+          '<ellipse cx="' + x + '" cy="' + y + '" rx="' + (r - 8) + '" ry="' + (r * 0.2).toFixed(1) + '" fill="#8d4d2b" opacity=".55"/>';
+      }
+      return sombra(160, 200, 96, 11) +
+        '<g opacity=".95">' + bowl(106, 118, 46, '#b8764c', '#d29a6e') + '</g>' +
+        bowl(190, 150, 58, '#a86339', '#c98b5f') +
+        '<path d="M146 138a56 56 0 0 0 14 34" stroke="#fff" stroke-width="6" stroke-linecap="round" fill="none" opacity=".2"/>' +
+        pecas(30, 190, 168, 46, 22, '#6d3b1d', '.25', 21);
+    },
+    jarra: function(u){
+      return sombra(160, 206, 66, 10) +
+        '<defs><linearGradient id="g' + u + '" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#c98b5f"/><stop offset=".45" stop-color="#b3714a"/><stop offset="1" stop-color="#94512f"/></linearGradient></defs>' +
+        '<path d="M198 92c16 22 18 62 12 88-3 14-12 20-50 20s-47-6-50-20c-6-26-4-66 12-88Z" fill="url(#g' + u + ')"/>' +
+        '<path d="M198 96c22 8 26 44 4 62" stroke="#a4623a" stroke-width="13" fill="none" stroke-linecap="round"/>' +
+        '<path d="M198 96c22 8 26 44 4 62" stroke="#c98b5f" stroke-width="6" fill="none" stroke-linecap="round"/>' +
+        '<path d="M120 92c6-22 10-30 40-30s34 8 40 30Z" fill="#bd7c52"/>' +
+        '<path d="M120 62c8-6 20-8 40-8s32 2 40 8l-4 8c-10-5-22-6-36-6s-26 1-36 6Z" fill="#d29a6e"/>' +
+        '<ellipse cx="160" cy="60" rx="40" ry="9" fill="#e0ac80"/>' +
+        '<ellipse cx="160" cy="60" rx="31" ry="6" fill="#8d4d2b" opacity=".5"/>' +
+        rep(4, function(i){ return '<path d="M112 ' + (118 + i * 16) + 'q48 8 96 0" stroke="#8d4d2b" stroke-width="1.8" fill="none" opacity=".3"/>'; }) +
+        pecas(26, 160, 150, 42, 46, '#6d3b1d', '.22', 33);
+    },
+    servilletas: function(u){
+      function serv(x, y, rot, c, borde, franja){
+        return '<g transform="rotate(' + rot + ' ' + (x + 55) + ' ' + (y + 40) + ')">' +
+          '<rect x="' + x + '" y="' + (y + 5) + '" width="112" height="80" rx="4" fill="rgba(70,45,25,.13)"/>' +
+          '<rect x="' + x + '" y="' + y + '" width="112" height="80" rx="4" fill="' + c + '"/>' +
+          '<rect x="' + x + '" y="' + (y + 56) + '" width="112" height="8" fill="' + franja + '" opacity=".8"/>' +
+          '<rect x="' + x + '" y="' + (y + 48) + '" width="112" height="3" fill="' + franja + '" opacity=".55"/>' +
+          '<rect x="' + (x + 6) + '" y="' + (y + 6) + '" width="100" height="68" rx="3" fill="none" stroke="' + borde + '" stroke-width="1.8" stroke-dasharray="5 4"/>' +
+          '<path d="M' + x + ' ' + (y + 30) + 'h112" stroke="' + borde + '" stroke-width="1.8" opacity=".75"/>' +
+          '<rect x="' + x + '" y="' + y + '" width="112" height="80" rx="4" fill="none" stroke="' + borde + '" stroke-width="2"/>' +
+          '</g>';
+      }
+      return sombra(160, 208, 92, 11) +
+        serv(92, 56, -11, '#e2d5b8', '#ab9469', '#5f6f45') +
+        serv(104, 88, 6, '#efe4cb', '#b7a077', '#a8482a') +
+        serv(96, 120, -3, '#f8f2e4', '#c1aa82', '#a8482a') +
+        '<path d="M104 168c34 16 74 16 106 0" stroke="#a8482a" stroke-width="5" fill="none" opacity=".85" stroke-linecap="round"/>' +
+        '<circle cx="157" cy="180" r="8" fill="none" stroke="#a8482a" stroke-width="4.4" opacity=".85"/>';
+    },
+    tabla: function(u){
+      return sombra(160, 200, 100, 11) +
+        '<defs><linearGradient id="g' + u + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cf9a5c"/><stop offset="1" stop-color="#a3703a"/></linearGradient>' +
+        '<clipPath id="c' + u + '"><path d="M76 66h150a22 22 0 0 1 22 22v64a22 22 0 0 1-22 22H76a12 12 0 0 1-12-12V78a12 12 0 0 1 12-12Z"/></clipPath></defs>' +
+        '<path d="M76 66h150a22 22 0 0 1 22 22v64a22 22 0 0 1-22 22H76a12 12 0 0 1-12-12V78a12 12 0 0 1 12-12Z" fill="url(#g' + u + ')"/>' +
+        '<g clip-path="url(#c' + u + ')">' +
+          rep(6, function(i){ return '<path d="M64 ' + (78 + i * 16) + 'q60 ' + (i % 2 ? 9 : -9) + ' 120 0t120 0" stroke="#7d5324" stroke-width="1.8" fill="none" opacity=".35"/>'; }) +
+          '<rect x="64" y="150" width="200" height="24" fill="#8a5a29" opacity=".25"/>' +
+        '</g>' +
+        '<circle cx="92" cy="94" r="9" fill="#f3ead9"/>' +
+        '<circle cx="92" cy="94" r="9" fill="none" stroke="#7d5324" stroke-width="2.4" opacity=".6"/>' +
+        '<path d="M76 66h150a22 22 0 0 1 22 22v64a22 22 0 0 1-22 22H76a12 12 0 0 1-12-12V78a12 12 0 0 1 12-12Z" fill="none" stroke="#7d5324" stroke-width="2.4" opacity=".55"/>';
+    },
+    repasador: function(u){
+      return '<defs><pattern id="p' + u + '" width="26" height="26" patternUnits="userSpaceOnUse">' +
+          '<rect width="26" height="26" fill="#f6efe2"/><rect width="13" height="26" fill="#b5502f" opacity=".38"/><rect width="26" height="13" fill="#b5502f" opacity=".38"/></pattern></defs>' +
+        '<rect x="42" y="44" width="236" height="5" rx="2.5" fill="#a4803f"/>' +
+        '<path d="M150 48v-6a10 10 0 0 1 20 0v6" fill="none" stroke="#a08a6a" stroke-width="5"/>' +
+        '<rect x="98" y="48" width="124" height="146" rx="4" fill="url(#p' + u + ')"/>' +
+        '<rect x="98" y="48" width="124" height="146" rx="4" fill="none" stroke="#c9b79c" stroke-width="2"/>' +
+        '<rect x="98" y="164" width="124" height="8" fill="#5f6f45" opacity=".7"/>' +
+        '<rect x="98" y="150" width="124" height="4" fill="#5f6f45" opacity=".5"/>' +
+        '<path d="M98 194q31 10 62 0t62 0" fill="none" stroke="#c9b79c" stroke-width="2"/>' +
+        '<path d="M110 60v122" stroke="#fff" stroke-width="7" opacity=".22"/>';
+    },
+    canastoG: function(u){
+      var cuerpo = 'M94 84h132l-16 106q-2 12 -50 12t-50-12Z';
+      return sombra(160, 206, 68, 10) +
+        '<defs><clipPath id="c' + u + '"><path d="' + cuerpo + '"/></clipPath></defs>' +
+        '<path d="' + cuerpo + '" fill="#d3b47c"/>' +
+        '<g clip-path="url(#c' + u + ')">' +
+          rep(8, function(i){ return '<path d="M80 ' + (94 + i * 14) + 'q80 12 160 0" stroke="#a8853f" stroke-width="5" fill="none" opacity=".45"/>'; }) +
+          rep(9, function(i){ return '<rect x="' + (86 + i * 16) + '" y="80" width="7" height="130" fill="#b9944c" opacity=".38"/>'; }) +
+        '</g>' +
+        '<path d="M74 100q14-26 22 0" fill="none" stroke="#b08a45" stroke-width="9" stroke-linecap="round"/>' +
+        '<path d="M224 100q14-26 22 0" fill="none" stroke="#b08a45" stroke-width="9" stroke-linecap="round"/>' +
+        '<ellipse cx="160" cy="84" rx="66" ry="13" fill="#e2c894"/>' +
+        '<ellipse cx="160" cy="84" rx="53" ry="8" fill="#a67f3c" opacity=".6"/>' +
+        '<path d="' + cuerpo + '" fill="none" stroke="#9c7834" stroke-width="2.4" opacity=".6"/>';
+    },
+    canastoPan: function(u){
+      var cuerpo = 'M76 128h168l-14 44q-2 10 -70 10t-70-10Z';
+      return sombra(160, 194, 92, 11) +
+        '<defs><clipPath id="c' + u + '"><path d="' + cuerpo + '"/></clipPath></defs>' +
+        '<path d="' + cuerpo + '" fill="#d9bc85"/>' +
+        '<g clip-path="url(#c' + u + ')">' +
+          rep(4, function(i){ return '<path d="M70 ' + (136 + i * 14) + 'q90 12 180 0" stroke="#a8853f" stroke-width="5" fill="none" opacity=".45"/>'; }) +
+          rep(11, function(i){ return '<rect x="' + (76 + i * 16) + '" y="124" width="7" height="70" fill="#b9944c" opacity=".35"/>'; }) +
+        '</g>' +
+        '<path d="M88 128q26-24 72-24t72 24q-16 14 -72 14t-72-14Z" fill="#f3ebdb"/>' +
+        '<path d="M104 118q22-12 56-12t56 12" fill="none" stroke="#b5502f" stroke-width="4" opacity=".65"/>' +
+        '<ellipse cx="160" cy="128" rx="84" ry="15" fill="none" stroke="#a67f3c" stroke-width="2.6" opacity=".7"/>';
+    },
+    velaSoja: function(u){
+      return sombra(160, 200, 62, 10) +
+        '<defs><linearGradient id="g' + u + '" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#f6ecd9"/><stop offset=".5" stop-color="#ece0c7"/><stop offset="1" stop-color="#d9c9a8"/></linearGradient>' +
+        '<radialGradient id="f' + u + '" cx="50%" cy="60%" r="50%"><stop offset="0" stop-color="#ffe9a8"/><stop offset="1" stop-color="#f0912f"/></radialGradient></defs>' +
+        '<ellipse cx="160" cy="100" rx="55" ry="52" fill="#ffd27a" opacity=".2"/>' +
+        '<rect x="112" y="104" width="96" height="92" rx="6" fill="url(#g' + u + ')"/>' +
+        '<ellipse cx="160" cy="104" rx="48" ry="13" fill="#e6d7b8"/>' +
+        '<ellipse cx="160" cy="105" rx="38" ry="9" fill="#cdb98f"/>' +
+        '<rect x="112" y="150" width="96" height="26" fill="#fdf8ec" opacity=".7"/>' +
+        '<path d="M118 158h84" stroke="#a8482a" stroke-width="2" opacity=".5"/>' +
+        '<path d="M126 166h34" stroke="#8a7757" stroke-width="2" opacity=".45"/>' +
+        '<path d="M160 104V92" stroke="#4b3b26" stroke-width="3.4"/>' +
+        '<path d="M160 62c11 12 15 20 15 27a15 15 0 0 1-30 0c0-9 8-16 15-27Z" fill="url(#f' + u + ')"/>' +
+        '<ellipse cx="160" cy="85" rx="4.6" ry="7" fill="#fff6d8" opacity=".85"/>';
+    },
+    velaBarro: function(u){
+      return sombra(160, 202, 58, 10) +
+        '<defs><linearGradient id="g' + u + '" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#c98b5f"/><stop offset=".5" stop-color="#ad6a41"/><stop offset="1" stop-color="#8f5029"/></linearGradient>' +
+        '<radialGradient id="f' + u + '" cx="50%" cy="60%" r="50%"><stop offset="0" stop-color="#ffe9a8"/><stop offset="1" stop-color="#f0912f"/></radialGradient></defs>' +
+        '<ellipse cx="160" cy="106" rx="52" ry="46" fill="#ffd27a" opacity=".18"/>' +
+        '<path d="M114 108h92l-10 82q-2 10 -36 10t-36-10Z" fill="url(#g' + u + ')"/>' +
+        '<ellipse cx="160" cy="108" rx="46" ry="12" fill="#d29a6e"/>' +
+        '<ellipse cx="160" cy="109" rx="37" ry="9" fill="#f2e4c8"/>' +
+        rep(3, function(i){ return '<path d="M118 ' + (130 + i * 18) + 'q42 7 84 0" stroke="#7d4423" stroke-width="1.8" fill="none" opacity=".3"/>'; }) +
+        '<path d="M160 109V96" stroke="#4b3b26" stroke-width="3.4"/>' +
+        '<path d="M160 66c11 12 15 20 15 27a15 15 0 0 1-30 0c0-9 8-16 15-27Z" fill="url(#f' + u + ')"/>' +
+        '<ellipse cx="160" cy="89" rx="4.6" ry="7" fill="#fff6d8" opacity=".85"/>' +
+        '<g transform="rotate(-14 250 176)"><ellipse cx="250" cy="176" rx="34" ry="10" fill="#c08b4f"/><ellipse cx="250" cy="172" rx="34" ry="10" fill="#dda964"/><ellipse cx="250" cy="172" rx="22" ry="6" fill="#c08b4f" opacity=".6"/></g>';
+    },
+    jabonMiel: function(u){
+      function hexa(cx, cy, r){
+        var p = '', i, a, x, y;
+        for(i = 0; i < 6; i++){
+          a = Math.PI / 180 * (60 * i - 30);
+          x = cx + r * Math.cos(a); y = cy + r * Math.sin(a);
+          p += (i ? 'L' : 'M') + x.toFixed(1) + ' ' + y.toFixed(1);
+        }
+        return '<path d="' + p + 'Z" fill="none" stroke="#7d4a12" stroke-width="2.4" opacity=".45"/>';
+      }
+      return sombra(160, 196, 84, 11) +
+        '<defs><linearGradient id="g' + u + '" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f0b95c"/><stop offset="1" stop-color="#c8802a"/></linearGradient></defs>' +
+        '<ellipse cx="160" cy="176" rx="92" ry="20" fill="#e9dcc6"/>' +
+        '<ellipse cx="160" cy="172" rx="92" ry="20" fill="#f4ead8"/>' +
+        '<g transform="rotate(-6 160 128)">' +
+          '<rect x="86" y="86" width="148" height="82" rx="16" fill="#a86b1e" opacity=".5"/>' +
+          '<rect x="86" y="80" width="148" height="82" rx="16" fill="url(#g' + u + ')"/>' +
+          '<rect x="94" y="88" width="132" height="30" rx="12" fill="#fff" opacity=".22"/>' +
+          hexa(160, 121, 21) + hexa(124, 121, 21) + hexa(196, 121, 21) +
+          pecas(26, 160, 121, 60, 30, '#6b3d0a', '.3', 51) +
+        '</g>';
+    },
+    jabonCarbon: function(u){
+      function barra(x, y, rot, c1, c2){
+        return '<g transform="rotate(' + rot + ' ' + (x + 62) + ' ' + (y + 26) + ')">' +
+          '<rect x="' + x + '" y="' + (y + 6) + '" width="124" height="52" rx="12" fill="#1f2022" opacity=".45"/>' +
+          '<rect x="' + x + '" y="' + y + '" width="124" height="52" rx="12" fill="' + c1 + '"/>' +
+          '<rect x="' + (x + 8) + '" y="' + (y + 6) + '" width="108" height="16" rx="8" fill="' + c2 + '" opacity=".45"/>' +
+          '</g>';
+      }
+      return sombra(160, 200, 86, 11) +
+        barra(96, 148, 3, '#3b3d42', '#8e939c') +
+        barra(102, 116, -5, '#45474d', '#9aa0aa') +
+        barra(98, 82, 2, '#4e5158', '#a7adb8') +
+        '<g transform="rotate(2 160 108)">' +
+          '<rect x="130" y="80" width="42" height="56" fill="#dcc59d"/>' +
+          '<rect x="130" y="80" width="42" height="56" fill="none" stroke="#bda274" stroke-width="1.6"/>' +
+          '<path d="M138 100h26M138 110h26M138 120h16" stroke="#7a6238" stroke-width="2.6" opacity=".7"/>' +
+        '</g>';
+    },
+    tinaja: function(u){
+      return sombra(160, 210, 60, 10) +
+        '<defs><linearGradient id="g' + u + '" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#cd9265"/><stop offset=".45" stop-color="#b1704a"/><stop offset="1" stop-color="#8d5029"/></linearGradient></defs>' +
+        '<g stroke="#7e6a4a" stroke-width="3.4" fill="none" stroke-linecap="round">' +
+          '<path d="M158 108C146 76 128 58 112 46"/><path d="M162 108c4-30 16-52 30-66"/><path d="M160 110c-2-22 2-40 8-56"/>' +
+        '</g>' +
+        '<g fill="#7f8f5c">' +
+          '<ellipse cx="112" cy="46" rx="9" ry="5" transform="rotate(-35 112 46)"/>' +
+          '<ellipse cx="192" cy="42" rx="9" ry="5" transform="rotate(30 192 42)"/>' +
+          '<ellipse cx="168" cy="54" rx="8" ry="4.4" transform="rotate(-8 168 54)"/>' +
+          '<ellipse cx="136" cy="70" rx="8" ry="4.4" transform="rotate(-50 136 70)"/>' +
+          '<ellipse cx="182" cy="74" rx="8" ry="4.4" transform="rotate(40 182 74)"/>' +
+        '</g>' +
+        '<path d="M144 110h32l4 12c22 12 34 34 34 56 0 24-24 36-54 36s-54-12-54-36c0-22 12-44 34-56Z" fill="url(#g' + u + ')"/>' +
+        '<ellipse cx="160" cy="110" rx="16" ry="5" fill="#e0ab7d"/>' +
+        '<ellipse cx="160" cy="110" rx="10" ry="3" fill="#6d3b1d" opacity=".6"/>' +
+        rep(3, function(i){ return '<path d="M112 ' + (156 + i * 16) + 'q48 10 96 0" stroke="#7d4423" stroke-width="1.8" fill="none" opacity=".3"/>'; }) +
+        '<path d="M126 150c-6 18-4 34 6 44" stroke="#fff" stroke-width="7" fill="none" opacity=".18" stroke-linecap="round"/>' +
+        pecas(30, 160, 176, 46, 34, '#6d3b1d', '.24', 91);
+    },
+    almohadon: function(u){
+      var forma = 'M78 60q82-10 164 0 10 60 0 120-82 10-164 0-10-60 0-120Z';
+      return sombra(160, 190, 92, 11) +
+        '<defs><clipPath id="c' + u + '"><path d="' + forma + '"/></clipPath>' +
+        '<linearGradient id="g' + u + '" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset="1" stop-color="#8a6b4a" stop-opacity=".22"/></linearGradient></defs>' +
+        '<path d="' + forma + '" fill="#eee2cc"/>' +
+        '<g clip-path="url(#c' + u + ')">' +
+          '<rect x="70" y="104" width="180" height="16" fill="#a8482a" opacity=".8"/>' +
+          '<rect x="70" y="126" width="180" height="6" fill="#5f6f45" opacity=".7"/>' +
+          '<rect x="70" y="92" width="180" height="6" fill="#5f6f45" opacity=".7"/>' +
+          rep(14, function(i){ return '<rect x="' + (70 + i * 14) + '" y="50" width="1.6" height="140" fill="#c9b79c" opacity=".5"/>'; }) +
+          '<path d="' + forma + '" fill="url(#g' + u + ')"/>' +
+        '</g>' +
+        '<path d="' + forma + '" fill="none" stroke="#d3c0a4" stroke-width="2.4"/>' +
+        '<path d="M88 70q72-8 144 0" stroke="#c9b79c" stroke-width="1.8" stroke-dasharray="6 5" fill="none"/>' +
+        '<g stroke="#b5502f" stroke-width="3" stroke-linecap="round" opacity=".8">' +
+          '<path d="M78 60l-14-12M242 60l14-12M78 180l-14 12M242 180l14 12"/>' +
+        '</g>';
+    }
+  };
+
+  /* ---- texturas (la foto de detalle) ---- */
+  var TEX = {
+    rayas: function(u){
+      return '<rect width="320" height="240" fill="#f6efe3"/>' +
+        rep(5, function(i){ return '<rect y="' + (i * 52 + 10) + '" width="320" height="22" fill="#b5502f" opacity=".72"/>'; }) +
+        rep(5, function(i){ return '<rect y="' + (i * 52 + 40) + '" width="320" height="7" fill="#5f6f45" opacity=".6"/>'; }) +
+        rep(40, function(i){ return '<rect x="' + (i * 8) + '" width="2.5" height="240" fill="#fff" opacity=".18"/>'; }) +
+        rep(30, function(i){ return '<rect y="' + (i * 8) + '" width="320" height="2.5" fill="#000" opacity=".05"/>'; });
+    },
+    fibra: function(u){
+      return '<rect width="320" height="240" fill="#d9bc85"/>' +
+        rep(9, function(i){ return '<rect y="' + (i * 27) + '" width="320" height="15" rx="7" fill="#c2a163" opacity=".85"/>'; }) +
+        rep(11, function(i){ return '<rect x="' + (i * 29 + 4) + '" y="' + ((i % 2) * 13) + '" width="16" height="240" rx="8" fill="#e3ca9a" opacity=".7"/>'; }) +
+        rep(9, function(i){ return '<path d="M0 ' + (i * 27 + 8) + 'q80 8 160 0t160 0" stroke="#a2803c" stroke-width="2" fill="none" opacity=".5"/>'; });
+    },
+    barro: function(u){
+      return '<defs><radialGradient id="g' + u + '" cx="34%" cy="26%" r="86%"><stop offset="0" stop-color="#d79a6e"/><stop offset="1" stop-color="#95552f"/></radialGradient></defs>' +
+        '<rect width="320" height="240" fill="url(#g' + u + ')"/>' +
+        rep(9, function(i){ return '<path d="M-10 ' + (i * 28 + 8) + 'q90 14 170 0t170 0" stroke="#7d4423" stroke-width="2.4" fill="none" opacity=".3"/>'; }) +
+        pecas(150, 160, 120, 175, 130, '#5d2f14', '.3', 12) +
+        '<path d="M20 200q60-40 120-30" stroke="#fff" stroke-width="10" fill="none" opacity=".12" stroke-linecap="round"/>';
+    },
+    lino: function(u){
+      return '<rect width="320" height="240" fill="#efe6d3"/>' +
+        rep(32, function(i){ return '<rect y="' + (i * 8) + '" width="320" height="4" fill="#d6c6a5" opacity=".55"/>'; }) +
+        rep(42, function(i){ return '<rect x="' + (i * 8) + '" width="4" height="240" fill="#cbb997" opacity=".45"/>'; }) +
+        '<rect x="0" y="176" width="320" height="4" fill="#a8482a" opacity=".55"/>' +
+        '<rect x="0" y="188" width="320" height="2.4" fill="#a8482a" opacity=".4"/>' +
+        pecas(50, 160, 120, 170, 130, '#a08a63', '.3', 5);
+    },
+    madera: function(u){
+      return '<defs><linearGradient id="g' + u + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d2a066"/><stop offset="1" stop-color="#a0702f"/></linearGradient></defs>' +
+        '<rect width="320" height="240" fill="url(#g' + u + ')"/>' +
+        rep(10, function(i){ return '<path d="M-10 ' + (i * 26 + 6) + 'q80 ' + (i % 2 ? 16 : -16) + ' 160 0t170 0" stroke="#7d5324" stroke-width="3" fill="none" opacity=".4"/>'; }) +
+        rep(10, function(i){ return '<path d="M-10 ' + (i * 26 + 14) + 'q80 ' + (i % 2 ? 12 : -12) + ' 160 0t170 0" stroke="#e2be8c" stroke-width="1.6" fill="none" opacity=".4"/>'; }) +
+        '<ellipse cx="230" cy="120" rx="30" ry="18" fill="none" stroke="#7d5324" stroke-width="3" opacity=".45"/>' +
+        '<ellipse cx="230" cy="120" rx="16" ry="9" fill="none" stroke="#7d5324" stroke-width="3" opacity=".4"/>';
+    },
+    cuadros: function(u){
+      return '<defs><pattern id="p' + u + '" width="52" height="52" patternUnits="userSpaceOnUse">' +
+          '<rect width="52" height="52" fill="#f6efe2"/><rect width="26" height="52" fill="#b5502f" opacity=".38"/><rect width="52" height="26" fill="#b5502f" opacity=".38"/></pattern></defs>' +
+        '<rect width="320" height="240" fill="url(#p' + u + ')"/>' +
+        rep(20, function(i){ return '<rect y="' + (i * 13) + '" width="320" height="2" fill="#fff" opacity=".18"/>'; }) +
+        '<rect y="196" width="320" height="14" fill="#5f6f45" opacity=".7"/>';
+    },
+    cera: function(u){
+      return '<defs><radialGradient id="g' + u + '" cx="46%" cy="42%" r="70%"><stop offset="0" stop-color="#fbf3e2"/><stop offset="1" stop-color="#d9c9a8"/></radialGradient></defs>' +
+        '<rect width="320" height="240" fill="url(#g' + u + ')"/>' +
+        rep(6, function(i){ return '<ellipse cx="160" cy="120" rx="' + (30 + i * 24) + '" ry="' + (22 + i * 18) + '" fill="none" stroke="#c3ae86" stroke-width="2" opacity=".45"/>'; }) +
+        '<circle cx="160" cy="120" r="16" fill="#efe2c6"/>' +
+        '<path d="M160 120l-4-34" stroke="#4b3b26" stroke-width="6" stroke-linecap="round"/>' +
+        '<circle cx="156" cy="86" r="7" fill="#3a2d1c"/>' +
+        pecas(60, 160, 120, 160, 120, '#b9a377', '.3', 61);
+    },
+    jabon: function(u){
+      return '<defs><linearGradient id="g' + u + '" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f0b95c"/><stop offset="1" stop-color="#b9761f"/></linearGradient></defs>' +
+        '<rect width="320" height="240" fill="url(#g' + u + ')"/>' +
+        rep(26, function(i){ var r = azar(i * 97 + 3); var x = r() * 320, y = r() * 240, rr = 5 + r() * 18;
+          return '<circle cx="' + x.toFixed(0) + '" cy="' + y.toFixed(0) + '" r="' + rr.toFixed(0) + '" fill="none" stroke="#fff" stroke-width="2" opacity=".35"/>'; }) +
+        '<rect x="0" y="150" width="320" height="90" fill="#7d4a12" opacity=".18"/>' +
+        pecas(50, 160, 120, 160, 120, '#6b3d0a', '.28', 77);
+    },
+    algodon: function(u){
+      return '<rect width="320" height="240" fill="#eee2cc"/>' +
+        rep(46, function(i){ return '<path d="M' + (i * 12 - 120) + ' 250 l120 -260" stroke="#d5c3a3" stroke-width="5" opacity=".55"/>'; }) +
+        rep(46, function(i){ return '<path d="M' + (i * 12 - 116) + ' 250 l120 -260" stroke="#fff" stroke-width="1.6" opacity=".4"/>'; }) +
+        '<rect y="104" width="320" height="26" fill="#a8482a" opacity=".78"/>' +
+        '<rect y="86" width="320" height="8" fill="#5f6f45" opacity=".7"/>' +
+        '<rect y="140" width="320" height="8" fill="#5f6f45" opacity=".7"/>';
+    }
+  };
+
+  /* ---- escena "en uso" ---- */
+  function escena(clave, u){
+    return '<defs><linearGradient id="w' + u + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f2e8d8"/><stop offset="1" stop-color="#e4d5bd"/></linearGradient>' +
+      '<linearGradient id="m' + u + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c1915c"/><stop offset="1" stop-color="#a1743f"/></linearGradient></defs>' +
+      '<rect width="320" height="240" fill="url(#w' + u + ')"/>' +
+      '<path d="M18 0h86l-52 150H0Z" fill="#fff" opacity=".34"/>' +
+      '<rect x="222" y="20" width="72" height="86" rx="6" fill="#e9dcc4"/>' +
+      '<rect x="222" y="20" width="72" height="86" rx="6" fill="none" stroke="#c6b291" stroke-width="3"/>' +
+      '<path d="M258 20v86M222 63h72" stroke="#c6b291" stroke-width="3"/>' +
+      '<rect y="150" width="320" height="90" fill="url(#m' + u + ')"/>' +
+      '<rect y="150" width="320" height="6" fill="#d6ab77"/>' +
+      '<g transform="translate(50,48) scale(.68)">' + ART[clave](u + 'e') + '</g>' +
+      '<g transform="translate(272,116)"><path d="M0 32h22l-3 20H3Z" fill="#b3714a"/>' +
+        '<path d="M11 32C2 20 2 8 11 0c9 8 9 20 0 32Z" fill="#6f7f4f"/>' +
+        '<path d="M11 32C22 24 30 16 34 6c-12 0-21 12-23 26Z" fill="#82945d"/></g>';
+  }
+
+  /* =============== productos =============== */
+  var PROD = [
+    { id:'mantel-rayas', col:'mesa', n:'Mantel de algodón a rayas', p:195000, art:'mantel', tex:'rayas',
+      d:'Tejido en algodón crudo con rayas teñidas a mano. Se lava en el lavarropas y sale mejor: la tela se ablanda con cada uso.',
+      med:'1,50 × 2,20 m (mesa de 6)', mat:'Algodón 100%, teñido natural', cuid:'Lavado a máquina en frío, plancha tibia' },
+    { id:'individuales', col:'mesa', n:'Individuales de fibra (juego de 4)', p:88000, art:'individuales', tex:'fibra',
+      d:'Cuatro individuales tejidos en fibra vegetal. Aguantan la fuente caliente y se limpian con un trapo húmedo.',
+      med:'38 × 28 cm cada uno', mat:'Fibra vegetal trenzada', cuid:'Paño húmedo, secar a la sombra' },
+    { id:'plato-barro', col:'mesa', n:'Plato hondo de barro', p:45000, art:'plato', tex:'barro',
+      d:'Torneado y cocido en horno de leña. Cada plato sale con su tono propio, así que ninguno es igual al otro.',
+      med:'22 cm de diámetro, 5 cm de alto', mat:'Barro cocido con esmalte apto para alimentos', cuid:'Lavado a mano, no va al microondas' },
+    { id:'bowls-barro', col:'mesa', n:'Bowls de barro (juego de 2)', p:78000, art:'bowls', tex:'barro',
+      d:'Dos bowls que sirven para la sopa, el cereal o para llevar la ensalada a la mesa. Se apilan sin problema.',
+      med:'14 cm de diámetro, 7 cm de alto', mat:'Barro cocido esmaltado por dentro', cuid:'Lavado a mano' },
+    { id:'jarra-barro', col:'mesa', n:'Jarra de barro 1,5 L', p:125000, art:'jarra', tex:'barro',
+      d:'Mantiene el agua fresca un buen rato y queda linda en el medio de la mesa. El asa está pensada para servir con una mano.',
+      med:'24 cm de alto · 1,5 litros', mat:'Barro cocido, interior esmaltado', cuid:'Lavado a mano, no va al fuego' },
+    { id:'servilletas', col:'mesa', n:'Servilletas de lino (juego de 6)', p:96000, art:'servilletas', tex:'lino',
+      d:'Seis servilletas de lino lavado con dobladillo cosido a mano. Del uso diario a la mesa de fiesta sin cambiar nada.',
+      med:'42 × 42 cm cada una', mat:'Lino lavado', cuid:'Lavado a máquina en frío' },
+    { id:'tabla-madera', col:'mesa', n:'Tabla de madera para picada', p:145000, art:'tabla', tex:'madera',
+      d:'Una sola pieza de madera, lijada y aceitada. Sirve de tabla para cortar y de bandeja para servir el queso.',
+      med:'45 × 22 × 2 cm', mat:'Madera dura de [especie], aceite mineral', cuid:'Lavado a mano y aceitar cada tanto' },
+    { id:'repasador', col:'mesa', n:'Repasador a cuadros', p:38000, art:'repasador', tex:'cuadros',
+      d:'De algodón grueso, con la argolla para colgar. Seca de verdad, no solo mueve el agua.',
+      med:'50 × 70 cm', mat:'Algodón 100%', cuid:'Lavado a máquina, no usar suavizante' },
+
+    { id:'canasto-grande', col:'casa', n:'Canasto tejido grande', p:168000, art:'canastoG', tex:'fibra',
+      d:'Para la ropa, las mantas o los juguetes. Lo teje a mano una familia de [comunidad] y lleva sus dos asas reforzadas.',
+      med:'42 cm de alto · 40 cm de diámetro', mat:'Fibra vegetal trenzada', cuid:'Cepillo seco, lejos de la humedad' },
+    { id:'canasto-pan', col:'casa', n:'Canasto de pan con lienzo', p:72000, art:'canastoPan', tex:'fibra',
+      d:'Canasto bajo con su lienzo de algodón adentro: la chipa y el pan se mantienen tibios y no se humedecen.',
+      med:'28 cm de diámetro, 10 cm de alto', mat:'Fibra vegetal y lienzo de algodón', cuid:'El lienzo se lava aparte' },
+    { id:'vela-soja', col:'casa', n:'Vela de cera de soja', p:58000, art:'velaSoja', tex:'cera',
+      d:'Cera de soja con mecha de algodón. Quema parejo y no deja el hollín negro que dejan las velas de parafina.',
+      med:'9 × 9 cm · unas [horas] horas de uso', mat:'Cera de soja y mecha de algodón', cuid:'Recortar la mecha antes de cada uso' },
+    { id:'vela-barro', col:'casa', n:'Vela en vaso de barro', p:89000, art:'velaBarro', tex:'cera',
+      d:'La misma cera de soja, en un vaso de barro con tapa de madera. Cuando se termina, el vaso queda para lápices o para plantas chicas.',
+      med:'10 cm de alto · vaso reutilizable', mat:'Barro cocido, cera de soja, tapa de madera', cuid:'Apagar con la tapa, no soplar' },
+    { id:'jabon-miel', col:'casa', n:'Jabón de miel y avena', p:25000, art:'jabonMiel', tex:'jabon',
+      d:'Jabón de glicerina con miel y avena molida. Espuma suave, aroma tranquilo, va bien para la cara y para las manos.',
+      med:'100 g · 9 × 6 cm', mat:'Base de glicerina, miel, avena', cuid:'Dejarlo en jabonera con desagote' },
+    { id:'jabon-carbon', col:'casa', n:'Jabones de carbón (pack de 3)', p:65000, art:'jabonCarbon', tex:'jabon',
+      d:'Tres barras con carbón activado, envueltas en papel kraft. Uno para el baño, uno para la cocina y uno de regalo.',
+      med:'3 barras de 100 g', mat:'Base de glicerina y carbón activado', cuid:'Guardar en lugar seco' },
+    { id:'tinaja', col:'casa', n:'Tinaja de barro para ramas secas', p:138000, art:'tinaja', tex:'barro',
+      d:'De boca angosta y panza ancha, pensada para ramas secas o flores de pastizal. También queda bien sola en un rincón.',
+      med:'34 cm de alto · boca de 7 cm', mat:'Barro cocido sin esmaltar', cuid:'No apta para agua, usar con ramas secas' },
+    { id:'almohadon', col:'casa', n:'Almohadón de algodón crudo', p:110000, art:'almohadon', tex:'algodon',
+      d:'Funda de algodón crudo con franja teñida y relleno incluido. La funda sale con cierre para lavarla cuando haga falta.',
+      med:'45 × 45 cm, relleno incluido', mat:'Algodón crudo, relleno siliconado', cuid:'Funda lavable a máquina' }
+  ];
+
+  function buscar(id){
+    var i;
+    for(i = 0; i < PROD.length; i++){ if(PROD[i].id === id){ return PROD[i]; } }
+    return null;
+  }
+
+  function svgDe(cual, clave){
+    var u = nuevoId(), dentro;
+    if(cual === 'art'){ dentro = ART[clave](u); }
+    else if(cual === 'tex'){ dentro = TEX[clave](u); }
+    else { dentro = escena(clave, u); }
+    return '<svg viewBox="0 0 320 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">' + dentro + '</svg>';
+  }
+
+  /* =============== estado =============== */
+  var carro = [];   /* [{id, cant}] */
+  var ultimoFoco = null;
+  var abierto = null; /* 'carrito' | 'ficha' | null */
+  var fichaActual = null;
+
+  var $ = function(s){ return document.querySelector(s); };
+  var badge = $('#badge');
+  var btnCarrito = $('#btnCarrito');
+  var elCarrito = $('#carrito');
+  var elVelo = $('#velo');
+  var elFicha = $('#ficha');
+  var carLista = $('#carLista');
+  var carPie = $('#carPie');
+  var avisoSR = $('#aviso');
+
+  function totalArt(){
+    var t = 0, i;
+    for(i = 0; i < carro.length; i++){ t += carro[i].cant; }
+    return t;
+  }
+  function totalGs(){
+    var t = 0, i, p;
+    for(i = 0; i < carro.length; i++){
+      p = buscar(carro[i].id);
+      if(p){ t += p.p * carro[i].cant; }
+    }
+    return t;
+  }
+
+  /* =============== tarjetas =============== */
+  function tarjeta(p){
+    var art = document.createElement('div');
+    art.className = 'card rev';
+
+    var marco = document.createElement('div');
+    marco.className = 'marco';
+    marco.innerHTML = svgDe('art', p.art);
+    art.appendChild(marco);
+
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'abrir';
+    btn.setAttribute('aria-haspopup', 'dialog');
+    var h3 = document.createElement('h3');
+    h3.textContent = p.n;
+    var pr = document.createElement('p');
+    pr.className = 'p';
+    pr.textContent = gs(p.p);
+    var ver = document.createElement('p');
+    ver.className = 'ver';
+    ver.textContent = 'Ver la ficha';
+    btn.appendChild(h3); btn.appendChild(pr); btn.appendChild(ver);
+    btn.addEventListener('click', function(){ abrirFicha(p.id, btn); });
+    art.appendChild(btn);
+
+    var add = document.createElement('button');
+    add.type = 'button';
+    add.className = 'add';
+    add.textContent = 'Agregar';
+    add.setAttribute('aria-label', 'Agregar ' + p.n + ' al carrito');
+    add.addEventListener('click', function(){
+      agregar(p.id, 1);
+      add.textContent = 'Agregado ✓';
+      add.classList.add('hecho');
+      window.setTimeout(function(){ add.textContent = 'Agregar'; add.classList.remove('hecho'); }, 1400);
+    });
+    art.appendChild(add);
+    return art;
+  }
+
+  function pintarGrillas(){
+    var gm = $('#grillaMesa'), gc = $('#grillaCasa'), dest = $('#destacados'), i, p;
+    for(i = 0; i < PROD.length; i++){
+      p = PROD[i];
+      (p.col === 'mesa' ? gm : gc).appendChild(tarjeta(p));
+    }
+    var elegidos = ['mantel-rayas', 'plato-barro', 'jarra-barro'];
+    for(i = 0; i < elegidos.length; i++){
+      (function(pp){
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'mini';
+        b.setAttribute('aria-haspopup', 'dialog');
+        var m = document.createElement('div');
+        m.className = 'marco';
+        m.innerHTML = svgDe('art', pp.art);
+        var n = document.createElement('span');
+        n.className = 'n'; n.textContent = pp.n;
+        var pr = document.createElement('span');
+        pr.className = 'p'; pr.textContent = gs(pp.p);
+        b.appendChild(m); b.appendChild(n); b.appendChild(pr);
+        b.addEventListener('click', function(){ abrirFicha(pp.id, b); });
+        dest.appendChild(b);
+      })(buscar(elegidos[i]));
+    }
+  }
+
+  /* =============== carrito =============== */
+  function agregar(id, cant){
+    var i, hay = false;
+    for(i = 0; i < carro.length; i++){
+      if(carro[i].id === id){ carro[i].cant += cant; hay = true; break; }
+    }
+    if(!hay){ carro.push({ id: id, cant: cant }); }
+    pintarCarro(true);
+    var p = buscar(id);
+    avisoSR.textContent = p.n + ' agregado. Llevás ' + totalArt() + (totalArt() === 1 ? ' artículo' : ' artículos') + ', total ' + gs(totalGs()) + '.';
+  }
+
+  function cambiar(id, delta){
+    var i;
+    for(i = 0; i < carro.length; i++){
+      if(carro[i].id === id){
+        carro[i].cant += delta;
+        if(carro[i].cant < 1){ carro.splice(i, 1); }
+        break;
+      }
+    }
+    pintarCarro(delta > 0);
+    avisoSR.textContent = 'Carrito actualizado. Total ' + gs(totalGs()) + '.';
+  }
+
+  function mensajeWA(){
+    var t = 'Hola! Quiero hacer este pedido:\n\n', i, p;
+    for(i = 0; i < carro.length; i++){
+      p = buscar(carro[i].id);
+      t += '• ' + carro[i].cant + ' x ' + p.n + ' — ' + gs(p.p * carro[i].cant) + '\n';
+    }
+    t += '\nTotal: ' + gs(totalGs()) + '\n\n¿Tenés todo disponible?';
+    return t;
+  }
+
+  function lineaCarro(item){
+    var p = buscar(item.id);
+    var fila = document.createElement('div');
+    fila.className = 'linea';
+
+    var mini = document.createElement('div');
+    mini.className = 'mini-img';
+    mini.innerHTML = svgDe('art', p.art);
+    fila.appendChild(mini);
+
+    var col = document.createElement('div');
+    var n = document.createElement('p'); n.className = 'n'; n.textContent = p.n;
+    var u = document.createElement('p'); u.className = 'u'; u.textContent = gs(p.p) + ' c/u';
+    col.appendChild(n); col.appendChild(u);
+
+    var f2 = document.createElement('div'); f2.className = 'fila';
+    var cant = document.createElement('div'); cant.className = 'cant';
+
+    var menos = document.createElement('button');
+    menos.type = 'button'; menos.textContent = '−';
+    menos.setAttribute('aria-label', item.cant > 1 ? ('Quitar uno de ' + p.n) : ('Sacar ' + p.n + ' del carrito'));
+    menos.addEventListener('click', function(){ cambiar(item.id, -1); });
+
+    var num = document.createElement('span');
+    num.textContent = String(item.cant);
+    num.setAttribute('aria-hidden', 'true');
+
+    var mas = document.createElement('button');
+    mas.type = 'button'; mas.textContent = '+';
+    mas.setAttribute('aria-label', 'Agregar uno más de ' + p.n);
+    mas.addEventListener('click', function(){ cambiar(item.id, 1); });
+
+    cant.appendChild(menos); cant.appendChild(num); cant.appendChild(mas);
+
+    var sub = document.createElement('p');
+    sub.className = 'sub';
+    sub.textContent = gs(p.p * item.cant);
+
+    var lect = document.createElement('span');
+    lect.className = 'sr';
+    lect.textContent = item.cant + ' unidades de ' + p.n + ', subtotal ' + gs(p.p * item.cant);
+
+    f2.appendChild(cant); f2.appendChild(sub);
+    col.appendChild(f2); col.appendChild(lect);
+    fila.appendChild(col);
+    return fila;
+  }
+
+  function vacio(){
+    var d = document.createElement('div');
+    d.className = 'vacio';
+    var dib = document.createElement('div');
+    dib.className = 'dib';
+    dib.innerHTML = '<svg viewBox="0 0 120 120" aria-hidden="true" focusable="false">' +
+      '<ellipse cx="60" cy="104" rx="34" ry="6" fill="rgba(70,45,25,.12)"/>' +
+      '<path d="M32 40h56l-7 60q-1 6 -21 6t-21-6Z" fill="#e0c894"/>' +
+      '<path d="M32 40h56l-7 60q-1 6 -21 6t-21-6Z" fill="none" stroke="#a67f3c" stroke-width="2.4"/>' +
+      '<ellipse cx="60" cy="40" rx="28" ry="6.5" fill="#efdcb4"/>' +
+      '<path d="M46 40c0-12 6-20 14-20s14 8 14 20" fill="none" stroke="#a67f3c" stroke-width="3"/>' +
+      '<path d="M40 58q20 6 40 0M42 74q18 5 36 0" stroke="#a67f3c" stroke-width="2" fill="none" opacity=".6"/></svg>';
+    var h = document.createElement('h3');
+    h.textContent = 'Tu canasto está vacío';
+    var p = document.createElement('p');
+    p.textContent = 'Mirá las dos colecciones y agregá lo que te guste. Acá te vamos sumando el total.';
+    d.appendChild(dib); d.appendChild(h); d.appendChild(p);
+    return d;
+  }
+
+  function pintarCarro(subio){
+    var i, n = totalArt();
+    while(carLista.firstChild){ carLista.removeChild(carLista.firstChild); }
+
+    if(carro.length === 0){
+      carLista.appendChild(vacio());
+      carPie.hidden = true;
+      $('#cuentaCar').textContent = 'Todavía no elegiste nada';
+    } else {
+      for(i = 0; i < carro.length; i++){ carLista.appendChild(lineaCarro(carro[i])); }
+      carPie.hidden = false;
+      $('#totalTxt').textContent = gs(totalGs());
+      $('#btnPedido').setAttribute('href', WA + encodeURIComponent(mensajeWA()));
+      $('#cuentaCar').textContent = n + (n === 1 ? ' artículo' : ' artículos');
+    }
+
+    if(n > 0){
+      badge.hidden = false;
+      badge.textContent = String(n);
+      if(subio){
+        badge.classList.remove('pop');
+        window.requestAnimationFrame(function(){
+          window.requestAnimationFrame(function(){ badge.classList.add('pop'); });
+        });
+      }
+    } else {
+      badge.hidden = true;
+      badge.classList.remove('pop');
+    }
+    btnCarrito.setAttribute('aria-label', n === 0 ? 'Abrir el carrito, está vacío' : ('Abrir el carrito, ' + n + (n === 1 ? ' artículo' : ' artículos') + ', total ' + gs(totalGs())));
+  }
+
+  /* =============== paneles: abrir, cerrar, foco =============== */
+  var SELECT = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+  function focoDentro(caja, e){
+    var lista = [], todos = caja.querySelectorAll(SELECT), i, primero, ultimo;
+    for(i = 0; i < todos.length; i++){
+      if(todos[i].offsetParent !== null || todos[i].getClientRects().length){ lista.push(todos[i]); }
+    }
+    if(!lista.length){ return; }
+    primero = lista[0]; ultimo = lista[lista.length - 1];
+    if(e.shiftKey && document.activeElement === primero){ e.preventDefault(); ultimo.focus(); }
+    else if(!e.shiftKey && document.activeElement === ultimo){ e.preventDefault(); primero.focus(); }
+  }
+
+  function abrirPanel(cual, disparador){
+    if(abierto){ cerrarPanel(true); }
+    ultimoFoco = disparador || document.activeElement;
+    abierto = cual;
+    elVelo.classList.add('on');
+    document.body.classList.add('bloqueado');
+    if(cual === 'carrito'){
+      elCarrito.classList.add('on');
+      window.setTimeout(function(){ $('#cerrarCar').focus(); }, 60);
+    } else {
+      elFicha.classList.add('on');
+      window.setTimeout(function(){ $('#cerrarFicha').focus(); }, 60);
+    }
+  }
+
+  function cerrarPanel(sinFoco){
+    if(!abierto){ return; }
+    elCarrito.classList.remove('on');
+    elFicha.classList.remove('on');
+    elVelo.classList.remove('on');
+    document.body.classList.remove('bloqueado');
+    abierto = null;
+    fichaActual = null;
+    if(!sinFoco && ultimoFoco && document.contains(ultimoFoco)){ ultimoFoco.focus(); }
+  }
+
+  /* =============== ficha =============== */
+  function abrirFicha(id, disparador){
+    var p = buscar(id), i;
+    fichaActual = id;
+    $('#fichaCol').textContent = p.col === 'mesa' ? 'Para la mesa' : 'Para la casa';
+    $('#fichaTitulo').textContent = p.n;
+    $('#fichaPrecio').textContent = gs(p.p);
+    $('#fichaDesc').textContent = p.d;
+
+    var datos = $('#fichaDatos');
+    while(datos.firstChild){ datos.removeChild(datos.firstChild); }
+    var pares = [['Medidas', p.med], ['Material', p.mat], ['Cuidado', p.cuid], ['Entrega', 'Retiro en el local o envío a coordinar']];
+    for(i = 0; i < pares.length; i++){
+      (function(par){
+        var li = document.createElement('li');
+        var b = document.createElement('b'); b.textContent = par[0];
+        var s = document.createElement('span'); s.textContent = par[1];
+        li.appendChild(b); li.appendChild(s);
+        datos.appendChild(li);
+      })(pares[i]);
+    }
+
+    var vistas = [
+      { t: 'El producto entero', html: svgDe('art', p.art) },
+      { t: 'El detalle del material', html: svgDe('tex', p.tex) },
+      { t: 'Cómo queda en la casa', html: svgDe('esc', p.art) }
+    ];
+    var grande = $('#galGrande'), thumbs = $('#galThumbs');
+    grande.innerHTML = vistas[0].html;
+    while(thumbs.firstChild){ thumbs.removeChild(thumbs.firstChild); }
+    for(i = 0; i < vistas.length; i++){
+      (function(v, idx){
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.setAttribute('aria-label', v.t);
+        b.setAttribute('aria-pressed', idx === 0 ? 'true' : 'false');
+        var m = document.createElement('div');
+        m.className = 'marco';
+        m.innerHTML = v.html;
+        b.appendChild(m);
+        b.addEventListener('click', function(){
+          grande.innerHTML = v.html;
+          var hs = thumbs.querySelectorAll('button'), k;
+          for(k = 0; k < hs.length; k++){ hs[k].setAttribute('aria-pressed', hs[k] === b ? 'true' : 'false'); }
+        });
+        thumbs.appendChild(b);
+      })(vistas[i], i);
+    }
+
+    var add = $('#fichaAdd');
+    add.textContent = 'Agregar al carrito · ' + gs(p.p);
+    add.classList.remove('hecho');
+    abrirPanel('ficha', disparador);
+  }
+
+  $('#fichaAdd').addEventListener('click', function(){
+    if(!fichaActual){ return; }
+    var b = this, p = buscar(fichaActual);
+    agregar(fichaActual, 1);
+    b.textContent = 'Agregado ✓ · ya está en el carrito';
+    b.classList.add('hecho');
+    window.setTimeout(function(){
+      if(fichaActual === p.id){ b.textContent = 'Agregar al carrito · ' + gs(p.p); b.classList.remove('hecho'); }
+    }, 1600);
+  });
+
+  /* =============== eventos generales =============== */
+  btnCarrito.addEventListener('click', function(){ abrirPanel('carrito', btnCarrito); });
+  $('#cerrarCar').addEventListener('click', function(){ cerrarPanel(); });
+  $('#cerrarFicha').addEventListener('click', function(){ cerrarPanel(); });
+  elVelo.addEventListener('click', function(){ cerrarPanel(); });
+  elFicha.addEventListener('mousedown', function(e){ if(e.target === elFicha){ cerrarPanel(); } });
+
+  document.addEventListener('keydown', function(e){
+    if(!abierto){ return; }
+    if(e.key === 'Escape'){ e.preventDefault(); cerrarPanel(); return; }
+    if(e.key === 'Tab'){ focoDentro(abierto === 'carrito' ? elCarrito : $('#fichaCaja'), e); }
+  });
+
+  /* enlaces de WhatsApp fijos */
+  $('#waConsulta').setAttribute('href', WA + encodeURIComponent('Hola Ña Lucía! Tengo una consulta sobre un producto del catálogo.'));
+  $('#waPie').setAttribute('href', WA + encodeURIComponent('Hola! Vi la demo del catálogo chico con carrito. ¿Cuánto sale para mi negocio?'));
+
+  /* =============== aparición al scrollear =============== */
+  function revelar(){
+    var revs = document.querySelectorAll('.rev'), i;
+    if(!('IntersectionObserver' in window)){
+      for(i = 0; i < revs.length; i++){ revs[i].classList.add('on'); }
+      return;
+    }
+    var io = new IntersectionObserver(function(entradas){
+      var j;
+      for(j = 0; j < entradas.length; j++){
+        if(entradas[j].isIntersecting){
+          entradas[j].target.classList.add('on');
+          io.unobserve(entradas[j].target);
+        }
+      }
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.06 });
+    for(i = 0; i < revs.length; i++){ io.observe(revs[i]); }
+  }
+
+  /* =============== arranque =============== */
+  pintarGrillas();
+  pintarCarro(false);
+  revelar();
+})();
+</script>
+</body>
+</html>

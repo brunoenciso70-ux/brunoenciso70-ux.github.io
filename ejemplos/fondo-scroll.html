@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; frame-src 'self'; media-src 'self' data:; form-action 'none'; object-src 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ñemity Construcciones — La obra entera en un scroll</title>
+<meta name="description" content="Demo de fondo conducido por scroll: el visitante baja con el dedo y la obra avanza cuadro a cuadro, del terreno limpio a la casa entregada.">
+<!--
+  DEMO KatuWeb · Fondo conducido por scroll
+  Negocio y datos de ejemplo. Al usarla con un cliente real, reemplazar
+  todo por sus productos, precios y fotos verdaderas.
+-->
+<style>
+  *,*::before,*::after{box-sizing:border-box}
+  :root{
+    --tinta:#111a22;
+    --tinta2:#4a5a67;
+    --papel:#f7f5f1;
+    --panel:#0e1620;
+    --panel2:#18232f;
+    --acc:#e8762c;
+    --accT:#a8480f;
+    --linea:#e2ddd4;
+  }
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0; background:var(--papel); color:var(--tinta);
+    font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+    line-height:1.6; overflow-x:hidden;
+  }
+  img,canvas{display:block; max-width:100%}
+  .env{max-width:1080px; margin:0 auto; padding:0 18px}
+  .sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+  a{color:var(--accT)}
+  :focus-visible{outline:3px solid var(--acc); outline-offset:3px; border-radius:6px}
+
+  /* ---------- portada ---------- */
+  .tapa{padding:34px 0 30px; text-align:center}
+  .marca{
+    display:inline-flex; align-items:center; gap:9px;
+    font-size:12px; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--tinta2); font-weight:700;
+  }
+  .marca .casco{
+    width:20px; height:20px; border-radius:50% 50% 4px 4px;
+    background:linear-gradient(180deg,var(--acc),#c85f19);
+    box-shadow:inset 0 -4px 0 rgba(0,0,0,.18);
+  }
+  h1{
+    font-family:Georgia,serif; font-weight:400;
+    font-size:clamp(28px,7.6vw,54px); line-height:1.08;
+    margin:14px 0 12px; letter-spacing:-.01em;
+  }
+  h1 em{font-style:normal; color:var(--accT)}
+  .bajada{margin:0 auto; max-width:52ch; color:var(--tinta2); font-size:clamp(15px,4vw,18px)}
+  .pista-scroll{
+    margin-top:22px; font-size:13px; color:var(--tinta2);
+    display:inline-flex; align-items:center; gap:8px;
+  }
+  .flecha{
+    width:26px; height:26px; border-radius:50%; border:1.5px solid var(--linea);
+    display:grid; place-items:center; animation:baja 1.8s ease-in-out infinite;
+  }
+  .flecha span{
+    width:7px; height:7px; border-right:2px solid var(--accT); border-bottom:2px solid var(--accT);
+    transform:translateY(-1px) rotate(45deg);
+  }
+  @keyframes baja{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
+
+  /* ---------- escena ---------- */
+  .obra{position:relative; height:560vh; height:560svh}
+  .pegado{
+    position:sticky; top:0;
+    height:100vh; height:100svh;
+    display:flex; flex-direction:column;
+    overflow:hidden; background:#bcdcf0;
+  }
+  .lienzo-caja{position:relative; flex:1 1 auto; min-height:0}
+  #lienzo{position:absolute; inset:0; width:100%; height:100%}
+  .sello{
+    position:absolute; left:10px; top:10px; z-index:2;
+    font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; font-weight:700;
+    color:#fff; background:rgba(14,22,32,.62);
+    padding:5px 9px; border-radius:999px;
+  }
+
+  /* ---------- panel de etapas ---------- */
+  .panel{background:var(--panel); color:#eef3f8; padding:12px 0 14px; position:relative; z-index:3}
+  .panel-in{max-width:1080px; margin:0 auto; padding:0 16px; display:grid; gap:8px}
+  .etapas{position:relative; min-height:104px}
+  .tarjeta{
+    position:absolute; inset:0; opacity:0; transform:translateY(10px);
+    transition:opacity .38s ease, transform .38s ease; pointer-events:none;
+  }
+  .tarjeta.on{opacity:1; transform:translateY(0)}
+  .num-etapa{
+    font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--acc); font-weight:800; margin:0 0 4px;
+  }
+  .tit-etapa{font-family:Georgia,serif; font-size:clamp(19px,5.4vw,26px); margin:0 0 4px; font-weight:400; color:#fff}
+  .txt-etapa{margin:0; font-size:clamp(13.5px,3.6vw,15.5px); color:#c3d0dc; max-width:56ch}
+
+  .barra{position:relative; display:flex; align-items:center; margin:0 -4px}
+  .pista{
+    position:absolute; left:8px; right:8px; top:50%; height:4px; margin-top:-2px;
+    background:rgba(255,255,255,.16); border-radius:99px; overflow:hidden;
+  }
+  .lleno{
+    display:block; width:100%; height:100%; background:var(--acc);
+    transform:scaleX(0); transform-origin:left center; will-change:transform;
+  }
+  .paso{
+    position:relative; flex:1 1 0; min-width:0; height:48px;
+    background:none; border:0; padding:0; cursor:pointer;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px;
+    color:#8fa3b4; font:inherit;
+  }
+  .punto{
+    width:11px; height:11px; border-radius:50%;
+    background:#39485a; box-shadow:0 0 0 3px var(--panel);
+    transition:transform .3s ease, background-color .3s ease;
+  }
+  .paso .rot{font-size:10px; letter-spacing:.04em; font-weight:700}
+  .paso[aria-current="true"] .punto{background:var(--acc); transform:scale(1.55)}
+  .paso[aria-current="true"] .rot{color:#fff}
+  .paso.hecho .punto{background:#c26526}
+  .paso:hover .punto{background:#5a6c7f}
+  .paso[aria-current="true"]:hover .punto{background:var(--acc)}
+
+  /* ---------- contenido ---------- */
+  .bloque{padding:52px 0 8px}
+  h2{
+    font-family:Georgia,serif; font-weight:400; font-size:clamp(23px,6vw,34px);
+    line-height:1.15; margin:0 0 10px; letter-spacing:-.01em;
+  }
+  .sub{color:var(--tinta2); margin:0 0 26px; max-width:58ch; font-size:clamp(15px,4vw,17px)}
+  .pasos{list-style:none; margin:0; padding:0; display:grid; gap:14px}
+  @media(min-width:760px){.pasos{grid-template-columns:1fr 1fr; gap:16px}}
+  .pasos li{
+    background:#fff; border:1px solid var(--linea); border-radius:14px; padding:16px 16px 15px;
+    box-shadow:0 1px 2px rgba(17,26,34,.05);
+  }
+  .pasos b{display:block; font-size:16px; margin-bottom:4px}
+  .pasos span{color:var(--tinta2); font-size:14.5px}
+  .pasos .cifra{
+    display:inline-grid; place-items:center; width:26px; height:26px; border-radius:8px;
+    background:var(--acc); color:#fff; font-size:13px; font-weight:800; margin-bottom:9px;
+  }
+  .aviso{
+    margin-top:20px; background:#fff6ee; border:1px solid #f3d7bd; border-left:4px solid var(--acc);
+    border-radius:12px; padding:16px 16px 14px;
+  }
+  .aviso h3{margin:0 0 6px; font-size:16.5px}
+  .aviso p{margin:0 0 10px; font-size:14.5px; color:#4a3a2c}
+  .aviso p:last-child{margin-bottom:0}
+  .aviso code{font-family:ui-monospace,monospace; font-size:13px; background:#fdece0; padding:1px 5px; border-radius:5px}
+  .nota{
+    margin-top:22px; font-size:13.5px; color:var(--tinta2); line-height:1.7;
+    border-top:1px solid var(--linea); padding-top:16px;
+  }
+  .cierre{
+    margin:40px 0 0; background:var(--panel); color:#eef3f8; border-radius:18px;
+    padding:26px 20px 24px; text-align:center;
+  }
+  .cierre h2{color:#fff; margin-bottom:8px}
+  .cierre p{color:#bccbd8; margin:0 auto 18px; max-width:44ch; font-size:15px}
+  .wa{
+    display:inline-flex; align-items:center; justify-content:center; gap:9px;
+    min-height:52px; padding:0 24px; border-radius:999px;
+    background:var(--acc); color:#1a0d03; font-weight:800; font-size:16px;
+    text-decoration:none; box-shadow:0 6px 18px rgba(232,118,44,.28);
+  }
+  .wa:hover{background:#f28437}
+  .lista-rm{display:none}
+
+  .katu-pie{
+    margin-top:34px; border-top:1px solid var(--linea); padding:20px 16px 30px;
+    text-align:center; font-size:13px; color:var(--tinta2); line-height:1.9;
+  }
+  .katu-pie a{color:var(--accT); text-decoration:none; font-weight:600; display:inline-block; min-height:44px; line-height:44px; padding:0 6px; margin:-10px 0}
+  .katu-pie a:hover{text-decoration:underline}
+
+  @media(min-width:900px){
+    .panel-in{grid-template-columns:1fr minmax(360px,44%); align-items:center; gap:30px}
+    .etapas{min-height:88px}
+  }
+  @media(max-width:480px){
+    .obra{height:500vh; height:500svh}
+  }
+
+  /* ---------- sin movimiento ---------- */
+  @media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{
+      animation-duration:.001ms !important; animation-iteration-count:1 !important;
+      transition-duration:.001ms !important; scroll-behavior:auto !important;
+    }
+  }
+  .rm .obra{height:auto}
+  .rm .pegado{position:static; height:auto}
+  .rm .lienzo-caja{height:62vw; max-height:440px; flex:none}
+  .rm .barra{display:none}
+  .rm .etapas{display:none}
+  .rm .lista-rm{display:block}
+  .rm .flecha{animation:none}
+  .rm .tarjeta{position:static; opacity:1; transform:none}
+</style>
+</head>
+<body>
+
+<header class="tapa env">
+  <p class="marca"><span class="casco" aria-hidden="true"></span>Ñemity Construcciones · Asunción</p>
+  <h1>La obra entera,<br><em>en un scroll</em>.</h1>
+  <p class="bajada">Bajá con el dedo y mirá cómo el terreno se convierte en casa. Vos manejás el tiempo: si subís, la obra vuelve para atrás.</p>
+  <p class="pista-scroll"><span class="flecha" aria-hidden="true"><span></span></span> Deslizá despacio</p>
+</header>
+
+<section class="obra" id="obra" aria-labelledby="tit-obra">
+  <h2 id="tit-obra" class="sr">Cómo se levanta una casa, etapa por etapa</h2>
+
+  <div class="pegado" id="pegado">
+    <div class="lienzo-caja" id="caja">
+      <canvas id="lienzo" role="img" aria-label="Escena dibujada: una casa que se construye desde el terreno limpio hasta la entrega, al atardecer."></canvas>
+      <p class="sello">Escena dibujada por computadora</p>
+    </div>
+
+    <div class="panel">
+      <div class="panel-in">
+        <div class="etapas" id="etapas" aria-live="polite">
+          <div class="tarjeta on" data-i="0">
+            <p class="num-etapa">Etapa 1 de 7</p>
+            <h3 class="tit-etapa">Terreno y replanteo</h3>
+            <p class="txt-etapa">Se limpia el lote, se marca la casa con estacas e hilo y se planta el cartel de obra.</p>
+          </div>
+          <div class="tarjeta" data-i="1">
+            <p class="num-etapa">Etapa 2 de 7</p>
+            <h3 class="tit-etapa">Cimientos</h3>
+            <p class="txt-etapa">Zanja, hierro y hormigón. Lo que después nadie ve es lo que sostiene todo.</p>
+          </div>
+          <div class="tarjeta" data-i="2">
+            <p class="num-etapa">Etapa 3 de 7</p>
+            <h3 class="tit-etapa">Estructura</h3>
+            <p class="txt-etapa">Suben las columnas y se atan arriba con la viga de encadenado. Ya se lee la casa.</p>
+          </div>
+          <div class="tarjeta" data-i="3">
+            <p class="num-etapa">Etapa 4 de 7</p>
+            <h3 class="tit-etapa">Mampostería</h3>
+            <p class="txt-etapa">Las paredes suben hilada por hilada, dejando los vanos de puertas y ventanas.</p>
+          </div>
+          <div class="tarjeta" data-i="4">
+            <p class="num-etapa">Etapa 5 de 7</p>
+            <h3 class="tit-etapa">Techo</h3>
+            <p class="txt-etapa">Tijerales, listones y teja. La obra queda tapada y se puede seguir aunque llueva.</p>
+          </div>
+          <div class="tarjeta" data-i="5">
+            <p class="num-etapa">Etapa 6 de 7</p>
+            <h3 class="tit-etapa">Aberturas y revoque</h3>
+            <p class="txt-etapa">Entran ventanas y puerta, y el revoque tapa el ladrillo y empareja las paredes.</p>
+          </div>
+          <div class="tarjeta" data-i="6">
+            <p class="num-etapa">Etapa 7 de 7</p>
+            <h3 class="tit-etapa">Entrega</h3>
+            <p class="txt-etapa">Pintura, vereda, plantas y la luz prendida. Se entrega la llave al atardecer.</p>
+          </div>
+        </div>
+
+        <ol class="lista-rm" id="lista-rm"></ol>
+
+        <div class="barra" id="barra" role="group" aria-label="Avance de la obra. Elegí una etapa para ir a ese punto.">
+          <div class="pista" aria-hidden="true"><span class="lleno" id="lleno"></span></div>
+          <button type="button" class="paso" data-i="0"><span class="punto" aria-hidden="true"></span><span class="rot" aria-hidden="true">1</span><span class="sr">Ir a la etapa 1: Terreno y replanteo</span></button>
+          <button type="button" class="paso" data-i="1"><span class="punto" aria-hidden="true"></span><span class="rot" aria-hidden="true">2</span><span class="sr">Ir a la etapa 2: Cimientos</span></button>
+          <button type="button" class="paso" data-i="2"><span class="punto" aria-hidden="true"></span><span class="rot" aria-hidden="true">3</span><span class="sr">Ir a la etapa 3: Estructura</span></button>
+          <button type="button" class="paso" data-i="3"><span class="punto" aria-hidden="true"></span><span class="rot" aria-hidden="true">4</span><span class="sr">Ir a la etapa 4: Mampostería</span></button>
+          <button type="button" class="paso" data-i="4"><span class="punto" aria-hidden="true"></span><span class="rot" aria-hidden="true">5</span><span class="sr">Ir a la etapa 5: Techo</span></button>
+          <button type="button" class="paso" data-i="5"><span class="punto" aria-hidden="true"></span><span class="rot" aria-hidden="true">6</span><span class="sr">Ir a la etapa 6: Aberturas y revoque</span></button>
+          <button type="button" class="paso" data-i="6"><span class="punto" aria-hidden="true"></span><span class="rot" aria-hidden="true">7</span><span class="sr">Ir a la etapa 7: Entrega</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<main class="env">
+  <section class="bloque">
+    <h2>Cómo se hace esto con el video de tu obra</h2>
+    <p class="sub">Acá la escena está dibujada con código, pero el efecto es el mismo que usan las marcas grandes. Con un cliente real el camino es este, y es más simple de lo que parece.</p>
+
+    <ol class="pasos">
+      <li>
+        <span class="cifra" aria-hidden="true">1</span>
+        <b>Se filma una sola vez</b>
+        <span>Un timelapse de la obra, o una vuelta con dron, o el auto girando sobre una base. Con 20 a 40 segundos de material limpio alcanza y sobra.</span>
+      </li>
+      <li>
+        <span class="cifra" aria-hidden="true">2</span>
+        <b>El video se corta en fotos</b>
+        <span>Ese video se exporta como una secuencia de 120 a 240 imágenes, todas del mismo tamaño y bien comprimidas: unos 15 a 25 KB cada una. El total termina pesando como dos fotos grandes de las que se suben hoy.</span>
+      </li>
+      <li>
+        <span class="cifra" aria-hidden="true">3</span>
+        <b>Se precargan de a poco</b>
+        <span>Mientras el visitante lee lo de arriba, el navegador va bajando los cuadros en orden y los deja guardados. Cuando llega a la sección ya están todos listos, y no se ve ni un parpadeo.</span>
+      </li>
+      <li>
+        <span class="cifra" aria-hidden="true">4</span>
+        <b>El scroll elige cuál se muestra</b>
+        <span>Se mide dónde está la sección respecto de la pantalla: eso da un número de 0 a 1. Ese número se multiplica por la cantidad de cuadros y se dibuja el que toca. Siempre dentro de <code>requestAnimationFrame</code>, nunca en el listener del scroll.</span>
+      </li>
+    </ol>
+
+    <div class="aviso">
+      <h3>¿Y por qué no un <code>&lt;video&gt;</code> con el tiempo forzado?</h3>
+      <p>Se puede: se pone un video y se le va cambiando el <code>currentTime</code> según el scroll. En la compu anda bastante bien. En el celular, no.</p>
+      <p>Cada vez que movés el dedo, el navegador tiene que ir a buscar ese instante exacto adentro de un archivo comprimido, y ese salto no es gratis: se cuelga una fracción de segundo, va a los tirones y a veces ni arranca hasta que el visitante toca la pantalla. Peor todavía si la conexión es de datos móviles.</p>
+      <p>Con las imágenes sueltas cada cuadro es independiente y ya está en memoria: cambiar de uno a otro es como pasar hojas. Por eso este camino es el que se usa cuando el efecto tiene que andar en cualquier teléfono, que es justo donde te miran los clientes.</p>
+    </div>
+
+    <p class="nota">
+      Una aclaración honesta: en esta demo no hay ni video ni fotos. La casa está dibujada con código, cuadro por cuadro, sobre un <code>canvas</code>. Por eso pesa unos pocos KB, nunca se pixela por más que agrandes la pantalla y se adapta sola al celular. Con un cliente real hacemos lo mismo pero con el video de su obra, su fábrica o su producto.
+    </p>
+  </section>
+
+  <section class="cierre">
+    <h2>¿Tenés una obra filmada?</h2>
+    <p>Aunque sea con el celular. Contanos qué querés mostrar y te decimos si sirve para armar este efecto.</p>
+    <a class="wa" href="https://wa.me/595983518856?text=" id="wa-cierre" target="_blank" rel="noopener noreferrer">Escribinos por WhatsApp</a>
+  </section>
+
+  <div class="katu-pie">
+    Demo de <strong>KatuWeb</strong> · <a href="../catalogo.html">Volver al catálogo</a> ·
+    <a href="https://wa.me/595983518856?text=Hola!%20Vi%20la%20demo%20del%20fondo%20conducido%20por%20scroll.%20%C2%BFCu%C3%A1nto%20sale%20para%20mi%20negocio%3F" target="_blank" rel="noopener noreferrer">Quiero esto para mi negocio</a>
+  </div>
+</main>
+
+<script>
+(function(){
+  'use strict';
+
+  /* ============================================================
+     0 · utilidades
+     ============================================================ */
+  var cl = function(v,a,b){ return v<a?a:(v>b?b:v); };
+  var lerp = function(a,b,t){ return a+(b-a)*t; };
+  var seg = function(p,a,b){ return cl((p-a)/(b-a),0,1); };
+  var suave = function(t){ return t*t*(3-2*t); };
+  var mez = function(c1,c2,t){
+    return [ c1[0]+(c2[0]-c1[0])*t, c1[1]+(c2[1]-c1[1])*t, c1[2]+(c2[2]-c1[2])*t ];
+  };
+  var rgb = function(c){ return 'rgb('+(c[0]|0)+','+(c[1]|0)+','+(c[2]|0)+')'; };
+  var rgba = function(c,a){ return 'rgba('+(c[0]|0)+','+(c[1]|0)+','+(c[2]|0)+','+a+')'; };
+
+  var WA = 'https://wa.me/595983518856?text=';
+  var waCierre = document.getElementById('wa-cierre');
+  if(waCierre){
+    waCierre.href = WA + encodeURIComponent(
+      'Hola! Vi la demo del fondo conducido por scroll de Ñemity. Quiero algo así con el video de mi obra. ¿Cuánto sale?'
+    );
+  }
+
+  /* ============================================================
+     1 · etapas
+     ============================================================ */
+  var ETAPAS = [
+    { a:0.00, b:0.13, n:'Terreno y replanteo', d:'Se limpia el lote, se marca la casa con estacas e hilo y se planta el cartel de obra.' },
+    { a:0.13, b:0.27, n:'Cimientos',           d:'Zanja, hierro y hormigón. Lo que después nadie ve es lo que sostiene todo.' },
+    { a:0.27, b:0.42, n:'Estructura',          d:'Suben las columnas y se atan arriba con la viga de encadenado. Ya se lee la casa.' },
+    { a:0.42, b:0.58, n:'Mampostería',         d:'Las paredes suben hilada por hilada, dejando los vanos de puertas y ventanas.' },
+    { a:0.58, b:0.72, n:'Techo',               d:'Tijerales, listones y teja. La obra queda tapada y se puede seguir aunque llueva.' },
+    { a:0.72, b:0.87, n:'Aberturas y revoque', d:'Entran ventanas y puerta, y el revoque tapa el ladrillo y empareja las paredes.' },
+    { a:0.87, b:1.01, n:'Entrega',             d:'Pintura, vereda, plantas y la luz prendida. Se entrega la llave al atardecer.' }
+  ];
+
+  /* ============================================================
+     2 · lienzo
+     ============================================================ */
+  var cvs   = document.getElementById('lienzo');
+  var ctx   = cvs.getContext('2d');
+  var caja  = document.getElementById('caja');
+  var sec   = document.getElementById('obra');
+  var peg   = document.getElementById('pegado');
+  var lleno = document.getElementById('lleno');
+  var tarjetas = document.querySelectorAll('.tarjeta');
+  var botones  = document.querySelectorAll('.paso');
+
+  var vw=1, vh=1, dpr=1, S=1, TX=0, TY=0, simple=false;
+
+  /* mundo (unidades propias, independientes del tamaño real) */
+  var GY   = 470;          /* nivel del suelo */
+  var X0   = 330, X1 = 770;/* muros de la casa */
+  var TOPM = 250;          /* arranque del muro por arriba */
+  var CIM  = 448;          /* sobrecimiento */
+  var VIG  = 228;          /* cara superior de la viga */
+  var APEX = 118;          /* cumbrera */
+  var CX   = (X0+X1)/2;
+  var COLS = [338, 445, 552, 659, 762];
+  var VANOS = [
+    { x:378, y:300, w:76, h:64,  t:'v' },
+    { x:646, y:300, w:76, h:64,  t:'v' },
+    { x:516, y:336, w:68, h:112, t:'p' }
+  ];
+  var LAY = { signX:120, signS:0.86, matX:150 };
+
+  function medir(){
+    var r = caja.getBoundingClientRect();
+    vw = Math.max(1, Math.round(r.width));
+    vh = Math.max(1, Math.round(r.height));
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    cvs.width  = Math.round(vw*dpr);
+    cvs.height = Math.round(vh*dpr);
+    cvs.style.width  = vw+'px';
+    cvs.style.height = vh+'px';
+
+    var ancho = (vw/vh) >= 1.15;
+    simple = (vw < 640);
+    var caj = ancho ? { x:60, y:55, w:880, h:530 } : { x:262, y:92, w:570, h:470 };
+    S  = Math.min(vw/caj.w, vh/caj.h);
+    TX = vw/2 - S*(caj.x + caj.w/2);
+    /* el horizonte se ancla al 78% del alto: nunca queda todo cielo ni todo suelo */
+    TY = Math.max(vh*0.78 - S*GY, -70*S);
+
+    if(ancho){ LAY.signX = 118; LAY.signS = 0.86; LAY.matX = 828; }
+    else     { LAY.signX = 266; LAY.signS = 0.58; LAY.matX = 706; }
+  }
+  function mundo(){ ctx.setTransform(S*dpr,0,0,S*dpr,TX*dpr,TY*dpr); }
+  function pantalla(){ ctx.setTransform(dpr,0,0,dpr,0,0); }
+
+  /* ============================================================
+     3 · paleta del cielo (de la mañana al atardecer)
+     ============================================================ */
+  var CIELO = [
+    { p:0.00, c:[[122,190,235],[176,219,242],[226,241,250]] },
+    { p:0.30, c:[[ 72,158,222],[151,203,238],[221,238,250]] },
+    { p:0.60, c:[[ 96,152,208],[176,199,229],[246,220,180]] },
+    { p:0.84, c:[[ 62, 92,155],[168,120,158],[255,190,125]] },
+    { p:1.00, c:[[ 20, 30, 70],[ 96, 63,116],[239,139, 82]] }
+  ];
+  function cielo(p){
+    var i=0;
+    while(i < CIELO.length-2 && p > CIELO[i+1].p) i++;
+    var a=CIELO[i], b=CIELO[i+1];
+    var t=suave(cl((p-a.p)/(b.p-a.p),0,1));
+    return [ mez(a.c[0],b.c[0],t), mez(a.c[1],b.c[1],t), mez(a.c[2],b.c[2],t) ];
+  }
+
+  /* ============================================================
+     4 · piezas de la escena
+     ============================================================ */
+  function sol(p, noche){
+    var a  = lerp(0.16, 0.98, p);
+    var sx = 130 + 790*a;
+    var sy = 430 - 312*Math.sin(Math.PI*a);
+    var c  = noche < 0.5 ? mez([255,247,216],[255,208,132], noche*2)
+                         : mez([255,208,132],[255,136, 76],(noche-0.5)*2);
+    var r  = lerp(26, 44, p);
+    var g  = ctx.createRadialGradient(sx,sy,r*0.35,sx,sy,r*(simple?3.6:5.2));
+    g.addColorStop(0, rgba(c, 0.5));
+    g.addColorStop(1, rgba(c, 0));
+    ctx.fillStyle=g;
+    ctx.beginPath(); ctx.arc(sx,sy,r*(simple?3.6:5.2),0,6.2832); ctx.fill();
+    ctx.fillStyle = rgb(c);
+    ctx.beginPath(); ctx.arc(sx,sy,r,0,6.2832); ctx.fill();
+  }
+
+  var NUBES = [ {x:180,y:150,e:1.0}, {x:640,y:105,e:0.78}, {x:880,y:190,e:0.62} ];
+  function nubes(p, noche){
+    var c = mez([255,255,255], [255,182,150], noche);
+    var n = simple ? 2 : NUBES.length;
+    ctx.fillStyle = rgba(c, lerp(0.85, 0.55, noche));
+    for(var i=0;i<n;i++){
+      var u=NUBES[i], x=u.x+p*46, y=u.y, e=u.e;
+      ctx.beginPath();
+      ctx.arc(x,        y,        30*e, 0, 6.2832);
+      ctx.arc(x+34*e,   y-12*e,   24*e, 0, 6.2832);
+      ctx.arc(x+64*e,   y+2*e,    28*e, 0, 6.2832);
+      ctx.arc(x+32*e,   y+14*e,   26*e, 0, 6.2832);
+      ctx.fill();
+    }
+  }
+
+  function lejania(noche){
+    var c = mez([126,166,128], [34,38,72], noche);
+    ctx.fillStyle = rgb(c);
+    /* arboleda de fondo */
+    ctx.beginPath();
+    ctx.moveTo(-400, GY+4);
+    var paso = simple ? 130 : 78;
+    for(var x=-400; x<=1420; x+=paso){
+      var h = 24 + ((x*7919)%37);
+      ctx.lineTo(x, GY-6-h*0.7);
+      ctx.lineTo(x+paso*0.5, GY-2-h*0.32);
+    }
+    ctx.lineTo(1420, GY+4);
+    ctx.closePath(); ctx.fill();
+    if(!simple){
+      /* un par de edificios lejanos, apenas insinuados */
+      var c2 = mez([150,178,168],[30,34,66], noche);
+      ctx.fillStyle = rgba(c2, 0.85);
+      ctx.fillRect(60, GY-92, 34, 92);
+      ctx.fillRect(102, GY-64, 24, 64);
+      ctx.fillRect(936, GY-78, 30, 78);
+    }
+  }
+
+  function suelo(p, e7, noche){
+    var tierra = mez([182,150,116], [120,96,74], noche*0.7);
+    ctx.fillStyle = rgb(tierra);
+    ctx.fillRect(-1200, GY, 3600, 600);
+    ctx.fillStyle = rgba([0,0,0], 0.06);
+    ctx.fillRect(-1200, GY, 3600, 8);
+
+    var f = suave(e7);
+    if(f > 0.01){
+      /* césped, vereda y calle: se hacen al final de la obra */
+      ctx.globalAlpha = f;
+      ctx.fillStyle = rgb(mez([116,152,84],[52,72,58], noche));
+      ctx.fillRect(-1200, GY, 3600, 32);
+      ctx.fillStyle = rgb(mez([214,209,198],[104,102,122], noche));
+      ctx.fillRect(-1200, GY+32, 3600, 26);
+      ctx.fillStyle = rgb(mez([120,118,116],[44,44,60], noche));
+      ctx.fillRect(-1200, GY+58, 3600, 200);
+      ctx.strokeStyle = rgba([255,255,255], 0.22); ctx.lineWidth = 2;
+      ctx.beginPath();
+      for(var x=-180; x<1300; x+=96){ ctx.moveTo(x, GY+32); ctx.lineTo(x, GY+58); }
+      ctx.stroke();
+      /* camino de la puerta a la vereda */
+      ctx.fillStyle = rgb(mez([226,221,208],[112,110,130], noche));
+      ctx.beginPath();
+      ctx.moveTo(516, GY); ctx.lineTo(584, GY);
+      ctx.lineTo(612, GY+32); ctx.lineTo(488, GY+32);
+      ctx.closePath(); ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  /* matitas sueltas del lote sin tocar: se van cuando entra el jardín */
+  var MATAS = [ [150,506],[236,538],[420,556],[604,530],[712,562],[858,512],[928,548] ];
+  function matas(e7, noche){
+    var a = 1 - suave(seg(e7,0,0.5));
+    if(a <= 0.02) return;
+    ctx.strokeStyle = rgba(mez([120,142,86],[54,64,60], noche), 0.85*a);
+    ctx.lineWidth = 2.4;
+    ctx.beginPath();
+    var n = simple ? 4 : MATAS.length;
+    for(var i=0;i<n;i++){
+      var x = MATAS[i][0], y = MATAS[i][1];
+      ctx.moveTo(x, y);   ctx.lineTo(x-6, y-11);
+      ctx.moveTo(x, y);   ctx.lineTo(x, y-14);
+      ctx.moveTo(x, y);   ctx.lineTo(x+6, y-10);
+    }
+    ctx.stroke();
+  }
+
+  function sombraCasa(p, e3){
+    var t = suave(cl(e3,0,1));
+    if(t<=0) return;
+    ctx.fillStyle = rgba([40,30,20], 0.13*t);
+    ctx.beginPath();
+    ctx.ellipse(CX+20, GY+10, (X1-X0)/2+70, 14, 0, 0, 6.2832);
+    ctx.fill();
+  }
+
+  function replanteo(e1, e2){
+    var vis = suave(cl(e1*1.8,0,1)) * (1 - suave(seg(e2,0,0.45)));
+    if(vis <= 0.01) return;
+    ctx.globalAlpha = vis;
+    /* huella marcada con hilo */
+    ctx.strokeStyle = 'rgba(255,255,255,.85)'; ctx.lineWidth = 2.4;
+    ctx.setLineDash([10,8]);
+    ctx.beginPath();
+    ctx.moveTo(X0-26, GY+22); ctx.lineTo(X1+26, GY+22);
+    ctx.lineTo(X1+8, GY-4);   ctx.lineTo(X0-8, GY-4);
+    ctx.closePath(); ctx.stroke();
+    ctx.setLineDash([]);
+    /* estacas */
+    ctx.fillStyle = '#8a6a44';
+    var ex = [X0-26, X0+90, CX, X1-90, X1+26];
+    for(var i=0;i<ex.length;i++){
+      ctx.fillRect(ex[i]-3, GY+2, 6, 22);
+      ctx.fillStyle = '#e0553a';
+      ctx.fillRect(ex[i]-6, GY+2, 12, 5);
+      ctx.fillStyle = '#8a6a44';
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function cimientos(e2){
+    if(e2 <= 0) return;
+    var z = suave(cl(e2/0.45,0,1));
+    /* zanja */
+    ctx.fillStyle = '#4f3b28';
+    ctx.fillRect(X0-24, GY-6, (X1-X0+48)*z, 24);
+    /* hormigón */
+    var h = suave(seg(e2,0.34,0.82));
+    if(h>0){
+      ctx.fillStyle = '#b9b4a8';
+      ctx.fillRect(X0-22, GY-4, (X1-X0+44)*h, 18);
+    }
+    /* sobrecimiento */
+    var s = suave(seg(e2,0.55,1));
+    if(s>0){
+      var hh = (GY-CIM)*s;
+      ctx.fillStyle = '#c6c1b6';
+      ctx.fillRect(X0-12, GY-hh, X1-X0+24, hh);
+      ctx.fillStyle = 'rgba(0,0,0,.10)';
+      ctx.fillRect(X0-12, GY-hh, X1-X0+24, 4);
+      /* hierros de arranque */
+      var hb = suave(seg(e2,0.72,1));
+      if(hb>0){
+        ctx.strokeStyle = 'rgba(110,92,74,.9)'; ctx.lineWidth = 2.6;
+        ctx.beginPath();
+        for(var i=0;i<COLS.length;i++){
+          var x=COLS[i];
+          ctx.moveTo(x-5, CIM); ctx.lineTo(x-5, CIM-26*hb);
+          ctx.moveTo(x+5, CIM); ctx.lineTo(x+5, CIM-26*hb);
+        }
+        ctx.stroke();
+      }
+    }
+  }
+
+  function columnas(e3){
+    if(e3 <= 0) return;
+    var i, x, t, h;
+    for(i=0;i<COLS.length;i++){
+      t = suave(cl((e3 - i*0.055)/0.5, 0, 1));
+      if(t<=0) continue;
+      x = COLS[i];
+      h = (CIM-TOPM+4)*t;
+      ctx.fillStyle = '#cbc6bc';
+      ctx.fillRect(x-9, CIM-h, 18, h);
+      ctx.fillStyle = 'rgba(0,0,0,.10)';
+      ctx.fillRect(x+4, CIM-h, 5, h);
+      var hb = (1-suave(seg(e3,0.62,0.92))) * t;
+      if(hb > 0.03){
+        ctx.strokeStyle = rgba([110,92,74], hb);
+        ctx.lineWidth = 2.4;
+        ctx.beginPath();
+        ctx.moveTo(x-5, CIM-h); ctx.lineTo(x-5, CIM-h-24);
+        ctx.moveTo(x+5, CIM-h); ctx.lineTo(x+5, CIM-h-24);
+        ctx.stroke();
+      }
+    }
+    var v = suave(seg(e3,0.66,1));
+    if(v>0){
+      ctx.fillStyle = '#cbc6bc';
+      ctx.fillRect(X0-12, VIG, (X1-X0+24)*v, TOPM-VIG+2);
+      ctx.fillStyle = 'rgba(0,0,0,.12)';
+      ctx.fillRect(X0-12, TOPM-4, (X1-X0+24)*v, 4);
+    }
+  }
+
+  function muros(e4, e6){
+    if(e4 <= 0) return;
+    var alto = CIM-TOPM;
+    var hh   = alto*suave(e4);
+    var topY = CIM-hh;
+    var rev  = suave(seg(e6, 0.28, 0.88));
+    var col  = mez([176,86,60], [233,224,204], rev);
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(X0, TOPM-2, X1-X0, alto+4);
+    for(var i=0;i<VANOS.length;i++){ var v=VANOS[i]; ctx.rect(v.x, v.y, v.w, v.h); }
+    ctx.clip('evenodd');
+
+    ctx.fillStyle = rgb(col);
+    ctx.fillRect(X0-4, topY, X1-X0+8, hh+6);
+
+    var al = (1-rev);
+    if(al > 0.03){
+      ctx.strokeStyle = rgba([118,52,36], 0.45*al);
+      ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      var y, k=0;
+      for(y=CIM-11; y>topY; y-=11){ ctx.moveTo(X0, y); ctx.lineTo(X1, y); }
+      if(!simple){
+        for(y=CIM; y>topY+2; y-=11){
+          var off = (k%2) ? 13 : 0;
+          for(var x=X0+off; x<X1; x+=26){ ctx.moveTo(x, y); ctx.lineTo(x, y-11); }
+          k++;
+        }
+      }
+      ctx.stroke();
+    }
+    /* revoque: una sombra suave abajo para que no quede plano */
+    if(rev > 0.05){
+      ctx.fillStyle = rgba([0,0,0], 0.05*rev);
+      ctx.fillRect(X0-4, CIM-30, X1-X0+8, 30);
+    }
+    ctx.restore();
+
+    /* interior visto por los vanos, a medida que el muro pasa por ahí */
+    for(var j=0;j<VANOS.length;j++){
+      var w = VANOS[j];
+      var ap = cl((CIM - topY - (CIM - (w.y+w.h)))/w.h, 0, 1);
+      if(ap>0){
+        ctx.fillStyle = rgba([46,38,32], 0.92*ap);
+        ctx.fillRect(w.x, w.y+w.h-w.h*ap, w.w, w.h*ap);
+      }
+    }
+  }
+
+  function techo(e5){
+    if(e5 <= 0) return;
+    var g   = suave(cl(e5/0.5,0,1));
+    var ay  = lerp(VIG+4, APEX, g);
+    var bx0 = X0-36, bx1 = X1+36, by = VIG+8;
+
+    /* tijerales */
+    var est = 1 - suave(seg(e5,0.45,0.95));
+    if(est > 0.03){
+      ctx.strokeStyle = rgba([124,86,52], est);
+      ctx.lineWidth = 5;
+      ctx.beginPath();
+      ctx.moveTo(bx0,by); ctx.lineTo(CX,ay); ctx.lineTo(bx1,by);
+      ctx.moveTo(bx0,by); ctx.lineTo(bx1,by);
+      ctx.moveTo(CX,ay);  ctx.lineTo(CX,by);
+      ctx.stroke();
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(CX-110, by); ctx.lineTo(CX-46, ay+ (by-ay)*0.42);
+      ctx.moveTo(CX+110, by); ctx.lineTo(CX+46, ay+ (by-ay)*0.42);
+      ctx.stroke();
+    }
+
+    /* tejas: suben desde el alero hasta la cumbrera */
+    var tf = suave(seg(e5,0.36,1));
+    if(tf > 0){
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(bx0,by); ctx.lineTo(CX,ay); ctx.lineTo(bx1,by); ctx.closePath();
+      ctx.clip();
+      var yTop = by - (by-ay)*tf;
+      ctx.fillStyle = '#a8452f';
+      ctx.fillRect(bx0-10, yTop, bx1-bx0+20, by-yTop+4);
+      ctx.strokeStyle = 'rgba(88,30,20,.42)'; ctx.lineWidth = 1.8;
+      ctx.beginPath();
+      for(var y=by-10; y>yTop; y-=11){ ctx.moveTo(bx0-10,y); ctx.lineTo(bx1+10,y); }
+      ctx.stroke();
+      if(!simple){
+        ctx.strokeStyle = 'rgba(255,255,255,.10)'; ctx.lineWidth = 1.4;
+        ctx.beginPath();
+        for(var x=bx0; x<bx1; x+=22){ ctx.moveTo(x, yTop); ctx.lineTo(x, by); }
+        ctx.stroke();
+      }
+      ctx.restore();
+      /* alero */
+      ctx.fillStyle = rgba([132,58,40], tf);
+      ctx.fillRect(bx0-6, by, bx1-bx0+12, 10);
+      ctx.fillStyle = rgba([0,0,0], 0.10*tf);
+      ctx.fillRect(X0, VIG+18, X1-X0, 12);
+    }
+  }
+
+  function aberturas(e6, e7){
+    var t = suave(seg(e6, 0.02, 0.55));
+    if(t <= 0.01) return;
+    ctx.globalAlpha = t;
+    for(var i=0;i<VANOS.length;i++){
+      var v = VANOS[i];
+      if(v.t === 'v'){
+        ctx.fillStyle = '#8fb0c2';
+        ctx.fillRect(v.x, v.y, v.w, v.h);
+        ctx.fillStyle = 'rgba(255,255,255,.22)';
+        ctx.beginPath();
+        ctx.moveTo(v.x, v.y+v.h); ctx.lineTo(v.x+v.w*0.6, v.y);
+        ctx.lineTo(v.x+v.w, v.y); ctx.lineTo(v.x+v.w, v.y+v.h*0.25);
+        ctx.closePath(); ctx.fill();
+        ctx.strokeStyle = '#f2efe8'; ctx.lineWidth = 6;
+        ctx.strokeRect(v.x+3, v.y+3, v.w-6, v.h-6);
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(v.x+v.w/2, v.y+3); ctx.lineTo(v.x+v.w/2, v.y+v.h-3);
+        ctx.stroke();
+      } else {
+        ctx.fillStyle = '#6d4526';
+        ctx.fillRect(v.x, v.y, v.w, v.h);
+        ctx.strokeStyle = 'rgba(255,255,255,.18)'; ctx.lineWidth = 3;
+        ctx.strokeRect(v.x+9, v.y+12, v.w-18, v.h*0.38);
+        ctx.strokeRect(v.x+9, v.y+12+v.h*0.46, v.w-18, v.h*0.36);
+        ctx.fillStyle = '#e8c66a';
+        ctx.beginPath(); ctx.arc(v.x+v.w-13, v.y+v.h*0.55, 3.6, 0, 6.2832); ctx.fill();
+        ctx.strokeStyle = '#f2efe8'; ctx.lineWidth = 5;
+        ctx.strokeRect(v.x+2.5, v.y+2.5, v.w-5, v.h-2.5);
+      }
+    }
+    /* zócalo y detalle de terminación */
+    var f = suave(e7);
+    if(f>0){
+      ctx.fillStyle = rgba([176,166,148], f);
+      ctx.fillRect(X0-4, CIM-16, X1-X0+8, 16);
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function andamios(e3, e7){
+    var a = suave(seg(e3,0.25,1)) * (1 - suave(seg(e7,0,0.45)));
+    if(a <= 0.02) return;
+    ctx.globalAlpha = a*0.9;
+    ctx.strokeStyle = '#8d949a'; ctx.lineWidth = 4;
+    ctx.beginPath();
+    var lados = [X0-22, X1+22];
+    for(var i=0;i<2;i++){
+      var x = lados[i];
+      ctx.moveTo(x, GY); ctx.lineTo(x, TOPM+10);
+      ctx.moveTo(x-16, GY); ctx.lineTo(x-16, TOPM+10);
+      ctx.moveTo(x-16, GY-70); ctx.lineTo(x, GY-70);
+      ctx.moveTo(x-16, GY-140); ctx.lineTo(x, GY-140);
+      ctx.moveTo(x-16, GY); ctx.lineTo(x, GY-70);
+    }
+    ctx.stroke();
+    ctx.fillStyle = '#b08a52';
+    ctx.fillRect(X0-42, GY-74, 26, 6);
+    ctx.fillRect(X1+4,  GY-74, 26, 6);
+    ctx.globalAlpha = 1;
+  }
+
+  function materiales(e1, e7){
+    var a = suave(cl(e1*2.2,0,1)) * (1 - suave(seg(e7,0.05,0.55)));
+    if(a <= 0.02) return;
+    var x = LAY.matX, y = GY+34;
+    ctx.globalAlpha = a;
+    /* montículo de arena */
+    ctx.fillStyle = '#c9a877';
+    ctx.beginPath();
+    ctx.moveTo(x-46, y); ctx.quadraticCurveTo(x-14, y-42, x+20, y);
+    ctx.closePath(); ctx.fill();
+    ctx.fillStyle = 'rgba(0,0,0,.08)';
+    ctx.beginPath();
+    ctx.moveTo(x-14, y-38); ctx.quadraticCurveTo(x+6, y-20, x+20, y);
+    ctx.lineTo(x-14, y); ctx.closePath(); ctx.fill();
+    /* pila de ladrillos */
+    ctx.fillStyle = '#a8503a';
+    for(var f=0; f<3; f++){
+      for(var c=0; c<(simple?2:3); c++){
+        ctx.fillRect(x+28+c*22, y-14-f*11, 20, 9);
+      }
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function cartel(e7){
+    var a = 1 - suave(seg(e7,0.15,0.65));
+    if(a <= 0.02) return;
+    ctx.save();
+    ctx.globalAlpha = a;
+    ctx.translate(LAY.signX, GY+40);
+    ctx.scale(LAY.signS, LAY.signS);
+    /* patas */
+    ctx.fillStyle = '#7d5c3a';
+    ctx.fillRect(18, -78, 9, 78);
+    ctx.fillRect(112, -78, 9, 78);
+    /* tablero */
+    ctx.fillStyle = '#f4f1ea';
+    ctx.fillRect(0, -168, 140, 92);
+    ctx.fillStyle = '#e8762c';
+    ctx.fillRect(0, -168, 140, 22);
+    ctx.fillStyle = 'rgba(0,0,0,.16)';
+    ctx.fillRect(0, -78, 140, 4);
+    /* casquito */
+    ctx.fillStyle = '#e8762c';
+    ctx.beginPath();
+    ctx.arc(24, -122, 12, Math.PI, 0); ctx.closePath(); ctx.fill();
+    ctx.fillRect(9, -122, 30, 4);
+    /* renglones */
+    ctx.fillStyle = '#9aa3ac';
+    ctx.fillRect(48, -130, 78, 6);
+    ctx.fillRect(48, -118, 60, 6);
+    ctx.fillRect(14, -102, 112, 5);
+    ctx.fillRect(14, -92, 86, 5);
+    ctx.restore();
+    ctx.globalAlpha = 1;
+  }
+
+  function jardin(e7, noche){
+    var f = suave(e7);
+    if(f <= 0.02) return;
+    var verde = mez([70,116,64], [30,52,52], noche);
+    ctx.globalAlpha = f;
+    /* arbolito a la izquierda */
+    ctx.fillStyle = rgb(mez([104,74,48],[40,34,44], noche));
+    ctx.fillRect(294, GY-64, 11, 66);
+    ctx.fillStyle = rgb(verde);
+    ctx.beginPath();
+    ctx.arc(300, GY-88, 34*f, 0, 6.2832);
+    ctx.arc(276, GY-70, 24*f, 0, 6.2832);
+    ctx.arc(324, GY-72, 26*f, 0, 6.2832);
+    ctx.fill();
+    /* arbustos al pie */
+    var ax = simple ? [420, 640] : [420, 640, 730];
+    for(var i=0;i<ax.length;i++){
+      ctx.beginPath();
+      ctx.arc(ax[i], GY+6, 17*f, 0, 6.2832);
+      ctx.arc(ax[i]+20, GY+9, 13*f, 0, 6.2832);
+      ctx.fill();
+    }
+    /* farol */
+    ctx.fillStyle = rgb(mez([90,96,104],[36,40,58], noche));
+    ctx.fillRect(836, GY-140, 7, 142);
+    ctx.fillRect(822, GY-146, 34, 8);
+    ctx.globalAlpha = 1;
+  }
+
+  function velo(noche){
+    if(noche <= 0.01) return;
+    pantalla();
+    ctx.fillStyle = rgba([24,20,56], 0.29*noche);
+    ctx.fillRect(0,0,vw,vh);
+    mundo();
+  }
+
+  function luces(e7, noche){
+    var a = suave(e7) * (0.30 + 0.70*noche);
+    if(a <= 0.02) return;
+    for(var i=0;i<VANOS.length;i++){
+      var v = VANOS[i];
+      var esP = v.t === 'p';
+      var vx = esP ? v.x+9 : v.x+5, vy = esP ? v.y+14 : v.y+5;
+      var vw2 = esP ? v.w-18 : v.w-10, vh2 = esP ? v.h*0.34 : v.h-10;
+      var g = ctx.createRadialGradient(vx+vw2/2, vy+vh2/2, 2, vx+vw2/2, vy+vh2/2, Math.max(vw2,vh2)*(simple?1.6:2.4));
+      g.addColorStop(0, rgba([255,206,120], 0.55*a));
+      g.addColorStop(1, rgba([255,206,120], 0));
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(vx+vw2/2, vy+vh2/2, Math.max(vw2,vh2)*(simple?1.6:2.4), 0, 6.2832);
+      ctx.fill();
+      ctx.fillStyle = rgba([255,214,138], 0.88*a);
+      ctx.fillRect(vx, vy, vw2, vh2);
+    }
+    /* farol encendido */
+    var lx=839, ly=GY-142;
+    var g2 = ctx.createRadialGradient(lx, ly, 2, lx, ly, 90);
+    g2.addColorStop(0, rgba([255,220,150], 0.5*a));
+    g2.addColorStop(1, rgba([255,220,150], 0));
+    ctx.fillStyle = g2;
+    ctx.beginPath(); ctx.arc(lx, ly, 90, 0, 6.2832); ctx.fill();
+  }
+
+  /* ============================================================
+     5 · dibujar(p): el estado exacto de la obra en el punto p
+     ============================================================ */
+  function dibujar(p){
+    p = cl(p, 0, 1);
+    var e1=seg(p,0,.13), e2=seg(p,.13,.27), e3=seg(p,.27,.42),
+        e4=seg(p,.42,.58), e5=seg(p,.58,.72), e6=seg(p,.72,.87), e7=seg(p,.87,1);
+    var noche = suave(seg(p, 0.60, 1));
+
+    pantalla();
+    ctx.clearRect(0,0,vw,vh);
+    var sk = cielo(p);
+    var g = ctx.createLinearGradient(0,0,0,vh);
+    g.addColorStop(0, rgb(sk[0]));
+    g.addColorStop(0.58, rgb(sk[1]));
+    g.addColorStop(1, rgb(sk[2]));
+    ctx.fillStyle = g;
+    ctx.fillRect(0,0,vw,vh);
+
+    mundo();
+    ctx.lineJoin='round'; ctx.lineCap='butt';
+
+    sol(p, noche);
+    nubes(p, noche);
+    lejania(noche);
+    suelo(p, e7, noche);
+    matas(e7, noche);
+    sombraCasa(p, e3);
+
+    replanteo(e1, e2);
+    cimientos(e2);
+    columnas(e3);
+    techo(e5);
+    muros(e4, e6);
+    aberturas(e6, e7);
+    andamios(e3, e7);
+    materiales(e1, e7);
+    cartel(e7);
+    jardin(e7, noche);
+
+    velo(noche);
+    luces(e7, noche);
+  }
+
+  /* ============================================================
+     6 · panel de texto y barra
+     ============================================================ */
+  var etapaActual = -1;
+  function panel(p){
+    lleno.style.transform = 'scaleX('+ p.toFixed(4) +')';
+    var i = 0;
+    for(var k=0; k<ETAPAS.length; k++){ if(p >= ETAPAS[k].a) i = k; }
+    if(i === etapaActual) return;
+    etapaActual = i;
+    for(var j=0;j<tarjetas.length;j++){
+      var on = (j === i);
+      tarjetas[j].classList.toggle('on', on);
+      tarjetas[j].setAttribute('aria-hidden', on ? 'false' : 'true');
+    }
+    for(var b=0;b<botones.length;b++){
+      if(b === i) botones[b].setAttribute('aria-current','true');
+      else botones[b].removeAttribute('aria-current');
+      botones[b].classList.toggle('hecho', b < i);
+    }
+  }
+
+  /* ============================================================
+     7 · scroll → avance (siempre dentro de requestAnimationFrame)
+     ============================================================ */
+  var pMostrado = 0, corriendo = false, pendienteMedir = false;
+
+  function avance(){
+    var r = sec.getBoundingClientRect();
+    var total = r.height - peg.offsetHeight;
+    if(total <= 0) return 0;
+    return cl(-r.top/total, 0, 1);
+  }
+
+  function paso(){
+    var objetivo = avance();
+    var d = objetivo - pMostrado;
+    if(Math.abs(d) < 0.0006){ pMostrado = objetivo; corriendo = false; }
+    else { pMostrado += d*0.22; }
+    dibujar(pMostrado);
+    panel(pMostrado);
+    if(corriendo) requestAnimationFrame(paso);
+  }
+
+  function pedir(){
+    if(corriendo) return;
+    corriendo = true;
+    requestAnimationFrame(paso);
+  }
+
+  function reMedir(){
+    if(pendienteMedir) return;
+    pendienteMedir = true;
+    requestAnimationFrame(function(){
+      pendienteMedir = false;
+      medir();
+      dibujar(pMostrado);
+    });
+  }
+
+  /* ============================================================
+     8 · arranque
+     ============================================================ */
+  var mq = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
+  var quieto = !!(mq && mq.matches);
+
+  function listaSinMovimiento(){
+    var ol = document.getElementById('lista-rm');
+    ol.textContent = '';
+    for(var i=0;i<ETAPAS.length;i++){
+      var li = document.createElement('li');
+      var b = document.createElement('b');
+      b.textContent = ETAPAS[i].n;
+      var s = document.createElement('span');
+      s.textContent = ' — ' + ETAPAS[i].d;
+      li.appendChild(b); li.appendChild(s);
+      li.style.color = '#c3d0dc';
+      li.style.fontSize = '14px';
+      li.style.marginBottom = '6px';
+      b.style.color = '#fff';
+      ol.appendChild(li);
+    }
+    ol.style.margin = '0'; ol.style.padding = '0 0 0 20px';
+  }
+
+  medir();
+
+  if(quieto){
+    document.documentElement.className += ' rm';
+    listaSinMovimiento();
+    medir();
+    pMostrado = 1;
+    dibujar(1);
+    lleno.style.transform = 'scaleX(1)';
+    window.addEventListener('resize', reMedir, { passive:true });
+  } else {
+    dibujar(0);
+    panel(0);
+    window.addEventListener('scroll', pedir, { passive:true });
+    window.addEventListener('touchmove', pedir, { passive:true });
+    window.addEventListener('resize', function(){ reMedir(); pedir(); }, { passive:true });
+    window.addEventListener('orientationchange', function(){ reMedir(); pedir(); }, { passive:true });
+
+    for(var i=0;i<botones.length;i++){
+      botones[i].addEventListener('click', function(ev){
+        var idx = parseInt(ev.currentTarget.getAttribute('data-i'), 10) || 0;
+        var e = ETAPAS[idx];
+        var pt = (idx === ETAPAS.length-1) ? 0.985 : (e.a + (Math.min(e.b,1) - e.a)*0.45);
+        var r = sec.getBoundingClientRect();
+        var total = r.height - peg.offsetHeight;
+        var arriba = (window.pageYOffset || document.documentElement.scrollTop) + r.top;
+        var destino = Math.round(arriba + pt*total);
+        try { window.scrollTo({ top: destino, behavior:'smooth' }); }
+        catch(err){ window.scrollTo(0, destino); }
+        pedir();
+      });
+    }
+    /* primer cálculo por si la página se abre ya scrolleada */
+    pedir();
+  }
+})();
+</script>
+</body>
+</html>

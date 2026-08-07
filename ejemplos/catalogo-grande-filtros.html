@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; frame-src 'self'; media-src 'self' data:; form-action 'none'; object-src 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Corralón San Blas — Materiales de construcción y ferretería en Asunción</title>
+<meta name="description" content="Buscá entre 52 productos de corralón y ferretería: cemento, hierro, sanitarios, electricidad y pinturas. Precio a la vista y consulta directa por WhatsApp.">
+<!--
+  DEMO KatuWeb · Catálogo grande con filtros
+  Negocio y datos de ejemplo. Al usarla con un cliente real, reemplazar
+  todo por sus productos, precios y fotos verdaderas.
+-->
+<style>
+  :root{
+    --bg:#f4f6f8; --blanco:#fff; --ink:#0f1a24; --ink2:#4d5a68; --ink3:#61707f;
+    --linea:#e2e8ee; --linea2:#cfd8e1;
+    --acc:#0f4c81; --acc2:#12639f; --acc-suave:#e8f0f8;
+    --wa:#0f7a41;
+    --r:12px; --r2:16px;
+    --sombra:0 1px 2px rgba(15,26,36,.05), 0 6px 18px rgba(15,26,36,.06);
+    --sombra2:0 10px 40px rgba(15,26,36,.16);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+    background:var(--bg); color:var(--ink); line-height:1.55;
+    font-size:15px; padding-bottom:78px;
+  }
+  a{color:inherit}
+  button{font:inherit;color:inherit}
+  :focus-visible{outline:3px solid #1b7fd4;outline-offset:2px;border-radius:6px}
+
+  .env{max-width:1180px;margin:0 auto;padding:0 14px}
+
+  /* ---------- cabecera ---------- */
+  .top{background:#0d2233;color:#e9eff5}
+  .top .env{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-top:12px;padding-bottom:12px}
+  .marca{display:flex;align-items:center;gap:10px;margin-right:auto;min-width:0}
+  .marca b{display:block;font-size:16.5px;letter-spacing:-.01em;line-height:1.2}
+  .marca span{display:block;font-size:11.5px;color:#9fb3c4;letter-spacing:.04em;text-transform:uppercase}
+  .marca .logo{
+    width:40px;height:40px;border-radius:10px;flex:0 0 auto;
+    background:linear-gradient(150deg,#f0b429,#d97706);
+    display:grid;place-items:center;color:#3a2205;font-weight:900;font-size:16px;
+    letter-spacing:0;text-transform:none;line-height:1;
+    box-shadow:inset 0 -2px 0 rgba(0,0,0,.18)
+  }
+  .top-wa{
+    display:inline-flex;align-items:center;gap:7px;background:var(--wa);color:#fff;
+    text-decoration:none;font-weight:700;font-size:13.5px;padding:9px 13px;border-radius:9px;
+    min-height:44px;line-height:1.1
+  }
+  .top-wa svg{width:17px;height:17px;flex:0 0 auto}
+  .datos{background:#0a1b29;color:#8fa5b8;font-size:12px}
+  .datos .env{padding:7px 14px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;text-align:center}
+
+  /* ---------- buscador pegajoso ---------- */
+  .barra-busq{position:sticky;top:0;z-index:60;background:rgba(244,246,248,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--linea);padding:10px 0}
+  .busq-caja{position:relative;display:flex;align-items:center}
+  .busq-caja svg.lupa{position:absolute;left:13px;width:19px;height:19px;color:var(--ink3);pointer-events:none}
+  #buscador{
+    width:100%;min-height:48px;padding:11px 44px 11px 40px;font-size:16px;
+    border:1.5px solid var(--linea2);border-radius:11px;background:var(--blanco);color:var(--ink);
+    font-family:inherit
+  }
+  #buscador::placeholder{color:#64727f}
+  #buscador::-webkit-search-cancel-button,#buscador::-webkit-search-decoration{-webkit-appearance:none;appearance:none;display:none}
+  #buscador:focus{border-color:var(--acc2);outline:none;box-shadow:0 0 0 3px rgba(18,99,159,.15)}
+  .borrar-busq{
+    position:absolute;right:3px;width:44px;height:44px;border:0;background:transparent;
+    color:var(--ink3);cursor:pointer;border-radius:50%;display:none;place-items:center
+  }
+  .borrar-busq.on{display:grid}
+  .borrar-busq svg{width:16px;height:16px}
+
+  /* ---------- titular ---------- */
+  .intro{padding:16px 0 2px}
+  .intro h1{font-size:clamp(20px,4.8vw,30px);letter-spacing:-.02em;line-height:1.18;font-weight:800}
+  .intro p{color:var(--ink2);margin-top:5px;max-width:58ch;font-size:14px}
+  .aviso{
+    margin-top:22px;font-size:12px;color:var(--ink3);border-left:3px solid var(--linea2);
+    padding-left:9px;max-width:64ch;line-height:1.45
+  }
+
+  /* ---------- disposición ---------- */
+  .layout{display:block;padding:16px 0 40px}
+  aside.col-f{display:none}
+  @media (min-width:900px){
+    .layout{display:grid;grid-template-columns:255px minmax(0,1fr);gap:26px;align-items:start}
+    aside.col-f{display:block}
+  }
+
+  /* ---------- panel de filtros ---------- */
+  .panel:not(.puesto){display:none}
+  .panel{background:var(--blanco);border:1px solid var(--linea);border-radius:var(--r2);padding:4px 16px 16px}
+  @media (min-width:900px){.panel{position:sticky;top:78px;max-height:calc(100vh - 96px);overflow-y:auto}}
+  .panel-cab{display:flex;align-items:center;gap:10px;padding:12px 0 4px;position:sticky;top:0;background:var(--blanco);z-index:2}
+  .panel-cab h2{font-size:16px;font-weight:800;margin-right:auto}
+  .cerrar-panel{
+    display:none;width:44px;height:44px;border:1px solid var(--linea);background:var(--blanco);
+    border-radius:50%;cursor:pointer;place-items:center;color:var(--ink2);flex:0 0 auto
+  }
+  .cerrar-panel svg{width:16px;height:16px}
+  .grupo{padding:14px 0;border-top:1px solid var(--linea)}
+  .grupo h3{font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink3);font-weight:800;margin-bottom:9px}
+  .ops{display:flex;flex-wrap:wrap;gap:7px}
+  .op{
+    border:1.5px solid var(--linea2);background:var(--blanco);border-radius:9px;
+    padding:8px 11px;font-size:13.5px;font-weight:600;cursor:pointer;min-height:44px;
+    display:inline-flex;align-items:center;gap:7px;color:var(--ink);
+    transition:border-color .18s,background-color .18s,color .18s
+  }
+  .op .pt{width:9px;height:9px;border-radius:50%;background:var(--rc,#94a3b8);flex:0 0 auto}
+  .op .cn{color:var(--ink3);font-size:12px;font-weight:700;font-variant-numeric:tabular-nums}
+  .op[aria-pressed="true"]{background:var(--acc);border-color:var(--acc);color:#fff}
+  .op[aria-pressed="true"] .cn{color:#c5dcf0}
+  @media (hover:hover){.op:hover{border-color:var(--acc2)}}
+  .limpiar-t{
+    width:100%;margin-top:14px;min-height:44px;border:1.5px solid var(--linea2);background:var(--blanco);
+    border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;color:var(--ink2)
+  }
+  .limpiar-t[disabled]{opacity:.45;cursor:default}
+
+  /* ---------- panel como hoja inferior en celular ---------- */
+  #velo{
+    position:fixed;inset:0;background:rgba(9,20,30,.5);z-index:75;opacity:0;
+    transition:opacity .28s ease;pointer-events:none
+  }
+  #velo.on{opacity:1;pointer-events:auto}
+  @media (max-width:899px){
+    .panel{
+      position:fixed;left:0;right:0;bottom:0;z-index:80;border-radius:18px 18px 0 0;
+      border:0;box-shadow:var(--sombra2);max-height:78vh;overflow-y:auto;
+      padding:0 14px 24px;visibility:hidden;transform:translateY(102%);
+      transition:transform .32s cubic-bezier(.22,.8,.28,1),visibility 0s linear .32s;
+      -webkit-overflow-scrolling:touch
+    }
+    .panel.abierto{visibility:visible;transform:none;transition:transform .32s cubic-bezier(.22,.8,.28,1),visibility 0s}
+    .panel-cab{padding:14px 0 6px;border-bottom:1px solid var(--linea);margin-bottom:-1px}
+    .cerrar-panel{display:grid}
+    .panel::before{content:"";display:block;width:42px;height:4px;border-radius:99px;background:var(--linea2);margin:8px auto -4px}
+  }
+  body.sin-scroll{overflow:hidden}
+
+  /* ---------- barra de resultados ---------- */
+  .res-barra{display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;padding:4px 0 12px}
+  /* en celular el contador vive en la barra fija de abajo: acá queda solo para lectores de pantalla */
+  @media (max-width:519px){
+    .cuenta{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;padding:0;margin:0}
+    .res-barra{padding:0 0 10px;justify-content:flex-end}
+    .marca span span{display:none}
+    .marca b{font-size:15.5px}
+    .top .env{padding-top:9px;padding-bottom:9px}
+  }
+  .cuenta{font-size:14px;color:var(--ink2);font-weight:600;margin-right:auto}
+  .cuenta b{color:var(--ink);font-weight:800;font-variant-numeric:tabular-nums}
+  .orden-caja{display:flex;align-items:center;gap:7px}
+  .orden-caja label{font-size:13px;color:var(--ink3);font-weight:600}
+  #orden{
+    min-height:44px;padding:8px 10px;border:1.5px solid var(--linea2);border-radius:10px;
+    background:var(--blanco);font-size:14px;font-family:inherit;color:var(--ink);font-weight:600;cursor:pointer
+  }
+
+  /* ---------- chips ---------- */
+  .chips{display:flex;flex-wrap:wrap;gap:7px;padding-bottom:14px}
+  .chips:empty{display:none}
+  .chip{
+    display:inline-flex;align-items:center;gap:4px;background:var(--acc-suave);color:#0c3f6c;
+    border:1px solid #c8ddf0;border-radius:99px;padding:0 2px 0 11px;font-size:13px;font-weight:700;
+    min-height:34px
+  }
+  .chip .x{
+    width:30px;height:30px;border:0;background:transparent;color:#0c3f6c;cursor:pointer;
+    border-radius:50%;display:grid;place-items:center;flex:0 0 auto
+  }
+  .chip .x svg{width:11px;height:11px}
+  @media (hover:hover){.chip .x:hover{background:#d3e5f5}}
+  /* en pantallas táctiles todo lo que se toca llega a 44 px */
+  @media (pointer:coarse){
+    .chip{min-height:44px;padding-left:13px}
+    .chip .x{width:44px;height:44px}
+    .chip-limpiar{min-height:44px}
+  }
+  .chip-limpiar{
+    background:transparent;border:1px dashed var(--linea2);color:var(--ink2);
+    border-radius:99px;padding:0 13px;min-height:34px;font-size:13px;font-weight:700;cursor:pointer
+  }
+
+  /* ---------- grilla ---------- */
+  .grilla{
+    display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;position:relative
+  }
+  @media (min-width:520px){.grilla{grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px}}
+
+  .card{
+    background:var(--blanco);border:1px solid var(--linea);border-radius:var(--r2);
+    display:flex;flex-direction:column;overflow:hidden;box-shadow:var(--sombra)
+  }
+  .card.flip{transition:transform .4s cubic-bezier(.22,.8,.28,1);will-change:transform}
+  .card.pop{animation:pop .38s cubic-bezier(.22,.9,.3,1) both}
+  @keyframes pop{from{opacity:0;transform:scale(.93)}to{opacity:1;transform:none}}
+  .card.fantasma{position:absolute;z-index:1;pointer-events:none;margin:0;transition:opacity .26s ease,transform .26s ease}
+  .card.fantasma.sale{opacity:0;transform:scale(.9)}
+
+  .tile{
+    position:relative;aspect-ratio:4/3;background:linear-gradient(155deg,var(--rcb),#fff 78%);
+    display:grid;place-items:center;border-bottom:1px solid var(--linea)
+  }
+  .tile::after{
+    content:"";position:absolute;inset:0;
+    background:repeating-linear-gradient(135deg,rgba(15,26,36,.035) 0 1px,transparent 1px 9px)
+  }
+  .tile svg{width:44%;max-width:64px;height:auto;color:var(--rc);position:relative;z-index:1;opacity:.92}
+  .badge{
+    position:absolute;top:7px;left:7px;z-index:2;font-size:10.5px;font-weight:800;letter-spacing:.02em;
+    padding:3px 7px;border-radius:99px;background:#eef2f6;color:#3c4a58;text-transform:uppercase
+  }
+  .badge.ok{background:#e2f6ea;color:#0d6a38}
+  .badge.poco{background:#fdf0dc;color:#8a4b06}
+  .badge.ped{background:#eceff3;color:#4a5867}
+
+  .cuerpo{padding:10px 11px 11px;display:flex;flex-direction:column;gap:3px;flex:1}
+  .rubro{font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--rc)}
+  .nom{font-size:13.5px;font-weight:700;line-height:1.3;letter-spacing:-.01em}
+  .uni{font-size:12px;color:var(--ink3);margin-bottom:2px}
+  .precio{font-size:16px;font-weight:800;letter-spacing:-.02em;margin-top:auto;padding-top:6px;font-variant-numeric:tabular-nums}
+  .wa{
+    margin-top:8px;display:flex;align-items:center;justify-content:center;gap:6px;
+    min-height:44px;border-radius:10px;background:var(--wa);color:#fff;text-decoration:none;
+    font-weight:700;font-size:13px;line-height:1.1;padding:6px 8px;text-align:center
+  }
+  .wa svg{width:15px;height:15px;flex:0 0 auto}
+  @media (hover:hover){.wa:hover{background:#0c6837}}
+
+  @media (min-width:520px){
+    .nom{font-size:14.5px}.precio{font-size:17px}.cuerpo{padding:12px 13px 13px}
+  }
+
+  /* ---------- vacío ---------- */
+  .vacio{
+    display:none;background:var(--blanco);border:1px dashed var(--linea2);border-radius:var(--r2);
+    padding:34px 20px;text-align:center
+  }
+  .vacio.on{display:block;animation:pop .3s cubic-bezier(.22,.9,.3,1) both}
+  .vacio .cara{width:56px;height:56px;margin:0 auto 12px;color:var(--ink3)}
+  .vacio h3{font-size:18px;font-weight:800;letter-spacing:-.01em}
+  .vacio p{color:var(--ink2);margin:6px auto 16px;max-width:44ch;font-size:14px}
+  .vacio button{
+    min-height:46px;padding:0 20px;border:0;border-radius:11px;background:var(--acc);color:#fff;
+    font-weight:700;font-size:14.5px;cursor:pointer
+  }
+
+  /* ---------- barra fija de celular ---------- */
+  .barra-movil{
+    position:fixed;left:0;right:0;bottom:0;z-index:70;background:rgba(255,255,255,.96);
+    backdrop-filter:blur(10px);border-top:1px solid var(--linea);
+    display:flex;align-items:center;gap:10px;padding:9px 14px;
+    padding-bottom:calc(9px + env(safe-area-inset-bottom,0px))
+  }
+  .barra-movil .cnt{font-size:13px;color:var(--ink2);font-weight:600;line-height:1.25}
+  .barra-movil .cnt b{color:var(--ink);font-weight:800}
+  #btnFiltrar{
+    margin-left:auto;display:inline-flex;align-items:center;gap:8px;min-height:46px;padding:0 18px;
+    border:0;border-radius:11px;background:var(--acc);color:#fff;font-weight:700;font-size:14.5px;cursor:pointer
+  }
+  #btnFiltrar svg{width:16px;height:16px}
+  #btnFiltrar .n{
+    background:#fff;color:var(--acc);border-radius:99px;min-width:20px;height:20px;
+    font-size:12px;font-weight:800;display:none;place-items:center;padding:0 5px
+  }
+  #btnFiltrar .n.on{display:grid}
+  @media (min-width:900px){.barra-movil{display:none}body{padding-bottom:0}}
+
+  /* ---------- pie ---------- */
+  .katu-pie{
+    background:#0d2233;color:#9fb3c4;font-size:13px;text-align:center;padding:18px 14px;line-height:1.7
+  }
+  .katu-pie strong{color:#e9eff5}
+  .katu-pie a{color:#8ec5f0;text-decoration:underline;text-underline-offset:3px;display:inline-block;padding:11px 5px}
+
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+    .card.pop{animation:none}
+  }
+</style>
+</head>
+<body>
+
+<!-- iconos por rubro -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <g id="i-cem" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M6.5 8h11l1.6 12.5H4.9L6.5 8z"/><path d="M9 8V6.2C9 4.4 10.3 3 12 3s3 1.4 3 3.2V8"/><path d="M8.4 13.2h7.2"/>
+    </g>
+    <g id="i-hie" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3.5 6.2h17M3.5 17.8h17"/><path d="M9 6.2v11.6M15 6.2v11.6"/><path d="M9 12h6"/>
+    </g>
+    <g id="i-san" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 3.2s-5.6 6.4-5.6 10.2a5.6 5.6 0 0 0 11.2 0C17.6 9.6 12 3.2 12 3.2z"/><path d="M9.6 13.8a2.6 2.6 0 0 0 2.6 2.6"/>
+    </g>
+    <g id="i-ele" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M13.4 2.5 5.6 13.4h5.4l-1.4 8.1 8.8-11.4h-5.9l.9-7.6z"/>
+    </g>
+    <g id="i-pin" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3.2" y="3.6" width="13" height="5.4" rx="1.4"/>
+      <path d="M16.2 6.3h3a1.6 1.6 0 0 1 1.6 1.6v2.2a1.6 1.6 0 0 1-1.6 1.6H12v2.1"/>
+      <rect x="9.9" y="13.8" width="4.2" height="6.8" rx="1.3"/>
+    </g>
+    <g id="i-her" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M20.4 4.1a5.4 5.4 0 0 1-6.9 6.9l-7 7a2.2 2.2 0 1 1-3.1-3.1l7-7a5.4 5.4 0 0 1 6.9-6.9l-3 3 .8 2.3 2.3.8 3-3z"/>
+    </g>
+    <g id="i-x" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+      <path d="M5 5l14 14M19 5L5 19"/>
+    </g>
+    <g id="i-wa" fill="currentColor">
+      <path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.3A10 10 0 1 0 12 2zm0 1.9a8.1 8.1 0 1 1-4.2 15l-.3-.2-3 .8.8-2.9-.2-.3A8.1 8.1 0 0 1 12 3.9zm-3.4 4c-.2 0-.5 0-.7.3-.3.3-1 1-1 2.3s1 2.7 1.2 2.9c.1.2 2 3.1 4.9 4.2 2.4.9 2.9.8 3.4.7.5 0 1.6-.6 1.8-1.3.2-.6.2-1.2.2-1.3-.1-.1-.3-.2-.6-.3l-2-1c-.3-.1-.5-.1-.7.1l-.9 1.2c-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.5-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.6c.1-.2.2-.3.3-.5 0-.2 0-.4-.1-.5l-.8-2c-.2-.5-.4-.5-.6-.5h-.2z"/>
+    </g>
+  </defs>
+</svg>
+
+<header class="top">
+  <div class="env">
+    <div class="marca">
+      <span class="logo" aria-hidden="true">SB</span>
+      <span>
+        <b>Corralón San Blas</b>
+        <span>Materiales y ferretería · Asunción</span>
+      </span>
+    </div>
+    <a class="top-wa" id="waCab" href="#" target="_blank" rel="noopener noreferrer" aria-label="Pedí tu presupuesto por WhatsApp">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-wa"></use></svg>
+      Presupuesto
+    </a>
+  </div>
+</header>
+<div class="datos">
+  <div class="env">
+    <span>[dirección], Asunción</span><span aria-hidden="true">·</span>
+    <span>Lunes a sábado [horario]</span><span aria-hidden="true">·</span>
+    <span>Retiro en el local o envío a coordinar</span>
+  </div>
+</div>
+
+<div class="barra-busq">
+  <div class="env">
+    <div class="busq-caja">
+      <svg class="lupa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg>
+      <label for="buscador" class="sr" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap">Buscar producto</label>
+      <input id="buscador" type="search" placeholder="Buscá: cemento, hierro del 8, pintura…" autocomplete="off" spellcheck="false" enterkeyhint="search">
+      <button class="borrar-busq" id="borrarBusq" type="button" aria-label="Borrar lo que escribí">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<main class="env">
+  <div class="intro">
+    <h1>Todo el corralón, en una sola pantalla</h1>
+    <p>Escribí lo que buscás o filtrá por rubro, precio y disponibilidad. Tocá el botón verde y nos llega tu consulta por WhatsApp con el producto ya escrito.</p>
+  </div>
+
+  <div class="layout">
+    <aside class="col-f" id="colFiltros"></aside>
+
+    <section aria-label="Resultados">
+      <div class="res-barra">
+        <p class="cuenta" id="cuenta" role="status" aria-live="polite"><b>52</b> de 52 productos</p>
+        <div class="orden-caja">
+          <label for="orden">Ordenar</label>
+          <select id="orden">
+            <option value="dest">Destacados</option>
+            <option value="barato">Más barato primero</option>
+            <option value="caro">Más caro primero</option>
+            <option value="nombre">Nombre (A → Z)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="chips" id="chips" role="group" aria-label="Filtros activos"></div>
+
+      <div class="grilla" id="grilla"></div>
+
+
+      <div class="vacio" id="vacio">
+        <svg class="cara" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/><path d="M8.5 12.5h5"/>
+        </svg>
+        <h3>No encontramos nada con esos filtros</h3>
+        <p>Probá con menos filtros o escribí el nombre de otra manera. Si es algo que no está en la lista, escribinos: lo conseguimos igual.</p>
+        <button type="button" id="vaciarTodo">Limpiar todo y ver los 52</button>
+      </div>
+
+      <p class="aviso">Las imágenes de esta demo están dibujadas con código para mostrar cómo funciona; en tu página van tus fotos reales. Los precios son de ejemplo.</p>
+    </section>
+  </div>
+
+  <noscript>
+    <p style="background:#fff;border:1px solid #e2e8ee;border-radius:12px;padding:16px;margin:0 0 30px">
+      Para ver el catálogo con buscador y filtros hace falta tener JavaScript activado.
+      Igual podés escribirnos por WhatsApp al <strong>+595 983 518856</strong> y te pasamos precios.
+    </p>
+  </noscript>
+</main>
+
+<!-- panel de filtros: en escritorio va en la columna, en celular es hoja inferior -->
+<div id="velo" hidden></div>
+<div class="panel" id="panel" role="region" aria-label="Filtros del catálogo">
+  <div class="panel-cab">
+    <h2>Filtros</h2>
+    <button class="cerrar-panel" id="cerrarPanel" type="button" aria-label="Cerrar filtros">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg>
+    </button>
+  </div>
+  <div class="grupo">
+    <h3 id="tRubro">Rubro</h3>
+    <div class="ops" id="opsRubro" role="group" aria-labelledby="tRubro"></div>
+  </div>
+  <div class="grupo">
+    <h3 id="tPrecio">Precio</h3>
+    <div class="ops" id="opsPrecio" role="group" aria-labelledby="tPrecio"></div>
+  </div>
+  <div class="grupo">
+    <h3 id="tDisp">Disponibilidad</h3>
+    <div class="ops" id="opsDisp" role="group" aria-labelledby="tDisp"></div>
+  </div>
+  <button class="limpiar-t" id="limpiarTodo" type="button" disabled>Limpiar todos los filtros</button>
+</div>
+
+<div class="barra-movil">
+  <p class="cnt" id="cuentaMovil"><b>52</b> de 52<br>productos</p>
+  <button id="btnFiltrar" type="button" aria-expanded="false" aria-controls="panel">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M6 12h12M10 18h4"/></svg>
+    Filtrar <span class="n" id="nFiltros">0</span>
+  </button>
+</div>
+
+<div class="katu-pie">
+  Demo de <strong>KatuWeb</strong> · <a href="../catalogo.html">Volver al catálogo</a> ·
+  <a id="waPie" href="#" target="_blank" rel="noopener noreferrer">Quiero esto para mi negocio</a>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var TEL = 'https://wa.me/595983518856?text=';
+
+  /* ---------- rubros ---------- */
+  var RUBROS = [
+    { id:'cem', n:'Cemento y áridos',  ic:'#i-cem' },
+    { id:'hie', n:'Hierro y perfiles', ic:'#i-hie' },
+    { id:'san', n:'Sanitarios',        ic:'#i-san' },
+    { id:'ele', n:'Electricidad',      ic:'#i-ele' },
+    { id:'pin', n:'Pinturas',          ic:'#i-pin' },
+    { id:'her', n:'Herramientas',      ic:'#i-her' }
+  ];
+  var RUB = {};
+  RUBROS.forEach(function (r) { RUB[r.id] = r; });
+
+  // color fuerte (texto e ícono) y tinte suave (fondo del recuadro) por rubro
+  var COLOR = {
+    cem: { c:'#4b5b6e', b:'#eef1f5' },
+    hie: { c:'#96501c', b:'#f8efe6' },
+    san: { c:'#0d6376', b:'#e7f2f5' },
+    ele: { c:'#8a5a06', b:'#faf2e2' },
+    pin: { c:'#6435ba', b:'#f1ecfb' },
+    her: { c:'#17683a', b:'#e8f4ec' }
+  };
+
+  var DISP = {
+    stock:  { t:'En stock',          c:'ok'  },
+    poco:   { t:'Últimas unidades',  c:'poco'},
+    pedido: { t:'A pedido',          c:'ped' }
+  };
+
+  var RANGOS = [
+    { id:'p1', t:'Hasta Gs. 25.000',        min:0,      max:25000 },
+    { id:'p2', t:'Gs. 25.000 a 60.000',     min:25000,  max:60000 },
+    { id:'p3', t:'Gs. 60.000 a 150.000',    min:60000,  max:150000 },
+    { id:'p4', t:'Gs. 150.000 a 400.000',   min:150000, max:400000 },
+    { id:'p5', t:'Más de Gs. 400.000',      min:400000, max:Infinity }
+  ];
+  var RNG = {};
+  RANGOS.forEach(function (r) { RNG[r.id] = r; });
+
+  var DISPS = [
+    { id:'ya',     t:'Disponible ahora' },
+    { id:'pedido', t:'A pedido' }
+  ];
+
+  /* ---------- productos (n nombre, u unidad, p precio, r rubro, d disponibilidad, k palabras) ---------- */
+  var DATOS = [
+    {n:'Cemento portland 50 kg',              u:'bolsa',        p:62000,  r:'cem', d:'stock',  k:'cemento portland gris obra hormigon'},
+    {n:'Cal hidratada 25 kg',                 u:'bolsa',        p:28000,  r:'cem', d:'stock',  k:'cal revoque mezcla'},
+    {n:'Arena lavada',                        u:'metro cúbico', p:185000, r:'cem', d:'stock',  k:'arena arido fina lavada'},
+    {n:'Piedra triturada 6ta',                u:'metro cúbico', p:240000, r:'cem', d:'stock',  k:'piedra triturada basalto arido'},
+    {n:'Ripio lavado',                        u:'metro cúbico', p:195000, r:'cem', d:'poco',   k:'ripio arido relleno'},
+    {n:'Ladrillo común',                      u:'unidad',       p:1500,   r:'cem', d:'stock',  k:'ladrillo comun cocido mamposteria'},
+    {n:'Ladrillo hueco 12x18x25',             u:'unidad',       p:3900,   r:'cem', d:'stock',  k:'ladrillo hueco ceramico pared'},
+    {n:'Bloque de hormigón 15 cm',            u:'unidad',       p:6500,   r:'cem', d:'pedido', k:'bloque hormigon cemento pared'},
+    {n:'Mezcla adhesiva para cerámica 25 kg', u:'bolsa',        p:45000,  r:'cem', d:'stock',  k:'pegamento adhesivo ceramica porcelanato'},
+
+    {n:'Hierro nervurado del 6 · barra 12 m',  u:'barra',  p:28000,  r:'hie', d:'stock',  k:'hierro nervurado varilla 6 mm armadura'},
+    {n:'Hierro nervurado del 8 · barra 12 m',  u:'barra',  p:49000,  r:'hie', d:'stock',  k:'hierro nervurado varilla 8 mm armadura'},
+    {n:'Hierro nervurado del 10 · barra 12 m', u:'barra',  p:76000,  r:'hie', d:'poco',   k:'hierro nervurado varilla 10 mm columna'},
+    {n:'Hierro nervurado del 12 · barra 12 m', u:'barra',  p:110000, r:'hie', d:'pedido', k:'hierro nervurado varilla 12 mm viga'},
+    {n:'Alambre de atar recocido',             u:'kilo',   p:15000,  r:'hie', d:'stock',  k:'alambre atar recocido armadura'},
+    {n:'Malla electrosoldada 15x15 · 2x6 m',   u:'panel',  p:260000, r:'hie', d:'pedido', k:'malla electrosoldada contrapiso losa'},
+    {n:'Perfil C 100x50 galvanizado',          u:'metro',  p:38000,  r:'hie', d:'stock',  k:'perfil c galvanizado estructura techo'},
+    {n:'Caño estructural cuadrado 40x40',      u:'metro',  p:32000,  r:'hie', d:'stock',  k:'cano tubo estructural cuadrado hierro'},
+    {n:'Chapa trapezoidal galvanizada',        u:'metro',  p:72000,  r:'hie', d:'poco',   k:'chapa trapezoidal techo galvanizada zinc'},
+
+    {n:'Inodoro corto con mochila',            u:'juego',  p:690000, r:'san', d:'stock',  k:'inodoro vater mochila deposito bano'},
+    {n:'Lavatorio con pedestal',               u:'juego',  p:420000, r:'san', d:'poco',   k:'lavatorio lavamanos pedestal bano'},
+    {n:'Grifería monocomando para lavatorio',  u:'unidad', p:310000, r:'san', d:'stock',  k:'griferia canilla monocomando lavatorio grifo'},
+    {n:'Ducha con brazo y flor cromada',       u:'unidad', p:165000, r:'san', d:'stock',  k:'ducha flor brazo bano cromada'},
+    {n:'Caño PVC 100 mm para desagüe',         u:'metro',  p:26000,  r:'san', d:'stock',  k:'cano cañeria pvc desague cloacal 100'},
+    {n:'Caño de agua fría 1/2"',               u:'metro',  p:12500,  r:'san', d:'stock',  k:'cano cañeria agua fria media pulgada polipropileno'},
+    {n:'Codo PVC 90° de 100 mm',               u:'unidad', p:9500,   r:'san', d:'stock',  k:'codo pvc accesorio desague'},
+    {n:'Rejilla sifonada 15x15',               u:'unidad', p:38000,  r:'san', d:'poco',   k:'rejilla sifonada piso bano desague'},
+    {n:'Tanque de agua 1.000 litros',          u:'unidad', p:780000, r:'san', d:'pedido', k:'tanque agua mil litros deposito'},
+
+    {n:'Cable unipolar 1,5 mm²',        u:'metro',  p:2900,   r:'ele', d:'stock',  k:'cable unipolar 1.5 luz instalacion'},
+    {n:'Cable unipolar 2,5 mm²',        u:'metro',  p:4200,   r:'ele', d:'stock',  k:'cable unipolar 2.5 tomacorriente'},
+    {n:'Caño corrugado 3/4"',           u:'metro',  p:3500,   r:'ele', d:'stock',  k:'cano cañeria corrugado electrico flexible'},
+    {n:'Caja de embutir rectangular',   u:'unidad', p:5500,   r:'ele', d:'stock',  k:'caja embutir rectangular pared'},
+    {n:'Llave de luz simple con tapa',  u:'unidad', p:18000,  r:'ele', d:'stock',  k:'llave interruptor luz simple tecla'},
+    {n:'Tomacorriente doble con tapa',  u:'unidad', p:24000,  r:'ele', d:'poco',   k:'tomacorriente enchufe doble tapa'},
+    {n:'Térmica bipolar 25 A',          u:'unidad', p:78000,  r:'ele', d:'stock',  k:'termica bipolar disyuntor 25 amper'},
+    {n:'Tablero para 8 térmicas',       u:'unidad', p:145000, r:'ele', d:'pedido', k:'tablero electrico ocho termicas gabinete'},
+    {n:'Lámpara LED 12 W luz fría',     u:'unidad', p:16000,  r:'ele', d:'stock',  k:'lampara led foco bombilla 12w luz fria'},
+
+    {n:'Látex interior blanco 20 litros',   u:'balde',  p:320000, r:'pin', d:'stock',  k:'latex interior blanco pintura pared'},
+    {n:'Látex exterior blanco 20 litros',   u:'balde',  p:395000, r:'pin', d:'poco',   k:'latex exterior blanco pintura frente'},
+    {n:'Látex interior color 4 litros',     u:'lata',   p:95000,  r:'pin', d:'stock',  k:'latex color pintura interior cuatro litros'},
+    {n:'Esmalte sintético brillante 1 litro', u:'lata', p:68000,  r:'pin', d:'stock',  k:'esmalte sintetico brillante madera hierro'},
+    {n:'Fondo antióxido rojo 1 litro',      u:'lata',   p:52000,  r:'pin', d:'stock',  k:'antioxido fondo rojo hierro convertidor'},
+    {n:'Enduido plástico interior 25 kg',   u:'balde',  p:135000, r:'pin', d:'pedido', k:'enduido plastico masilla pared interior'},
+    {n:'Rodillo de lana 22 cm con mango',   u:'unidad', p:34000,  r:'pin', d:'stock',  k:'rodillo lana pintar mango'},
+    {n:'Pincel de 2 pulgadas',              u:'unidad', p:14000,  r:'pin', d:'stock',  k:'pincel brocha pintar dos pulgadas'},
+
+    {n:'Carretilla reforzada con rueda maciza', u:'unidad', p:420000, r:'her', d:'stock',  k:'carretilla reforzada rueda maciza obra'},
+    {n:'Pala ancha con cabo de madera',         u:'unidad', p:88000,  r:'her', d:'stock',  k:'pala ancha cabo madera arena'},
+    {n:'Cuchara de albañil 8 pulgadas',         u:'unidad', p:45000,  r:'her', d:'stock',  k:'cuchara albanil llana revoque'},
+    {n:'Nivel de aluminio 60 cm',               u:'unidad', p:72000,  r:'her', d:'poco',   k:'nivel aluminio burbuja 60'},
+    {n:'Cinta métrica 5 metros',                u:'unidad', p:28000,  r:'her', d:'stock',  k:'cinta metrica medir 5 metros flexometro'},
+    {n:'Maza de 3 kg con cabo',                 u:'unidad', p:95000,  r:'her', d:'stock',  k:'maza martillo tres kilos demoler'},
+    {n:'Taladro percutor 650 W',                u:'unidad', p:480000, r:'her', d:'pedido', k:'taladro percutor electrico 650 mecha'},
+    {n:'Amoladora angular 4 1/2" 820 W',        u:'unidad', p:520000, r:'her', d:'poco',   k:'amoladora angular disco corte 820'}
+  ];
+
+  /* ---------- utilidades ---------- */
+  function norm(s) {
+    // saca tildes y diéresis: "Cañería Ácida" -> "caneria acida"
+    return String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  }
+  function gs(n) {
+    return 'Gs. ' + String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  }
+  function wa(msg) { return TEL + encodeURIComponent(msg); }
+  function el(tag, cls, txt) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (txt !== undefined) e.textContent = txt;
+    return e;
+  }
+  function icono(href, cls) {
+    var s = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    s.setAttribute('viewBox', '0 0 24 24');
+    s.setAttribute('aria-hidden', 'true');
+    s.setAttribute('focusable', 'false');
+    if (cls) s.setAttribute('class', cls);
+    var u = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+    u.setAttribute('href', href);
+    s.appendChild(u);
+    return s;
+  }
+
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- estado ---------- */
+  var estado = {
+    q: '',
+    rubros: [],      // varios a la vez
+    precio: null,    // un rango
+    disp: null,      // 'ya' | 'pedido'
+    orden: 'dest'
+  };
+  var filtrados = [];      // arreglo filtrado guardado
+  var visibles = [];       // nodos que están hoy en la grilla
+
+  /* ---------- construir tarjetas una sola vez ---------- */
+  var grilla = document.getElementById('grilla');
+  var PRODS = DATOS.map(function (p, i) {
+    var r = RUB[p.r];
+    var card = el('article', 'card r-' + p.r);
+    card.style.setProperty('--rc', COLOR[p.r].c);
+    card.style.setProperty('--rcb', COLOR[p.r].b);
+
+    var tile = el('div', 'tile');
+    var b = el('span', 'badge ' + DISP[p.d].c, DISP[p.d].t);
+    tile.appendChild(b);
+    tile.appendChild(icono(r.ic));
+    card.appendChild(tile);
+
+    var cu = el('div', 'cuerpo');
+    cu.appendChild(el('p', 'rubro', r.n));
+    var h = el('h3', 'nom', p.n);
+    cu.appendChild(h);
+    cu.appendChild(el('p', 'uni', 'Se vende por ' + p.u));
+    cu.appendChild(el('p', 'precio', gs(p.p)));
+
+    var a = el('a', 'wa');
+    a.href = wa('Hola! Vi en la página el producto "' + p.n + '" (' + gs(p.p) + ' por ' + p.u + '). ¿Tenés disponible?');
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.appendChild(icono('#i-wa'));
+    a.appendChild(document.createTextNode('Consultar'));
+    a.setAttribute('aria-label', 'Consultar por WhatsApp: ' + p.n);
+    cu.appendChild(a);
+
+    card.appendChild(cu);
+    grilla.appendChild(card);
+
+    return {
+      i: i, n: p.n, u: p.u, p: p.p, r: p.r, d: p.d,
+      el: card,
+      nn: norm(p.n + ' ' + p.u + ' ' + r.n + ' ' + p.k)
+    };
+  });
+  var TOTAL = PRODS.length;
+
+  /* ---------- filtros: botones ---------- */
+  function cuentaSi(pred) {
+    var c = 0;
+    for (var i = 0; i < TOTAL; i++) if (pred(PRODS[i])) c++;
+    return c;
+  }
+  function boton(texto, cantidad, color) {
+    var b = el('button', 'op');
+    b.type = 'button';
+    b.setAttribute('aria-pressed', 'false');
+    if (color) {
+      var pt = el('span', 'pt'); pt.style.background = color;
+      b.appendChild(pt);
+    }
+    b.appendChild(document.createTextNode(texto));
+    if (cantidad !== null) b.appendChild(el('span', 'cn', String(cantidad)));
+    return b;
+  }
+
+  var opsRubro = document.getElementById('opsRubro');
+  var opsPrecio = document.getElementById('opsPrecio');
+  var opsDisp = document.getElementById('opsDisp');
+  var btnRubro = {}, btnPrecio = {}, btnDisp = {};
+
+  RUBROS.forEach(function (r) {
+    var b = boton(r.n, cuentaSi(function (p) { return p.r === r.id; }), COLOR[r.id].c);
+    b.addEventListener('click', function () {
+      var k = estado.rubros.indexOf(r.id);
+      if (k === -1) estado.rubros.push(r.id); else estado.rubros.splice(k, 1);
+      aplicar();
+    });
+    btnRubro[r.id] = b;
+    opsRubro.appendChild(b);
+  });
+
+  RANGOS.forEach(function (g) {
+    var b = boton(g.t, cuentaSi(function (p) { return p.p > g.min && p.p <= g.max; }), null);
+    b.addEventListener('click', function () {
+      estado.precio = (estado.precio === g.id) ? null : g.id;
+      aplicar();
+    });
+    btnPrecio[g.id] = b;
+    opsPrecio.appendChild(b);
+  });
+
+  DISPS.forEach(function (g) {
+    var pred = g.id === 'ya'
+      ? function (p) { return p.d !== 'pedido'; }
+      : function (p) { return p.d === 'pedido'; };
+    var b = boton(g.t, cuentaSi(pred), null);
+    b.addEventListener('click', function () {
+      estado.disp = (estado.disp === g.id) ? null : g.id;
+      aplicar();
+    });
+    btnDisp[g.id] = b;
+    opsDisp.appendChild(b);
+  });
+
+  /* ---------- filtrado ---------- */
+  function calcular() {
+    var q = norm(estado.q.trim());
+    var pal = q ? q.split(/\s+/) : [];
+    var rg = estado.precio ? RNG[estado.precio] : null;
+    var res = [];
+    for (var i = 0; i < TOTAL; i++) {
+      var p = PRODS[i];
+      if (estado.rubros.length && estado.rubros.indexOf(p.r) === -1) continue;
+      if (rg && !(p.p > rg.min && p.p <= rg.max)) continue;
+      if (estado.disp === 'ya' && p.d === 'pedido') continue;
+      if (estado.disp === 'pedido' && p.d !== 'pedido') continue;
+      if (pal.length) {
+        var ok = true;
+        for (var j = 0; j < pal.length; j++) {
+          if (p.nn.indexOf(pal[j]) === -1) { ok = false; break; }
+        }
+        if (!ok) continue;
+      }
+      res.push(p);
+    }
+    var o = estado.orden;
+    if (o === 'barato') res.sort(function (a, b) { return a.p - b.p; });
+    else if (o === 'caro') res.sort(function (a, b) { return b.p - a.p; });
+    else if (o === 'nombre') res.sort(function (a, b) { return a.n.localeCompare(b.n, 'es'); });
+    else res.sort(function (a, b) { return a.i - b.i; });
+    return res;
+  }
+
+  /* ---------- FLIP ---------- */
+  var fantasmas = [];
+  var enMovimiento = [];
+  function limpiarFantasmas() {
+    fantasmas.forEach(function (f) { if (f.parentNode) f.parentNode.removeChild(f); });
+    fantasmas = [];
+  }
+  function soltarMovimiento() {
+    for (var i = 0; i < enMovimiento.length; i++) {
+      enMovimiento[i].classList.remove('flip');
+      enMovimiento[i].style.transform = '';
+      enMovimiento[i].style.transition = '';
+    }
+    enMovimiento = [];
+  }
+
+  // "First": se mide ANTES de tocar nada (chips, contador, grilla).
+  function medirAntes() {
+    if (reduce) return null;
+    var m = new Map();
+    for (var i = 0; i < visibles.length; i++) {
+      m.set(visibles[i], visibles[i].getBoundingClientRect());
+    }
+    return m;
+  }
+
+  function pintar(nuevos, antes) {
+    var animar = !!antes && !reduce;
+    soltarMovimiento();
+    limpiarFantasmas();
+
+    // 1. ocultar lo que ya no va
+    var sigue = new Set();
+    nuevos.forEach(function (p) { sigue.add(p.el); });
+    var salen = [];
+    for (var k = 0; k < visibles.length; k++) {
+      if (!sigue.has(visibles[k])) {
+        visibles[k].style.display = 'none';
+        salen.push(visibles[k]);
+      }
+    }
+    // 2. mostrar y reordenar lo que va
+    var frag = document.createDocumentFragment();
+    nuevos.forEach(function (p) {
+      p.el.style.display = '';
+      p.el.classList.remove('pop');
+      frag.appendChild(p.el);
+    });
+    grilla.appendChild(frag);
+
+    var nuevosEls = nuevos.map(function (p) { return p.el; });
+
+    if (!animar) { visibles = nuevosEls; return; }
+
+    // 3. "Last": medir después + "Invert": transform inverso sin transición
+    var gB = grilla.getBoundingClientRect();
+    var mover = [];
+    for (var m = 0; m < nuevosEls.length; m++) {
+      var e = nuevosEls[m];
+      var a = antes.get(e);
+      if (!a) { e.classList.add('pop'); continue; }
+      var b = e.getBoundingClientRect();
+      var dx = a.left - b.left, dy = a.top - b.top;
+      if (Math.abs(dx) < 1 && Math.abs(dy) < 1) continue;
+      e.style.transition = 'none';
+      e.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
+      mover.push(e);
+    }
+
+    // 4. clones de las que se van, en su última posición
+    for (var s = 0; s < salen.length && s < 30; s++) {
+      var vieja = antes.get(salen[s]);
+      if (!vieja) continue;
+      var cl = salen[s].cloneNode(true);
+      cl.className = 'card fantasma';
+      cl.setAttribute('aria-hidden', 'true');
+      cl.style.display = '';
+      cl.style.left = (vieja.left - gB.left) + 'px';
+      cl.style.top = (vieja.top - gB.top) + 'px';
+      cl.style.width = vieja.width + 'px';
+      cl.style.height = vieja.height + 'px';
+      var focs = cl.querySelectorAll('a,button');
+      for (var f = 0; f < focs.length; f++) focs[f].setAttribute('tabindex', '-1');
+      grilla.appendChild(cl);
+      fantasmas.push(cl);
+    }
+
+    visibles = nuevosEls;
+    enMovimiento = mover;
+
+    // "Play": en el frame siguiente saco el transform, ahora sí con transición
+    requestAnimationFrame(function () {
+      for (var i2 = 0; i2 < mover.length; i2++) {
+        mover[i2].style.transition = '';
+        mover[i2].classList.add('flip');
+        mover[i2].style.transform = '';
+      }
+      for (var j2 = 0; j2 < fantasmas.length; j2++) fantasmas[j2].classList.add('sale');
+    });
+
+    clearTimeout(pintar._t);
+    pintar._t = setTimeout(function () {
+      soltarMovimiento();
+      limpiarFantasmas();
+    }, 460);
+  }
+
+  /* ---------- chips ---------- */
+  var chips = document.getElementById('chips');
+  function chip(texto, quitar) {
+    var c = el('span', 'chip');
+    c.appendChild(document.createTextNode(texto));
+    var x = el('button', 'x');
+    x.type = 'button';
+    x.setAttribute('aria-label', 'Quitar filtro: ' + texto);
+    x.appendChild(icono('#i-x'));
+    x.addEventListener('click', function () { quitar(); aplicar(); });
+    c.appendChild(x);
+    return c;
+  }
+  function pintarChips() {
+    chips.textContent = '';
+    var n = 0;
+    if (estado.q.trim()) {
+      n++;
+      chips.appendChild(chip('“' + estado.q.trim() + '”', function () {
+        estado.q = ''; buscador.value = ''; borrarBusq.classList.remove('on');
+      }));
+    }
+    estado.rubros.slice().forEach(function (id) {
+      n++;
+      chips.appendChild(chip(RUB[id].n, function () {
+        estado.rubros.splice(estado.rubros.indexOf(id), 1);
+      }));
+    });
+    if (estado.precio) {
+      n++;
+      chips.appendChild(chip(RNG[estado.precio].t, function () { estado.precio = null; }));
+    }
+    if (estado.disp) {
+      n++;
+      var d = estado.disp;
+      chips.appendChild(chip(d === 'ya' ? 'Disponible ahora' : 'A pedido', function () { estado.disp = null; }));
+    }
+    if (n > 1) {
+      var b = el('button', 'chip-limpiar', 'Limpiar todo');
+      b.type = 'button';
+      b.addEventListener('click', vaciar);
+      chips.appendChild(b);
+    }
+    return n;
+  }
+
+  /* ---------- pintar todo ---------- */
+  var cuenta = document.getElementById('cuenta');
+  var cuentaMovil = document.getElementById('cuentaMovil');
+  var vacio = document.getElementById('vacio');
+  var limpiarTodoBtn = document.getElementById('limpiarTodo');
+  var nFiltros = document.getElementById('nFiltros');
+  var primera = true;
+
+  function aplicar() {
+    // primero medir: los chips y el contador también corren la grilla de lugar
+    var antes = primera ? null : medirAntes();
+    filtrados = calcular();
+
+    // botones
+    RUBROS.forEach(function (r) {
+      btnRubro[r.id].setAttribute('aria-pressed', estado.rubros.indexOf(r.id) !== -1 ? 'true' : 'false');
+    });
+    RANGOS.forEach(function (g) {
+      btnPrecio[g.id].setAttribute('aria-pressed', estado.precio === g.id ? 'true' : 'false');
+    });
+    DISPS.forEach(function (g) {
+      btnDisp[g.id].setAttribute('aria-pressed', estado.disp === g.id ? 'true' : 'false');
+    });
+
+    var nAct = pintarChips();
+    limpiarTodoBtn.disabled = nAct === 0;
+    nFiltros.textContent = String(nAct);
+    nFiltros.classList.toggle('on', nAct > 0);
+
+    cuenta.textContent = '';
+    var bb = el('b', null, String(filtrados.length));
+    cuenta.appendChild(bb);
+    cuenta.appendChild(document.createTextNode(' de ' + TOTAL + ' productos'));
+
+    cuentaMovil.textContent = '';
+    var bm = el('b', null, String(filtrados.length));
+    cuentaMovil.appendChild(bm);
+    cuentaMovil.appendChild(document.createTextNode(' de ' + TOTAL));
+    cuentaMovil.appendChild(document.createElement('br'));
+    cuentaMovil.appendChild(document.createTextNode('productos'));
+
+    vacio.classList.toggle('on', filtrados.length === 0);
+
+    pintar(filtrados, antes);
+    primera = false;
+  }
+
+  function vaciar() {
+    estado.q = '';
+    estado.rubros = [];
+    estado.precio = null;
+    estado.disp = null;
+    buscador.value = '';
+    borrarBusq.classList.remove('on');
+    aplicar();
+  }
+
+  /* ---------- buscador con debounce ---------- */
+  var buscador = document.getElementById('buscador');
+  var borrarBusq = document.getElementById('borrarBusq');
+  var tid = 0;
+  buscador.addEventListener('input', function () {
+    borrarBusq.classList.toggle('on', buscador.value.length > 0);
+    clearTimeout(tid);
+    tid = setTimeout(function () {
+      if (buscador.value === estado.q) return;
+      estado.q = buscador.value;
+      aplicar();
+    }, 140);
+  });
+  buscador.addEventListener('keydown', function (ev) {
+    if (ev.key === 'Enter') { ev.preventDefault(); buscador.blur(); }
+    if (ev.key === 'Escape' && buscador.value) {
+      buscador.value = ''; estado.q = ''; borrarBusq.classList.remove('on'); aplicar();
+    }
+  });
+  borrarBusq.addEventListener('click', function () {
+    buscador.value = ''; estado.q = ''; borrarBusq.classList.remove('on');
+    aplicar(); buscador.focus();
+  });
+
+  document.getElementById('orden').addEventListener('change', function () {
+    estado.orden = this.value;
+    aplicar();
+  });
+  limpiarTodoBtn.addEventListener('click', vaciar);
+  document.getElementById('vaciarTodo').addEventListener('click', function () {
+    vaciar();
+    buscador.focus();
+  });
+
+  /* ---------- panel: columna en escritorio, hoja en celular ---------- */
+  var panel = document.getElementById('panel');
+  var col = document.getElementById('colFiltros');
+  var velo = document.getElementById('velo');
+  var btnFiltrar = document.getElementById('btnFiltrar');
+  var cerrarBtn = document.getElementById('cerrarPanel');
+  var mqAncho = window.matchMedia('(min-width: 900px)');
+  var abierto = false;
+
+  function colocar() {
+    if (mqAncho.matches) {
+      if (panel.parentNode !== col) col.appendChild(panel);
+      if (abierto) cerrar(true);
+      panel.setAttribute('role', 'region');       // en escritorio es una columna, no un diálogo
+      panel.removeAttribute('aria-modal');
+    } else {
+      if (panel.parentNode !== document.body) document.body.appendChild(panel);
+      panel.setAttribute('role', 'dialog');
+      panel.setAttribute('aria-modal', abierto ? 'true' : 'false');
+    }
+    panel.classList.add('puesto');
+  }
+  function abrir() {
+    abierto = true;
+    panel.classList.add('abierto');
+    panel.setAttribute('aria-modal', 'true');
+    velo.hidden = false;
+    requestAnimationFrame(function () { velo.classList.add('on'); });
+    document.body.classList.add('sin-scroll');
+    btnFiltrar.setAttribute('aria-expanded', 'true');
+    cerrarBtn.focus();
+  }
+  function cerrar(sinFoco) {
+    abierto = false;
+    panel.classList.remove('abierto');
+    panel.setAttribute('aria-modal', 'false');
+    velo.classList.remove('on');
+    setTimeout(function () { if (!abierto) velo.hidden = true; }, 300);
+    document.body.classList.remove('sin-scroll');
+    btnFiltrar.setAttribute('aria-expanded', 'false');
+    if (!sinFoco) btnFiltrar.focus();
+  }
+  btnFiltrar.addEventListener('click', function () { abierto ? cerrar() : abrir(); });
+  cerrarBtn.addEventListener('click', function () { cerrar(); });
+  velo.addEventListener('click', function () { cerrar(); });
+  document.addEventListener('keydown', function (ev) {
+    if (!abierto) return;
+    if (ev.key === 'Escape') { ev.preventDefault(); cerrar(); return; }
+    if (ev.key !== 'Tab') return;
+    var f = panel.querySelectorAll('button:not([disabled]),select,input,a[href]');
+    if (!f.length) return;
+    var pri = f[0], ult = f[f.length - 1];
+    if (ev.shiftKey && document.activeElement === pri) { ev.preventDefault(); ult.focus(); }
+    else if (!ev.shiftKey && document.activeElement === ult) { ev.preventDefault(); pri.focus(); }
+  });
+  if (mqAncho.addEventListener) mqAncho.addEventListener('change', colocar);
+  else if (mqAncho.addListener) mqAncho.addListener(colocar);
+  colocar();
+
+  /* ---------- WhatsApp de cabecera y pie ---------- */
+  document.getElementById('waCab').href =
+    wa('Hola! Vi el catálogo online y quiero pedir un presupuesto de materiales.');
+  document.getElementById('waPie').href =
+    wa('Hola! Vi la demo del catálogo grande con filtros. ¿Cuánto sale para mi negocio?');
+
+  aplicar();
+})();
+</script>
+</body>
+</html>

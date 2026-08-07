@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; frame-src 'self'; media-src 'self' data:; form-action 'none'; object-src 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Parrilla Tatakua — asado a la brasa en Asunción</title>
+<meta name="description" content="Parrilla Tatakua: asado a la leña, costilla al tatakua y chipa guasu en Asunción. Reservá tu mesa por WhatsApp y llegá con la brasa en su punto.">
+<!--
+  DEMO KatuWeb · Hero con video en bucle
+  Negocio y datos de ejemplo. Al usarla con un cliente real, reemplazar
+  todo por sus productos, precios y fotos verdaderas.
+-->
+<style>
+  :root{
+    --neg:#0b0908; --neg2:#120e0c; --panel:#16110e; --panel2:#1d1613;
+    --linea:#2d2320; --linea2:#3d2f29;
+    --tx:#f0e8de; --tx2:#c3b5a8; --tx3:#a2948a;
+    --brasa:#ff9a3c; --brasa2:#ffc46b; --rojo:#e8563a;
+    --wa:#0b7a3c; --wa2:#0a6a35;
+    --r:16px; --r2:11px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%; scroll-behavior:smooth}
+  body{
+    font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+    background:var(--neg); color:var(--tx);
+    line-height:1.6; font-size:16px;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  img,canvas{display:block; max-width:100%}
+  a{color:var(--brasa2)}
+  .sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+  .caja{max-width:1000px; margin:0 auto; padding:0 14px}
+
+  /* ================= PORTADA ================= */
+  .hero{
+    position:relative; overflow:hidden;
+    min-height:660px; min-height:max(660px, 82svh);
+    display:flex; flex-direction:column;
+    background:#0a0706;
+    isolation:isolate;
+  }
+  #lienzo-hero{position:absolute; inset:0; width:100%; height:100%; z-index:0}
+  /* velo de legibilidad: garantiza contraste del texto pase lo que pase en el canvas */
+  .velo{
+    position:absolute; inset:0; z-index:1; pointer-events:none;
+    background:
+      linear-gradient(180deg, rgba(8,6,5,.88) 0%, rgba(8,6,5,.66) 26%, rgba(8,6,5,.24) 52%, rgba(8,6,5,0) 72%),
+      radial-gradient(120% 80% at 50% 105%, rgba(0,0,0,0) 40%, rgba(0,0,0,.45) 100%);
+  }
+  .hero-cont{
+    position:relative; z-index:2; width:100%; max-width:1000px;
+    margin:0 auto; padding:26px 14px 14px;
+    display:flex; flex-direction:column; flex:1 1 auto;
+  }
+  .marca-top{display:flex; align-items:center; gap:9px; flex-wrap:wrap}
+  .logo{
+    width:34px; height:34px; border-radius:9px; flex:none;
+    background:linear-gradient(150deg,#ffb457,#e0521c 62%,#8c2708);
+    box-shadow:0 0 0 1px rgba(255,190,120,.34), 0 6px 18px rgba(220,80,20,.30);
+    position:relative;
+  }
+  .logo::after{
+    content:""; position:absolute; inset:9px 10px 8px;
+    background:linear-gradient(180deg,#fff3dd,#ffb457);
+    clip-path:polygon(50% 0,100% 46%,72% 100%,28% 100%,0 46%);
+    opacity:.92;
+  }
+  .marca-nom{font-weight:800; letter-spacing:-.2px; font-size:15px}
+  .marca-sub{font-size:11.5px; color:var(--tx3); letter-spacing:.14em; text-transform:uppercase; font-weight:700}
+
+  /* el texto arriba y el fuego abajo: si el bloque se centrara, en un celular
+     el precio caería justo encima de las brasas y perdería contraste */
+  .hero-medio{flex:1 1 auto; display:flex; flex-direction:column; justify-content:flex-start; padding:22px 0 16px}
+  .pill-estado{
+    display:inline-flex; align-items:center; gap:8px; align-self:flex-start;
+    background:rgba(14,10,8,.62); border:1px solid var(--linea2);
+    backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+    border-radius:99px; padding:7px 13px 7px 11px;
+    font-size:12.5px; font-weight:700; color:var(--tx); letter-spacing:.01em;
+  }
+  .punto{width:8px; height:8px; border-radius:50%; background:#3fd07f; flex:none;
+    box-shadow:0 0 0 3px rgba(63,208,127,.20)}
+  .punto.no{background:#f0724f; box-shadow:0 0 0 3px rgba(240,114,79,.20)}
+
+  h1{
+    font-size:clamp(32px, 9.2vw, 62px); line-height:1.02; letter-spacing:-.028em;
+    font-weight:800; margin:14px 0 0; text-wrap:balance;
+    text-shadow:0 2px 26px rgba(0,0,0,.55);
+  }
+  h1 em{font-family:Georgia,serif; font-style:italic; font-weight:400; color:var(--brasa2); letter-spacing:-.01em}
+  .bajada{
+    margin-top:13px; max-width:33ch; font-size:clamp(14.5px,3.9vw,17px);
+    color:#ded2c6; text-shadow:0 1px 14px rgba(0,0,0,.6);
+  }
+  .acciones{display:flex; flex-direction:column; gap:10px; margin-top:18px; max-width:400px}
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:9px;
+    min-height:52px; padding:0 20px; border-radius:13px; border:0;
+    font:inherit; font-weight:800; font-size:15.5px; letter-spacing:-.01em;
+    text-decoration:none; cursor:pointer; text-align:center;
+    transition:transform .16s ease, opacity .16s ease;
+  }
+  .btn:active{transform:scale(.985)}
+  .btn-wa{background:var(--wa); color:#fff; box-shadow:0 8px 26px rgba(11,122,60,.34)}
+  .btn-wa:hover{background:var(--wa2)}
+  .btn-fan{background:rgba(16,11,9,.62); color:var(--tx); border:1px solid rgba(255,255,255,.22); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px)}
+  .btn-fan:hover{background:rgba(30,22,18,.78)}
+  .precio-linea{margin-top:14px; font-size:13.5px; color:var(--tx2); text-shadow:0 1px 12px rgba(0,0,0,.85), 0 0 22px rgba(0,0,0,.7)}
+  .precio-linea b{color:var(--brasa2); font-weight:800}
+
+  .hero-pie{ background:var(--neg2); border-bottom:1px solid var(--linea) }
+  .hero-pie-in{
+    max-width:1000px; margin:0 auto; padding:9px 14px 11px;
+    display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px;
+  }
+  .hp-rot{font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--tx3); font-weight:800}
+  .hp-nota{font-size:12.5px; color:var(--tx3); flex:1 1 240px; min-width:0}
+  .grupo{display:inline-flex; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.16);
+    border-radius:11px; padding:3px; gap:3px}
+  .chip{
+    min-height:44px; padding:0 13px; border-radius:9px; border:0; background:transparent;
+    color:var(--tx2); font:inherit; font-size:12.5px; font-weight:700; cursor:pointer;
+    display:inline-flex; align-items:center; transition:background .16s ease, color .16s ease;
+  }
+  .chip[aria-pressed="true"]{background:var(--brasa); color:#2a1002}
+  .chip:disabled{opacity:.45; cursor:not-allowed}
+  .chip-corte{
+    display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:700;
+    color:var(--tx3); background:rgba(255,255,255,.05); border:1px solid var(--linea2);
+    border-radius:99px; padding:6px 11px; min-height:30px;
+  }
+  .chip-corte.on{color:#ffc0af; background:rgba(232,86,58,.20); border-color:rgba(232,86,58,.50); font-weight:800}
+
+  :focus-visible{outline:3px solid var(--brasa2); outline-offset:3px; border-radius:6px}
+
+  /* ================= AVISO ================= */
+  .aviso{
+    max-width:1000px; margin:0 auto; padding:14px;
+    font-size:12.8px; color:var(--tx3); line-height:1.65;
+  }
+  .aviso b{color:var(--tx2); font-weight:700}
+
+  /* ================= SECCIONES ================= */
+  section.bloque{padding:34px 0 6px}
+  .rotulo{
+    font-size:11px; letter-spacing:.19em; text-transform:uppercase;
+    color:var(--brasa); font-weight:800; margin-bottom:9px;
+  }
+  h2{font-size:clamp(22px,6.2vw,32px); line-height:1.14; letter-spacing:-.022em; font-weight:800; text-wrap:balance}
+  .parr{margin-top:11px; color:var(--tx2); font-size:15px; max-width:62ch}
+
+  .pasos{display:grid; gap:10px; margin-top:20px}
+  @media (min-width:640px){ .pasos{grid-template-columns:repeat(3,1fr)} }
+  .paso{background:var(--panel); border:1px solid var(--linea); border-radius:var(--r2); padding:14px}
+  .paso-n{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:24px; height:24px; border-radius:7px; background:rgba(255,154,60,.16);
+    color:var(--brasa2); font-size:12.5px; font-weight:800; margin-bottom:8px;
+  }
+  .paso h3{font-size:14.5px; font-weight:800; letter-spacing:-.01em}
+  .paso p{font-size:13.2px; color:var(--tx2); margin-top:5px}
+
+  /* --------- cuadros A y B --------- */
+  .par{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:22px}
+  .cuadro{background:var(--panel); border:1px solid var(--linea); border-radius:var(--r2); overflow:hidden}
+  .cuadro-lienzo{position:relative}
+  .cuadro canvas{width:100%; aspect-ratio:4/3; height:auto; background:#0a0706}
+  .cuadro-tit{
+    display:flex; align-items:baseline; gap:7px; padding:8px 10px 9px; flex-wrap:wrap;
+    border-top:1px solid var(--linea);
+  }
+  .cuadro-tit b{font-size:13px; font-weight:800}
+  .cuadro-tit span{font-size:11.5px; color:var(--tx3)}
+  /* anillo hueco: rodea lo que cambia sin taparlo */
+  .marca{
+    position:absolute; z-index:2; width:36px; height:36px; border-radius:50%;
+    transform:translate(-50%,-50%);
+    background:transparent; border:2px solid var(--brasa2);
+    box-shadow:0 0 0 2px rgba(0,0,0,.55), inset 0 0 14px rgba(0,0,0,.30);
+  }
+  .marca i{
+    position:absolute; top:-9px; left:-9px; width:19px; height:19px; border-radius:50%;
+    background:var(--brasa2); color:#2a1200; font-style:normal;
+    font-size:11.5px; font-weight:800; line-height:19px; text-align:center;
+    box-shadow:0 1px 5px rgba(0,0,0,.65);
+  }
+  .difs{list-style:none; margin-top:14px; display:grid; gap:8px}
+  .difs li{
+    display:flex; gap:10px; align-items:flex-start;
+    background:var(--panel); border:1px solid var(--linea); border-radius:var(--r2);
+    padding:11px 12px; font-size:13.4px; color:var(--tx2);
+  }
+  .difs b{
+    flex:none; width:22px; height:22px; border-radius:50%; margin-top:1px;
+    border:2px solid var(--brasa2); color:var(--brasa2);
+    font-size:11.5px; font-weight:800; display:flex; align-items:center; justify-content:center;
+  }
+  .difs i{font-style:normal; color:var(--tx); font-weight:700}
+
+  /* --------- línea de tiempo --------- */
+  .linea-tiempo{
+    margin-top:22px; background:var(--panel); border:1px solid var(--linea);
+    border-radius:var(--r); padding:14px 14px 16px;
+  }
+  .lt-lienzo{position:relative; border-radius:10px; overflow:hidden; border:1px solid var(--linea2)}
+  #lienzo-scrub{width:100%; aspect-ratio:16/10; height:auto; background:#0a0706}
+  .lt-badge{
+    position:absolute; left:10px; top:10px; z-index:2;
+    background:rgba(11,9,8,.74); border:1px solid rgba(255,255,255,.16);
+    backdrop-filter:blur(5px); -webkit-backdrop-filter:blur(5px);
+    border-radius:9px; padding:6px 10px; font-size:12px; font-weight:700; color:var(--tx);
+    font-variant-numeric:tabular-nums;
+  }
+  .lt-badge em{font-style:normal; color:var(--brasa2)}
+  .lt-fila{display:flex; align-items:center; gap:10px; margin-top:14px}
+  .pista{
+    -webkit-appearance:none; appearance:none; width:100%; height:44px;
+    background:transparent; margin:0; display:block; cursor:pointer; flex:1 1 auto;
+  }
+  .pista:focus{outline:none}
+  .pista:focus-visible{outline:3px solid var(--brasa2); outline-offset:2px; border-radius:10px}
+  .pista::-webkit-slider-runnable-track{
+    height:10px; border-radius:99px;
+    background:linear-gradient(90deg,#7a2c10 0%,#f2a13d 50%,#7a2c10 100%);
+    border:1px solid rgba(255,255,255,.16);
+  }
+  .pista::-webkit-slider-thumb{
+    -webkit-appearance:none; appearance:none; width:28px; height:28px; margin-top:-10px;
+    border-radius:50%; background:#fff4e2; border:3px solid #b4511a;
+    box-shadow:0 3px 10px rgba(0,0,0,.65);
+  }
+  .pista::-moz-range-track{
+    height:10px; border-radius:99px;
+    background:linear-gradient(90deg,#7a2c10 0%,#f2a13d 50%,#7a2c10 100%);
+    border:1px solid rgba(255,255,255,.16);
+  }
+  .pista::-moz-range-thumb{
+    width:24px; height:24px; border-radius:50%; background:#fff4e2;
+    border:3px solid #b4511a; box-shadow:0 3px 10px rgba(0,0,0,.65);
+  }
+  .lt-marcas{display:flex; justify-content:space-between; font-size:11.5px; color:var(--tx3);
+    font-weight:700; margin-top:2px; font-variant-numeric:tabular-nums}
+  .btn-mini{
+    min-height:44px; min-width:44px; padding:0 14px; border-radius:11px; flex:none;
+    background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.18);
+    color:var(--tx); font:inherit; font-size:13px; font-weight:700; cursor:pointer;
+    display:inline-flex; align-items:center; justify-content:center; gap:7px;
+  }
+  .btn-mini:hover{background:rgba(255,255,255,.12)}
+  .btn-mini:disabled{opacity:.45; cursor:not-allowed}
+  .nota{font-size:12.5px; color:var(--tx3); margin-top:11px; line-height:1.6}
+
+  /* --------- ping-pong --------- */
+  .pp-caja{margin-top:20px; background:var(--panel); border:1px solid var(--linea); border-radius:var(--r); padding:14px}
+  .pp-ctrl{display:flex; flex-wrap:wrap; gap:9px; align-items:center; margin-bottom:13px}
+  .pp-lienzo{position:relative; border-radius:10px; overflow:hidden; border:1px solid var(--linea2)}
+  #lienzo-pp{width:100%; aspect-ratio:16/10; height:auto; background:#0a0706}
+  .pp-flash{
+    position:absolute; inset:0; z-index:2; pointer-events:none; opacity:0;
+    box-shadow:inset 0 0 0 3px rgba(232,86,58,.95), inset 0 0 60px rgba(232,86,58,.45);
+    transition:opacity .5s ease;
+  }
+  .pp-flash.on{opacity:1; transition:opacity .04s ease}
+  .pp-etiq{
+    position:absolute; left:10px; top:10px; z-index:3;
+    background:rgba(11,9,8,.74); border:1px solid rgba(255,255,255,.16);
+    border-radius:9px; padding:6px 10px; font-size:11.5px; font-weight:800; color:var(--tx);
+  }
+  .pp-marcador{
+    position:absolute; right:10px; top:10px; z-index:3;
+    background:rgba(232,86,58,.18); border:1px solid rgba(232,86,58,.45);
+    border-radius:9px; padding:6px 10px; font-size:11.5px; font-weight:800; color:#ffc3b3;
+    font-variant-numeric:tabular-nums;
+  }
+  .pp-lect{
+    display:grid; gap:9px; margin-top:13px;
+  }
+  @media (min-width:620px){ .pp-lect{grid-template-columns:1fr 1fr} }
+  .lect{border:1px solid var(--linea); border-radius:var(--r2); padding:11px 12px; background:var(--panel2)}
+  .lect h3{font-size:13.5px; font-weight:800; display:flex; align-items:center; gap:7px}
+  .lect p{font-size:13px; color:var(--tx2); margin-top:5px}
+  .tick{color:#5cd694} .cruz{color:#f0724f}
+
+  /* --------- ficha técnica --------- */
+  .fichas{display:grid; gap:10px; margin-top:20px}
+  @media (min-width:700px){ .fichas{grid-template-columns:1fr 1fr} }
+  .ficha{background:var(--panel); border:1px solid var(--linea); border-radius:var(--r2); padding:15px}
+  .ficha h3{font-size:15px; font-weight:800; letter-spacing:-.01em}
+  .ficha p{font-size:13.4px; color:var(--tx2); margin-top:7px}
+  .ficha p + p{margin-top:8px}
+  .dato{
+    display:inline-block; margin-top:10px; font-size:12px; font-weight:800;
+    background:rgba(255,154,60,.14); color:var(--brasa2);
+    border:1px solid rgba(255,154,60,.28); border-radius:8px; padding:5px 10px;
+  }
+  pre{
+    margin-top:12px; background:#0a0806; border:1px solid var(--linea2); border-radius:10px;
+    padding:12px; overflow-x:auto; font-family:ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+    font-size:12px; line-height:1.75; color:#e4d9cb; -webkit-overflow-scrolling:touch;
+  }
+  pre b{color:var(--brasa2); font-weight:700}
+  pre i{color:#8d8177; font-style:normal}
+  .atrib{list-style:none; margin-top:12px; display:grid; gap:7px}
+  .atrib li{font-size:13px; color:var(--tx2); display:flex; gap:9px; align-items:flex-start}
+  .atrib code{
+    flex:none; font-family:ui-monospace,Menlo,Consolas,monospace; font-size:11.5px;
+    background:rgba(255,255,255,.07); border:1px solid var(--linea2); border-radius:6px;
+    padding:2px 6px; color:var(--brasa2);
+  }
+
+  /* ================= PIE ================= */
+  .katu-pie{
+    margin-top:34px; border-top:1px solid var(--linea); padding:20px 14px 30px;
+    text-align:center; font-size:13px; color:var(--tx3); line-height:1.9;
+  }
+  .katu-pie a{color:var(--brasa2); text-decoration:none; font-weight:700;
+    display:inline-block; min-height:44px; line-height:44px; padding:0 6px; margin:-10px 0}
+  .katu-pie a:hover{text-decoration:underline}
+  .katu-pie strong{color:var(--tx2)}
+
+  @media (hover:none){
+    .btn:hover,.btn-mini:hover,.chip:hover{background:inherit}
+    .btn-wa:hover{background:var(--wa)}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto}
+    *,*::before,*::after{transition-duration:.001ms !important; animation-duration:.001ms !important}
+  }
+</style>
+</head>
+<body>
+<main>
+
+  <!-- ============ PORTADA ============ -->
+  <header class="hero" id="hero">
+    <canvas id="lienzo-hero" aria-hidden="true"></canvas>
+    <div class="velo" aria-hidden="true"></div>
+
+    <div class="hero-cont">
+      <div class="marca-top">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <div class="marca-nom">Parrilla Tatakua</div>
+          <div class="marca-sub">Asado a la brasa · Asunción</div>
+        </div>
+      </div>
+
+      <div class="hero-medio">
+        <p class="pill-estado" id="estado">
+          <span class="punto" id="estado-punto" aria-hidden="true"></span>
+          <span id="estado-tx">Consultando el horario…</span>
+        </p>
+
+        <h1>El fuego ya está <em>prendido</em></h1>
+
+        <p class="bajada">Asado a la leña, costilla al tatakua y chipa guasu recién hecha. Llegá con la brasa en su punto.</p>
+
+        <p class="precio-linea">Asado completo para dos · <b>Gs. 145.000</b> · Barrio [barrio], Asunción</p>
+
+        <div class="acciones">
+          <a class="btn btn-wa" id="wa-hero" href="https://wa.me/595983518856" target="_blank" rel="noopener noreferrer">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.6-6.1c-.3-.1-1.5-.7-1.7-.8s-.4-.1-.6.2-.7.8-.8 1-.3.2-.5 0a6.7 6.7 0 0 1-2-1.2 7.4 7.4 0 0 1-1.3-1.7c-.2-.3 0-.4.1-.6l.4-.5.3-.4v-.4l-.8-1.9c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4 12 12 0 0 0 1.5.5 3.6 3.6 0 0 0 1.7.1 2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .2-1.2c-.1-.2-.3-.3-.5-.4Z"/></svg>
+            Reservar por WhatsApp
+          </a>
+          <a class="btn btn-fan" href="#explicador">Ver cómo se hizo</a>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <div class="hero-pie">
+    <div class="hero-pie-in">
+      <span class="hp-rot">Bucle de la portada</span>
+      <span class="grupo" role="group" aria-label="Modo del bucle de la portada">
+        <button type="button" class="chip modo" data-modo="pp" aria-pressed="true">Ida y vuelta</button>
+        <button type="button" class="chip modo" data-modo="una" aria-pressed="false">Una sola pasada</button>
+      </span>
+      <span class="chip-corte" id="corte-hero" aria-hidden="true">sin cortes: no se nota nunca</span>
+      <span class="hp-nota" id="hp-nota" hidden>Tenés activado “reducir movimiento”: la portada queda en un cuadro fijo.</span>
+    </div>
+  </div>
+
+  <p class="aviso">
+    <b>Cómo está hecha esta demo:</b> el movimiento de arriba está dibujado por computadora, cuadro por cuadro, para mostrarte cómo se comporta la pieza. En tu página va un video de verdad, generado a partir de dos fotos de tu local. Acá simulamos el resultado porque una demo tiene que pesar poco y cargar en cualquier lado.
+  </p>
+
+  <div class="caja">
+
+    <!-- ============ EXPLICADOR A / B ============ -->
+    <section class="bloque" id="explicador">
+      <p class="rotulo">Cómo funciona</p>
+      <h2>Dos fotos, un video de seis segundos, y una vuelta que nadie nota</h2>
+      <p class="parr">La pieza no es una animación programada: son dos fotos del mismo momento sacadas con un instante de diferencia, y una herramienta paga que arma el video que va de una a la otra. Después se reproduce de ida y de vuelta.</p>
+
+      <div class="pasos">
+        <div class="paso">
+          <span class="paso-n">1</span>
+          <h3>Sacamos el cuadro A y el cuadro B</h3>
+          <p>Misma escena, mismo encuadre, un instante de diferencia. La brasa respiró, el humo subió un poco. Nada más.</p>
+        </div>
+        <div class="paso">
+          <span class="paso-n">2</span>
+          <h3>La herramienta rellena el medio</h3>
+          <p>Genera los 5 a 7 segundos que van de A a B. El movimiento sale de las dos fotos, no se inventa una escena nueva.</p>
+        </div>
+        <div class="paso">
+          <span class="paso-n">3</span>
+          <h3>Se monta de ida y de vuelta</h3>
+          <p>A → B y después B → A, en un solo archivo. Como termina exactamente donde empezó, el bucle no tiene costura.</p>
+        </div>
+      </div>
+
+      <div class="par">
+        <div class="cuadro">
+          <div class="cuadro-lienzo">
+            <canvas id="lienzo-a" aria-hidden="true"></canvas>
+            <span class="marca" style="left:28.5%; top:87.8%" aria-hidden="true"><i>1</i></span>
+            <span class="marca" style="left:66.5%; top:90.5%" aria-hidden="true"><i>2</i></span>
+            <span class="marca" style="left:45.8%; top:70.8%" aria-hidden="true"><i>3</i></span>
+          </div>
+          <p class="cuadro-tit"><b>Cuadro A</b> <span>segundo 0</span></p>
+        </div>
+        <div class="cuadro">
+          <div class="cuadro-lienzo">
+            <canvas id="lienzo-b" aria-hidden="true"></canvas>
+            <span class="marca" style="left:28.5%; top:87.8%" aria-hidden="true"><i>1</i></span>
+            <span class="marca" style="left:66.5%; top:90.5%" aria-hidden="true"><i>2</i></span>
+            <span class="marca" style="left:37.3%; top:20.2%" aria-hidden="true"><i>3</i></span>
+          </div>
+          <p class="cuadro-tit"><b>Cuadro B</b> <span>segundo 6</span></p>
+        </div>
+      </div>
+
+      <ul class="difs">
+        <li><b aria-hidden="true">1</b><span><i>La brasa grande se apaga.</i> En A está al rojo vivo; en B quedó casi en ceniza. Es el latido del carbón, no un efecto.</span></li>
+        <li><b aria-hidden="true">2</b><span><i>Esta otra hace lo contrario.</i> En A está dormida y en B se prendió. Ese cruce es lo que da sensación de fuego vivo.</span></li>
+        <li><b aria-hidden="true">3</b><span><i>El penacho de humo viaja.</i> En A recién asoma sobre la parrilla; en B ya se fue arriba y se abrió. Es el movimiento que más se nota.</span></li>
+      </ul>
+
+      <!-- línea de tiempo -->
+      <div class="linea-tiempo">
+        <div class="lt-lienzo">
+          <canvas id="lienzo-scrub" aria-hidden="true"></canvas>
+          <p class="lt-badge" id="lt-badge" aria-hidden="true"><em>Cuadro A</em> · 0,0 s</p>
+        </div>
+
+        <div class="lt-fila">
+          <button type="button" class="btn-mini" id="btn-play" aria-label="Reproducir la línea de tiempo">▶ Reproducir</button>
+          <input type="range" class="pista" id="scrub" min="0" max="200" step="1" value="0"
+                 aria-label="Línea de tiempo del bucle, de 0 a 12 segundos">
+        </div>
+        <div class="lt-marcas" aria-hidden="true">
+          <span>A · 0 s</span><span>B · 6 s</span><span>A · 12 s</span>
+        </div>
+        <p class="nota">Arrastrá el control (o movelo con las flechas del teclado). De 0 a 6 segundos va de A a B; de 6 a 12 vuelve de B a A por el mismo camino. Cuando llega otra vez a A, arranca de nuevo sin ningún salto: por eso no se ve la costura.</p>
+        <p class="sr" id="lt-vivo" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <!-- ============ PING-PONG vs LOOP ============ -->
+    <section class="bloque" id="pingpong">
+      <p class="rotulo">El interruptor</p>
+      <h2>Ida y vuelta, o una sola pasada con el corte a la vista</h2>
+      <p class="parr">Es el mismo video en los dos casos. Lo único que cambia es cómo vuelve al principio. Probá los dos botones y mirá el momento en que reinicia.</p>
+
+      <div class="pp-caja">
+        <div class="pp-ctrl">
+          <span class="grupo" role="group" aria-label="Modo del bucle">
+            <button type="button" class="chip modo" data-modo="pp" aria-pressed="true">Ida y vuelta</button>
+            <button type="button" class="chip modo" data-modo="una" aria-pressed="false">Una sola pasada</button>
+          </span>
+          <button type="button" class="btn-mini" id="btn-saltar">Saltar al final del bucle</button>
+        </div>
+
+        <div class="pp-lienzo">
+          <canvas id="lienzo-pp" aria-hidden="true"></canvas>
+          <span class="pp-etiq" aria-hidden="true">acelerado ×2</span>
+          <span class="pp-marcador" id="pp-marcador" aria-hidden="true">cortes: 0</span>
+          <span class="pp-flash" id="pp-flash" aria-hidden="true"></span>
+        </div>
+
+        <div class="pp-lect">
+          <div class="lect">
+            <h3><span class="tick" aria-hidden="true">✓</span> Ida y vuelta (ping-pong)</h3>
+            <p>El video termina exactamente en el cuadro con el que empezó, así que el salto no existe. Podés dejarlo horas y nunca se nota. Cuesta el doble de segundos de video: 12 en vez de 6.</p>
+          </div>
+          <div class="lect">
+            <h3><span class="cruz" aria-hidden="true">✕</span> Una sola pasada (loop común)</h3>
+            <p>Al volver del segundo 6 al 0, la brasa cambia de golpe y el humo se teletransporta para abajo. Se ve un parpadeo, y el ojo lo agarra aunque el visitante no sepa explicarlo.</p>
+          </div>
+        </div>
+        <p class="nota" id="pp-nota">Estás viendo el modo <b>ida y vuelta</b>. Cambiá el interruptor para ver el problema que resuelve.</p>
+        <p class="sr" id="pp-vivo" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <!-- ============ FICHA TÉCNICA ============ -->
+    <section class="bloque" id="ficha">
+      <p class="rotulo">Ficha técnica en criollo</p>
+      <h2>Qué hay que saber antes de poner un video de fondo</h2>
+
+      <div class="fichas">
+        <div class="ficha">
+          <h3>Cuánto pesa</h3>
+          <p>Un video de 6 segundos, sin sonido y bien comprimido, entra cómodo entre 800 KB y 2 MB. Con el ida y vuelta son 12 segundos, así que calculá el doble.</p>
+          <p>Se suben dos versiones: una vertical y liviana para el celular y una ancha para la computadora. Nadie descarga la que no le toca.</p>
+          <span class="dato">Objetivo: que la portada esté visible antes que el video</span>
+        </div>
+
+        <div class="ficha">
+          <h3>Por qué va sin sonido</h3>
+          <p>No es una decisión de gusto: ningún navegador deja que un video arranque solo con audio. Si lleva sonido, no se reproduce y el visitante ve un cuadro quieto.</p>
+          <p>Aparte, el que abre tu página en la parada del colectivo no quiere que le suene el celular. Un fondo es fondo: se mira, no se escucha.</p>
+        </div>
+
+        <div class="ficha">
+          <h3>Siempre lleva imagen de respaldo</h3>
+          <p>La imagen de respaldo (el <em>poster</em>) es un cuadro del propio video, pesa entre 60 KB y 120 KB, y es lo primero que se ve. Si el video no llega a cargar, la portada igual se ve entera y linda.</p>
+          <p>Hace falta más seguido de lo que parece: datos justos, señal mala, ahorro de batería prendido (en iPhone el modo de bajo consumo directamente no reproduce solo), o el visitante pidió menos movimiento en la configuración del teléfono. En todos esos casos queda la foto fija.</p>
+          <span class="dato">Sin respaldo, un rectángulo negro donde iba tu local</span>
+        </div>
+
+        <div class="ficha">
+          <h3>El ida y vuelta se hornea en el archivo</h3>
+          <p>Pedirle al navegador que reproduzca un video al revés no anda bien en celulares: se traba y come batería. Por eso el ping-pong se exporta ya armado, A → B → A en un solo archivo, y el navegador nada más lo repite.</p>
+          <p>Lo mismo con el recorte: el video se sube ya en el tamaño final. Nada de bajar un archivo grande para después achicarlo con CSS.</p>
+        </div>
+      </div>
+
+      <div class="ficha" style="margin-top:10px">
+        <h3>La etiqueta, tal cual va</h3>
+<pre><code>&lt;video <b>autoplay muted loop playsinline</b>
+       <b>preload</b>="metadata"
+       <b>poster</b>="portada-brasas.jpg"
+       aria-hidden="true"&gt;
+  &lt;source src="brasas-pingpong.webm" type="video/webm"&gt;
+  &lt;source src="brasas-pingpong.mp4"  type="video/mp4"&gt;
+&lt;/video&gt;
+<i>&lt;!-- el poster es un cuadro del propio video: si algo falla, queda eso --&gt;</i></code></pre>
+        <ul class="atrib">
+          <li><code>autoplay</code><span>Arranca solo, sin que el visitante toque nada.</span></li>
+          <li><code>muted</code><span>Sin sonido. Es la condición para que el <code style="display:inline">autoplay</code> funcione.</span></li>
+          <li><code>loop</code><span>Vuelve a empezar al terminar, para siempre.</span></li>
+          <li><code>playsinline</code><span>Que se reproduzca dentro de la página. Sin esto, el iPhone lo abre a pantalla completa y te arruina la portada.</span></li>
+          <li><code>preload="metadata"</code><span>Baja lo mínimo primero. El texto y el botón de WhatsApp aparecen antes que el video.</span></li>
+          <li><code>poster</code><span>La imagen de respaldo que se ve mientras carga, o para siempre si el video no puede reproducirse.</span></li>
+        </ul>
+        <p class="nota">Si el visitante tiene activado “reducir movimiento” en su teléfono, el video no arranca: queda el poster fijo. Eso también viene resuelto de fábrica en las páginas que hacemos.</p>
+      </div>
+    </section>
+  </div>
+
+  <div class="katu-pie">
+    Demo de <strong>KatuWeb</strong> · <a href="../catalogo.html">Volver al catálogo</a> ·
+    <a href="https://wa.me/595983518856?text=Hola!%20Vi%20la%20demo%20del%20hero%20con%20video%20en%20bucle.%20%C2%BFCu%C3%A1nto%20sale%20para%20mi%20negocio%3F" target="_blank" rel="noopener noreferrer">Quiero esto para mi negocio</a>
+  </div>
+
+</main>
+
+<script>
+(function(){
+  'use strict';
+
+  var TAU = Math.PI * 2;
+  var WA = 'https://wa.me/595983518856?text=';
+  var reduce = false;
+  try { reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+  function $(s){ return document.querySelector(s); }
+
+  /* ==================================================================
+     1. DATOS DE LA ESCENA
+     Se generan una sola vez con una semilla fija, así TODAS las canvas
+     (portada, cuadro A, cuadro B, línea de tiempo, ping-pong) dibujan
+     exactamente la misma parrilla. Todo está en coordenadas 0..1.
+     ================================================================== */
+  var semilla = 20250806;
+  function rnd(){ semilla = (semilla * 1664525 + 1013904223) % 4294967296; return semilla / 4294967296; }
+  function ent(a, b){ return a + (b - a) * rnd(); }
+
+  var BRASAS = [], CLAVE_A, CLAVE_B;
+  (function(){
+    /* las dos brasas protagonistas: una se apaga de A a B, la otra se prende.
+       Se guardan aparte porque después el arreglo se ordena por profundidad. */
+    CLAVE_A = { x:.268, y:.888, r:42, base:.09, amp:.91, f:.5, ph:0, ceniza:0, clave:1 };
+    CLAVE_B = { x:.688, y:.914, r:46, base:.07, amp:.93, f:.5, ph:Math.PI, ceniza:0, clave:2 };
+    BRASAS.push(CLAVE_A); BRASAS.push(CLAVE_B);
+    /* pocos carbones y grandes: leen mejor que muchos chiquitos.
+       Adelante quedan más apagados y con más ceniza, como en una parrilla real. */
+    var filas = [
+      { y:.804, r:16, n:12, cal:1.00, cen:.28 },
+      { y:.844, r:20, n:10, cal:1.00, cen:.30 },
+      { y:.888, r:25, n:9,  cal:.92,  cen:.38 },
+      { y:.940, r:30, n:8,  cal:.72,  cen:.52 },
+      { y:.998, r:36, n:7,  cal:.52,  cen:.66 }
+    ];
+    for (var i = 0; i < filas.length; i++){
+      var fl = filas[i], m = .05 + i * .002;
+      for (var j = 0; j < fl.n; j++){
+        BRASAS.push({
+          x: m + (1 - 2 * m) * ((j + .5) / fl.n) + ent(-.045, .045),
+          y: fl.y + ent(-.016, .016),
+          r: fl.r * ent(.70, 1.45),
+          base: ent(.20, .44) * fl.cal, amp: ent(.24, .52) * fl.cal,
+          f: ent(.45, 1.55), ph: rnd() * TAU,
+          ceniza: rnd() < fl.cen ? 1 : 0, clave: 0
+        });
+      }
+    }
+    /* forma irregular de cada carbón */
+    for (var q = 0; q < BRASAS.length; q++){
+      var p = [];
+      for (var v = 0; v < 9; v++) p.push(ent(.84, 1.14));
+      BRASAS[q].poli = p;
+      BRASAS[q].rot = rnd() * TAU;
+    }
+    /* de atrás hacia adelante, para que los de adelante tapen a los de atrás */
+    BRASAS.sort(function(a, b){ return a.y - b.y; });
+  })();
+
+  /* escalas de color del carbón: de ceniza fría a naranja al rojo vivo.
+     Se arman una vez para no crear cadenas de color en cada cuadro. */
+  var PAL_FUEGO = [], PAL_CENIZA = [];
+  (function(){
+    for (var i = 0; i < 10; i++){
+      var v = i / 9;
+      PAL_FUEGO.push('rgb(' +
+        Math.round(24 + 231 * Math.pow(v, 1.10)) + ',' +
+        Math.round(17 + 152 * Math.pow(v, 2.05)) + ',' +
+        Math.round(13 + 68 * Math.pow(v, 3.6)) + ')');
+      PAL_CENIZA.push('rgb(' +
+        Math.round(28 + 62 * Math.pow(v, 1.30)) + ',' +
+        Math.round(24 + 51 * Math.pow(v, 1.50)) + ',' +
+        Math.round(21 + 42 * Math.pow(v, 1.75)) + ')');
+    }
+  })();
+
+  var HUMOS = [];
+  (function(){
+    /* el penacho marcado con el número 3: viaja de abajo a arriba, sin dar la vuelta */
+    HUMOS.push({ x0:.415, amp:.045, freq:1.1, ph:.6, r0:34, grow:110, op:.50, lineal:1 });
+    for (var i = 0; i < 26; i++){
+      HUMOS.push({
+        x0: ent(.12, .88), amp: ent(.02, .075), freq: ent(.6, 1.6), ph: rnd() * TAU,
+        vel: ent(.55, 1.35), off: rnd(),
+        r0: ent(18, 38), grow: ent(60, 125), op: ent(.15, .32)
+      });
+    }
+  })();
+
+  var CHISPAS = [];
+  (function(){
+    for (var i = 0; i < 14; i++){
+      CHISPAS.push({
+        x0: ent(.14, .86), amp: ent(.01, .05), freq: ent(1, 2.4), ph: rnd() * TAU,
+        vel: ent(1.4, 3.1), off: rnd(), r: ent(1.7, 3.4), sube: ent(.28, .56)
+      });
+    }
+  })();
+
+  /* cortes de carne sobre la parrilla */
+  var CARNES = [
+    { x:.228, y:.836, w:172, h:40, ph:.4,  f:1.0 },
+    { x:.552, y:.862, w:206, h:48, ph:2.2, f:.55 },
+    { x:.808, y:.828, w:138, h:35, ph:4.1, f:1.4 }
+  ];
+
+  /* barras de la parrilla, con perspectiva (más gruesas y separadas abajo) */
+  var BARRAS = [];
+  (function(){
+    for (var i = 0; i < 5; i++){
+      var p = i / 4;
+      BARRAS.push({ y: .786 + .082 * Math.pow(p, 1.30), th: 6 + 7 * p });
+    }
+  })();
+
+  /* ==================================================================
+     2. SPRITES
+     Un degradado radial por partícula y por cuadro sería carísimo.
+     Se dibujan una sola vez en canvas chiquitos y después se copian.
+     ================================================================== */
+  function esfera(size, paradas){
+    var c = document.createElement('canvas');
+    c.width = c.height = size;
+    var x = c.getContext('2d');
+    var g = x.createRadialGradient(size/2, size/2, 0, size/2, size/2, size/2);
+    for (var i = 0; i < paradas.length; i++) g.addColorStop(paradas[i][0], paradas[i][1]);
+    x.fillStyle = g; x.fillRect(0, 0, size, size);
+    return c;
+  }
+  var SP = {
+    calido: esfera(128, [[0,'rgba(255,238,196,.95)'],[.16,'rgba(255,178,74,.62)'],[.44,'rgba(226,86,16,.20)'],[1,'rgba(180,40,0,0)']]),
+    tibio:  esfera(128, [[0,'rgba(255,148,66,.72)'],[.20,'rgba(214,72,18,.40)'],[.54,'rgba(150,30,4,.13)'],[1,'rgba(90,14,0,0)']]),
+    nucleo: esfera(64,  [[0,'rgba(255,250,232,1)'],[.34,'rgba(255,202,112,.80)'],[.74,'rgba(255,120,30,.22)'],[1,'rgba(255,90,0,0)']]),
+    humoC:  esfera(128, [[0,'rgba(255,198,144,.50)'],[.40,'rgba(190,132,92,.20)'],[1,'rgba(120,80,60,0)']]),
+    humoF:  esfera(128, [[0,'rgba(198,202,216,.40)'],[.44,'rgba(140,146,160,.15)'],[1,'rgba(90,95,110,0)']]),
+    amb:    esfera(256, [[0,'rgba(255,140,45,.52)'],[.34,'rgba(210,80,18,.21)'],[.70,'rgba(120,40,8,.07)'],[1,'rgba(60,20,0,0)']]),
+    chispa: esfera(32,  [[0,'rgba(255,248,222,1)'],[.30,'rgba(255,190,90,.68)'],[1,'rgba(255,120,20,0)']]),
+    /* al revés que las demás: transparente en el centro y oscura en el borde */
+    hueco:  esfera(96,  [[0,'rgba(0,0,0,0)'],[.50,'rgba(0,0,0,.05)'],[.82,'rgba(0,0,0,.46)'],[.94,'rgba(0,0,0,.26)'],[1,'rgba(0,0,0,0)']])
+  };
+
+  /* ==================================================================
+     3. LA ESCENA
+     pintar(t) con t de 0 a 1 es una función pura: el mismo t da siempre
+     el mismo cuadro. Eso es lo que permite el ida y vuelta y el control
+     deslizable sin guardar ningún estado.
+     ================================================================== */
+  function rectRedondo(c, x, y, w, h, r){
+    c.beginPath();
+    c.moveTo(x + r, y);
+    c.lineTo(x + w - r, y); c.quadraticCurveTo(x + w, y, x + w, y + r);
+    c.lineTo(x + w, y + h - r); c.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    c.lineTo(x + r, y + h); c.quadraticCurveTo(x, y + h, x, y + h - r);
+    c.lineTo(x, y + r); c.quadraticCurveTo(x, y, x + r, y);
+    c.closePath();
+  }
+
+  function crearEscena(cv, cfg){
+    cfg = cfg || {};
+    var ctx = cv.getContext('2d', { alpha: false });
+    var fondo = document.createElement('canvas'), fc = fondo.getContext('2d');
+    var frente = document.createElement('canvas'), rc = frente.getContext('2d');
+    var W = 1, H = 1, k = 1, yFrente = 0, hFrente = 1;
+    var hCama = 1, yCama = 0, yReja = 0, yPie = 0, gPie = null;
+    var nHumo = HUMOS.length, nChispa = CHISPAS.length;
+    var ultimoT = 0, medido = false;
+
+    /* La cama de brasas es una franja proporcional al ancho, apoyada abajo.
+       Si midiéramos todo en fracciones del alto, en un celular vertical la
+       parrilla se estiraría y quedaría un peine de líneas separadas. */
+    function mapY(f){ return yCama + (f - .78) / .22 * hCama; }
+
+    function medir(){
+      var r = cv.getBoundingClientRect();
+      var cw = Math.max(1, Math.round(r.width));
+      var ch = Math.round(r.height);
+      if (!ch || ch < 8) ch = Math.round(cw * (cfg.rel || .625));   /* por si aspect-ratio no está */
+      var area = cw * ch;
+      var d = window.devicePixelRatio || 1;
+      /* Resolución de dispositivo, pero con presupuesto de píxeles: por más que
+         la pantalla sea 3x, no dibujamos más de ~900.000 píxeles por cuadro.
+         En un celular eso da 2x completos; en una compu grande baja solo un poco
+         y no se nota, porque la escena es toda degradados suaves. */
+      var dpr = Math.min(d, 2);
+      var techo = cfg.estatico ? 1600000 : 900000;
+      if (area * dpr * dpr > techo) dpr = Math.max(1, Math.sqrt(techo / area));
+      W = Math.max(2, Math.round(cw * dpr));
+      H = Math.max(2, Math.round(ch * dpr));
+      if (cv.width !== W) cv.width = W;
+      if (cv.height !== H) cv.height = H;
+      hCama = Math.min(H * .42, W * .46);
+      yCama = H - hCama;
+      /* el tamaño del carbón sigue al ancho: si sólo siguiera al alto de la cama,
+         en una pantalla ancha quedarían cuatro piedras enormes y separadas */
+      k = Math.max(W / 1000, hCama / 340);
+      yReja = mapY(.80);
+      /* sombra del frente del cajón, cacheada: se pinta encima de los carbones
+         para que la fila de adelante se hunda en la penumbra */
+      yPie = yCama + hCama * .62;
+      gPie = ctx.createLinearGradient(0, yPie, 0, H);
+      gPie.addColorStop(0, 'rgba(0,0,0,0)');
+      gPie.addColorStop(.55, 'rgba(0,0,0,.34)');
+      gPie.addColorStop(1, 'rgba(0,0,0,.66)');
+      /* menos partículas en las canvas chicas: no se notan y ahorran relleno */
+      nHumo   = (cfg.estatico || area >= 130000) ? HUMOS.length : 16;
+      nChispa = (cfg.estatico || area >= 130000) ? CHISPAS.length : 9;
+      capaFondo();
+      capaFrente();
+      medido = true;
+    }
+
+    function capaFondo(){
+      fondo.width = W; fondo.height = H;
+      var g = fc.createLinearGradient(0, 0, 0, H);
+      g.addColorStop(0, '#07060a'); g.addColorStop(.40, '#0c0908');
+      g.addColorStop(.70, '#170d09'); g.addColorStop(1, '#2b1409');
+      fc.fillStyle = g; fc.fillRect(0, 0, W, H);
+
+      /* halo cálido de la pared, centrado arriba de la cama: la pared se ilumina,
+         el cajón de carbón queda oscuro y así las brasas resaltan */
+      var rHalo = Math.max(W * .58, hCama * 2.4);
+      var g2 = fc.createRadialGradient(W * .5, yCama, hCama * .08, W * .5, yCama, rHalo);
+      g2.addColorStop(0, 'rgba(255,128,36,.26)');
+      g2.addColorStop(.38, 'rgba(172,56,10,.09)');
+      g2.addColorStop(1, 'rgba(0,0,0,0)');
+      fc.fillStyle = g2; fc.fillRect(0, 0, W, H);
+
+      /* el cajón: oscuro, con un poco de ceniza al frente */
+      var g3 = fc.createLinearGradient(0, yCama - hCama * .10, 0, H);
+      g3.addColorStop(0, 'rgba(0,0,0,0)');
+      g3.addColorStop(.45, 'rgba(0,0,0,.56)');
+      g3.addColorStop(1, 'rgba(0,0,0,.90)');
+      fc.fillStyle = g3; fc.fillRect(0, yCama - hCama * .10, W, hCama * 1.10);
+      var g4 = fc.createLinearGradient(0, yCama + hCama * .3, 0, H);
+      g4.addColorStop(0, 'rgba(70,52,42,0)'); g4.addColorStop(1, 'rgba(72,55,45,.12)');
+      fc.fillStyle = g4; fc.fillRect(0, yCama + hCama * .3, W, hCama * .7);
+    }
+
+    function capaFrente(){
+      /* solo la franja de abajo: es lo único que tapa a las brasas */
+      yFrente = Math.max(0, Math.round(yCama - hCama * .40));
+      hFrente = Math.max(2, H - yFrente);
+      frente.width = W; frente.height = hFrente;
+      rc.clearRect(0, 0, W, hFrente);
+      rc.save(); rc.translate(0, -yFrente);
+
+      /* las barras: varillas redondas, más largas y gruesas cuanto más cerca.
+         La luz les pega por debajo, así que el filo caliente va abajo. */
+      function barra(bb, idx){
+        var y = mapY(bb.y), th = Math.max(2, bb.th * k);
+        var m = .105 - .062 * (idx / (BARRAS.length - 1));     /* perspectiva */
+        var x0 = W * m, an = W * (1 - 2 * m);
+        var g = rc.createLinearGradient(0, y, 0, y + th);
+        g.addColorStop(0, '#171110'); g.addColorStop(.34, '#2b211d');
+        g.addColorStop(.72, '#120c0a'); g.addColorStop(1, '#0a0605');
+        rc.fillStyle = g;
+        rectRedondo(rc, x0, y, an, th, th * .5); rc.fill();
+        rc.fillStyle = 'rgba(255,150,60,.34)';                 /* filo caliente */
+        rc.fillRect(x0 + th * .5, y + th * .74, an - th, Math.max(1, th * .20));
+        rc.fillStyle = 'rgba(255,236,208,.10)';                /* brillo del metal */
+        rc.fillRect(x0 + th * .5, y + th * .18, an - th, Math.max(1, th * .13));
+      }
+      var i;
+      for (i = 0; i < BARRAS.length - 2; i++) barra(BARRAS[i], i);
+
+      /* los cortes de carne, apoyados sobre la parrilla */
+      for (i = 0; i < CARNES.length; i++){
+        var c = CARNES[i];
+        var w = c.w * k, h = c.h * k, x = c.x * W - w / 2, y = mapY(c.y) - h;
+        var gg = rc.createLinearGradient(0, y, 0, y + h);
+        gg.addColorStop(0, '#5a3521'); gg.addColorStop(.42, '#3a2015');
+        gg.addColorStop(.80, '#22120c'); gg.addColorStop(1, '#160c08');
+        rectRedondo(rc, x, y, w, h, h * .44);
+        rc.fillStyle = gg; rc.fill();
+        /* lomo iluminado por arriba */
+        rc.fillStyle = 'rgba(255,206,150,.20)';
+        rectRedondo(rc, x + w * .07, y + h * .09, w * .86, h * .20, h * .10);
+        rc.fill();
+        /* marcas de la parrilla */
+        rc.fillStyle = 'rgba(18,10,7,.62)';
+        for (var mm = 0; mm < 3; mm++){
+          var mx = x + w * (.22 + mm * .26);
+          rc.fillRect(mx, y + h * .16, Math.max(1, w * .035), h * .62);
+        }
+        /* borde de abajo, que es donde pega el fuego */
+        rc.fillStyle = 'rgba(255,146,52,.42)';
+        rectRedondo(rc, x + w * .04, y + h * .80, w * .92, h * .17, h * .085);
+        rc.fill();
+      }
+
+      /* las dos barras de adelante van por encima de la carne: da profundidad */
+      for (i = BARRAS.length - 2; i < BARRAS.length; i++) barra(BARRAS[i], i);
+
+      /* montantes laterales de la parrilla */
+      var yM = mapY(.775), altoM = H - yM;
+      rc.fillStyle = '#0d0908';
+      rc.fillRect(W * .048, yM, Math.max(2, 8 * k), altoM);
+      rc.fillRect(W * .952 - Math.max(2, 8 * k), yM, Math.max(2, 8 * k), altoM);
+      rc.restore();
+    }
+
+    function pintar(t){
+      if (!medido) medir();
+      ultimoT = t;
+      var i, x, y, r, a, u, v;
+
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.globalAlpha = 1;
+      ctx.drawImage(fondo, 0, 0);
+
+      ctx.globalCompositeOperation = 'lighter';
+
+      /* respiración general del fuego */
+      var amb = .78 + .22 * Math.sin(.6 + t * TAU * .5);
+      var R = Math.max(W * .52, hCama * 2.0);
+      ctx.globalAlpha = amb * .34;
+      ctx.drawImage(SP.amb, W * .5 - R, H + hCama * .30 - R, R * 2, R * 2);
+
+      /* PASO 1 — el resplandor que se escapa entre los carbones */
+      var b, calor = [];
+      for (i = 0; i < BRASAS.length; i++){
+        b = BRASAS[i];
+        v = b.base + b.amp * (.5 + .5 * Math.cos(b.ph + t * TAU * b.f));
+        calor[i] = v;
+        if (v < .26) continue;
+        x = b.x * W; y = mapY(b.y); r = b.r * k * (.95 + .40 * v);
+        ctx.globalAlpha = (v - .26) * .70;
+        ctx.drawImage(v > .58 ? SP.calido : SP.tibio, x - r * 1.7, y - r * 1.7, r * 3.4, r * 3.4);
+      }
+
+      /* la grasa que cae y se prende debajo de cada corte */
+      for (i = 0; i < CARNES.length; i++){
+        var cc = CARNES[i];
+        v = .25 + .75 * (.5 + .5 * Math.cos(cc.ph + t * TAU * cc.f));
+        r = cc.w * k * .52;
+        ctx.globalAlpha = .16 + .40 * v;
+        ctx.drawImage(SP.calido, cc.x * W - r, mapY(cc.y) - r * .50, r * 2, r);
+      }
+
+      /* PASO 2 — el cuerpo opaco de cada carbón, pintado según su calor */
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.globalAlpha = 1;
+      ctx.strokeStyle = 'rgba(9,5,3,.85)';
+      ctx.lineWidth = Math.max(1.2, k * 3);
+      ctx.lineJoin = 'round';
+      for (i = 0; i < BRASAS.length; i++){
+        b = BRASAS[i]; v = calor[i];
+        x = b.x * W; y = mapY(b.y); r = b.r * k;
+        ctx.beginPath();
+        for (var q = 0; q < 9; q++){
+          var ang = b.rot + q / 9 * TAU, dd = r * b.poli[q];
+          var px = x + Math.cos(ang) * dd, py = y + Math.sin(ang) * dd * .56;
+          if (q === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+        }
+        ctx.closePath();
+        ctx.fillStyle = (b.ceniza ? PAL_CENIZA : PAL_FUEGO)[Math.round(v * 9)];
+        ctx.fill();
+        ctx.stroke();   /* la juntura oscura entre carbón y carbón */
+        /* sombra en el borde: le da bulto y hunde las junturas */
+        ctx.drawImage(SP.hueco, x - r * 1.30, y - r * 1.00, r * 2.6, r * 2.0);
+      }
+
+      /* la penumbra del frente */
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = gPie;
+      ctx.fillRect(0, yPie, W, H - yPie);
+
+      /* PASO 3 — el punto blanco de los que están al rojo vivo */
+      ctx.globalCompositeOperation = 'lighter';
+      for (i = 0; i < BRASAS.length; i++){
+        v = calor[i];
+        if (v < .55 || BRASAS[i].ceniza) continue;
+        b = BRASAS[i];
+        r = b.r * k;
+        ctx.globalAlpha = (v - .55) * 1.5;
+        ctx.drawImage(SP.nucleo, b.x * W - r * .8, mapY(b.y) - r * .5, r * 1.6, r);
+      }
+
+      /* la parrilla y la carne, recortadas contra el fuego */
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.globalAlpha = 1;
+      ctx.drawImage(frente, 0, yFrente);
+
+      /* humo: sube en aditivo, como humo iluminado desde abajo */
+      ctx.globalCompositeOperation = 'lighter';
+      var viaje = yReja + H * .08;
+      for (i = 0; i < nHumo; i++){
+        var hm = HUMOS[i];
+        u = hm.lineal ? (.10 + .55 * t) : ((hm.off + t * hm.vel) % 1);
+        y = yReja - u * viaje;
+        x = (hm.x0 + Math.sin(hm.ph + u * hm.freq * TAU) * hm.amp) * W;
+        r = (hm.r0 + u * hm.grow) * k;
+        a = hm.op * Math.pow(Math.sin(Math.PI * Math.min(1, u)), .75);
+        if (a <= .004) continue;
+        ctx.globalAlpha = a;
+        ctx.drawImage(u < .34 ? SP.humoC : SP.humoF, x - r, y - r, r * 2, r * 2);
+      }
+
+      /* chispas */
+      for (i = 0; i < nChispa; i++){
+        var ch = CHISPAS[i];
+        u = (ch.off + t * ch.vel) % 1;
+        y = mapY(.885) - u * ch.sube * viaje;
+        x = (ch.x0 + Math.sin(ch.ph + u * ch.freq * TAU) * ch.amp) * W;
+        r = ch.r * k * (1 - u * .45) * 3;
+        ctx.globalAlpha = Math.pow(1 - u, 1.6) * .9;
+        ctx.drawImage(SP.chispa, x - r, y - r, r * 2, r * 2);
+      }
+
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.globalAlpha = 1;
+    }
+
+    return {
+      medir: medir,
+      pintar: pintar,
+      repintar: function(){ medir(); pintar(ultimoT); },
+      esta: function(){ return medido; },
+      /* dónde cae un punto de la escena dentro de la caja, en % (para las marcas) */
+      pos: function(xf, yf){ return { x: xf * 100, y: mapY(yf) / H * 100 }; },
+      posHumo: function(t){
+        var hm = HUMOS[0], u = .10 + .55 * t;
+        return {
+          x: (hm.x0 + Math.sin(hm.ph + u * hm.freq * TAU) * hm.amp) * 100,
+          y: (yReja - u * (yReja + H * .08)) / H * 100
+        };
+      }
+    };
+  }
+
+  /* ==================================================================
+     4. MOTOR: un solo requestAnimationFrame para toda la página
+     ================================================================== */
+  var vivos = {}, corriendo = false, hayAlguno = false;
+  function bucle(now){
+    corriendo = false;
+    hayAlguno = false;
+    for (var id in vivos){ if (vivos.hasOwnProperty(id)){ vivos[id](now); hayAlguno = true; } }
+    if (hayAlguno) arrancar();
+  }
+  function arrancar(){
+    /* con la pestaña en segundo plano el navegador ya no llama a
+       requestAnimationFrame: la animación se congela sola y no gasta batería */
+    if (corriendo || reduce) return;
+    corriendo = true;
+    requestAnimationFrame(bucle);
+  }
+  function vivir(id, fn){ if (reduce) return; vivos[id] = fn; arrancar(); }
+  function morir(id){ delete vivos[id]; }
+
+  /* reproductor: convierte el reloj en t (0..1) según el modo, y avisa del corte */
+  var modo = 'pp';
+  function reproductor(dur){
+    var t0 = null, prevP = 0;
+    return {
+      reiniciar: function(){ t0 = null; prevP = 0; },
+      alFinal: function(now){ var c = (modo === 'pp' ? dur * 2 : dur); t0 = now - c * .88; prevP = .88; },
+      leer: function(now){
+        if (t0 === null){ t0 = now; prevP = 0; }
+        var ciclo = (modo === 'pp') ? dur * 2 : dur;
+        var p = ((now - t0) % ciclo) / ciclo;
+        var corte = (modo !== 'pp' && p < prevP - .30);
+        prevP = p;
+        return { t: (modo === 'pp') ? (p < .5 ? p * 2 : 2 - 2 * p) : p, corte: corte };
+      }
+    };
+  }
+
+  /* ==================================================================
+     5. PORTADA
+     ================================================================== */
+  var cvHero = $('#lienzo-hero');
+  var escHero = crearEscena(cvHero, { rel: .62 });
+  var repHero = reproductor(6000);
+  var chipHero = $('#corte-hero'), tmpHero = 0;
+
+  var TX_PP = 'sin cortes: no se nota nunca', TX_UNA = 'esperá el corte…';
+  function flashHero(){
+    chipHero.classList.add('on');
+    chipHero.textContent = '● ahí saltó el corte';
+    clearTimeout(tmpHero);
+    tmpHero = setTimeout(function(){
+      chipHero.classList.remove('on');
+      chipHero.textContent = (modo === 'pp') ? TX_PP : TX_UNA;
+    }, 800);
+  }
+  function cuadroHero(now){
+    var r = repHero.leer(now);
+    escHero.pintar(r.t);
+    if (r.corte) flashHero();
+  }
+
+  escHero.medir();
+  escHero.pintar(reduce ? .42 : 0);
+
+  if (!reduce && 'IntersectionObserver' in window){
+    new IntersectionObserver(function(es){
+      for (var i = 0; i < es.length; i++){
+        /* si la portada no está en pantalla, no se dibuja nada: cero batería */
+        if (es[i].isIntersecting){ repHero.reiniciar(); vivir('hero', cuadroHero); }
+        else morir('hero');
+      }
+    }, { threshold: 0 }).observe($('#hero'));
+  } else if (!reduce){
+    vivir('hero', cuadroHero);
+  }
+
+  /* ==================================================================
+     6. CUADROS A y B + LÍNEA DE TIEMPO (se arman recién al acercarse)
+     ================================================================== */
+  var escA = null, escB = null, escScrub = null;
+  function armarExplicador(){
+    if (escA) return;
+    /* A y B se dibujan una sola vez: pueden darse el lujo de más resolución */
+    escA = crearEscena($('#lienzo-a'), { rel: .75, estatico: true });
+    escB = crearEscena($('#lienzo-b'), { rel: .75, estatico: true });
+    escScrub = crearEscena($('#lienzo-scrub'), { rel: .625 });
+    escA.medir(); escA.pintar(0);
+    escB.medir(); escB.pintar(1);
+    escScrub.medir(); escScrub.pintar(0);
+    marcar();
+  }
+
+  /* las marcas 1, 2 y 3 se colocan con la geometría real de la escena,
+     así siguen a las brasas aunque cambie la proporción de la canvas */
+  function marcar(){
+    if (!escA) return;
+    var pares = [[escA, 0], [escB, 1]];
+    for (var i = 0; i < 2; i++){
+      var esc = pares[i][0], t = pares[i][1];
+      var caja = (i === 0 ? $('#lienzo-a') : $('#lienzo-b')).parentNode;
+      var ms = caja.querySelectorAll('.marca');
+      var p = [ esc.pos(CLAVE_A.x, CLAVE_A.y), esc.pos(CLAVE_B.x, CLAVE_B.y), esc.posHumo(t) ];
+      for (var j = 0; j < ms.length && j < 3; j++){
+        ms[j].style.left = p[j].x.toFixed(2) + '%';
+        ms[j].style.top  = Math.max(6, Math.min(94, p[j].y)).toFixed(2) + '%';
+      }
+    }
+  }
+
+  var scrub = $('#scrub'), badge = $('#lt-badge'), vivoLT = $('#lt-vivo');
+  var pendiente = false, valorPend = 0;
+
+  function tDeValor(val){ return val <= 100 ? val / 100 : (200 - val) / 100; }
+
+  function dibujarScrub(){
+    pendiente = false;
+    armarExplicador();
+    var val = valorPend;
+    var t = tDeValor(val);
+    escScrub.pintar(t);
+    var seg = (val * 12 / 200);
+    var etiqueta;
+    if (val === 0 || val === 200) etiqueta = 'Cuadro A';
+    else if (val === 100) etiqueta = 'Cuadro B';
+    else etiqueta = (val < 100 ? 'yendo A → B' : 'volviendo B → A');
+    badge.textContent = '';
+    var em = document.createElement('em');
+    em.textContent = etiqueta;
+    badge.appendChild(em);
+    badge.appendChild(document.createTextNode(' · ' + seg.toFixed(1).replace('.', ',') + ' s'));
+    scrub.setAttribute('aria-valuetext', etiqueta + ', segundo ' + seg.toFixed(1).replace('.', ','));
+  }
+  function pedirScrub(val){
+    valorPend = val;
+    if (pendiente) return;
+    pendiente = true;
+    requestAnimationFrame(dibujarScrub);
+  }
+  scrub.addEventListener('input', function(){ pedirScrub(parseInt(scrub.value, 10) || 0); });
+
+  /* reproducir la línea de tiempo */
+  var btnPlay = $('#btn-play'), jugando = false, jT0 = 0;
+  function cuadroLT(now){
+    if (!jT0) jT0 = now;
+    var p = ((now - jT0) % 12000) / 12000;
+    var val = Math.round(p * 200);
+    scrub.value = String(val);
+    valorPend = val;
+    dibujarScrub();
+  }
+  function pararLT(){
+    jugando = false; jT0 = 0; morir('lt');
+    btnPlay.textContent = '▶ Reproducir';
+    btnPlay.setAttribute('aria-label', 'Reproducir la línea de tiempo');
+  }
+  btnPlay.addEventListener('click', function(){
+    if (reduce) return;
+    if (jugando){ pararLT(); return; }
+    armarExplicador();
+    jugando = true; jT0 = 0;
+    btnPlay.textContent = '❚❚ Pausar';
+    btnPlay.setAttribute('aria-label', 'Pausar la línea de tiempo');
+    vivoLT.textContent = 'Reproduciendo el ciclo completo de doce segundos.';
+    vivir('lt', cuadroLT);
+  });
+  scrub.addEventListener('pointerdown', function(){ if (jugando) pararLT(); }, { passive: true });
+  scrub.addEventListener('keydown', function(){ if (jugando) pararLT(); }, { passive: true });
+
+  if (reduce){
+    btnPlay.disabled = true;
+    btnPlay.textContent = '▶ Reproducir';
+  }
+
+  /* ==================================================================
+     7. PING-PONG vs UNA SOLA PASADA
+     ================================================================== */
+  var escPP = null;
+  var repPP = reproductor(3000);           /* acelerado ×2 para no hacer esperar */
+  var flashPP = $('#pp-flash'), marcPP = $('#pp-marcador'), notaPP = $('#pp-nota'), vivoPP = $('#pp-vivo');
+  var cortes = 0, tmpPP = 0;
+
+  function armarPP(){
+    if (escPP) return;
+    escPP = crearEscena($('#lienzo-pp'), { rel: .625 });
+    escPP.medir();
+    escPP.pintar(reduce ? .42 : 0);
+  }
+  function cuadroPP(now){
+    var r = repPP.leer(now);
+    escPP.pintar(r.t);
+    if (r.corte){
+      cortes++;
+      marcPP.textContent = 'cortes: ' + cortes;
+      flashPP.classList.add('on');
+      clearTimeout(tmpPP);
+      tmpPP = setTimeout(function(){ flashPP.classList.remove('on'); }, 90);
+    }
+  }
+
+  $('#btn-saltar').addEventListener('click', function(){
+    armarPP();
+    var ahora = (window.performance && performance.now) ? performance.now() : Date.now();
+    repPP.alFinal(ahora);
+    repHero.alFinal(ahora);
+    if (reduce) escPP.pintar(.95);
+  });
+
+  function ponerModo(m){
+    modo = m;
+    var bs = document.querySelectorAll('.chip.modo');
+    for (var i = 0; i < bs.length; i++){
+      bs[i].setAttribute('aria-pressed', bs[i].getAttribute('data-modo') === m ? 'true' : 'false');
+    }
+    repHero.reiniciar(); repPP.reiniciar();
+    notaPP.textContent = (m === 'pp')
+      ? 'Estás viendo el modo ida y vuelta. Cambiá el interruptor para ver el problema que resuelve.'
+      : 'Estás viendo el modo una sola pasada. Mirá el borde rojo: ese es el corte, y pasa cada 3 segundos.';
+    vivoPP.textContent = (m === 'pp')
+      ? 'Modo ida y vuelta activado: el bucle no tiene corte.'
+      : 'Modo una sola pasada activado: el bucle salta al volver al principio.';
+    clearTimeout(tmpHero);
+    chipHero.classList.remove('on');
+    chipHero.textContent = (m === 'pp') ? TX_PP : TX_UNA;
+    if (m === 'pp'){ cortes = 0; marcPP.textContent = 'cortes: 0'; }
+  }
+  (function(){
+    var bs = document.querySelectorAll('.chip.modo');
+    for (var i = 0; i < bs.length; i++){
+      bs[i].addEventListener('click', function(){ ponerModo(this.getAttribute('data-modo')); });
+      if (reduce) bs[i].disabled = true;
+    }
+  })();
+
+  if (reduce){
+    $('#hp-nota').hidden = false;
+    $('#btn-saltar').disabled = true;
+    notaPP.textContent = 'Tenés activado “reducir movimiento” en tu teléfono, así que nada se mueve solo. Usá el control deslizable de arriba para recorrer el bucle a tu ritmo.';
+  }
+
+  /* arranque perezoso y encendido/apagado por visibilidad */
+  if ('IntersectionObserver' in window){
+    var obs = new IntersectionObserver(function(es){
+      for (var i = 0; i < es.length; i++){
+        var e = es[i];
+        if (e.target.id === 'explicador'){
+          if (e.isIntersecting){ armarExplicador(); obs.unobserve(e.target); }
+        } else {
+          if (e.isIntersecting){
+            armarPP();
+            if (!reduce){ repPP.reiniciar(); vivir('pp', cuadroPP); }
+          } else morir('pp');
+        }
+      }
+    }, { rootMargin: '300px 0px', threshold: 0 });
+    obs.observe($('#explicador'));
+    obs.observe($('#pingpong'));
+  } else {
+    armarExplicador(); armarPP();
+    if (!reduce) vivir('pp', cuadroPP);
+  }
+
+  /* ==================================================================
+     8. REDIMENSIONADO
+     ================================================================== */
+  var tmpRes = 0;
+  window.addEventListener('resize', function(){
+    /* con retardo: en el celular la barra del navegador dispara resize a cada
+       scroll, y rehacer las capas fijas en cada uno sería un desperdicio */
+    clearTimeout(tmpRes);
+    tmpRes = setTimeout(function(){
+      escHero.repintar();
+      if (escA){ escA.medir(); escA.pintar(0); escB.medir(); escB.pintar(1); escScrub.repintar(); marcar(); }
+      if (escPP) escPP.repintar();
+    }, 200);
+  }, { passive: true });
+
+  /* ==================================================================
+     9. ABIERTO / CERRADO (se calcula con la hora del visitante)
+     ================================================================== */
+  var DIAS = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+  var HORARIO = {
+    0: [[660, 900], [1110, 1410]],   /* domingo  11:00-15:00 y 18:30-23:30 */
+    1: [],                            /* lunes cerrado */
+    2: [[660, 900], [1110, 1410]],
+    3: [[660, 900], [1110, 1410]],
+    4: [[660, 900], [1110, 1410]],
+    5: [[660, 900], [1110, 1470]],   /* viernes hasta 00:30 -> se muestra 24:30 como 00:30 */
+    6: [[660, 900], [1110, 1470]]
+  };
+  function hhmm(min){
+    var m = min % 1440;
+    var h = Math.floor(m / 60), mm = m % 60;
+    return (h < 10 ? '0' : '') + h + ':' + (mm < 10 ? '0' : '') + mm;
+  }
+  (function estado(){
+    var d = new Date();
+    var dia = d.getDay(), min = d.getHours() * 60 + d.getMinutes();
+    var hoy = HORARIO[dia] || [], i, txt = '', abierto = false;
+    for (i = 0; i < hoy.length; i++){
+      if (min >= hoy[i][0] && min < hoy[i][1]){
+        abierto = true;
+        txt = 'Abierto ahora · cerramos ' + hhmm(hoy[i][1]);
+        break;
+      }
+    }
+    if (!abierto){
+      var prox = null;
+      for (i = 0; i < hoy.length; i++){ if (min < hoy[i][0]){ prox = hoy[i][0]; break; } }
+      if (prox !== null){
+        txt = 'Cerrado · abrimos hoy ' + hhmm(prox);
+      } else {
+        for (var j = 1; j <= 7; j++){
+          var dd = (dia + j) % 7, r = HORARIO[dd] || [];
+          if (r.length){
+            txt = 'Cerrado · abrimos ' + (j === 1 ? 'mañana' : 'el ' + DIAS[dd]) + ' ' + hhmm(r[0][0]);
+            break;
+          }
+        }
+      }
+    }
+    $('#estado-tx').textContent = txt;
+    if (!abierto) $('#estado-punto').classList.add('no');
+  })();
+
+  /* ==================================================================
+     10. WHATSAPP
+     ================================================================== */
+  $('#wa-hero').href = WA + encodeURIComponent('Hola! Quiero reservar una mesa en Parrilla Tatakua. ¿Tienen lugar para hoy a la noche?');
+
+})();
+</script>
+</body>
+</html>

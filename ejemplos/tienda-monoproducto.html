@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; frame-src 'self'; media-src 'self' data:; form-action 'none'; object-src 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mbaracayá — Miel de monte envasada por una familia productora</title>
+<meta name="description" content="Miel de monte pura, cosechada y envasada a mano por una familia productora del interior. Elegí tamaño y tipo, y pedí tu frasco por WhatsApp.">
+<!--
+  DEMO KatuWeb · Tienda monoproducto
+  Negocio y datos de ejemplo. Al usarla con un cliente real, reemplazar
+  todo por sus productos, precios y fotos verdaderas.
+-->
+<style>
+  :root{
+    --crema:#fdf6ea;
+    --crema-2:#f6e9d3;
+    --papel:#fffaf2;
+    --tinta:#33200f;
+    --tinta-2:#6b5240;
+    --linea:#e6d6bd;
+    --ambar:#d98f14;
+    --ambar-osc:#8f4f08;
+    --verde:#0f7a40;
+    --verde-osc:#0b5e31;
+    --r:16px;
+    --sombra:0 6px 28px rgba(90,58,20,.10);
+    --sombra-2:0 14px 44px rgba(90,58,20,.16);
+    --barra-h:80px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  [hidden]{display:none !important}
+  html{overflow-x:hidden;scroll-behavior:smooth}
+  body{
+    font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+    background:var(--crema);
+    color:var(--tinta);
+    line-height:1.62;
+    -webkit-text-size-adjust:100%;
+    overflow-x:hidden;
+    padding-bottom:calc(var(--barra-h) + env(safe-area-inset-bottom,0px));
+  }
+  @media (min-width:861px){ body{padding-bottom:0} }
+  img,svg{max-width:100%}
+  a{color:var(--ambar-osc)}
+  button{font:inherit;color:inherit}
+
+  :focus-visible{outline:3px solid var(--ambar-osc);outline-offset:3px;border-radius:6px}
+
+  .saltar{
+    position:absolute;left:-9999px;top:0;z-index:200;background:var(--tinta);color:#fff;
+    padding:12px 18px;border-radius:0 0 10px 0;text-decoration:none;font-weight:700;
+  }
+  .saltar:focus{left:0}
+
+  .env{width:100%;max-width:1080px;margin:0 auto;padding:0 20px}
+  @media (min-width:600px){ .env{padding:0 28px} }
+
+  section{padding:62px 0}
+  h2{font-size:clamp(24px,5.4vw,34px);font-weight:800;letter-spacing:-.02em;line-height:1.2}
+  .ojo{
+    font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--ambar-osc);
+  }
+  .sub{color:var(--tinta-2);margin-top:10px;max-width:56ch}
+
+  /* ---------- revelado ---------- */
+  .rev{opacity:0;transform:translateY(20px);transition:opacity .6s ease,transform .6s cubic-bezier(.16,.84,.3,1)}
+  .rev.ok{opacity:1;transform:none}
+
+  /* ================= PORTADA + SELECTOR ================= */
+  .portada{
+    position:relative;
+    padding:26px 0 54px;
+    background:
+      radial-gradient(120% 80% at 78% 8%, rgba(233,168,44,.36), rgba(233,168,44,0) 62%),
+      radial-gradient(90% 70% at 8% 92%, rgba(196,110,20,.16), rgba(196,110,20,0) 60%),
+      linear-gradient(180deg,#fdf1dc 0%, var(--crema) 72%);
+    overflow:hidden;
+  }
+  .portada::after{
+    content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
+    background:repeating-linear-gradient(115deg,rgba(255,255,255,.5) 0 2px,rgba(255,255,255,0) 2px 9px);
+  }
+  .portada .env{position:relative;z-index:1}
+
+  .marca{
+    display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:-.01em;
+    font-size:15px;color:var(--ambar-osc);margin-bottom:26px;
+  }
+  .marca .gota{width:22px;height:22px;flex:0 0 22px}
+
+  .prod{display:grid;gap:26px;align-items:start}
+  @media (min-width:861px){
+    .prod{grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:48px}
+    .prod .visual{position:sticky;top:22px}
+  }
+
+  .frasco-caja{
+    position:relative;
+    background:linear-gradient(165deg,#fffdf8,#f7e9d1);
+    border:1px solid var(--linea);
+    border-radius:22px;
+    padding:12px 8px 6px;
+    box-shadow:var(--sombra-2);
+    text-align:center;
+  }
+  .frasco-caja svg{display:block;width:100%;height:auto;max-height:56vh;margin:0 auto}
+  @media (min-width:861px){ .frasco-caja svg{max-height:none} }
+  .jar-g{transition:opacity .34s ease,transform .44s cubic-bezier(.16,.84,.3,1);transform-origin:120px 300px}
+  .jar-g[data-off="1"]{opacity:0;transform:scale(.94);pointer-events:none}
+  .panal-g{transition:opacity .34s ease}
+  .panal-g[data-off="1"]{opacity:0}
+
+  .sello{
+    display:inline-block;background:var(--tinta);color:#fff;
+    font-size:11.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;
+    padding:7px 14px;border-radius:99px;margin:2px auto 12px;
+  }
+  .nota-tecnica{
+    font-size:12.5px;color:var(--tinta-2);margin-top:14px;line-height:1.5;
+    border-left:3px solid var(--linea);padding-left:11px;
+  }
+
+  h1{font-size:clamp(34px,9.4vw,58px);font-weight:800;letter-spacing:-.03em;line-height:1.02;margin:8px 0 0}
+  h1 .ser{font-family:Georgia,serif;font-weight:400;font-style:italic;letter-spacing:-.01em}
+  .venta{font-size:clamp(16px,4.2vw,19px);color:var(--tinta-2);margin-top:14px;max-width:44ch}
+
+  .precio-fila{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 14px;margin-top:22px}
+  .precio{font-size:clamp(32px,8.6vw,44px);font-weight:800;letter-spacing:-.03em;color:var(--tinta);line-height:1}
+  .por100{font-size:13.5px;color:var(--tinta-2);font-weight:600}
+  .ahorro{
+    display:inline-block;background:#e7f4ec;color:#0b5e31;border:1px solid #bfe2ce;
+    font-size:12.5px;font-weight:800;padding:5px 11px;border-radius:99px;margin-top:12px;
+  }
+
+  /* ---- selector ---- */
+  .grupo{margin-top:26px;border:0}
+  .grupo legend{font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--tinta-2);padding:0;margin-bottom:10px}
+  .ops{position:relative;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .ops input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+  .ops label{
+    display:flex;flex-direction:column;justify-content:center;gap:2px;
+    min-height:60px;padding:10px 12px;cursor:pointer;
+    background:var(--papel);border:2px solid var(--linea);border-radius:13px;
+    transition:transform .18s ease,border-color .18s ease,background-color .18s ease;
+  }
+  .ops label b{font-size:15.5px;font-weight:800;letter-spacing:-.01em}
+  .ops label span{font-size:12.5px;color:var(--tinta-2);line-height:1.35}
+  .ops input:checked + label{
+    border-color:var(--ambar-osc);background:#fdf0d8;
+  }
+  .ops input:focus-visible + label{outline:3px solid var(--ambar-osc);outline-offset:3px}
+  @media (hover:hover){ .ops label:hover{transform:translateY(-2px)} }
+
+  .resumen{
+    margin-top:22px;background:var(--papel);border:1px solid var(--linea);border-radius:14px;
+    padding:14px 16px;display:flex;flex-wrap:wrap;gap:6px 12px;align-items:baseline;justify-content:space-between;
+  }
+  .resumen .qué{font-size:14.5px;font-weight:700;line-height:1.35}
+  .resumen .cuánto{font-size:19px;font-weight:800;letter-spacing:-.02em;white-space:nowrap}
+
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:10px;
+    min-height:56px;padding:14px 22px;border-radius:14px;border:2px solid transparent;
+    font-weight:800;font-size:16.5px;text-decoration:none;cursor:pointer;
+    text-align:center;flex-wrap:wrap;
+    transition:transform .18s ease,background-color .18s ease;
+  }
+  .btn-col{display:flex;flex-direction:column;align-items:center;line-height:1.16;min-width:0}
+  .btn-col b{font-size:14px;font-weight:700;opacity:.94;letter-spacing:-.01em}
+  .btn-wa{background:var(--verde);color:#fff;width:100%;box-shadow:0 6px 18px rgba(15,122,64,.24)}
+  .btn-wa svg{flex:0 0 22px}
+  @media (hover:hover){ .btn:hover{transform:translateY(-2px)} .btn-wa:hover{background:var(--verde-osc)} }
+  .btn:active{transform:translateY(0)}
+  .btn-linea{background:transparent;border-color:var(--tinta);color:var(--tinta)}
+
+  .cta-caja{margin-top:14px}
+  .bajo-cta{font-size:12.5px;color:var(--tinta-2);margin-top:10px;text-align:center}
+
+  .datitos{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-top:22px}
+  .datito{
+    background:rgba(255,255,255,.6);border:1px solid var(--linea);border-radius:12px;padding:11px 13px;
+  }
+  .datito b{display:block;font-size:13.5px}
+  .datito span{font-size:12.5px;color:var(--tinta-2)}
+
+  /* ================= GALERÍA ================= */
+  .galeria{background:var(--papel);border-top:1px solid var(--linea);border-bottom:1px solid var(--linea)}
+  .rejilla{display:grid;grid-template-columns:repeat(auto-fill,minmax(142px,1fr));gap:12px;margin-top:24px}
+  .toma{
+    display:block;width:100%;padding:0;border:1px solid var(--linea);background:#fff;
+    border-radius:14px;overflow:hidden;cursor:pointer;text-align:left;
+    transition:transform .2s ease,box-shadow .2s ease;
+  }
+  .toma svg{display:block;width:100%;height:auto}
+  .toma .pie-t{
+    display:flex;align-items:center;justify-content:space-between;gap:8px;
+    padding:9px 11px;font-size:12.5px;font-weight:700;border-top:1px solid var(--linea);min-height:44px;
+  }
+  .toma .pie-t i{font-style:normal;color:var(--ambar-osc);font-size:15px;line-height:1}
+  @media (hover:hover){ .toma:hover{transform:translateY(-3px);box-shadow:var(--sombra)} }
+  .toma:first-child{grid-column:span 2}
+
+  /* ---- visor ---- */
+  .visor[hidden]{display:none}
+  .visor{
+    position:fixed;inset:0;z-index:120;background:rgba(38,23,9,.86);
+    display:flex;align-items:center;justify-content:center;padding:16px;
+  }
+  .visor-caja{
+    position:relative;
+    background:#fff;border-radius:18px;overflow:hidden;width:100%;max-width:620px;
+    max-height:92vh;display:flex;flex-direction:column;box-shadow:var(--sombra-2);
+  }
+  .visor-caja svg{display:block;width:100%;height:auto}
+  .visor-txt{padding:14px 16px;border-top:1px solid var(--linea)}
+  .visor-txt h3{font-size:16px;font-weight:800}
+  .visor-txt p{font-size:13.5px;color:var(--tinta-2);margin-top:3px}
+  .visor-cerrar{
+    position:absolute;top:10px;right:10px;z-index:2;width:46px;height:46px;border-radius:50%;
+    background:rgba(255,255,255,.94);border:1px solid var(--linea);cursor:pointer;
+    font-size:21px;line-height:1;font-weight:700;color:var(--tinta);
+    display:flex;align-items:center;justify-content:center;box-shadow:var(--sombra);
+  }
+  .visor-nav{display:flex;gap:8px;padding:0 16px 14px}
+  .visor-nav button{
+    flex:1;min-height:46px;border-radius:11px;border:2px solid var(--linea);background:var(--papel);
+    font-weight:700;font-size:14px;cursor:pointer;
+  }
+
+  /* ================= RELATO ================= */
+  .relato{background:linear-gradient(180deg,var(--crema) 0%,#f9edd9 100%)}
+  .bloques{display:grid;gap:16px;margin-top:28px}
+  @media (min-width:760px){ .bloques{grid-template-columns:repeat(2,minmax(0,1fr))} }
+  .bloque{
+    background:var(--papel);border:1px solid var(--linea);border-radius:var(--r);
+    padding:22px;box-shadow:var(--sombra);
+  }
+  .bloque .num{
+    font-family:Georgia,serif;font-size:26px;font-style:italic;color:var(--ambar-osc);line-height:1;
+  }
+  .bloque h3{font-size:19px;font-weight:800;margin:8px 0 8px;letter-spacing:-.01em}
+  .bloque p{font-size:15px;color:var(--tinta-2)}
+  .bloque p + p{margin-top:9px}
+
+  .cita{
+    margin-top:26px;font-family:Georgia,serif;font-size:clamp(18px,4.6vw,24px);
+    font-style:italic;line-height:1.42;border-left:4px solid var(--ambar);padding-left:18px;
+  }
+  .cita span{display:block;font-family:system-ui,sans-serif;font-style:normal;font-size:13px;
+    font-weight:700;color:var(--tinta-2);margin-top:10px;letter-spacing:.04em}
+
+  /* ================= ENVÍO ================= */
+  .envios{display:grid;gap:14px;margin-top:26px}
+  @media (min-width:700px){ .envios{grid-template-columns:repeat(3,minmax(0,1fr))} }
+  .env-card{
+    background:var(--papel);border:1px solid var(--linea);border-radius:var(--r);padding:20px;
+    display:flex;flex-direction:column;gap:6px;
+  }
+  .env-card .ic{width:34px;height:34px;margin-bottom:4px}
+  .env-card h3{font-size:17px;font-weight:800}
+  .env-card .costo{font-size:21px;font-weight:800;letter-spacing:-.02em;color:var(--ambar-osc)}
+  .env-card p{font-size:14px;color:var(--tinta-2)}
+  .env-nota{
+    margin-top:16px;background:#e7f4ec;border:1px solid #bfe2ce;border-radius:12px;
+    padding:13px 16px;font-size:14px;color:#0b4d29;font-weight:600;
+  }
+
+  /* ================= FAQ ================= */
+  .faq{background:var(--papel);border-top:1px solid var(--linea)}
+  .lista-faq{margin-top:24px;border-top:1px solid var(--linea)}
+  .item-faq{border-bottom:1px solid var(--linea)}
+  .item-faq h3{margin:0;font-size:inherit;font-weight:inherit}
+  .faq-b{
+    width:100%;min-height:58px;padding:15px 42px 15px 0;background:none;border:0;cursor:pointer;
+    display:flex;align-items:center;justify-content:space-between;gap:14px;text-align:left;
+    font-size:16px;font-weight:700;letter-spacing:-.01em;position:relative;
+  }
+  .faq-b .cruz{
+    position:absolute;right:4px;top:50%;width:22px;height:22px;margin-top:-11px;flex:0 0 22px;
+    transition:transform .24s ease;
+  }
+  .faq-b[aria-expanded="true"] .cruz{transform:rotate(45deg)}
+  .faq-p{padding:0 8px 18px 0;font-size:15px;color:var(--tinta-2);max-width:64ch}
+  .faq-p[hidden]{display:none}
+  .faq-p .in{opacity:0;transform:translateY(-6px);transition:opacity .22s ease,transform .22s ease}
+  .faq-p.abre .in{opacity:1;transform:none}
+
+  /* ================= BARRA FIJA ================= */
+  .barra{
+    position:fixed;left:0;right:0;bottom:0;z-index:90;
+    background:rgba(255,250,242,.97);border-top:1px solid var(--linea);
+    box-shadow:0 -6px 24px rgba(90,58,20,.13);
+    padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));
+    display:flex;align-items:center;gap:12px;
+    transform:translateY(130%);transition:transform .3s cubic-bezier(.16,.84,.3,1);
+  }
+  .barra.vis{transform:none}
+  .barra .bi{min-width:0;flex:1}
+  .barra .bp{font-size:19px;font-weight:800;letter-spacing:-.02em;line-height:1.1}
+  .barra .bq{font-size:12px;color:var(--tinta-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .barra .btn{min-height:50px;padding:12px 18px;font-size:15.5px;width:auto;flex:0 0 auto}
+  @media (min-width:861px){ .barra{display:none} }
+
+  /* ================= PIE ================= */
+  .cierre{background:var(--tinta);color:#f6e9d3;padding:52px 0 34px;text-align:center}
+  .cierre h2{color:#fff}
+  .cierre p{color:#d9c6ac;margin-top:12px;max-width:46ch;margin-left:auto;margin-right:auto}
+  .cierre .btn-wa{max-width:340px;margin:22px auto 0}
+  .cierre .contacto{margin-top:14px;font-size:13.5px;color:#c8b298}
+  .cierre .contacto a{color:#f0c979;display:inline-block;padding:13px 10px;line-height:1.4}
+
+  .katu-pie{
+    background:#241608;color:#c7b298;font-size:13px;text-align:center;
+    padding:16px 20px calc(16px + env(safe-area-inset-bottom,0px));line-height:1.9;
+  }
+  .katu-pie strong{color:#f6e9d3}
+  .katu-pie a{color:#f0c979;text-decoration:underline;text-underline-offset:3px;
+    display:inline-block;padding:13px 8px;line-height:1.4}
+
+  .cierre .disclaimer{
+    font-size:12.5px;color:#bda78c;line-height:1.6;margin:22px auto 0;max-width:48ch;
+    border-top:1px solid rgba(246,233,211,.18);padding-top:16px;
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    *,*::before,*::after{transition-duration:.001ms !important;animation-duration:.001ms !important;animation-iteration-count:1 !important}
+    .rev{opacity:1;transform:none}
+    .barra{transform:none}
+    .faq-p .in{opacity:1;transform:none}
+    .jar-g[data-off="1"]{transform:none}
+  }
+</style>
+</head>
+<body>
+
+<a class="saltar" href="#producto">Saltar al producto</a>
+
+<!-- ==================== PORTADA + SELECTOR ==================== -->
+<header class="portada" id="producto">
+  <div class="env">
+
+    <div class="marca">
+      <svg class="gota" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M12 2c4 5.4 6.6 9 6.6 12.2A6.6 6.6 0 0 1 12 21a6.6 6.6 0 0 1-6.6-6.8C5.4 11 8 7.4 12 2z" fill="#d98f14"/>
+        <path d="M9.4 13.6c0-1.6 1-3 2.3-3.9" fill="none" stroke="#fff8ea" stroke-width="1.6" stroke-linecap="round" opacity=".9"/>
+      </svg>
+      Mbaracayá · miel de monte
+    </div>
+
+    <div class="prod">
+
+      <!-- ---------- visual: el frasco ---------- -->
+      <div class="visual">
+        <div class="frasco-caja">
+          <svg viewBox="0 0 240 330" role="img" aria-labelledby="frasco-t" id="frasco">
+            <title id="frasco-t">Frasco de miel de monte Mbaracayá, dibujo generado por computadora</title>
+            <defs>
+              <linearGradient id="miel" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#f6b93b"/>
+                <stop offset=".42" stop-color="#e2900f"/>
+                <stop offset="1" stop-color="#a85f06"/>
+              </linearGradient>
+              <linearGradient id="vidrio" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stop-color="#ffffff" stop-opacity=".55"/>
+                <stop offset=".22" stop-color="#ffffff" stop-opacity=".06"/>
+                <stop offset=".74" stop-color="#ffffff" stop-opacity="0"/>
+                <stop offset="1" stop-color="#ffffff" stop-opacity=".34"/>
+              </linearGradient>
+              <linearGradient id="tapa" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stop-color="#5c3a15"/>
+                <stop offset=".3" stop-color="#8a5b25"/>
+                <stop offset=".62" stop-color="#54350f"/>
+                <stop offset="1" stop-color="#7a4e1d"/>
+              </linearGradient>
+              <radialGradient id="piso" cx=".5" cy=".5" r=".5">
+                <stop offset="0" stop-color="#8a5c1c" stop-opacity=".34"/>
+                <stop offset="1" stop-color="#8a5c1c" stop-opacity="0"/>
+              </radialGradient>
+              <clipPath id="cl-1000"><path d="M84 62 L156 62 C160 66 178 82 178 112 L178 276 C178 290 168 298 154 298 L86 298 C72 298 62 290 62 276 L62 112 C62 82 80 66 84 62 Z"/></clipPath>
+              <clipPath id="cl-500"><path d="M92 116 L148 116 C152 120 168 132 168 156 L168 276 C168 290 158 298 146 298 L94 298 C82 298 72 290 72 276 L72 156 C72 132 88 120 92 116 Z"/></clipPath>
+              <path id="hx" d="M0 -9.4 L8.1 -4.7 L8.1 4.7 L0 9.4 L-8.1 4.7 L-8.1 -4.7 Z"/>
+            </defs>
+
+            <ellipse cx="120" cy="306" rx="92" ry="20" fill="url(#piso)"/>
+
+            <!-- ================= FRASCO 1 KG ================= -->
+            <g class="jar-g" id="jar-1000" data-off="1">
+              <rect x="76" y="22" width="88" height="28" rx="7" fill="url(#tapa)"/>
+              <rect x="76" y="22" width="88" height="8" rx="4" fill="#fff" opacity=".16"/>
+              <rect x="72" y="46" width="96" height="12" rx="5" fill="#4a2f10"/>
+              <path d="M84 62 L156 62 C160 66 178 82 178 112 L178 276 C178 290 168 298 154 298 L86 298 C72 298 62 290 62 276 L62 112 C62 82 80 66 84 62 Z" fill="#fbf0dc"/>
+              <g clip-path="url(#cl-1000)">
+                <rect x="58" y="80" width="126" height="222" fill="url(#miel)"/>
+                <ellipse cx="120" cy="82" rx="60" ry="9" fill="#f8c85f" opacity=".85"/>
+                <g class="panal-g" id="panal-1000" data-off="1">
+                  <g fill="#c98511" opacity=".5">
+                    <use href="#hx" x="104" y="112"/><use href="#hx" x="121" y="112"/><use href="#hx" x="138" y="112"/>
+                    <use href="#hx" x="95" y="130"/><use href="#hx" x="112" y="130"/><use href="#hx" x="129" y="130"/><use href="#hx" x="146" y="130"/>
+                    <use href="#hx" x="104" y="148"/><use href="#hx" x="121" y="148"/><use href="#hx" x="138" y="148"/>
+                  </g>
+                  <g fill="none" stroke="#7a4104" stroke-width="2.1" opacity=".72">
+                    <use href="#hx" x="104" y="112"/><use href="#hx" x="121" y="112"/><use href="#hx" x="138" y="112"/>
+                    <use href="#hx" x="95" y="130"/><use href="#hx" x="112" y="130"/><use href="#hx" x="129" y="130"/><use href="#hx" x="146" y="130"/>
+                    <use href="#hx" x="104" y="148"/><use href="#hx" x="121" y="148"/><use href="#hx" x="138" y="148"/>
+                  </g>
+                </g>
+                <circle cx="88" cy="132" r="4" fill="#fce39c" opacity=".55"/>
+                <circle cx="150" cy="160" r="2.6" fill="#fce39c" opacity=".5"/>
+                <circle cx="96" cy="252" r="3.2" fill="#fce39c" opacity=".45"/>
+              </g>
+              <path d="M84 62 L156 62 C160 66 178 82 178 112 L178 276 C178 290 168 298 154 298 L86 298 C72 298 62 290 62 276 L62 112 C62 82 80 66 84 62 Z" fill="url(#vidrio)"/>
+              <path d="M78 108 C78 88 88 76 94 70 L94 284 C86 282 78 276 78 268 Z" fill="#fff" opacity=".3"/>
+              <path d="M84 62 L156 62 C160 66 178 82 178 112 L178 276 C178 290 168 298 154 298 L86 298 C72 298 62 290 62 276 L62 112 C62 82 80 66 84 62 Z" fill="none" stroke="#a3712c" stroke-width="2" opacity=".55"/>
+              <!-- etiqueta -->
+              <rect x="70" y="176" width="100" height="98" rx="9" fill="#fbf3e2" stroke="#dfc79c" stroke-width="1.6"/>
+              <rect x="76" y="182" width="88" height="86" rx="6" fill="none" stroke="#c9a86e" stroke-width="1" opacity=".7"/>
+              <text x="120" y="209" text-anchor="middle" font-family="Georgia, serif" font-style="italic" font-size="23" fill="#5a3a11">Mbaracayá</text>
+              <text x="120" y="228" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9.4" letter-spacing="1.6" fill="#8a6a34" id="et1-tipo">MIEL DE MONTE</text>
+              <line x1="90" y1="238" x2="150" y2="238" stroke="#d3b783" stroke-width="1.4"/>
+              <text x="120" y="259" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="700" font-size="19" fill="#5a3a11" id="et1-peso">1 kg</text>
+              <ellipse cx="150" cy="132" rx="7" ry="22" fill="#fff" opacity=".34" transform="rotate(12 150 132)"/>
+            </g>
+
+            <!-- ================= FRASCO 500 G ================= -->
+            <g class="jar-g" id="jar-500">
+              <rect x="84" y="78" width="72" height="26" rx="6" fill="url(#tapa)"/>
+              <rect x="84" y="78" width="72" height="7" rx="3.5" fill="#fff" opacity=".16"/>
+              <rect x="80" y="100" width="80" height="12" rx="5" fill="#4a2f10"/>
+              <path d="M92 116 L148 116 C152 120 168 132 168 156 L168 276 C168 290 158 298 146 298 L94 298 C82 298 72 290 72 276 L72 156 C72 132 88 120 92 116 Z" fill="#fbf0dc"/>
+              <g clip-path="url(#cl-500)">
+                <rect x="68" y="132" width="106" height="170" fill="url(#miel)"/>
+                <ellipse cx="120" cy="134" rx="50" ry="8" fill="#f8c85f" opacity=".85"/>
+                <g class="panal-g" id="panal-500" data-off="1">
+                  <g fill="#c98511" opacity=".5">
+                    <use href="#hx" x="104" y="157"/><use href="#hx" x="121" y="157"/><use href="#hx" x="138" y="157"/>
+                    <use href="#hx" x="112" y="175"/><use href="#hx" x="129" y="175"/>
+                  </g>
+                  <g fill="none" stroke="#7a4104" stroke-width="2.1" opacity=".72">
+                    <use href="#hx" x="104" y="157"/><use href="#hx" x="121" y="157"/><use href="#hx" x="138" y="157"/>
+                    <use href="#hx" x="112" y="175"/><use href="#hx" x="129" y="175"/>
+                  </g>
+                </g>
+                <circle cx="94" cy="168" r="3.6" fill="#fce39c" opacity=".55"/>
+                <circle cx="148" cy="190" r="2.4" fill="#fce39c" opacity=".5"/>
+              </g>
+              <path d="M92 116 L148 116 C152 120 168 132 168 156 L168 276 C168 290 158 298 146 298 L94 298 C82 298 72 290 72 276 L72 156 C72 132 88 120 92 116 Z" fill="url(#vidrio)"/>
+              <path d="M86 152 C86 138 94 128 100 122 L100 288 C92 286 86 280 86 272 Z" fill="#fff" opacity=".3"/>
+              <path d="M92 116 L148 116 C152 120 168 132 168 156 L168 276 C168 290 158 298 146 298 L94 298 C82 298 72 290 72 276 L72 156 C72 132 88 120 92 116 Z" fill="none" stroke="#a3712c" stroke-width="2" opacity=".55"/>
+              <rect x="80" y="192" width="80" height="82" rx="8" fill="#fbf3e2" stroke="#dfc79c" stroke-width="1.6"/>
+              <rect x="85" y="197" width="70" height="72" rx="5" fill="none" stroke="#c9a86e" stroke-width="1" opacity=".7"/>
+              <text x="120" y="221" text-anchor="middle" font-family="Georgia, serif" font-style="italic" font-size="19" fill="#5a3a11">Mbaracayá</text>
+              <text x="120" y="238" text-anchor="middle" font-family="system-ui, sans-serif" font-size="8" letter-spacing="1.3" fill="#8a6a34" id="et5-tipo">MIEL DE MONTE</text>
+              <line x1="95" y1="246" x2="145" y2="246" stroke="#d3b783" stroke-width="1.3"/>
+              <text x="120" y="264" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="700" font-size="16" fill="#5a3a11" id="et5-peso">500 g</text>
+              <ellipse cx="150" cy="168" rx="6" ry="18" fill="#fff" opacity=".34" transform="rotate(12 150 168)"/>
+            </g>
+          </svg>
+          <span class="sello" id="sello">500 g</span>
+        </div>
+
+        <p class="nota-tecnica">
+          Las imágenes de esta demo están generadas por computadora para mostrar cómo funciona;
+          en tu página van tus fotos reales.
+        </p>
+      </div>
+
+      <!-- ---------- texto + selector ---------- -->
+      <div class="ficha">
+        <p class="ojo">Cosecha del monte</p>
+        <h1>Miel de monte<br><span class="ser">Mbaracayá</span></h1>
+        <p class="venta">
+          Una sola miel, hecha por una sola familia. Cruda, sin calentar y sin mezclar:
+          lo que sacamos de la colmena es lo que entra al frasco.
+        </p>
+
+        <div class="precio-fila">
+          <span class="precio" id="precio-grande">Gs. 45.000</span>
+          <span class="por100" id="por100">Gs. 9.000 cada 100 g</span>
+        </div>
+        <span class="ahorro" id="ahorro" hidden></span>
+
+        <fieldset class="grupo">
+          <legend>Elegí el tamaño</legend>
+          <div class="ops">
+            <input type="radio" name="tam" id="t500" value="500" checked>
+            <label for="t500"><b>500 g</b><span>El frasco de todos los días</span></label>
+            <input type="radio" name="tam" id="t1000" value="1000">
+            <label for="t1000"><b>1 kg</b><span>Rinde más por gramo</span></label>
+          </div>
+        </fieldset>
+
+        <fieldset class="grupo">
+          <legend>Elegí el tipo</legend>
+          <div class="ops">
+            <input type="radio" name="tipo" id="pmonte" value="monte" checked>
+            <label for="pmonte"><b>Miel de monte</b><span>Líquida, filtrada por malla</span></label>
+            <input type="radio" name="tipo" id="ppanal" value="panal">
+            <label for="ppanal"><b>Con panal</b><span>Con un trozo de panal adentro</span></label>
+          </div>
+        </fieldset>
+
+        <div class="resumen" aria-live="polite">
+          <span class="qué" id="resumen-que">Miel de monte · 500 g</span>
+          <span class="cuánto" id="resumen-precio">Gs. 45.000</span>
+        </div>
+
+        <div class="cta-caja">
+          <a class="btn btn-wa" id="cta-principal" href="https://wa.me/595983518856" target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false">
+              <path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 2a8 8 0 1 1-4.1 14.9l-.4-.2-2.6.7.7-2.5-.2-.4A8 8 0 0 1 12 4zm-3.3 4c-.2 0-.5.1-.7.4-.2.3-.8.8-.8 1.9s.8 2.2.9 2.4c.1.2 1.6 2.6 4 3.5 2 .8 2.4.6 2.8.6.4 0 1.4-.6 1.6-1.1.2-.6.2-1 .1-1.1l-.6-.3-1.5-.7c-.2-.1-.4-.1-.5.1l-.7.9c-.1.2-.3.2-.5.1a6.5 6.5 0 0 1-3.2-2.8c-.1-.2 0-.4.1-.5l.4-.5.3-.5v-.4l-.7-1.6c-.2-.4-.4-.4-.5-.4z"/>
+            </svg>
+            <span class="btn-col"><span>Pedir por WhatsApp</span><b id="cta-precio">Gs. 45.000</b></span>
+          </a>
+          <p class="bajo-cta">Te contestamos y coordinamos entrega o retiro. Sin formularios.</p>
+        </div>
+
+        <div class="datitos">
+          <div class="datito"><b>Envío a Asunción</b><span>Gs. 25.000 · 24 a 48 h</span></div>
+          <div class="datito"><b>Retiro en el local</b><span>Sin costo · [dirección]</span></div>
+          <div class="datito"><b>Pago</b><span>Efectivo, transferencia o giro</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</header>
+
+<!-- ==================== GALERÍA ==================== -->
+<section class="galeria" id="galeria">
+  <div class="env">
+    <p class="ojo rev">Las cinco tomas</p>
+    <h2 class="rev">Así se ve el frasco antes de que llegue a tu mesa</h2>
+    <p class="sub rev">Tocá cualquiera para verla grande. Son las cinco tomas que le pedimos a todo cliente de tienda: producto solo, textura, tamaño, en uso y en grupo.</p>
+
+    <div class="rejilla">
+
+      <!-- 1 · fondo blanco -->
+      <button class="toma rev" type="button" data-t="0">
+        <svg viewBox="0 0 300 210" role="img" aria-label="Toma del frasco sobre fondo blanco" focusable="false">
+          <rect width="300" height="210" fill="#ffffff"/>
+          <rect y="150" width="300" height="60" fill="#f4f1ec"/>
+          <ellipse cx="150" cy="172" rx="66" ry="12" fill="#d8d2c8" opacity=".7"/>
+          <g transform="translate(150 172) scale(.52) translate(-120 -300)">
+            <rect x="84" y="22" width="88" height="28" rx="7" fill="#6b431a"/>
+            <rect x="80" y="46" width="96" height="12" rx="5" fill="#4a2f10"/>
+            <path d="M92 62 L164 62 C168 66 186 82 186 112 L186 276 C186 290 176 298 162 298 L94 298 C80 298 70 290 70 276 L70 112 C70 82 88 66 92 62 Z" fill="#e5980f"/>
+            <path d="M92 62 L164 62 C168 66 186 82 186 112 L186 276 C186 290 176 298 162 298 L94 298 C80 298 70 290 70 276 L70 112 C70 82 88 66 92 62 Z" fill="none" stroke="#9c6a1e" stroke-width="3"/>
+            <path d="M86 108 C86 88 96 76 102 70 L102 284 C94 282 86 276 86 268 Z" fill="#fff" opacity=".35"/>
+            <rect x="78" y="176" width="100" height="98" rx="9" fill="#fbf3e2" stroke="#dfc79c" stroke-width="2"/>
+            <text x="128" y="212" text-anchor="middle" font-family="Georgia, serif" font-style="italic" font-size="24" fill="#5a3a11">Mbaracayá</text>
+            <text x="128" y="234" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" letter-spacing="1.6" fill="#8a6a34">MIEL DE MONTE</text>
+            <text x="128" y="260" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="700" font-size="18" fill="#5a3a11">500 g</text>
+          </g>
+        </svg>
+        <span class="pie-t">Sobre fondo blanco <i aria-hidden="true">&#43;</i></span>
+      </button>
+
+      <!-- 2 · macro textura -->
+      <button class="toma rev" type="button" data-t="1">
+        <svg viewBox="0 0 300 210" role="img" aria-label="Macro de la textura de la miel" focusable="false">
+          <defs>
+            <radialGradient id="g-macro" cx=".38" cy=".3" r=".85">
+              <stop offset="0" stop-color="#ffd166"/>
+              <stop offset=".5" stop-color="#e0900e"/>
+              <stop offset="1" stop-color="#8f4f06"/>
+            </radialGradient>
+          </defs>
+          <rect width="300" height="210" fill="url(#g-macro)"/>
+          <g fill="none" stroke="#ffe4a3" stroke-linecap="round" opacity=".45">
+            <path d="M-10 62 C60 34 110 96 176 68 C226 46 262 78 312 58" stroke-width="7"/>
+            <path d="M-10 116 C56 90 118 148 180 122 C232 100 268 130 312 112" stroke-width="5"/>
+            <path d="M-10 168 C64 146 112 196 184 172 C230 156 270 182 312 166" stroke-width="4"/>
+          </g>
+          <g fill="#8f4f06" opacity=".28">
+            <path d="M-10 92 C56 66 116 124 178 98 C230 76 266 108 312 88" fill="none" stroke="#8f4f06" stroke-width="4"/>
+          </g>
+          <circle cx="72" cy="146" r="13" fill="#ffe9b8" opacity=".55"/>
+          <circle cx="68" cy="141" r="5" fill="#fff8e6" opacity=".8"/>
+          <circle cx="222" cy="52" r="9" fill="#ffe9b8" opacity=".5"/>
+          <circle cx="196" cy="150" r="6" fill="#ffe9b8" opacity=".45"/>
+          <circle cx="118" cy="42" r="5" fill="#ffe9b8" opacity=".4"/>
+          <path d="M244 96 C258 96 262 112 258 128 C254 146 240 152 232 140 C226 130 232 108 244 96 Z" fill="#c47708" opacity=".45"/>
+        </svg>
+        <span class="pie-t">Macro de la textura <i aria-hidden="true">&#43;</i></span>
+      </button>
+
+      <!-- 3 · referencia de tamaño -->
+      <button class="toma rev" type="button" data-t="2">
+        <svg viewBox="0 0 300 210" role="img" aria-label="Referencia de tamaño: el frasco sostenido en una mano" focusable="false">
+          <rect width="300" height="210" fill="#f3ece0"/>
+          <rect y="170" width="300" height="40" fill="#e6dbc7"/>
+          <ellipse cx="118" cy="171" rx="34" ry="7" fill="#c2b49a" opacity=".8"/>
+          <ellipse cx="214" cy="171" rx="34" ry="7" fill="#c2b49a" opacity=".8"/>
+          <!-- frasco -->
+          <g transform="translate(118 170) scale(.46) translate(-120 -300)">
+            <rect x="84" y="78" width="72" height="26" rx="6" fill="#6b431a"/>
+            <rect x="80" y="100" width="80" height="12" rx="5" fill="#4a2f10"/>
+            <path d="M92 116 L148 116 C152 120 168 132 168 156 L168 276 C168 290 158 298 146 298 L94 298 C82 298 72 290 72 276 L72 156 C72 132 88 120 92 116 Z" fill="#e5980f" stroke="#9c6a1e" stroke-width="3"/>
+            <path d="M86 152 C86 138 94 128 100 122 L100 288 C92 286 86 280 86 272 Z" fill="#fff" opacity=".35"/>
+            <rect x="80" y="192" width="80" height="82" rx="8" fill="#fbf3e2" stroke="#dfc79c" stroke-width="2"/>
+            <text x="120" y="222" text-anchor="middle" font-family="Georgia, serif" font-style="italic" font-size="20" fill="#5a3a11">Mbaracayá</text>
+            <text x="120" y="262" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="700" font-size="18" fill="#5a3a11">500 g</text>
+          </g>
+          <!-- taza para comparar -->
+          <path d="M246 104 C266 104 268 136 246 138" fill="none" stroke="#d8d0c0" stroke-width="11" stroke-linecap="round"/>
+          <path d="M246 104 C266 104 268 136 246 138" fill="none" stroke="#b9af9b" stroke-width="1.6" stroke-linecap="round" opacity=".5"/>
+          <path d="M184 88 L246 88 L239 162 C238.6 166.5 235 170 230 170 L200 170 C195 170 191.4 166.5 191 162 Z" fill="#efe9dd" stroke="#b9af9b" stroke-width="1.8" stroke-linejoin="round"/>
+          <ellipse cx="215" cy="88" rx="31" ry="6.5" fill="#fff" stroke="#b9af9b" stroke-width="1.6"/>
+          <ellipse cx="215" cy="89" rx="25" ry="4.6" fill="#7a4a22"/>
+          <path d="M196 96 L200 156" stroke="#fff" stroke-width="5" opacity=".7" fill="none" stroke-linecap="round"/>
+          <!-- cota -->
+          <g stroke="#8a6a44" stroke-width="1.6" fill="none">
+            <path d="M158 68 L158 170 M152 68 L164 68 M152 170 L164 170"/>
+          </g>
+          <text x="158" y="58" text-anchor="middle" font-family="system-ui, sans-serif" font-size="13" font-weight="700" fill="#6b5240">11 cm</text>
+          <text x="118" y="192" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" font-weight="700" fill="#6b5240">frasco de 500 g</text>
+          <text x="215" y="192" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" font-weight="700" fill="#6b5240">taza de café</text>
+        </svg>
+        <span class="pie-t">Referencia de tamaño <i aria-hidden="true">&#43;</i></span>
+      </button>
+
+      <!-- 4 · en uso -->
+      <button class="toma rev" type="button" data-t="3">
+        <svg viewBox="0 0 300 210" role="img" aria-label="La miel cayendo de una cuchara sobre una rebanada de pan casero" focusable="false">
+          <rect width="300" height="210" fill="#fbf4e6"/>
+          <!-- plato -->
+          <ellipse cx="150" cy="182" rx="104" ry="22" fill="#ffffff" stroke="#e3d7c2" stroke-width="2"/>
+          <ellipse cx="150" cy="180" rx="76" ry="14" fill="none" stroke="#eee5d4" stroke-width="2"/>
+          <!-- rebanada de pan: corteza y miga -->
+          <path d="M104 174 L104 136 C104 118 122 108 150 108 C178 108 196 118 196 136 L196 174 C196 178 193 180 189 180 L111 180 C107 180 104 178 104 174 Z" fill="#c98b45"/>
+          <path d="M113 172 L113 138 C113 125 129 117 150 117 C171 117 187 125 187 138 L187 172 Z" fill="#f2d49b"/>
+          <g fill="#e3bd7c">
+            <circle cx="127" cy="160" r="3.4"/><circle cx="171" cy="164" r="2.8"/><circle cx="150" cy="168" r="2.4"/>
+          </g>
+          <!-- miel derramada encima -->
+          <path d="M112 133 C123 122 177 122 188 133 C189 143 180 150 170 147 C160 144 150 151 140 149 C128 147 118 151 114 144 C111 140 111 136 112 133 Z" fill="#e2900f"/>
+          <path d="M112 133 C123 124 177 124 188 133 C178 139 122 139 112 133 Z" fill="#f3b135" opacity=".7"/>
+          <path d="M120 148 C118 155 120 160 124 159 C127 158 126 152 124 146 Z" fill="#e2900f"/>
+          <path d="M173 146 C172 153 175 157 178 155 C181 153 179 149 178 144 Z" fill="#e2900f"/>
+          <!-- cuchara volcando -->
+          <g transform="rotate(-24 172 46)">
+            <rect x="167" y="2" width="9" height="42" rx="4.5" fill="#b9b3a6"/>
+            <ellipse cx="171" cy="50" rx="25" ry="14" fill="#cbc5b8"/>
+            <ellipse cx="171" cy="48" rx="19" ry="9.5" fill="#e2900f"/>
+          </g>
+          <!-- hilo de miel -->
+          <path d="M152 62 C148 84 156 100 152 124" stroke="#e2900f" stroke-width="7" fill="none" stroke-linecap="round"/>
+          <path d="M152 66 C149 84 155 100 152 118" stroke="#f3b135" stroke-width="2.4" fill="none" stroke-linecap="round" opacity=".7"/>
+        </svg>
+        <span class="pie-t">En uso <i aria-hidden="true">&#43;</i></span>
+      </button>
+
+      <!-- 5 · en grupo -->
+      <button class="toma rev" type="button" data-t="4">
+        <svg viewBox="0 0 300 210" role="img" aria-label="Tres frascos juntos sobre una mesa de madera" focusable="false">
+          <rect width="300" height="210" fill="#f6ecd9"/>
+          <rect y="150" width="300" height="60" fill="#a9773f"/>
+          <g stroke="#8e6231" stroke-width="2" opacity=".6">
+            <path d="M0 168 H300 M0 188 H300"/>
+          </g>
+          <ellipse cx="150" cy="156" rx="120" ry="10" fill="#8e6231" opacity=".35"/>
+          <!-- frasco chico izq -->
+          <g transform="translate(66 156) scale(.34) translate(-120 -300)">
+            <rect x="86" y="96" width="70" height="24" rx="6" fill="#6b431a"/>
+            <rect x="82" y="116" width="78" height="12" rx="5" fill="#4a2f10"/>
+            <path d="M94 132 L148 132 C152 136 166 150 166 172 L166 284 C166 296 156 302 144 302 L96 302 C84 302 74 296 74 284 L74 172 C74 150 90 136 94 132 Z" fill="#e5980f" stroke="#9c6a1e" stroke-width="3"/>
+            <rect x="82" y="200" width="76" height="72" rx="7" fill="#fbf3e2" stroke="#dfc79c" stroke-width="2"/>
+            <text x="120" y="234" text-anchor="middle" font-family="Georgia, serif" font-style="italic" font-size="18" fill="#5a3a11">Mbaracayá</text>
+          </g>
+          <!-- frasco grande centro -->
+          <g transform="translate(150 156) scale(.42) translate(-120 -300)">
+            <rect x="80" y="30" width="84" height="28" rx="7" fill="#6b431a"/>
+            <rect x="76" y="54" width="92" height="12" rx="5" fill="#4a2f10"/>
+            <path d="M88 70 L156 70 C160 74 176 90 176 118 L176 280 C176 294 166 302 152 302 L88 302 C74 302 64 294 64 280 L64 118 C64 90 84 74 88 70 Z" fill="#d98b0c" stroke="#9c6a1e" stroke-width="3"/>
+            <path d="M80 114 C80 96 90 84 96 78 L96 288 C88 286 80 280 80 272 Z" fill="#fff" opacity=".32"/>
+            <rect x="74" y="180" width="92" height="94" rx="8" fill="#fbf3e2" stroke="#dfc79c" stroke-width="2"/>
+            <text x="120" y="216" text-anchor="middle" font-family="Georgia, serif" font-style="italic" font-size="22" fill="#5a3a11">Mbaracayá</text>
+            <text x="120" y="256" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="700" font-size="18" fill="#5a3a11">1 kg</text>
+          </g>
+          <!-- frasco con panal der -->
+          <g transform="translate(234 156) scale(.34) translate(-120 -300)">
+            <rect x="86" y="96" width="70" height="24" rx="6" fill="#6b431a"/>
+            <rect x="82" y="116" width="78" height="12" rx="5" fill="#4a2f10"/>
+            <path d="M94 132 L148 132 C152 136 166 150 166 172 L166 284 C166 296 156 302 144 302 L96 302 C84 302 74 296 74 284 L74 172 C74 150 90 136 94 132 Z" fill="#e5980f" stroke="#9c6a1e" stroke-width="3"/>
+            <g fill="none" stroke="#7d4405" stroke-width="3" opacity=".6">
+              <use href="#hx" x="106" y="166"/><use href="#hx" x="123" y="156"/><use href="#hx" x="140" y="166"/>
+              <use href="#hx" x="106" y="185"/><use href="#hx" x="123" y="175"/><use href="#hx" x="140" y="185"/>
+            </g>
+            <rect x="82" y="200" width="76" height="72" rx="7" fill="#fbf3e2" stroke="#dfc79c" stroke-width="2"/>
+            <text x="120" y="234" text-anchor="middle" font-family="Georgia, serif" font-style="italic" font-size="18" fill="#5a3a11">Mbaracayá</text>
+            <text x="120" y="258" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#8a6a34">CON PANAL</text>
+          </g>
+        </svg>
+        <span class="pie-t">En grupo <i aria-hidden="true">&#43;</i></span>
+      </button>
+
+    </div>
+  </div>
+</section>
+
+<!-- ==================== RELATO ==================== -->
+<section class="relato" id="relato">
+  <div class="env">
+    <p class="ojo rev">De dónde sale</p>
+    <h2 class="rev">La miel es el resultado de dejar en paz al monte</h2>
+    <p class="sub rev">Nada de esto se ve en la foto del frasco. Pero es lo que hace que la miel sepa distinto de una a otra.</p>
+
+    <div class="bloques">
+      <article class="bloque rev">
+        <span class="num">01</span>
+        <h3>Las colmenas están en el borde del monte</h3>
+        <p>Las cajas se apoyan sobre el filo del monte nativo, en [compañía], departamento de [departamento]. No hay cultivo grande alrededor: las abejas salen a lo que florece solo.</p>
+        <p>Por eso el color cambia según el mes. En invierno sale más oscura y más fuerte; después de la floración sale clara y suave. Es la misma miel: cambia el monte.</p>
+      </article>
+
+      <article class="bloque rev">
+        <span class="num">02</span>
+        <h3>Se saca lo que sobra, no todo</h3>
+        <p>Cosechamos [cantidad] veces al año y siempre dejamos miel adentro de la colmena para que la familia de abejas pase el invierno sin que haya que darle azúcar.</p>
+        <p>Sacar todo rinde más ese año y menos los siguientes. Preferimos frascos contados y colmenas sanas.</p>
+      </article>
+
+      <article class="bloque rev">
+        <span class="num">03</span>
+        <h3>No se calienta ni se mezcla</h3>
+        <p>La miel sale del panal, pasa por una malla y va al frasco. No se pasteuriza, no se le agrega nada y no se junta con miel comprada a terceros.</p>
+        <p>Es cruda: eso quiere decir que con el frío se va a poner sólida y blanquecina. Es la señal de que es de verdad.</p>
+      </article>
+
+      <article class="bloque rev">
+        <span class="num">04</span>
+        <h3>Envasado y escrito a mano</h3>
+        <p>Cada frasco lo llena y lo tapa la familia. Atrás de la etiqueta va escrito el número de lote y el mes de la cosecha, con lapicera.</p>
+        <p>Si algún frasco no te gusta, escribinos con ese número y sabemos exactamente de qué cosecha salió.</p>
+      </article>
+    </div>
+
+    <blockquote class="cita rev">
+      “Nosotros no hacemos la miel. La hacen las abejas y el monte. Lo único que hacemos es no arruinarla.”
+      <span>— [nombre], productora</span>
+    </blockquote>
+  </div>
+</section>
+
+<!-- ==================== ENVÍO ==================== -->
+<section class="envio" id="envio">
+  <div class="env">
+    <p class="ojo rev">Cómo te llega</p>
+    <h2 class="rev">Envío, plazo y retiro</h2>
+    <p class="sub rev">El frasco va con burbuja y caja. Si llega roto, te lo reponemos sin discutir.</p>
+
+    <div class="envios">
+      <div class="env-card rev">
+        <svg class="ic" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+          <path d="M3 22V9h15v13H3z" fill="none" stroke="#8f4f08" stroke-width="2.2" stroke-linejoin="round"/>
+          <path d="M18 13h6l5 5v4h-11z" fill="none" stroke="#8f4f08" stroke-width="2.2" stroke-linejoin="round"/>
+          <circle cx="9" cy="24" r="3" fill="none" stroke="#8f4f08" stroke-width="2.2"/>
+          <circle cx="23" cy="24" r="3" fill="none" stroke="#8f4f08" stroke-width="2.2"/>
+        </svg>
+        <h3>Asunción y Gran Asunción</h3>
+        <p class="costo">Gs. 25.000</p>
+        <p>Llega en 24 a 48 horas hábiles. Coordinamos el horario por WhatsApp antes de salir.</p>
+      </div>
+
+      <div class="env-card rev">
+        <svg class="ic" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+          <path d="M16 3l11 6v14l-11 6-11-6V9z" fill="none" stroke="#8f4f08" stroke-width="2.2" stroke-linejoin="round"/>
+          <path d="M5 9l11 6 11-6M16 15v14" fill="none" stroke="#8f4f08" stroke-width="2.2" stroke-linejoin="round"/>
+        </svg>
+        <h3>Interior del país</h3>
+        <p class="costo">desde Gs. 35.000</p>
+        <p>Por empresa de encomiendas, según destino. Entre 2 y 4 días. Te pasamos el número de guía.</p>
+      </div>
+
+      <div class="env-card rev">
+        <svg class="ic" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+          <path d="M6 14l10-8 10 8v13H6z" fill="none" stroke="#8f4f08" stroke-width="2.2" stroke-linejoin="round"/>
+          <path d="M13 27v-8h6v8" fill="none" stroke="#8f4f08" stroke-width="2.2" stroke-linejoin="round"/>
+        </svg>
+        <h3>Retiro en el local</h3>
+        <p class="costo">Sin costo</p>
+        <p>[dirección], de lunes a viernes de [horario] y sábados de [horario]. Avisanos y lo dejamos listo.</p>
+      </div>
+    </div>
+
+    <p class="env-nota rev">Envío bonificado en Asunción a partir de Gs. 250.000 de compra.</p>
+  </div>
+</section>
+
+<!-- ==================== FAQ ==================== -->
+<section class="faq" id="preguntas">
+  <div class="env">
+    <p class="ojo rev">Antes de que preguntes</p>
+    <h2 class="rev">Preguntas frecuentes</h2>
+
+    <div class="lista-faq">
+
+      <div class="item-faq rev">
+        <h3><button class="faq-b" type="button" aria-expanded="false" aria-controls="p1" id="b1">
+          Se me puso dura y blanca, ¿se echó a perder?
+          <svg class="cruz" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14" stroke="#8f4f08" stroke-width="2.4" stroke-linecap="round" fill="none"/></svg>
+        </button></h3>
+        <div class="faq-p" id="p1" role="region" aria-labelledby="b1" hidden>
+          <div class="in">No. Se cristalizó, que es lo que le pasa a toda miel cruda cuando baja la temperatura. Poné el frasco en agua tibia (nunca hirviendo) unos minutos y vuelve a estar líquida. La miel que nunca se cristaliza es la que fue calentada de más.</div>
+        </div>
+      </div>
+
+      <div class="item-faq rev">
+        <h3><button class="faq-b" type="button" aria-expanded="false" aria-controls="p2" id="b2">
+          ¿Cómo se come la que viene con panal?
+          <svg class="cruz" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14" stroke="#8f4f08" stroke-width="2.4" stroke-linecap="round" fill="none"/></svg>
+        </button></h3>
+        <div class="faq-p" id="p2" role="region" aria-labelledby="b2" hidden>
+          <div class="in">El panal se come entero, cera incluida. Cortá un pedacito con cuchara y ponelo sobre pan, queso o fruta. Si preferís, dejalo dentro del frasco: le da cuerpo a la miel y se va disolviendo solo.</div>
+        </div>
+      </div>
+
+      <div class="item-faq rev">
+        <h3><button class="faq-b" type="button" aria-expanded="false" aria-controls="p3" id="b3">
+          ¿Hasta cuándo dura?
+          <svg class="cruz" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14" stroke="#8f4f08" stroke-width="2.4" stroke-linecap="round" fill="none"/></svg>
+        </button></h3>
+        <div class="faq-p" id="p3" role="region" aria-labelledby="b3" hidden>
+          <div class="in">La fecha de vencimiento va impresa en la etiqueta de cada lote. Guardala en un lugar seco, lejos del sol y con la tapa bien cerrada. No hace falta heladera; el frío solo la endurece más rápido.</div>
+        </div>
+      </div>
+
+      <div class="item-faq rev">
+        <h3><button class="faq-b" type="button" aria-expanded="false" aria-controls="p4" id="b4">
+          ¿Cómo pago?
+          <svg class="cruz" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14" stroke="#8f4f08" stroke-width="2.4" stroke-linecap="round" fill="none"/></svg>
+        </button></h3>
+        <div class="faq-p" id="p4" role="region" aria-labelledby="b4" hidden>
+          <div class="in">Efectivo contra entrega, transferencia bancaria o giro por celular. Te pasamos los datos por WhatsApp cuando confirmamos el pedido. Para el interior pedimos el pago antes de despachar.</div>
+        </div>
+      </div>
+
+      <div class="item-faq rev">
+        <h3><button class="faq-b" type="button" aria-expanded="false" aria-controls="p5" id="b5">
+          ¿Venden por mayor o para revender?
+          <svg class="cruz" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14" stroke="#8f4f08" stroke-width="2.4" stroke-linecap="round" fill="none"/></svg>
+        </button></h3>
+        <div class="faq-p" id="p5" role="region" aria-labelledby="b5" hidden>
+          <div class="in">Sí, desde [cantidad] frascos hay precio de reventa y podemos poner tu etiqueta. Escribinos contando qué necesitás y te pasamos la lista.</div>
+        </div>
+      </div>
+
+      <div class="item-faq rev">
+        <h3><button class="faq-b" type="button" aria-expanded="false" aria-controls="p6" id="b6">
+          ¿Tienen registro sanitario?
+          <svg class="cruz" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14" stroke="#8f4f08" stroke-width="2.4" stroke-linecap="round" fill="none"/></svg>
+        </button></h3>
+        <div class="faq-p" id="p6" role="region" aria-labelledby="b6" hidden>
+          <div class="in">El número de registro va impreso en cada etiqueta: [número de registro]. Si lo necesitás por escrito para tu comercio, pedinos el papel por WhatsApp y te lo mandamos.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ==================== CIERRE ==================== -->
+<section class="cierre">
+  <div class="env">
+    <h2>Cada cosecha es limitada</h2>
+    <p>Cuando se termina el lote hay que esperar a la siguiente floración. Si querés frasco de este, escribinos ahora.</p>
+    <a class="btn btn-wa" id="cta-cierre" href="https://wa.me/595983518856" target="_blank" rel="noopener noreferrer">
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false">
+        <path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 2a8 8 0 1 1-4.1 14.9l-.4-.2-2.6.7.7-2.5-.2-.4A8 8 0 0 1 12 4zm-3.3 4c-.2 0-.5.1-.7.4-.2.3-.8.8-.8 1.9s.8 2.2.9 2.4c.1.2 1.6 2.6 4 3.5 2 .8 2.4.6 2.8.6.4 0 1.4-.6 1.6-1.1.2-.6.2-1 .1-1.1l-.6-.3-1.5-.7c-.2-.1-.4-.1-.5.1l-.7.9c-.1.2-.3.2-.5.1a6.5 6.5 0 0 1-3.2-2.8c-.1-.2 0-.4.1-.5l.4-.5.3-.5v-.4l-.7-1.6c-.2-.4-.4-.4-.5-.4z"/>
+      </svg>
+      <span class="btn-col"><span>Pedir por WhatsApp</span><b id="cta-cierre-precio">Gs. 45.000</b></span>
+    </a>
+    <p class="contacto">Mbaracayá · [dirección], Asunción · <a href="https://wa.me/595983518856" target="_blank" rel="noopener noreferrer">WhatsApp</a></p>
+    <p class="disclaimer">
+      Negocio, precios y datos de ejemplo. Todo lo que se ve acá está dibujado con código:
+      en tu página van tus fotos y tus precios reales.
+    </p>
+  </div>
+</section>
+
+<div class="katu-pie">
+  Demo de <strong>KatuWeb</strong> · <a href="../catalogo.html">Volver al catálogo</a> ·
+  <a href="https://wa.me/595983518856?text=Hola!%20Vi%20la%20demo%20de%20la%20tienda%20monoproducto.%20%C2%BFCu%C3%A1nto%20sale%20para%20mi%20negocio%3F" target="_blank" rel="noopener noreferrer">Quiero esto para mi negocio</a>
+</div>
+
+<!-- ==================== BARRA FIJA ==================== -->
+<div class="barra" id="barra">
+  <div class="bi">
+    <div class="bp" id="barra-precio">Gs. 45.000</div>
+    <div class="bq" id="barra-que">Miel de monte · 500 g</div>
+  </div>
+  <a class="btn btn-wa" id="cta-barra" href="https://wa.me/595983518856" target="_blank" rel="noopener noreferrer">
+    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">
+      <path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 2a8 8 0 1 1-4.1 14.9l-.4-.2-2.6.7.7-2.5-.2-.4A8 8 0 0 1 12 4zm-3.3 4c-.2 0-.5.1-.7.4-.2.3-.8.8-.8 1.9s.8 2.2.9 2.4c.1.2 1.6 2.6 4 3.5 2 .8 2.4.6 2.8.6.4 0 1.4-.6 1.6-1.1.2-.6.2-1 .1-1.1l-.6-.3-1.5-.7c-.2-.1-.4-.1-.5.1l-.7.9c-.1.2-.3.2-.5.1a6.5 6.5 0 0 1-3.2-2.8c-.1-.2 0-.4.1-.5l.4-.5.3-.5v-.4l-.7-1.6c-.2-.4-.4-.4-.5-.4z"/>
+    </svg>
+    Pedir
+  </a>
+</div>
+
+<!-- ==================== VISOR ==================== -->
+<div class="visor" id="visor" role="dialog" aria-modal="true" aria-labelledby="visor-titulo" hidden>
+  <div class="visor-caja">
+    <button class="visor-cerrar" type="button" id="visor-cerrar" aria-label="Cerrar la imagen">&#215;</button>
+    <div id="visor-img"></div>
+    <div class="visor-txt">
+      <h3 id="visor-titulo">Sobre fondo blanco</h3>
+      <p id="visor-desc">La toma limpia, sin nada alrededor.</p>
+    </div>
+    <div class="visor-nav">
+      <button type="button" id="visor-ant">&#8592; Anterior</button>
+      <button type="button" id="visor-sig">Siguiente &#8594;</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var WA = 'https://wa.me/595983518856?text=';
+
+  /* ---------- precios: una sola fuente de verdad ---------- */
+  var PRECIOS = {
+    '500|monte': 45000,
+    '1000|monte': 80000,
+    '500|panal': 65000,
+    '1000|panal': 115000
+  };
+  var GRAMOS = { '500': 500, '1000': 1000 };
+  var ETIQ_TAM = { '500': '500 g', '1000': '1 kg' };
+
+  var estado = { tam: '500', tipo: 'monte' };
+
+  function gs(n) {
+    return 'Gs. ' + String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  }
+  function precioActual() {
+    return PRECIOS[estado.tam + '|' + estado.tipo];
+  }
+  function textoVariante() {
+    return 'la miel de monte de ' + ETIQ_TAM[estado.tam] + (estado.tipo === 'panal' ? ' con panal' : '');
+  }
+  function resumenCorto() {
+    return (estado.tipo === 'panal' ? 'Miel de monte con panal' : 'Miel de monte') + ' · ' + ETIQ_TAM[estado.tam];
+  }
+  function mensaje() {
+    return 'Hola! Quiero pedir ' + textoVariante() + ' — ' + gs(precioActual()) + '. ¿Tenés stock?';
+  }
+
+  /* ---------- nodos ---------- */
+  var $ = function (id) { return document.getElementById(id); };
+  var nPrecioGrande = $('precio-grande'), nPor100 = $('por100'), nAhorro = $('ahorro'),
+      nResQue = $('resumen-que'), nResPrecio = $('resumen-precio'),
+      nBarraPrecio = $('barra-precio'), nBarraQue = $('barra-que'),
+      nSello = $('sello'),
+      nJar500 = $('jar-500'), nJar1000 = $('jar-1000'),
+      nPanal500 = $('panal-500'), nPanal1000 = $('panal-1000'),
+      nCtaPrecio = $('cta-precio'), nCtaCierrePrecio = $('cta-cierre-precio');
+  var enlaces = [$('cta-principal'), $('cta-barra'), $('cta-cierre')];
+  var etiquetas = [
+    { tipo: $('et1-tipo'), peso: $('et1-peso') },
+    { tipo: $('et5-tipo'), peso: $('et5-peso') }
+  ];
+
+  /* ---------- pintar: TODO sale del mismo número ---------- */
+  function pintar() {
+    var p = precioActual();
+    var txtPrecio = gs(p);
+    var corto = resumenCorto();
+
+    nPrecioGrande.textContent = txtPrecio;
+    nResPrecio.textContent = txtPrecio;
+    nBarraPrecio.textContent = txtPrecio;
+    nResQue.textContent = corto;
+    nBarraQue.textContent = corto;
+    nSello.textContent = ETIQ_TAM[estado.tam] + (estado.tipo === 'panal' ? ' · con panal' : '');
+
+    nPor100.textContent = gs(p / (GRAMOS[estado.tam] / 100)) + ' cada 100 g';
+
+    var dosChicos = PRECIOS['500|' + estado.tipo] * 2;
+    var difer = dosChicos - PRECIOS['1000|' + estado.tipo];
+    if (estado.tam === '1000' && difer > 0) {
+      nAhorro.textContent = 'Ahorrás ' + gs(difer) + ' contra dos frascos de 500 g';
+      nAhorro.hidden = false;
+    } else {
+      nAhorro.hidden = true;
+    }
+
+    nCtaPrecio.textContent = txtPrecio;
+    nCtaCierrePrecio.textContent = txtPrecio;
+
+    var href = WA + encodeURIComponent(mensaje());
+    for (var i = 0; i < enlaces.length; i++) {
+      if (enlaces[i]) { enlaces[i].setAttribute('href', href); }
+    }
+
+    var esKilo = estado.tam === '1000';
+    nJar1000.setAttribute('data-off', esKilo ? '0' : '1');
+    nJar500.setAttribute('data-off', esKilo ? '1' : '0');
+
+    var conPanal = estado.tipo === 'panal';
+    nPanal500.setAttribute('data-off', conPanal ? '0' : '1');
+    nPanal1000.setAttribute('data-off', conPanal ? '0' : '1');
+
+    for (var j = 0; j < etiquetas.length; j++) {
+      etiquetas[j].tipo.textContent = conPanal ? 'MIEL CON PANAL' : 'MIEL DE MONTE';
+      etiquetas[j].peso.textContent = ETIQ_TAM[estado.tam];
+    }
+  }
+
+  /* ---------- selector ---------- */
+  function escuchar(nombre, clave) {
+    var radios = document.querySelectorAll('input[name="' + nombre + '"]');
+    for (var i = 0; i < radios.length; i++) {
+      radios[i].addEventListener('change', function (ev) {
+        estado[clave] = ev.target.value;
+        pintar();
+      });
+    }
+  }
+  escuchar('tam', 'tam');
+  escuchar('tipo', 'tipo');
+  pintar();
+
+  /* ---------- acordeón ---------- */
+  var botonesFaq = document.querySelectorAll('.faq-b');
+  for (var f = 0; f < botonesFaq.length; f++) {
+    botonesFaq[f].addEventListener('click', function () {
+      var abierto = this.getAttribute('aria-expanded') === 'true';
+      var panel = document.getElementById(this.getAttribute('aria-controls'));
+      this.setAttribute('aria-expanded', abierto ? 'false' : 'true');
+      if (abierto) {
+        panel.classList.remove('abre');
+        panel.hidden = true;
+      } else {
+        panel.hidden = false;
+        requestAnimationFrame(function () { panel.classList.add('abre'); });
+      }
+    });
+  }
+
+  /* ---------- barra fija: aparece recién cuando el CTA de arriba se fue ---------- */
+  var barra = $('barra'), ancla = $('cta-principal'), pedido = false;
+  function revisarBarra() {
+    pedido = false;
+    /* el pie nunca queda tapado: el body ya reserva el alto de la barra */
+    barra.classList.toggle('vis', ancla.getBoundingClientRect().bottom < 0);
+  }
+  function pedirRevision() {
+    if (pedido) { return; }
+    pedido = true;
+    requestAnimationFrame(revisarBarra);
+  }
+  window.addEventListener('scroll', pedirRevision, { passive: true });
+  window.addEventListener('resize', pedirRevision, { passive: true });
+  revisarBarra();
+
+  /* ---------- revelado al bajar ---------- */
+  var revs = document.querySelectorAll('.rev');
+  function mostrarTodo() {
+    for (var i = 0; i < revs.length; i++) { revs[i].classList.add('ok'); }
+  }
+  if ('IntersectionObserver' in window) {
+    var obs = new IntersectionObserver(function (ents) {
+      for (var i = 0; i < ents.length; i++) {
+        if (ents[i].isIntersecting) {
+          ents[i].target.classList.add('ok');
+          obs.unobserve(ents[i].target);
+        }
+      }
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    for (var r = 0; r < revs.length; r++) { obs.observe(revs[r]); }
+    setTimeout(mostrarTodo, 4000);
+  } else {
+    mostrarTodo();
+  }
+
+  /* ---------- visor de la galería ---------- */
+  var TOMAS = [
+    { t: 'Sobre fondo blanco', d: 'La toma limpia, sin nada alrededor. Es la que va primero y la que se usa en el catálogo.' },
+    { t: 'Macro de la textura', d: 'De cerca se ve el cuerpo de la miel y las burbujas. Esta toma es la que convence al que ya sabe de miel.' },
+    { t: 'Referencia de tamaño', d: 'El frasco en la mano: nadie tiene que adivinar cuánto mide. Baja las devoluciones a la mitad.' },
+    { t: 'En uso', d: 'La miel cayendo sobre el pan. Acá no se vende el frasco: se vende el desayuno.' },
+    { t: 'En grupo', d: 'Las variantes juntas, para que se entienda de una que hay tamaños y tipos distintos.' }
+  ];
+  var visor = $('visor'), visorImg = $('visor-img'), visorTitulo = $('visor-titulo'),
+      visorDesc = $('visor-desc'), visorCerrar = $('visor-cerrar'),
+      visorAnt = $('visor-ant'), visorSig = $('visor-sig');
+  var tomas = document.querySelectorAll('.toma');
+  var indice = 0, ultimoFoco = null;
+
+  function cargar(i) {
+    indice = (i + TOMAS.length) % TOMAS.length;
+    var origen = tomas[indice].querySelector('svg');
+    while (visorImg.firstChild) { visorImg.removeChild(visorImg.firstChild); }
+    var copia = origen.cloneNode(true);
+    // sacamos los id repetidos: la copia sigue usando las definiciones del original
+    var conId = copia.querySelectorAll('[id]');
+    for (var c = 0; c < conId.length; c++) { conId[c].removeAttribute('id'); }
+    copia.removeAttribute('id');
+    visorImg.appendChild(copia);
+    visorTitulo.textContent = TOMAS[indice].t;
+    visorDesc.textContent = TOMAS[indice].d;
+  }
+  function abrir(i) {
+    ultimoFoco = document.activeElement;
+    cargar(i);
+    visor.hidden = false;
+    document.body.style.overflow = 'hidden';
+    visorCerrar.focus();
+  }
+  function cerrar() {
+    visor.hidden = true;
+    document.body.style.overflow = '';
+    if (ultimoFoco && ultimoFoco.focus) { ultimoFoco.focus(); }
+  }
+  for (var k = 0; k < tomas.length; k++) {
+    (function (idx) {
+      tomas[idx].addEventListener('click', function () { abrir(idx); });
+    })(k);
+  }
+  visorCerrar.addEventListener('click', cerrar);
+  visorAnt.addEventListener('click', function () { cargar(indice - 1); });
+  visorSig.addEventListener('click', function () { cargar(indice + 1); });
+  visor.addEventListener('click', function (ev) {
+    if (ev.target === visor) { cerrar(); }
+  });
+  document.addEventListener('keydown', function (ev) {
+    if (visor.hidden) { return; }
+    if (ev.key === 'Escape') { cerrar(); return; }
+    if (ev.key === 'ArrowLeft') { cargar(indice - 1); return; }
+    if (ev.key === 'ArrowRight') { cargar(indice + 1); return; }
+    if (ev.key === 'Tab') {
+      var foco = [visorCerrar, visorAnt, visorSig];
+      var pos = foco.indexOf(document.activeElement);
+      var sig = ev.shiftKey ? pos - 1 : pos + 1;
+      if (pos === -1 || sig < 0 || sig >= foco.length) {
+        ev.preventDefault();
+        foco[ev.shiftKey ? foco.length - 1 : 0].focus();
+      }
+    }
+  });
+})();
+</script>
+
+</body>
+</html>
