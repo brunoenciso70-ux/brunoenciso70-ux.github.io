@@ -10,90 +10,202 @@
 <meta name="description" content="Todo lo que KatuWeb puede construir: lo que ya está hecho y se puede mostrar hoy, y lo que se puede construir a pedido. Con tiempos, requisitos y estado real de cada cosa.">
 <style>
   :root {
-    --papel: #fbfaf8; --blanco: #fff; --tinta: #0d0e11; --tinta2: #4a4d55; --gris: #8a8d95;
-    --linea: #e6e4de; --linea2: #d3d0c8;
-    --listo: #17845a; --listo-b: #e4f4ec;
-    --pedido: #1d6fd6; --pedido-b: #e7f0fb;
-    --paga: #b4700a; --paga-b: #fbf1de;
-    --wa: #128c4a; --acento: #e05a1c;
+    --papel: #fbfaf8; --blanco: #fff; --tinta: #0d0e11; --tinta2: #4a4d55; --gris: #6b6e76;
+    --linea: #e6e4de; --linea2: #d3d0c8; --hueco: #f3f1ec;
+    --listo: #106d4a; --listo-b: #e4f4ec; --listo-l: #b7e0cc;
+    --pedido: #1560bd; --pedido-b: #e7f0fb; --pedido-l: #bcd6f2;
+    --paga: #8a5300; --paga-b: #fbf1de; --paga-l: #ddb974;
+    --wa: #0d7a41; --acento: #c2470e;
+    --navh: 55px;
+    --r: 14px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
-  body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: var(--papel); color: var(--tinta); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: var(--papel); color: var(--tinta); line-height: 1.6;
+    -webkit-font-smoothing: antialiased; overflow-x: hidden;
+  }
   a { color: inherit; text-decoration: none; }
-  .wrap { max-width: 1160px; margin: 0 auto; padding: 0 clamp(16px, 4vw, 30px); }
-  .mono { font-family: ui-monospace, "SF Mono", Menlo, monospace; text-transform: uppercase; letter-spacing: .16em; font-size: 10.5px; }
+  img { max-width: 100%; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 clamp(15px, 4vw, 30px); }
+  .mono { font-family: ui-monospace, "SF Mono", Menlo, monospace; text-transform: uppercase; letter-spacing: .15em; font-size: 10.5px; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  :focus-visible { outline: 2px solid var(--acento); outline-offset: 2px; border-radius: 4px; }
 
-  nav { position: sticky; top: 0; z-index: 50; background: rgba(251,250,248,.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--linea); }
-  .n-in { max-width: 1160px; margin: 0 auto; padding: 13px clamp(16px,4vw,30px); display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+  /* ---------- barra ---------- */
+  nav { position: sticky; top: 0; z-index: 50; background: rgba(251,250,248,.93); backdrop-filter: blur(12px); border-bottom: 1px solid var(--linea); }
+  .n-in { max-width: 1180px; margin: 0 auto; padding: 8px clamp(15px,4vw,30px); display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: var(--navh); }
   .marca { font-weight: 900; font-size: 17px; letter-spacing: -.02em; white-space: nowrap; }
   .marca s { color: var(--acento); text-decoration: none; }
+  .marca .sec { color: var(--gris); font-weight: 600; }
+  @media (max-width: 430px) { .marca .sec { display: none; } }
   .n-links { display: flex; gap: 18px; font-size: 13.5px; color: var(--tinta2); }
+  .n-links a { display: inline-flex; align-items: center; min-height: 44px; }
   .n-links a:hover { color: var(--acento); }
-  @media (max-width: 820px) { .n-links { display: none; } }
-  .btn { display: inline-flex; align-items: center; gap: 7px; padding: 9px 17px; font-size: 13px; font-weight: 700; border: none; cursor: pointer; font-family: inherit; border-radius: 7px; white-space: nowrap; }
+  @media (max-width: 900px) { .n-links { display: none; } }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 44px; padding: 10px 18px; font-size: 13.5px; font-weight: 700; border: none; cursor: pointer; font-family: inherit; border-radius: 9px; white-space: nowrap; transition: transform .15s ease, background .15s ease, border-color .15s ease; }
+  .btn:hover { transform: translateY(-1px); }
   .btn-w { background: var(--wa); color: #fff; }
   .btn-t { background: var(--tinta); color: #fff; }
-  .btn-o { background: transparent; border: 1px solid var(--linea2); color: var(--tinta); }
+  .btn-o { background: var(--blanco); border: 1px solid var(--linea2); color: var(--tinta); }
+  .btn-o:hover { border-color: var(--tinta); }
 
-  header { padding: clamp(44px,7vw,78px) 0 26px; }
-  header h1 { font-size: clamp(28px, 5.4vw, 52px); font-weight: 900; letter-spacing: -.04em; line-height: 1.02; max-width: 17ch; text-wrap: balance; }
-  header p { color: var(--tinta2); margin-top: 16px; max-width: 62ch; font-size: 16px; }
-  .kick { color: var(--acento); margin-bottom: 12px; }
-  .resumen { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 34px; }
-  @media (max-width: 720px) { .resumen { grid-template-columns: 1fr 1fr; } }
-  .resumen div { background: var(--blanco); border: 1px solid var(--linea); border-radius: 11px; padding: 16px 16px 18px; }
-  .resumen b { display: block; font-size: clamp(24px,4vw,34px); font-weight: 900; letter-spacing: -.04em; line-height: 1; }
-  .resumen span { font-size: 12.5px; color: var(--gris); }
+  /* ---------- portada ---------- */
+  header { position: relative; padding: clamp(38px,6vw,72px) 0 30px; overflow: hidden; }
+  header::before {
+    content: ''; position: absolute; left: 0; right: 0; top: -140px; height: 460px; pointer-events: none;
+    background:
+      radial-gradient(46% 74% at 16% 42%, rgba(194,71,14,.13), transparent 66%),
+      radial-gradient(42% 70% at 78% 24%, rgba(21,96,189,.11), transparent 68%),
+      radial-gradient(38% 62% at 52% 96%, rgba(16,109,74,.10), transparent 70%);
+    filter: blur(6px);
+  }
+  header > * { position: relative; }
+  .kick { color: var(--acento); margin-bottom: 13px; }
+  header h1 { font-size: clamp(30px, 5.6vw, 54px); font-weight: 900; letter-spacing: -.045em; line-height: 1.02; max-width: 17ch; text-wrap: balance; }
+  header h1 mark { background: none; color: var(--tinta); box-shadow: inset 0 -.28em 0 rgba(194,71,14,.18); }
+  header p.intro { color: var(--tinta2); margin-top: 16px; max-width: 62ch; font-size: 16px; }
+  header p.intro strong { color: var(--tinta); }
 
-  .filtros { position: sticky; top: 52px; z-index: 40; background: rgba(251,250,248,.94); backdrop-filter: blur(10px); padding: 14px 0 12px; border-bottom: 1px solid var(--linea); margin-bottom: 30px; }
-  .tabs { display: flex; gap: 7px; overflow-x: auto; scrollbar-width: none; }
+  .resumen { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 32px; }
+  @media (max-width: 760px) { .resumen { grid-template-columns: 1fr 1fr; } }
+  .resumen div { position: relative; overflow: hidden; background: linear-gradient(180deg, #fff, #fdfcfa); border: 1px solid var(--linea); border-radius: var(--r); padding: 17px 16px 15px; box-shadow: 0 1px 2px rgba(13,14,17,.03); }
+  .resumen div::before { content: ''; position: absolute; inset: 0 0 auto 0; height: 4px; background: var(--c, var(--tinta)); }
+  .resumen b { display: block; font-size: clamp(26px,4.2vw,38px); font-weight: 900; letter-spacing: -.05em; line-height: 1.05; color: var(--c, var(--tinta)); font-variant-numeric: tabular-nums; }
+  .resumen span { display: block; font-size: 12.5px; color: var(--gris); line-height: 1.35; margin-top: 2px; }
+
+  /* ---------- filtros ---------- */
+  .filtros { position: sticky; top: var(--navh); z-index: 40; background: rgba(251,250,248,.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--linea); margin-bottom: 34px; }
+  .f-in { display: flex; align-items: center; gap: 14px; padding: 9px 0; }
+  @media (max-width: 900px) { .f-in { display: block; padding-bottom: 11px; } }
+  .tabs { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; flex: 1; padding: 2px 0; -webkit-overflow-scrolling: touch; }
   .tabs::-webkit-scrollbar { display: none; }
-  .tabs button { flex: 0 0 auto; background: var(--blanco); border: 1px solid var(--linea2); color: var(--tinta2); font-size: 13px; padding: 8px 15px; border-radius: 99px; cursor: pointer; font-family: inherit; white-space: nowrap; transition: all .18s ease; }
-  .tabs button:hover { border-color: var(--gris); }
+  .tabs button {
+    flex: 0 0 auto; display: inline-flex; align-items: center; min-height: 44px; background: var(--blanco);
+    border: 1px solid var(--linea2); color: var(--tinta2); font-size: 13px; padding: 0 16px; border-radius: 99px;
+    cursor: pointer; font-family: inherit; white-space: nowrap; transition: background .18s ease, color .18s ease, border-color .18s ease;
+  }
+  .tabs button:hover { border-color: var(--gris); color: var(--tinta); }
   .tabs button.on { background: var(--tinta); border-color: var(--tinta); color: #fff; font-weight: 700; }
-  .conteo { color: var(--gris); font-size: 12.5px; margin-top: 10px; }
+  .conteo { flex: none; color: var(--gris); font-size: 12.5px; white-space: nowrap; }
+  @media (max-width: 900px) { .conteo { margin-top: 6px; white-space: normal; } }
 
-  .grupo { margin-bottom: 44px; }
-  .grupo > h2 { font-size: clamp(19px,2.8vw,26px); font-weight: 900; letter-spacing: -.03em; }
-  .grupo > p { color: var(--tinta2); font-size: 14.5px; margin-top: 6px; max-width: 70ch; }
-  .grilla { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; margin-top: 20px; }
-  .it { background: var(--blanco); border: 1px solid var(--linea); border-radius: 12px; padding: 18px 18px 20px; display: flex; flex-direction: column; }
-  .it .top { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; }
-  .it h3 { font-size: 16px; font-weight: 800; letter-spacing: -.02em; line-height: 1.2; }
-  .it .rub { font-size: 12px; color: var(--gris); margin-top: 3px; }
-  .est { flex: none; font-size: 9.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; padding: 4px 8px; border-radius: 5px; white-space: nowrap; }
-  .e-listo { background: var(--listo-b); color: var(--listo); }
-  .e-pedido { background: var(--pedido-b); color: var(--pedido); }
-  .e-paga { background: var(--paga-b); color: var(--paga); }
-  .it .desc { font-size: 14px; color: var(--tinta2); margin-top: 11px; flex: 1; }
-  .it dl { margin-top: 14px; border-top: 1px solid var(--linea); padding-top: 12px; display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; font-size: 12.5px; }
-  .it dt { color: var(--gris); white-space: nowrap; }
-  .it dd { color: var(--tinta); }
-  .it .acc { margin-top: 14px; display: flex; gap: 7px; flex-wrap: wrap; }
-  .it .acc a { font-size: 12.5px; font-weight: 700; padding: 7px 12px; border-radius: 6px; border: 1px solid var(--linea2); }
-  .it .acc a:hover { border-color: var(--tinta); }
-  .it .acc a.pr { background: var(--tinta); color: #fff; border-color: var(--tinta); }
+  /* ---------- divisor de grupo ---------- */
+  .div-g { display: flex; align-items: baseline; gap: 14px; margin: 0 0 22px; }
+  .div-g .et { flex: none; display: inline-flex; align-items: center; gap: 8px; color: var(--tinta); font-weight: 800; }
+  .div-g .et i { width: 9px; height: 9px; border-radius: 99px; background: var(--c, var(--tinta)); flex: none; }
+  .div-g p { color: var(--gris); font-size: 13px; line-height: 1.45; }
+  @media (max-width: 700px) { .div-g { display: block; } .div-g p { margin-top: 5px; } }
 
+  /* ---------- encabezado de categoría ---------- */
+  .grupo { margin-bottom: 52px; scroll-margin-top: 130px; }
+  .g-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 14px; padding-bottom: 12px; border-bottom: 2px solid var(--tinta); margin-bottom: 20px; flex-wrap: wrap; }
+  .g-head h2 { font-size: clamp(20px,3vw,29px); font-weight: 900; letter-spacing: -.035em; line-height: 1.1; }
+  .g-n { font-style: normal; display: inline-flex; align-items: center; justify-content: center; min-width: 28px; height: 26px; padding: 0 8px; margin-left: 9px; border-radius: 99px; background: var(--tinta); color: #fff; font-size: 13px; font-weight: 800; letter-spacing: 0; vertical-align: 3px; font-variant-numeric: tabular-nums; }
+  .g-head p { color: var(--tinta2); font-size: 14px; margin-top: 7px; max-width: 66ch; }
+  .g-tag { flex: none; display: inline-flex; align-items: center; gap: 7px; padding: 5px 12px; border-radius: 99px; border: 1px solid var(--l, var(--linea2)); background: var(--b, var(--blanco)); color: var(--c, var(--tinta2)); font-weight: 700; margin-bottom: 3px; }
+
+  /* ---------- grilla ---------- */
+  .grilla { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  @media (max-width: 1000px) { .grilla { grid-template-columns: repeat(2, 1fr); gap: 15px; } }
+  @media (max-width: 640px) { .grilla { grid-template-columns: 1fr; } }
+
+  .it {
+    background: var(--blanco); border: 1px solid var(--linea); border-radius: var(--r); overflow: hidden;
+    display: flex; flex-direction: column; box-shadow: 0 1px 2px rgba(13,14,17,.03);
+    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+  }
+  .it:hover { transform: translateY(-3px); border-color: var(--linea2); box-shadow: 0 16px 34px rgba(13,14,17,.09); }
+
+  /* miniatura */
+  .shot { position: relative; aspect-ratio: 16 / 10; overflow: hidden; background: var(--hueco); border-bottom: 1px solid var(--linea); }
+  .shot iframe { position: absolute; left: 0; top: 0; width: 400%; height: 400%; max-width: none; transform: scale(.25); transform-origin: 0 0; border: 0; background: #fff; pointer-events: none; opacity: 0; transition: opacity .5s ease; }
+  .it.cargado .shot iframe { opacity: 1; }
+  .shot::after { content: ''; position: absolute; inset: auto 0 0 0; height: 3px; background: var(--c, var(--linea2)); opacity: .85; }
+
+  /* bloque gráfico generado (sin demo / esqueleto) */
+  .ph { position: absolute; inset: 0; overflow: hidden; display: grid; place-items: center;
+        background: linear-gradient(145deg, hsl(var(--h) 44% 94%), hsl(calc(var(--h) + 32) 48% 83%)); }
+  .ph i { position: absolute; border-radius: 50%; }
+  .ph .a1 { width: 46%; height: 74%; right: -12%; top: -20%; border: 1.5px solid hsl(var(--h) 42% 55% / .42); }
+  .ph .a2 { width: 30%; height: 48%; left: -7%; bottom: -14%; background: hsl(calc(var(--h) + 44) 55% 68% / .32); }
+  .ph .a3 { width: 16%; height: 26%; left: 24%; top: 16%; background: hsl(var(--h) 45% 42% / .16); }
+  .ph b { position: relative; font-size: clamp(38px, 7vw, 56px); font-weight: 900; letter-spacing: -.06em; line-height: 1; color: hsl(var(--h) 46% 26%); }
+
+  /* estado: color + forma distintos */
+  .est { position: absolute; left: 10px; top: 10px; z-index: 2; display: inline-flex; align-items: center; gap: 6px;
+         font-size: 10px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; padding: 5px 10px;
+         box-shadow: 0 2px 8px rgba(13,14,17,.10); }
+  .est i { flex: none; width: 8px; height: 8px; }
+  .e-listo { background: var(--listo-b); color: var(--listo); border: 1px solid var(--listo-l); border-radius: 99px; }
+  .e-listo i { background: var(--listo); border-radius: 99px; }
+  .e-pedido { background: var(--pedido-b); color: var(--pedido); border: 1px solid var(--pedido-l); border-radius: 6px; }
+  .e-pedido i { border: 2px solid var(--pedido); border-radius: 99px; }
+  .e-paga { background: var(--paga-b); color: var(--paga); border: 1px dashed var(--paga-l); border-radius: 3px; }
+  .e-paga i { background: var(--paga); transform: rotate(45deg); width: 7px; height: 7px; }
+
+  /* cuerpo */
+  .cuerpo { padding: 15px 16px 16px; display: flex; flex-direction: column; flex: 1; }
+  .it .rub { color: var(--gris); }
+  .it h3 { font-size: 16.5px; font-weight: 800; letter-spacing: -.025em; line-height: 1.22; margin-top: 5px; }
+  .it .desc { font-size: 13.5px; color: var(--tinta2); margin-top: 8px; flex: 1; }
+
+  .meta { margin-top: 13px; padding-top: 12px; border-top: 1px solid var(--linea); }
+  .chip { display: inline-flex; align-items: center; gap: 7px; background: var(--hueco); border: 1px solid var(--linea); border-radius: 99px; padding: 4px 11px 4px 9px; font-size: 11.5px; font-weight: 700; color: var(--tinta); }
+  .chip i { position: relative; flex: none; width: 11px; height: 11px; border: 1.5px solid var(--gris); border-radius: 99px; }
+  .chip i::after { content: ''; position: absolute; left: 3px; top: 1.4px; width: 1.5px; height: 3.6px; background: var(--gris); }
+  .need { font-size: 12.5px; color: var(--tinta2); margin-top: 8px; line-height: 1.45; }
+  .need b { color: var(--gris); margin-right: 5px; }
+
+  .acc { margin-top: 14px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .acc a { flex: 1 1 auto; display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 10px 13px; font-size: 13px; font-weight: 700; border-radius: 9px; border: 1px solid var(--linea2); background: var(--blanco); color: var(--tinta); transition: border-color .15s ease, background .15s ease; }
+  .acc a:hover { border-color: var(--tinta); }
+  .acc a.pr { background: var(--tinta); color: #fff; border-color: var(--tinta); }
+  .acc a.pr:hover { background: #23252c; }
+  .acc a.wa { color: var(--wa); border-color: rgba(13,122,65,.38); }
+  .acc a.wa:hover { border-color: var(--wa); background: #f1faf4; }
+  .acc a.wa.solo { background: var(--wa); color: #fff; border-color: var(--wa); }
+
+  .vacio { border: 1px dashed var(--linea2); border-radius: var(--r); padding: 34px 20px; text-align: center; color: var(--gris); font-size: 14px; }
+
+  /* ---------- fuentes ---------- */
   .fuentes { background: var(--blanco); border-top: 1px solid var(--linea); border-bottom: 1px solid var(--linea); padding: clamp(44px,7vw,78px) 0; margin-top: 20px; }
-  table { width: 100%; border-collapse: collapse; margin-top: 22px; font-size: 13.5px; }
+  .fuentes h2 { font-size: clamp(21px,3.2vw,30px); font-weight: 900; letter-spacing: -.035em; }
+  .fuentes > .wrap > p { color: var(--tinta2); margin-top: 10px; max-width: 70ch; font-size: 15px; }
+  table { width: 100%; border-collapse: collapse; margin-top: 22px; font-size: 13.5px; min-width: 560px; }
   th, td { text-align: left; padding: 11px 12px; border-bottom: 1px solid var(--linea); vertical-align: top; }
-  th { font-size: 11px; text-transform: uppercase; letter-spacing: .1em; color: var(--gris); font-weight: 700; }
+  th { font-size: 11px; text-transform: uppercase; letter-spacing: .1em; color: var(--gris); font-weight: 700; background: var(--papel); }
   td b { font-weight: 700; }
   .ok { color: var(--listo); font-weight: 700; }
-  .no { color: #c0392b; font-weight: 700; }
-  .tabla-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-  .nota { background: #fdf6e8; border: 1px solid #f0e2c2; border-radius: 10px; padding: 16px 18px; margin-top: 24px; font-size: 13.5px; color: #6b5726; }
-  .nota b { color: #4a3c15; }
+  .no { color: #a5271a; font-weight: 700; }
+  .tabla-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--linea); border-radius: var(--r); }
+  .tabla-scroll table { margin-top: 0; }
+  .tabla-scroll tr:last-child td { border-bottom: 0; }
+  .nota { background: #fdf6e8; border: 1px solid #f0e2c2; border-radius: var(--r); padding: 17px 19px; margin-top: 24px; font-size: 13.5px; color: #5e4c1d; }
+  .nota b { color: #40340f; }
+  .fuentes h3 { font-size: 19px; font-weight: 800; letter-spacing: -.025em; margin-top: 40px; }
 
+  /* ---------- cierre y pie ---------- */
   .cierre { text-align: center; padding: clamp(48px,8vw,88px) 0; }
-  .cierre h2 { font-size: clamp(24px,4.4vw,40px); font-weight: 900; letter-spacing: -.04em; }
+  .cierre h2 { font-size: clamp(24px,4.4vw,40px); font-weight: 900; letter-spacing: -.045em; }
   .cierre p { color: var(--tinta2); margin: 12px auto 0; max-width: 52ch; }
-  .cierre .acc { display: flex; gap: 9px; justify-content: center; margin-top: 22px; flex-wrap: wrap; }
-  footer { border-top: 1px solid var(--linea); padding: 26px 0 40px; font-size: 13px; color: var(--gris); }
-  footer .f { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-  footer a:hover { color: var(--tinta); }
-  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } html { scroll-behavior: auto; } }
+  .cierre .acc-c { display: flex; gap: 10px; justify-content: center; margin-top: 22px; flex-wrap: wrap; }
+
+  footer { border-top: 1px solid var(--linea); text-align: center; padding: 26px 5vw 90px; color: var(--gris); font-size: 13px; }
+  footer a { color: var(--tinta2); display: inline-block; min-height: 44px; padding: 12px 6px; }
+  footer a:hover { color: var(--acento); text-decoration: underline; }
+  footer .lin { line-height: 1.4; }
+  footer .lin strong { color: var(--tinta); }
+
+  .wa-float { position: fixed; right: 15px; bottom: 15px; width: 54px; height: 54px; border-radius: 99px; background: var(--wa); color: #fff; display: grid; place-items: center; font-size: 25px; z-index: 70; box-shadow: 0 8px 22px rgba(13,122,65,.34); }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+    html { scroll-behavior: auto; }
+    .it:hover, .btn:hover { transform: none; }
+    .shot iframe { opacity: 1; }
+  }
 </style>
 <script>
 (function () {
@@ -111,7 +223,7 @@
 
 <nav>
   <div class="n-in">
-    <div class="marca">Katu<s>Web</s> · Catálogo</div>
+    <div class="marca">Katu<s>Web</s> <span class="sec">· Catálogo</span></div>
     <div class="n-links">
       <a href="index.html">Inicio</a>
       <a href="motion.html">KatuMotion</a>
@@ -127,23 +239,23 @@
 <header>
   <div class="wrap">
     <div class="kick mono">Catálogo de capacidades</div>
-    <h1>Todo lo que se puede construir, y qué hay listo hoy.</h1>
-    <p>Esta página separa dos cosas que suelen mezclarse: lo que <strong>ya está construido y se puede mostrar
+    <h1>Todo lo que se puede construir, y <mark>qué hay listo hoy</mark>.</h1>
+    <p class="intro">Esta página separa dos cosas que suelen mezclarse: lo que <strong>ya está construido y se puede mostrar
     ahora mismo</strong>, y lo que <strong>se puede construir a pedido</strong>. Cada ítem dice qué necesita del
     cliente, cuánto tarda y qué se entrega. Sin promesas vagas.</p>
     <div class="resumen">
-      <div><b id="nListo">0</b><span>listos para mostrar</span></div>
-      <div><b id="nPedido">0</b><span>a pedido</span></div>
-      <div><b id="nPaga">0</b><span>necesitan herramienta paga</span></div>
+      <div style="--c:var(--listo)"><b id="nListo">0</b><span>listos para mostrar</span></div>
+      <div style="--c:var(--pedido)"><b id="nPedido">0</b><span>a pedido</span></div>
+      <div style="--c:var(--paga)"><b id="nPaga">0</b><span>necesitan herramienta paga</span></div>
       <div><b id="nTotal">0</b><span>capacidades en total</span></div>
     </div>
   </div>
 </header>
 
 <div class="filtros">
-  <div class="wrap">
-    <div class="tabs" id="tabs"></div>
-    <div class="conteo" id="conteo"></div>
+  <div class="wrap f-in">
+    <div class="tabs" id="tabs" role="group" aria-label="Filtrar capacidades"></div>
+    <div class="conteo" id="conteo" role="status"></div>
   </div>
 </div>
 
@@ -153,8 +265,8 @@
 <section class="fuentes" id="fuentes">
   <div class="wrap">
     <div class="kick mono">De dónde sale el material</div>
-    <h2 style="font-size:clamp(21px,3.2vw,30px);font-weight:900;letter-spacing:-.03em">Fotos, videos y animaciones que se pueden usar sin riesgo.</h2>
-    <p style="color:var(--tinta2);margin-top:10px;max-width:70ch;font-size:15px">Verificado en las páginas de licencia, no en blogs. La columna que importa es la
+    <h2>Fotos, videos y animaciones que se pueden usar sin riesgo.</h2>
+    <p>Verificado en las páginas de licencia, no en blogs. La columna que importa es la
     última: si dice que hay que dar crédito, hay que darlo sí o sí, y en la web de un cliente eso queda feo.</p>
 
     <div class="tabla-scroll">
@@ -176,7 +288,7 @@
     </table>
     </div>
 
-    <h3 style="font-size:19px;font-weight:800;letter-spacing:-.02em;margin-top:40px">Cuando no alcanza con el stock: generar con IA</h3>
+    <h3>Cuando no alcanza con el stock: generar con IA</h3>
     <div class="tabla-scroll">
     <table>
       <thead><tr><th>Herramienta</th><th>Para qué</th><th>Costo</th><th>Derechos comerciales</th></tr></thead>
@@ -206,7 +318,7 @@
     <h2>¿Querés algo de esta lista?</h2>
     <p>Mandame el número o el nombre del ítem por WhatsApp. Si es de los que están listos, te paso el enlace para
     que lo veas funcionando hoy mismo.</p>
-    <div class="acc">
+    <div class="acc-c">
       <a class="btn btn-w" href="https://wa.me/595983518856?text=Hola!%20Vi%20el%20cat%C3%A1logo%20de%20capacidades%20y%20quiero%20consultar%20por%20un%20%C3%ADtem" target="_blank" rel="noopener noreferrer">Escribir por WhatsApp</a>
       <a class="btn btn-o" href="motion.html">Ver el catálogo visual</a>
     </div>
@@ -214,12 +326,11 @@
 </section>
 
 <footer>
-  <div class="wrap f">
-    <div><strong style="color:var(--tinta)">KatuWeb</strong> · Asunción, Paraguay</div>
-    <div><a href="index.html">Inicio</a> · <a href="motion.html">KatuMotion</a> · <a href="portadas.html">Portadas</a></div>
-    <div><a href="https://wa.me/595983518856" target="_blank" rel="noopener noreferrer">+595 983 518 856</a></div>
-  </div>
+  <div class="lin"><strong>KatuWeb</strong> · Páginas web para negocios paraguayos · Asunción</div>
+  <div class="lin"><a href="https://wa.me/595983518856" target="_blank" rel="noopener noreferrer">WhatsApp +595 983 518 856</a> · <a href="crea-tu-pagina.html">Armá tu página</a> · <a href="motion.html">Catálogo completo</a> · <a href="catalogo.html">Qué se puede hacer</a> · <a href="efectos.html">Biblioteca de efectos</a> · <a href="portadas.html">Portadas</a> · <a href="clientes/index.html">Clientes</a></div>
 </footer>
+
+<a class="wa-float" href="https://wa.me/595983518856?text=Hola!%20Vi%20el%20cat%C3%A1logo%20de%20capacidades%20de%20KatuWeb" target="_blank" rel="noopener noreferrer" aria-label="Escribir por WhatsApp">✆</a>
 
 <script>
 (function () {
@@ -365,6 +476,16 @@
     { k:'nuevo', t:'Se puede construir', p:'Todavía no está armado, pero la técnica está resuelta. El tiempo indicado empieza a contar desde que llega el material del cliente.' }
   ];
 
+  /* una línea por categoría: resume lo que ya dicen los ítems de adentro */
+  var CATS = {
+    'Páginas completas': 'Sitios enteros, cada uno afinado para un rubro. Casi todos se entregan en 48 h con el material puesto.',
+    'Extras premium': 'Piezas 3D e inmersivas que se montan encima de una página ya armada.',
+    'Piezas sueltas': 'Colecciones y herramientas que se aplican sobre cualquier estilo, sin rehacer la página.',
+    'Tiendas online': 'Del producto único al catálogo con filtros. La compra siempre cierra por WhatsApp.',
+    'Movimiento generado': 'Video y 3D fabricados cuando no hay material filmado para usar.',
+    'Servicios sueltos': 'Trabajos que no son una página entera: auditorías, fichas, menús y automatizaciones.'
+  };
+
   var TABS = [
     { k:'todo', n:'Todo' },
     { k:'listo', n:'Listos para mostrar' },
@@ -378,16 +499,22 @@
   var filtro = 'todo';
   var tabsEl = document.getElementById('tabs');
   var listaEl = document.getElementById('lista');
+  var conteoEl = document.getElementById('conteo');
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   TABS.forEach(function (t, i) {
     var b = document.createElement('button');
+    b.type = 'button';
     b.textContent = t.n;
+    b.setAttribute('aria-pressed', i === 0 ? 'true' : 'false');
     if (i === 0) b.className = 'on';
     b.addEventListener('click', function () {
       filtro = t.k;
-      Array.prototype.forEach.call(tabsEl.children, function (x) { x.classList.remove('on'); });
-      b.classList.add('on');
-      pintar();
+      Array.prototype.forEach.call(tabsEl.children, function (x) {
+        x.classList.remove('on'); x.setAttribute('aria-pressed', 'false');
+      });
+      b.classList.add('on'); b.setAttribute('aria-pressed', 'true');
+      aplicar();
     });
     tabsEl.appendChild(b);
   });
@@ -400,68 +527,230 @@
   }
 
   var NOMBRE_EST = { listo: 'Listo', pedido: 'A pedido', paga: 'Herramienta paga' };
+  var VAR_EST = { listo: 'var(--listo)', pedido: 'var(--pedido)', paga: 'var(--paga)' };
+
+  /* tono estable a partir del nombre, para el bloque gráfico */
+  function tono(s) {
+    var h = 0;
+    for (var i = 0; i < s.length; i++) { h = (h * 31 + s.charCodeAt(i)) % 360; }
+    return h;
+  }
+
+  /* ---------- cola de carga de miniaturas ---------- */
+  var cola = [], activos = 0, MAX = 3;
+  function encolar(card) {
+    if (card.dataset.enCola) return;
+    card.dataset.enCola = '1';
+    cola.push(card);
+    bombear();
+  }
+  function bombear() {
+    while (activos < MAX && cola.length) { cargar(cola.shift()); }
+  }
+  function cargar(card) {
+    activos++;
+    var libre = false;
+    function fin() {
+      if (libre) return;
+      libre = true; activos--; card.classList.add('cargado');
+      bombear();
+    }
+    var f = document.createElement('iframe');
+    f.setAttribute('loading', 'lazy');
+    f.setAttribute('tabindex', '-1');
+    f.setAttribute('aria-hidden', 'true');
+    f.setAttribute('scrolling', 'no');
+    f.title = 'Vista previa de ' + card.dataset.nombre;
+    f.addEventListener('load', fin);
+    f.addEventListener('error', fin);
+    f.src = card.dataset.demo;
+    card.querySelector('.shot').appendChild(f);
+    setTimeout(fin, 6000);
+  }
+  var mirilla = ('IntersectionObserver' in window)
+    ? new IntersectionObserver(function (es) {
+        es.forEach(function (en) {
+          if (!en.isIntersecting) return;
+          mirilla.unobserve(en.target);
+          encolar(en.target);
+        });
+      }, { rootMargin: '350px 0px', threshold: 0 })
+    : null;
+
+  /* ---------- tarjeta ---------- */
+  function bloqueGrafico(it) {
+    var ph = document.createElement('div');
+    ph.className = 'ph';
+    ph.style.setProperty('--h', tono(it.n));
+    ['a1', 'a2', 'a3'].forEach(function (c) {
+      var i = document.createElement('i'); i.className = c; ph.appendChild(i);
+    });
+    var b = document.createElement('b');
+    b.textContent = it.n.charAt(0).toUpperCase();
+    ph.appendChild(b);
+    return ph;
+  }
 
   function tarjeta(it) {
     var c = document.createElement('article');
     c.className = 'it';
+    c.style.setProperty('--c', VAR_EST[it.e]);
 
-    var top = document.createElement('div');
-    top.className = 'top';
-    var izq = document.createElement('div');
+    /* --- miniatura --- */
+    var shot = document.createElement('div');
+    shot.className = 'shot';
+    shot.appendChild(bloqueGrafico(it));
+
+    var est = document.createElement('span');
+    est.className = 'est e-' + it.e;
+    var pin = document.createElement('i');
+    est.appendChild(pin);
+    est.appendChild(document.createTextNode(NOMBRE_EST[it.e]));
+    shot.appendChild(est);
+    c.appendChild(shot);
+
+    /* --- cuerpo --- */
+    var cu = document.createElement('div');
+    cu.className = 'cuerpo';
+
+    var r = document.createElement('div'); r.className = 'rub mono'; r.textContent = it.r;
     var h = document.createElement('h3'); h.textContent = it.n;
-    var r = document.createElement('div'); r.className = 'rub'; r.textContent = it.r;
-    izq.appendChild(h); izq.appendChild(r);
-    var e = document.createElement('span');
-    e.className = 'est e-' + it.e;
-    e.textContent = NOMBRE_EST[it.e];
-    top.appendChild(izq); top.appendChild(e);
-
     var d = document.createElement('p'); d.className = 'desc'; d.textContent = it.d;
 
-    var dl = document.createElement('dl');
-    [['Necesito', it.req], ['Tarda', it.t]].forEach(function (par) {
-      var dt = document.createElement('dt'); dt.textContent = par[0];
-      var dd = document.createElement('dd'); dd.textContent = par[1];
-      dl.appendChild(dt); dl.appendChild(dd);
-    });
+    var meta = document.createElement('div'); meta.className = 'meta';
+    var chip = document.createElement('span'); chip.className = 'chip';
+    chip.appendChild(document.createElement('i'));
+    var sr = document.createElement('span'); sr.className = 'sr'; sr.textContent = 'Tarda: ';
+    chip.appendChild(sr);
+    chip.appendChild(document.createTextNode(it.t));
+    var need = document.createElement('p'); need.className = 'need';
+    var nb = document.createElement('b'); nb.className = 'mono'; nb.textContent = 'Necesito';
+    need.appendChild(nb);
+    need.appendChild(document.createTextNode(it.req));
+    meta.appendChild(chip); meta.appendChild(need);
 
     var acc = document.createElement('div'); acc.className = 'acc';
     if (it.v) {
       var a = document.createElement('a');
       a.className = 'pr'; a.href = it.v; a.target = '_blank'; a.rel = 'noopener noreferrer';
       a.textContent = 'Verlo funcionando';
+      a.setAttribute('aria-label', 'Ver funcionando: ' + it.n);
       acc.appendChild(a);
     }
     var w = document.createElement('a');
+    w.className = 'wa' + (it.v ? '' : ' solo');
     w.href = 'https://wa.me/' + WA + '?text=' + encodeURIComponent(
       'Hola! Del catálogo de KatuWeb me interesa: ' + it.n + ' (' + it.r + ') [' + cod(it.n) + ']. ¿Me contás cómo sería?');
     w.target = '_blank'; w.rel = 'noopener noreferrer';
     w.textContent = it.v ? 'Consultar' : 'Pedir presupuesto';
+    w.setAttribute('aria-label', (it.v ? 'Consultar por ' : 'Pedir presupuesto de ') + it.n);
     acc.appendChild(w);
 
-    c.appendChild(top); c.appendChild(d); c.appendChild(dl); c.appendChild(acc);
+    cu.appendChild(r); cu.appendChild(h); cu.appendChild(d); cu.appendChild(meta); cu.appendChild(acc);
+    c.appendChild(cu);
+
+    /* la demo se carga recién cuando la tarjeta se acerca a la pantalla */
+    if (it.v) {
+      c.dataset.demo = it.v;
+      c.dataset.nombre = it.n;
+      if (mirilla) { mirilla.observe(c); } else { encolar(c); }
+    }
     return c;
   }
 
-  function pintar() {
-    listaEl.textContent = '';
-    var visibles = ITEMS.filter(pasa);
-    document.getElementById('conteo').textContent =
-      visibles.length + ' de ' + ITEMS.length + ' capacidades' +
-      (filtro === 'todo' ? '' : ' · filtro activo');
+  /* ---------- armado: divisor de grupo + sección por categoría ---------- */
+  var bloques = [];
 
-    GRUPOS.forEach(function (g) {
-      var delGrupo = visibles.filter(function (i) { return i.g === g.k; });
-      if (!delGrupo.length) return;
+  GRUPOS.forEach(function (g) {
+    var delGrupo = ITEMS.filter(function (i) { return i.g === g.k; });
+    if (!delGrupo.length) return;
+
+    var dv = document.createElement('div');
+    dv.className = 'div-g';
+    dv.style.setProperty('--c', g.k === 'hecho' ? 'var(--listo)' : 'var(--pedido)');
+    var et = document.createElement('span');
+    et.className = 'et mono';
+    et.appendChild(document.createElement('i'));
+    et.appendChild(document.createTextNode(g.t));
+    var dp = document.createElement('p'); dp.textContent = g.p;
+    dv.appendChild(et); dv.appendChild(dp);
+    listaEl.appendChild(dv);
+
+    var secs = [];
+    var vistas = [];
+    delGrupo.forEach(function (i) { if (vistas.indexOf(i.cat) < 0) vistas.push(i.cat); });
+
+    vistas.forEach(function (cat) {
+      var deLaCat = delGrupo.filter(function (i) { return i.cat === cat; });
+
       var sec = document.createElement('section');
       sec.className = 'grupo';
-      var h2 = document.createElement('h2'); h2.textContent = g.t + ' · ' + delGrupo.length;
-      var p = document.createElement('p'); p.textContent = g.p;
+
+      var head = document.createElement('div'); head.className = 'g-head';
+      var txt = document.createElement('div');
+      var h2 = document.createElement('h2');
+      h2.appendChild(document.createTextNode(cat));
+      var num = document.createElement('em'); num.className = 'g-n'; num.textContent = deLaCat.length;
+      h2.appendChild(num);
+      var sub = document.createElement('p'); sub.textContent = CATS[cat] || '';
+      txt.appendChild(h2); txt.appendChild(sub);
+
+      var tag = document.createElement('span');
+      tag.className = 'g-tag mono';
+      tag.textContent = g.t;
+      if (g.k === 'hecho') {
+        tag.style.setProperty('--c', 'var(--listo)');
+        tag.style.setProperty('--b', 'var(--listo-b)');
+        tag.style.setProperty('--l', 'var(--listo-l)');
+      } else {
+        tag.style.setProperty('--c', 'var(--pedido)');
+        tag.style.setProperty('--b', 'var(--pedido-b)');
+        tag.style.setProperty('--l', 'var(--pedido-l)');
+      }
+      head.appendChild(txt); head.appendChild(tag);
+
       var gr = document.createElement('div'); gr.className = 'grilla';
-      delGrupo.forEach(function (it) { gr.appendChild(tarjeta(it)); });
-      sec.appendChild(h2); sec.appendChild(p); sec.appendChild(gr);
+      var tarjetas = deLaCat.map(function (it) {
+        var el = tarjeta(it);
+        gr.appendChild(el);
+        return { el: el, it: it };
+      });
+
+      sec.appendChild(head); sec.appendChild(gr);
       listaEl.appendChild(sec);
+      secs.push({ el: sec, num: num, cards: tarjetas });
     });
+
+    bloques.push({ div: dv, secs: secs });
+  });
+
+  var vacioEl = document.createElement('div');
+  vacioEl.className = 'vacio';
+  vacioEl.textContent = 'No hay capacidades con ese filtro. Probá con "Todo".';
+  vacioEl.style.display = 'none';
+  listaEl.appendChild(vacioEl);
+
+  function aplicar() {
+    var total = 0;
+    bloques.forEach(function (bl) {
+      var enBloque = 0;
+      bl.secs.forEach(function (s) {
+        var n = 0;
+        s.cards.forEach(function (t) {
+          var ok = pasa(t.it);
+          t.el.style.display = ok ? '' : 'none';
+          if (ok) n++;
+        });
+        s.num.textContent = n;
+        s.el.style.display = n ? '' : 'none';
+        enBloque += n;
+      });
+      bl.div.style.display = enBloque ? '' : 'none';
+      total += enBloque;
+    });
+    vacioEl.style.display = total ? 'none' : '';
+    conteoEl.textContent = total + ' de ' + ITEMS.length + ' capacidades' +
+      (filtro === 'todo' ? '' : ' · filtro activo');
   }
 
   /* resumen de arriba */
@@ -472,7 +761,6 @@
     nPaga: cuenta(function (i) { return i.e === 'paga'; }),
     nTotal: ITEMS.length
   };
-  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   Object.keys(res).forEach(function (id) {
     var el = document.getElementById(id), n = res[id];
     if (reduce) { el.textContent = n; return; }
@@ -487,7 +775,7 @@
     setTimeout(function () { el.textContent = n; }, 1400);
   });
 
-  pintar();
+  aplicar();
 })();
 </script>
 </body>
