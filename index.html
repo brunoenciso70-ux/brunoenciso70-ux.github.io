@@ -668,7 +668,9 @@
     document.getElementById('lbTitulo').childNodes[0].textContent = s.nombre;
     document.getElementById('lbPara').textContent = s.para;
     document.getElementById('lbAbrir').href = s.demo;
-    document.getElementById('lbArmar').href = 'crea-tu-pagina.html' + (QUIZ_KEY[key] ? '?estilo=' + key : '');
+    /* el botón abre el editor apuntado a ESTA pieza: estilo, secciones y nombre ya puestos */
+    document.getElementById('lbArmar').href = 'crea-tu-pagina.html?pieza=' + encodeURIComponent(key);
+    document.getElementById('lbArmar').textContent = 'Editar esta pieza';
     lbFrame.src = s.demo;
     teñir(key);
     lb.classList.add('on');

@@ -658,6 +658,43 @@ Sopa paraguaya — 10.000"></textarea>
   var FUENTES = { auto: 'La del estilo base', serif: 'Clásica (serif)', sans: 'Moderna (sans)', black: 'Impacto (sans 900)' };
   var ENTRADAS = { ninguna: 'Sin animación', fade: 'Fundido', slide: 'Deslizar hacia arriba', zoom: 'Zoom suave' };
 
+  /* ===== PIEZAS =====
+     Cada demo de la galería puede abrir este editor apuntando a sí misma:
+     crea-tu-pagina.html?pieza=<clave>. La pieza fija el estilo base, prende las
+     secciones que esa pieza necesita y viaja en el brief, así lo que llega por
+     WhatsApp dice exactamente qué se está pidiendo. */
+  var PIEZAS = {
+    /* estilos completos: la pieza ES el estilo */
+    clasico:   { n: 'Clásico Cálido',            e: 'clasico', sec: ['menu','galeria','sobre','horarios','mapa'] },
+    minimal:   { n: 'Minimal Moderno',           e: 'minimal', sec: ['catalogo','galeria','sobre','horarios'] },
+    prof:      { n: 'Profesional Confianza',     e: 'prof',    sec: ['servicios','sobre','testimonios','horarios','mapa'] },
+    bold:      { n: 'Bold Oscuro',               e: 'bold',    sec: ['menu','galeria','horarios','mapa'] },
+    neon:      { n: 'Neón Creativo',             e: 'neon',    sec: ['servicios','galeria','sobre','testimonios'] },
+    grad:      { n: 'Degradado Vibrante',        e: 'grad',    sec: ['servicios','galeria','testimonios','horarios'] },
+    tech:      { n: 'Tech Bento',                e: 'tech',    sec: ['servicios','sobre','testimonios','horarios'] },
+    revista:   { n: 'Revista Collage',           e: 'revista', sec: ['catalogo','galeria','sobre','horarios'] },
+    edit:      { n: 'Editorial 90s',             e: 'edit',    sec: ['catalogo','galeria','sobre','horarios'] },
+    conv:      { n: 'Conversión SMB',            e: 'prof',    sec: ['servicios','testimonios','horarios','mapa'] },
+    darkpro:   { n: 'Dark Premium',              e: 'bold',    sec: ['catalogo','servicios','sobre','horarios','mapa'] },
+    cine:      { n: 'Scroll cinematográfico',    e: 'prof',    sec: ['servicios','galeria','sobre','testimonios','horarios'] },
+    /* extras 3D */
+    viajes:    { n: 'Armador de viajes 3D',      e: 'tech',    sec: ['servicios','galeria','testimonios','horarios'] },
+    sala:      { n: 'Salón 3D navegable',        e: 'clasico', sec: ['menu','galeria','horarios','mapa'] },
+    ar:        { n: 'Menú 3D con cámara',        e: 'clasico', sec: ['menu','galeria','horarios','mapa'] },
+    /* tiendas */
+    tienda:    { n: 'Tienda monoproducto',       e: 'minimal', sec: ['catalogo','galeria','sobre','horarios'] },
+    carrito:   { n: 'Catálogo chico con carrito',e: 'minimal', sec: ['catalogo','galeria','horarios','mapa'] },
+    filtros:   { n: 'Catálogo grande con filtros', e: 'darkpro_bold', sec: ['catalogo','servicios','horarios','mapa'] },
+    ficha:     { n: 'Ficha de producto',         e: 'tech',    sec: ['catalogo','sobre','horarios'] },
+    setfoto:   { n: 'Set de fotografía',         e: 'minimal', sec: ['catalogo','galeria','sobre'] },
+    /* movimiento */
+    videobucle:{ n: 'Hero con video en bucle',   e: 'bold',    sec: ['menu','galeria','horarios','mapa'] },
+    fondoscroll:{ n: 'Fondo conducido por scroll', e: 'prof',  sec: ['servicios','galeria','sobre','horarios'] },
+    gira3d:    { n: 'Producto 3D que gira',      e: 'tech',    sec: ['catalogo','galeria','sobre','horarios'] },
+    rescate:   { n: 'Fotos rescatadas',          e: 'clasico', sec: ['galeria','sobre','horarios'] }
+  };
+  var piezaActual = null;
+
   var estado = {
     estilo: 'clasico', color: '#7c4a21', colorN: 'Marrón tierra', forma: 12, fuente: 'auto',
     entrada: 'fade', vel: 0.6, hover: false, pulse: false, glow: false, blobs: false, gradanim: false,
@@ -1095,6 +1132,7 @@ Sopa paraguaya — 10.000"></textarea>
     var activas = estado.secciones.filter(function (s) { return s.on; });
     var l = [];
     l.push('BRIEF DE PAGINA WEB — diseño elegido por el cliente');
+    if (piezaActual && PIEZAS[piezaActual]) l.push('PIEZA PEDIDA: ' + PIEZAS[piezaActual].n);
     l.push('— DATOS —');
     l.push('Negocio: ' + (datos.nombre || '(sin completar)'));
     l.push('Rubro: ' + (datos.rubro || '(sin completar)'));
@@ -1169,6 +1207,44 @@ Sopa paraguaya — 10.000"></textarea>
   });
 
   renderSecList();
+
+  // ===== pieza elegida en la galería: crea-tu-pagina.html?pieza=tienda =====
+  var qp = location.search.match(/[?&]pieza=([a-z0-9]+)/);
+  if (qp && PIEZAS[qp[1]]) {
+    piezaActual = qp[1];
+    var P = PIEZAS[piezaActual];
+    var est = NOMBRES[P.e] ? P.e : 'bold';   /* si la pieza apunta a un estilo que el editor no tiene, cae al más cercano */
+    estado.estilo = est;
+    document.documentElement.style.setProperty('--azul', ACENTOS[est] || '#2a78d6');
+    var sel = document.querySelector('#ctlEstilo .estilo[data-v="' + est + '"]');
+    if (sel) {
+      document.querySelectorAll('#ctlEstilo .estilo').forEach(function (x) { x.classList.remove('sel'); });
+      sel.classList.add('sel');
+    }
+    /* las secciones que esa pieza necesita quedan prendidas y el resto apagadas */
+    estado.secciones.forEach(function (x) { x.on = P.sec.indexOf(x.id) >= 0; });
+    renderSecList();
+    /* cartel arriba de todo, para que se vea qué se está armando */
+    var aviso = document.createElement('div');
+    aviso.id = 'avisoPieza';
+    aviso.setAttribute('role', 'status');
+    aviso.style.cssText = 'position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:10px;flex-wrap:wrap;' +
+      'background:#101020;color:#f2f0fa;border-bottom:1px solid #322d45;padding:11px 5vw;font-size:13.5px';
+    var et = document.createElement('span');
+    et.style.cssText = 'font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#8d87a5;font-weight:800';
+    et.textContent = 'Estás armando';
+    var nm = document.createElement('b');
+    nm.textContent = P.n;
+    var ay = document.createElement('span');
+    ay.style.cssText = 'color:#8d87a5';
+    ay.textContent = '· ya te dejé el estilo y las secciones que lleva. Cambiá lo que quieras.';
+    var vol = document.createElement('a');
+    vol.href = 'index.html#galeria';
+    vol.style.cssText = 'margin-left:auto;color:#17c3b2;text-decoration:none;font-weight:700';
+    vol.textContent = 'Elegir otra pieza';
+    aviso.appendChild(et); aviso.appendChild(nm); aviso.appendChild(ay); aviso.appendChild(vol);
+    document.body.insertBefore(aviso, document.body.firstChild);
+  }
 
   // preselección por URL: crea-tu-pagina.html?estilo=neon&nombre=Mi%20Negocio&vista=proyecto
   var qm = location.search.match(/[?&]estilo=([a-z]+)/);
