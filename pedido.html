@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; frame-src 'self'; media-src 'self' data:; form-action 'none'; object-src 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Armar el pedido — KatuWeb</title>
+<meta name="description" content="Contame lo que hace falta para tu pieza y te llega a mi WhatsApp todo junto y ordenado, sin ida y vuelta.">
+<meta name="robots" content="noindex, follow">
+<style>
+  :root {
+    --negro: #14121c; --panel: #1d1a29; --panel2: #232032; --linea: #322d45;
+    --fucsia: #e91e8c; --amarillo: #f5e942; --teal: #17c3b2;
+    --blanco: #f2f0fa; --gris: #8d87a5; --wa: #25d366;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background: var(--negro); color: var(--blanco); line-height: 1.6; }
+  a { color: inherit; }
+
+  nav { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 15px 5vw; border-bottom: 1px solid var(--linea); position: sticky; top: 0; background: rgba(20,18,28,.93); backdrop-filter: blur(10px); z-index: 40; }
+  .marca { font-weight: 900; font-size: 19px; letter-spacing: .04em; text-decoration: none; }
+  .marca span { color: var(--teal); }
+  nav a.volver { color: var(--gris); font-size: 13.5px; text-decoration: none; }
+  nav a.volver:hover { color: var(--blanco); }
+
+  .wrap { max-width: 780px; margin: 0 auto; padding: 26px 5vw 120px; }
+
+  .cab { border: 1px solid var(--linea); background: var(--panel); border-radius: 16px; padding: 20px 22px; }
+  .cab .kick { font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--gris); font-weight: 800; }
+  .cab h1 { font-size: clamp(22px, 4.4vw, 32px); font-weight: 900; letter-spacing: -.02em; margin-top: 7px; }
+  .cab .cod { display: inline-block; margin-top: 10px; font-family: ui-monospace, monospace; font-size: 12px; color: var(--teal); border: 1px solid var(--linea); border-radius: 999px; padding: 5px 12px; }
+  .cab p { color: var(--gris); font-size: 15px; margin-top: 12px; }
+
+  .aviso { margin-top: 14px; font-size: 13.5px; color: var(--gris); background: rgba(23,195,178,.07); border: 1px solid rgba(23,195,178,.28); border-radius: 12px; padding: 12px 15px; }
+  .aviso b { color: var(--blanco); }
+
+  .demo-caja { margin-top: 20px; border: 1px solid var(--linea); background: var(--panel); border-radius: 16px; overflow: hidden; }
+  .demo-cab { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--linea); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--gris); font-weight: 800; }
+  .demo-cab a { color: var(--teal); text-decoration: none; letter-spacing: 0; text-transform: none; font-size: 13px; }
+  .demo-marco { position: relative; height: 460px; background: #0e0d16; }
+  .demo-marco iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .demo-pie { font-size: 13px; color: var(--gris); padding: 12px 16px; }
+  @media (max-width: 620px) { .demo-marco { height: 380px; } }
+  .grupo { margin-top: 22px; }
+  .grupo h2 { font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--gris); font-weight: 800; margin-bottom: 10px; }
+
+  .p { background: var(--panel); border: 1px solid var(--linea); border-radius: 14px; padding: 16px 18px; margin-bottom: 12px; }
+  .p label.q { display: block; font-weight: 700; font-size: 15.5px; margin-bottom: 4px; }
+  .p .ayuda { color: var(--gris); font-size: 13px; margin-bottom: 10px; }
+  .p .obl { color: var(--fucsia); font-weight: 800; }
+
+  input[type=text], textarea, select {
+    width: 100%; background: var(--panel2); color: var(--blanco); border: 1px solid var(--linea);
+    border-radius: 10px; padding: 12px 13px; font: inherit; font-size: 15px; min-height: 46px;
+  }
+  textarea { min-height: 92px; resize: vertical; }
+  input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-visible, a:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+
+  .ops { display: flex; flex-wrap: wrap; gap: 8px; }
+  .ops button {
+    background: var(--panel2); color: var(--blanco); border: 1px solid var(--linea);
+    border-radius: 999px; padding: 11px 16px; font: inherit; font-size: 14px; cursor: pointer; min-height: 44px;
+  }
+  .ops button[aria-pressed="true"] { background: var(--teal); color: #06211e; border-color: transparent; font-weight: 800; }
+
+  .barra { position: fixed; left: 0; right: 0; bottom: 0; background: rgba(20,18,28,.96); backdrop-filter: blur(10px); border-top: 1px solid var(--linea); padding: 12px 5vw calc(12px + env(safe-area-inset-bottom)); z-index: 50; }
+  .barra-in { max-width: 780px; margin: 0 auto; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .barra .cuenta { font-size: 13px; color: var(--gris); }
+  .barra .cuenta b { color: var(--blanco); }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; border: none; cursor: pointer;
+    background: var(--wa); color: #06210f; font-weight: 800; font-size: 15px; padding: 14px 24px; border-radius: 10px; min-height: 48px; }
+  .btn[aria-disabled="true"] { background: var(--panel2); color: var(--gris); cursor: not-allowed; }
+  .btn.ghost { background: transparent; border: 1px solid var(--linea); color: var(--gris); font-weight: 700; padding: 13px 18px; }
+  .barra .der { margin-left: auto; display: flex; gap: 10px; flex-wrap: wrap; }
+
+  .previo { margin-top: 22px; }
+  .previo summary { cursor: pointer; color: var(--gris); font-size: 14px; padding: 10px 0; }
+  .previo pre { white-space: pre-wrap; word-break: break-word; background: #0e0d16; border: 1px solid var(--linea); border-radius: 12px; padding: 15px; font-family: ui-monospace, monospace; font-size: 12.5px; color: #cfc9e6; }
+
+  footer { border-top: 1px solid var(--linea); text-align: center; padding: 26px 5vw 110px; color: var(--gris); font-size: 13px; }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="marca" href="index.html">Katu<span>Web</span></a>
+  <a class="volver" href="index.html#galeria">← Elegir otra pieza</a>
+</nav>
+
+<div class="wrap">
+  <div class="cab">
+    <div class="kick">Armamos tu pedido</div>
+    <h1 id="tit">Pieza</h1>
+    <div class="cod" id="cod">KTW-—</div>
+    <p id="baja"></p>
+    <div class="aviso">
+      Esta pieza <b>no se arma sola en el editor</b>: la construyo yo a mano. Contestá lo que
+      puedas de acá abajo y me llega todo junto por WhatsApp, ordenado y con el código de la
+      pieza. Lo que no sepas, dejalo en blanco: se resuelve hablando.
+    </div>
+  </div>
+
+  <div class="demo-caja" id="demoCaja" hidden>
+    <div class="demo-cab">
+      <span>La pieza andando</span>
+      <a id="demoAbrir" href="#" target="_blank" rel="noopener noreferrer">Abrir en grande ↗</a>
+    </div>
+    <div class="demo-marco">
+      <iframe id="demoFrame" title="Demo de la pieza elegida" loading="lazy"></iframe>
+    </div>
+    <p class="demo-pie">Es la demo de verdad, no una foto: podés hacer scroll y tocar adentro.
+    Mientras contestás, tenela a mano para señalar qué querés distinto.</p>
+  </div>
+
+  <div id="preguntas"></div>
+
+  <details class="previo">
+    <summary>Ver el mensaje que se va a enviar</summary>
+    <pre id="vista">—</pre>
+  </details>
+</div>
+
+<div class="barra">
+  <div class="barra-in">
+    <div class="cuenta"><b id="hechas">0</b> de <span id="total">0</span> contestadas</div>
+    <div class="der">
+      <a class="btn ghost" href="index.html#galeria">Cancelar</a>
+      <a class="btn" id="enviar" href="#" target="_blank" rel="noopener noreferrer">Enviar por WhatsApp</a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <strong style="color:var(--blanco)">KatuWeb</strong> · Páginas web para negocios paraguayos · Asunción
+</footer>
+
+<script>
+(function () {
+  'use strict';
+  var WA = '595983518856';
+
+  /* ===== las piezas que no se arman en el editor, cada una con sus preguntas =====
+     Tipos: 'texto' (una línea), 'largo' (varias), 'opcion' (elegir una de la lista).
+     Las marcadas obl:true son las que sin ellas no puedo ni empezar. */
+  var PIEZAS = {
+    tienda: {
+      n: 'Tienda monoproducto', cod: 'KTW-745AK',
+      baja: 'Una página entera para un solo producto. Todo el peso va al relato y a una sola cosa para hacer.',
+      qs: [
+        { id:'prod', t:'¿Cuál es el producto?', a:'Nombre y en una línea qué es.', tipo:'texto', obl:true },
+        { id:'porque', t:'¿Por qué alguien lo compraría a vos y no a otro?', a:'Lo que lo hace distinto. Escribilo como se lo contarías a un amigo, sin vender.', tipo:'largo', obl:true },
+        { id:'var', t:'¿Tiene variantes?', a:'Tamaños, colores, sabores, presentaciones. Poné cada una con su precio.', tipo:'largo' },
+        { id:'precio', t:'Precio', a:'Si hay más de uno, el de la variante más pedida.', tipo:'texto', obl:true },
+        { id:'fotos', t:'¿Qué fotos tenés?', a:'Sobre fondo blanco, en uso, de cerca, con algo al lado para dar tamaño. Si no tenés ninguna, decilo.', tipo:'opcion', ops:['Tengo varias buenas','Tengo pocas y regulares','No tengo, las necesito'] },
+        { id:'envio', t:'Envío y entrega', a:'A dónde llega, cuánto sale, cuánto tarda, si se puede retirar.', tipo:'largo' },
+        { id:'preg', t:'Las 3 preguntas que te hacen siempre', a:'Las que repetís todos los días por WhatsApp. Van en la página y te las sacás de encima.', tipo:'largo' }
+      ]
+    },
+    carrito: {
+      n: 'Catálogo chico con carrito', cod: 'KTW-HAKI4',
+      baja: 'De 2 a 20 productos, con ficha de cada uno y un carrito que arma el pedido y lo manda por WhatsApp.',
+      qs: [
+        { id:'cuantos', t:'¿Cuántos productos vas a mostrar?', tipo:'texto', obl:true },
+        { id:'lista', t:'¿Tenés la lista con precios?', a:'En planilla, en cuaderno, en la cabeza. Todo sirve, cambia el tiempo que lleva.', tipo:'opcion', ops:['Sí, en planilla','Sí, en papel o en el celular','No la tengo armada'], obl:true },
+        { id:'colec', t:'¿Se agrupan en colecciones?', a:'Por ejemplo: velas, textiles, cerámica. Si es una sola bolsa de productos, decilo.', tipo:'largo' },
+        { id:'stock', t:'¿Manejás stock?', a:'Si algo se agota, ¿querés que la página lo muestre como agotado?', tipo:'opcion', ops:['Sí, quiero marcar agotados','No, siempre hay','Todavía no sé'] },
+        { id:'fotos', t:'¿Las fotos son parejas entre sí?', a:'Misma luz y mismo encuadre en todas es lo que separa una grilla profesional de una amateur.', tipo:'opcion', ops:['Sí, todas iguales','Son de distintos días','No tengo fotos'] },
+        { id:'envio', t:'Envío, retiro y formas de pago', tipo:'largo' }
+      ]
+    },
+    filtros: {
+      n: 'Catálogo grande con filtros', cod: 'KTW-EOU5X',
+      baja: 'Más de 20 productos, con buscador y filtros. Acá encontrar pesa más que decorar: si no se encuentra, no se vende.',
+      qs: [
+        { id:'cuantos', t:'¿Cuántos productos, más o menos?', tipo:'texto', obl:true },
+        { id:'planilla', t:'¿Los tenés en planilla?', a:'Es lo que más acelera todo. Si están en el sistema de facturación, también sirve exportarlos.', tipo:'opcion', ops:['Sí, en Excel o Sheets','En un sistema, se puede exportar','No, hay que cargarlos a mano'], obl:true },
+        { id:'rubros', t:'¿En qué rubros se dividen?', a:'Escribilos separados por coma, como los diría un cliente en el mostrador.', tipo:'largo', obl:true },
+        { id:'atrib', t:'¿Por qué otra cosa buscan tus clientes?', a:'Medida, material, marca, potencia. Eso son los filtros. Es la pregunta más importante de todas.', tipo:'largo', obl:true },
+        { id:'cambio', t:'¿Cada cuánto cambian los precios?', a:'Define si conviene que los cargues vos o que los actualice yo.', tipo:'opcion', ops:['Casi nunca','Cada varios meses','Todos los meses','Todo el tiempo'] },
+        { id:'fotos', t:'¿Cuántos tienen foto?', a:'Los que no tengan igual entran; se ven distinto pero no quedan huecos.', tipo:'texto' }
+      ]
+    },
+    ficha: {
+      n: 'Ficha de producto reutilizable', cod: 'KTW-GBOQA',
+      baja: 'La plantilla que se repite en todos los productos, con los datos que Google necesita para mostrar precio y stock en los resultados.',
+      qs: [
+        { id:'ejemplo', t:'Elegí un producto de ejemplo y contame todo de él', a:'Con uno cargado completo alcanza: el resto se copia de ese molde.', tipo:'largo', obl:true },
+        { id:'var', t:'¿Tus productos tienen variantes?', a:'Color, talle, medida. Cambia si la ficha lleva selector o no.', tipo:'opcion', ops:['Sí, casi todos','Algunos','Ninguno'] },
+        { id:'cuotas', t:'¿Vendés en cuotas?', a:'Si sí, cuántas y con qué recargo.', tipo:'texto' },
+        { id:'garantia', t:'Garantía y devoluciones', a:'Lo que decís hoy cuando te preguntan.', tipo:'largo' },
+        { id:'relac', t:'¿Querés mostrar productos relacionados?', tipo:'opcion', ops:['Sí','No','Después'] }
+      ]
+    },
+    setfoto: {
+      n: 'Set de fotografía de producto', cod: 'KTW-3H3SB',
+      baja: 'Las cinco tomas que necesita cada producto, con la misma luz y el mismo encuadre en todas.',
+      qs: [
+        { id:'que', t:'¿Qué productos hay que fotografiar?', a:'Qué son y cuántos.', tipo:'largo', obl:true },
+        { id:'tam', t:'¿De qué tamaño son?', a:'Cambia todo el armado: no es lo mismo un anillo que una heladera.', tipo:'texto', obl:true },
+        { id:'donde', t:'¿Dónde se hace?', tipo:'opcion', ops:['Voy yo al local','Te acerco los productos','Te mando fotos crudas para retocar'], obl:true },
+        { id:'brillo', t:'¿Alguno es brillante, transparente o espejado?', a:'Vidrio, acero, joyería. Se iluminan distinto y llevan más tiempo.', tipo:'opcion', ops:['Sí','No','Algunos'] },
+        { id:'uso', t:'¿Dónde vas a usar las fotos?', a:'La página, Instagram, catálogo impreso, marketplace. Define recortes y medidas.', tipo:'largo' }
+      ]
+    },
+    videobucle: {
+      n: 'Hero con video en bucle', cod: 'KTW-TQVTW',
+      baja: 'Un video corto de portada que va y vuelve, así el corte no se nota nunca.',
+      qs: [
+        { id:'obj', t:'¿Qué tiene que estar moviéndose?', a:'Lo que se mueve es lo que vende: el fuego de la parrilla, el vapor del plato, las manos trabajando.', tipo:'largo', obl:true },
+        { id:'mood', t:'¿Qué sensación querés que deje?', a:'Una o dos palabras alcanzan: cálido, nocturno, limpio, artesanal.', tipo:'texto', obl:true },
+        { id:'material', t:'¿Tenés fotos o video de eso?', a:'Con dos fotos del mismo momento con un instante de diferencia ya se puede hacer sin video.', tipo:'opcion', ops:['Tengo video','Tengo fotos','No tengo nada'], obl:true },
+        { id:'texto', t:'¿Qué dice el titular encima?', tipo:'texto' }
+      ]
+    },
+    fondoscroll: {
+      n: 'Fondo conducido por scroll', cod: 'KTW-L7GY8',
+      baja: 'El fondo avanza cuadro a cuadro con el dedo del visitante: él maneja el tiempo.',
+      qs: [
+        { id:'proceso', t:'¿Qué proceso querés mostrar?', a:'Tiene que ser algo con principio y final: una obra que se levanta, una pieza que se arma, un plato que se cocina.', tipo:'largo', obl:true },
+        { id:'etapas', t:'¿Cuáles son las etapas?', a:'En orden. Cuatro o cinco funcionan mejor que diez.', tipo:'largo', obl:true },
+        { id:'material', t:'¿Tenés video del proceso?', tipo:'opcion', ops:['Sí, filmado','Fotos de cada etapa','Nada, hay que armarlo por computadora'], obl:true },
+        { id:'texto', t:'¿Qué texto acompaña cada etapa?', a:'Una línea por etapa.', tipo:'largo' }
+      ]
+    },
+    gira3d: {
+      n: 'Producto 3D que gira', cod: 'KTW-K3LOM',
+      baja: 'El producto rota sobre su eje mientras el visitante baja. Se arma con fotos tomadas en círculo, no con video.',
+      qs: [
+        { id:'prod', t:'¿Qué producto querés que gire?', a:'Uno solo. Conviene el que más vendés o el que más cuesta explicar.', tipo:'texto', obl:true },
+        { id:'tam', t:'¿Qué tamaño tiene?', a:'Define si se hace sobre una base giratoria o dando vueltas alrededor.', tipo:'texto', obl:true },
+        { id:'fotos', t:'¿Podés sacarle entre 24 y 36 fotos girando?', a:'Sobre una base que gire de a poco, sin mover la cámara. Si no, lo hacemos nosotros.', tipo:'opcion', ops:['Sí, puedo','Prefiero que lo hagan ustedes','No sé cómo'], obl:true },
+        { id:'detalle', t:'¿Qué parte hay que mostrar sí o sí?', a:'El detalle que decide la compra.', tipo:'largo' }
+      ]
+    },
+    rescate: {
+      n: 'Fotos del cliente rescatadas', cod: 'KTW-LCZKD',
+      baja: 'Las fotos que ya tenés, agrandadas, limpiadas y emparejadas de color para que entren en la página sin bajar el nivel.',
+      qs: [
+        { id:'cuantas', t:'¿Cuántas fotos son?', tipo:'texto', obl:true },
+        { id:'como', t:'¿Cómo están?', a:'Sé honesto, no cambia el precio: cambia lo que se puede prometer.', tipo:'opcion', ops:['Borrosas o movidas','Oscuras','Chicas, de WhatsApp','Un poco de todo'], obl:true },
+        { id:'donde', t:'¿De dónde salen?', a:'Del celular, de Instagram, de un CD viejo. Si están en Instagram bajan con menos calidad que el original.', tipo:'texto' },
+        { id:'para', t:'¿Para qué las vas a usar?', a:'Portada, galería, catálogo. Define hasta dónde hay que agrandarlas.', tipo:'largo' }
+      ]
+    },
+    sala: {
+      n: 'Salón 3D navegable', cod: 'KTW-WUK7J',
+      baja: 'El visitante queda parado adentro del local y gira 360° con el dedo. Cada pared es una sección.',
+      qs: [
+        { id:'local', t:'¿Cómo es el local?', a:'Un salón, varios ambientes, patio. Contame la recorrida como se la harías a alguien que entra.', tipo:'largo', obl:true },
+        { id:'fotos', t:'¿Tenés fotos del local?', a:'Idealmente una desde cada esquina, con luz de día.', tipo:'opcion', ops:['Sí, varias','Pocas','No tengo'], obl:true },
+        { id:'paredes', t:'¿Qué querés que haya en cada pared?', a:'Menú, fotos, horarios, promos, reservas.', tipo:'largo' },
+        { id:'llegada', t:'¿Dónde querés que aparezca parado el visitante?', a:'El punto desde el que se ve mejor el lugar.', tipo:'texto' }
+      ]
+    },
+    ar: {
+      n: 'Menú 3D con cámara', cod: 'KTW-4I4G6',
+      baja: 'El cliente apunta la cámara del celular y ve el plato apoyado en su mesa, a tamaño real.',
+      qs: [
+        { id:'platos', t:'¿Qué platos querés en 3D?', a:'Empezá por uno o dos: los que más se piden o los que más sorprenden.', tipo:'largo', obl:true },
+        { id:'escaneo', t:'¿Podés escanear el plato real con un celular?', a:'Se da vueltas alrededor del plato con una app. Toma unos minutos por plato.', tipo:'opcion', ops:['Sí, puedo','Prefiero que vayan ustedes','No sé cómo'], obl:true },
+        { id:'carta', t:'¿Tenés la carta completa en digital?', tipo:'opcion', ops:['Sí','En papel','No'] }
+      ]
+    },
+    viajes: {
+      n: 'Armador de viajes 3D', cod: 'KTW-8BXM5',
+      baja: 'El visitante elige el mes, toca su país en el mapa, se acerca a la ciudad y arma el viaje con precio final.',
+      qs: [
+        { id:'destinos', t:'¿Qué destinos vendés?', a:'Los que más salen. Con cinco o seis ya se arma.', tipo:'largo', obl:true },
+        { id:'hoteles', t:'¿Trabajás con hoteles fijos?', a:'Si sí, cuáles por destino.', tipo:'largo' },
+        { id:'precios', t:'¿Los precios los ponés vos o vienen de un sistema?', a:'Cambia si la página los tiene cargados o los consulta.', tipo:'opcion', ops:['Los cargo yo','Vienen de un sistema','Cotizo cada caso'], obl:true },
+        { id:'temporada', t:'¿Cambian por temporada?', tipo:'texto' }
+      ]
+    }
+  };
+
+  var DEMOS = {
+    tienda:'ejemplos/tienda-monoproducto.html', carrito:'ejemplos/catalogo-chico-carrito.html',
+    filtros:'ejemplos/catalogo-grande-filtros.html', ficha:'ejemplos/ficha-producto.html',
+    setfoto:'ejemplos/set-fotografia-producto.html', videobucle:'ejemplos/hero-video-bucle.html',
+    fondoscroll:'ejemplos/fondo-scroll.html', gira3d:'ejemplos/producto-3d-gira.html',
+    rescate:'ejemplos/fotos-rescatadas.html', sala:'ejemplos/sala-3d-restaurante.html',
+    ar:'ejemplos/extra-menu-3d/menu-3d-ar.html', viajes:'ejemplos/inmersivo-agencia-viajes.html'
+  };
+
+  function $(id) { return document.getElementById(id); }
+
+  var m = location.search.match(/[?&]pieza=([a-z0-9]+)/);
+  var clave = m && PIEZAS[m[1]] ? m[1] : null;
+
+  if (!clave) {
+    $('tit').textContent = 'Elegí una pieza';
+    $('cod').style.display = 'none';
+    $('baja').textContent = 'Entrá desde la galería y tocá la pieza que te interesa: acá aparecen las preguntas que le corresponden.';
+    $('preguntas').innerHTML = '';
+    var ir = document.createElement('a');
+    ir.className = 'btn'; ir.href = 'index.html#galeria'; ir.textContent = 'Ir a la galería';
+    ir.style.marginTop = '18px'; ir.style.display = 'inline-flex';
+    $('preguntas').appendChild(ir);
+    $('enviar').setAttribute('aria-disabled', 'true');
+    $('enviar').removeAttribute('href');
+    return;
+  }
+
+  var P = PIEZAS[clave];
+  var resp = {};
+
+  document.title = P.n + ' — armar el pedido · KatuWeb';
+  $('tit').textContent = P.n;
+  $('cod').textContent = P.cod;
+  $('baja').textContent = P.baja;
+  $('total').textContent = P.qs.length;
+
+  /* la mini pantalla con la demo de esta pieza, andando de verdad */
+  if (DEMOS[clave]) {
+    $('demoCaja').hidden = false;
+    $('demoFrame').src = DEMOS[clave];
+    $('demoAbrir').href = DEMOS[clave];
+  }
+
+  var cont = $('preguntas');
+  var g = document.createElement('div');
+  g.className = 'grupo';
+  var h2 = document.createElement('h2');
+  h2.textContent = 'Lo que necesito saber';
+  g.appendChild(h2);
+
+  P.qs.forEach(function (q) {
+    var caja = document.createElement('div');
+    caja.className = 'p';
+
+    var lab = document.createElement('label');
+    lab.className = 'q';
+    lab.setAttribute('for', 'c-' + q.id);
+    lab.textContent = q.t;
+    if (q.obl) {
+      var est = document.createElement('span');
+      est.className = 'obl'; est.textContent = ' *';
+      est.title = 'Sin esto no puedo arrancar';
+      lab.appendChild(est);
+    }
+    caja.appendChild(lab);
+
+    if (q.a) {
+      var ay = document.createElement('div');
+      ay.className = 'ayuda'; ay.textContent = q.a;
+      caja.appendChild(ay);
+    }
+
+    if (q.tipo === 'opcion') {
+      var ops = document.createElement('div');
+      ops.className = 'ops';
+      ops.id = 'c-' + q.id;
+      ops.setAttribute('role', 'group');
+      ops.setAttribute('aria-label', q.t);
+      q.ops.forEach(function (o) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.textContent = o;
+        b.setAttribute('aria-pressed', 'false');
+        b.addEventListener('click', function () {
+          var yaEstaba = b.getAttribute('aria-pressed') === 'true';
+          ops.querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', 'false'); });
+          if (yaEstaba) { delete resp[q.id]; }
+          else { b.setAttribute('aria-pressed', 'true'); resp[q.id] = o; }
+          pintar();
+        });
+        ops.appendChild(b);
+      });
+      caja.appendChild(ops);
+    } else {
+      var campo = q.tipo === 'largo' ? document.createElement('textarea') : document.createElement('input');
+      if (q.tipo !== 'largo') campo.type = 'text';
+      campo.id = 'c-' + q.id;
+      campo.addEventListener('input', function () {
+        var v = campo.value.trim();
+        if (v) resp[q.id] = v; else delete resp[q.id];
+        pintar();
+      });
+      caja.appendChild(campo);
+    }
+
+    g.appendChild(caja);
+  });
+
+  /* datos del negocio, iguales para todas las piezas */
+  var g2 = document.createElement('div');
+  g2.className = 'grupo';
+  var h3 = document.createElement('h2');
+  h3.textContent = 'Tus datos';
+  g2.appendChild(h3);
+  [
+    { id:'negocio', t:'Nombre del negocio', tipo:'texto' },
+    { id:'rubro', t:'Rubro', a:'Ferretería, parrilla, boutique.', tipo:'texto' },
+    { id:'ciudad', t:'Ciudad', tipo:'texto' },
+    { id:'cuando', t:'¿Para cuándo lo necesitás?', tipo:'opcion', ops:['No hay apuro','Este mes','Es urgente'] }
+  ].forEach(function (q) {
+    var caja = document.createElement('div');
+    caja.className = 'p';
+    var lab = document.createElement('label');
+    lab.className = 'q'; lab.setAttribute('for', 'c-' + q.id); lab.textContent = q.t;
+    caja.appendChild(lab);
+    if (q.a) { var ay = document.createElement('div'); ay.className = 'ayuda'; ay.textContent = q.a; caja.appendChild(ay); }
+    if (q.tipo === 'opcion') {
+      var ops = document.createElement('div'); ops.className = 'ops'; ops.id = 'c-' + q.id;
+      ops.setAttribute('role', 'group'); ops.setAttribute('aria-label', q.t);
+      q.ops.forEach(function (o) {
+        var b = document.createElement('button'); b.type = 'button'; b.textContent = o;
+        b.setAttribute('aria-pressed', 'false');
+        b.addEventListener('click', function () {
+          var ya = b.getAttribute('aria-pressed') === 'true';
+          ops.querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', 'false'); });
+          if (ya) delete resp[q.id]; else { b.setAttribute('aria-pressed', 'true'); resp[q.id] = o; }
+          pintar();
+        });
+        ops.appendChild(b);
+      });
+      caja.appendChild(ops);
+    } else {
+      var campo = document.createElement('input'); campo.type = 'text'; campo.id = 'c-' + q.id;
+      campo.addEventListener('input', function () {
+        var v = campo.value.trim(); if (v) resp[q.id] = v; else delete resp[q.id];
+        pintar();
+      });
+      caja.appendChild(campo);
+    }
+    g2.appendChild(caja);
+  });
+
+  cont.appendChild(g);
+  cont.appendChild(g2);
+
+  /* ===== el mensaje: mismo formato siempre, para poder leerlo de un vistazo ===== */
+  function armar() {
+    var l = [];
+    l.push('*PEDIDO DE PIEZA · KATUWEB*');
+    l.push(P.n + '  ·  ' + P.cod);
+    l.push('━━━━━━━━━━━━━━━');
+    l.push('');
+    P.qs.forEach(function (q) {
+      l.push('*' + q.t + '*');
+      l.push(resp[q.id] ? resp[q.id] : '(sin contestar)');
+      l.push('');
+    });
+    l.push('━━━━━━━━━━━━━━━');
+    l.push('*MI NEGOCIO*');
+    l.push('Nombre: ' + (resp.negocio || '(sin completar)'));
+    l.push('Rubro: ' + (resp.rubro || '(sin completar)'));
+    l.push('Ciudad: ' + (resp.ciudad || '(sin completar)'));
+    l.push('Plazo: ' + (resp.cuando || '(sin completar)'));
+    l.push('');
+    l.push('_Armado desde la página de KatuWeb._');
+    return l.join('\n');
+  }
+
+  function pintar() {
+    var hechas = P.qs.filter(function (q) { return resp[q.id]; }).length;
+    $('hechas').textContent = hechas;
+    var texto = armar();
+    $('vista').textContent = texto;
+    var e = $('enviar');
+    /* se habilita apenas contesta una: prefiero un pedido incompleto a ninguno */
+    if (hechas > 0) {
+      e.setAttribute('href', 'https://wa.me/' + WA + '?text=' + encodeURIComponent(texto));
+      e.removeAttribute('aria-disabled');
+    } else {
+      e.removeAttribute('href');
+      e.setAttribute('aria-disabled', 'true');
+    }
+  }
+
+  pintar();
+})();
+</script>
+</body>
+</html>

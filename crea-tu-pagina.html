@@ -85,7 +85,7 @@
   }
   .phone-top { height: 22px; background: #1c1c1c; display: flex; justify-content: center; align-items: center; }
   .phone-top::after { content: ""; width: 70px; height: 7px; border-radius: 99px; background: #3a3a3a; }
-  .screen { height: 560px; overflow-y: auto; }
+  .screen { height: 560px; overflow-y: auto; position: relative; }
   .prev-note { text-align: center; font-size: 12px; color: var(--muted); margin-top: 10px; }
 
   /* ===== Preview themes (variables set by JS) ===== */
@@ -564,9 +564,19 @@ Sopa paraguaya — 10.000"></textarea>
     <div class="preview-col">
       <div class="phone">
         <div class="phone-top"></div>
-        <div class="screen"><div class="pv" id="pv"></div></div>
+        <div class="screen">
+          <div class="pv" id="pv"></div>
+          <iframe id="pvDemo" title="Demo original de la pieza" loading="lazy"
+                  style="display:none;position:absolute;inset:0;width:100%;height:100%;border:0;background:#fff"></iframe>
+        </div>
       </div>
-      <p class="prev-note">Vista previa en vivo — así se verá en un celular. Podés hacer scroll adentro.</p>
+      <div id="cambiaVista" style="display:none;gap:6px;margin-top:10px;justify-content:center">
+        <button type="button" id="vMia" aria-pressed="true"
+          style="background:#2a78d6;color:#fff;border:none;border-radius:999px;padding:9px 15px;font:inherit;font-size:12.5px;font-weight:800;cursor:pointer;min-height:40px">Tu página</button>
+        <button type="button" id="vDemo" aria-pressed="false"
+          style="background:transparent;color:#8d87a5;border:1px solid #322d45;border-radius:999px;padding:9px 15px;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer;min-height:40px">La demo original</button>
+      </div>
+      <p class="prev-note" id="notaPrev">Vista previa en vivo — así se verá en un celular. Podés hacer scroll adentro.</p>
     </div>
   </div>
 </div>
@@ -663,6 +673,15 @@ Sopa paraguaya — 10.000"></textarea>
      crea-tu-pagina.html?pieza=<clave>. La pieza fija el estilo base, prende las
      secciones que esa pieza necesita y viaja en el brief, así lo que llega por
      WhatsApp dice exactamente qué se está pidiendo. */
+  var DEMOS = {
+    clasico:'ejemplos/clasico-calido-restaurante.html', minimal:'ejemplos/minimal-moderno-boutique.html',
+    prof:'ejemplos/profesional-confianza-consultorio.html', bold:'ejemplos/bold-oscuro-barberia.html',
+    neon:'ejemplos/neon-creativo-agencia.html', grad:'ejemplos/degradado-vibrante-eventos.html',
+    tech:'ejemplos/tech-bento-startup.html', revista:'ejemplos/revista-collage-tienda.html',
+    edit:'ejemplos/editorial-90s-tatuajes.html', conv:'ejemplos/conversion-smb-servicio.html',
+    darkpro:'ejemplos/dark-premium-ferreteria.html', cine:'ejemplos/scroll-cine-constructora.html'
+  };
+
   var PIEZAS = {
     /* estilos completos: la pieza ES el estilo */
     clasico:   { n: 'Clásico Cálido',            e: 'clasico', sec: ['menu','galeria','sobre','horarios','mapa'] },
@@ -1237,13 +1256,45 @@ Sopa paraguaya — 10.000"></textarea>
     nm.textContent = P.n;
     var ay = document.createElement('span');
     ay.style.cssText = 'color:#8d87a5';
-    ay.textContent = '· ya te dejé el estilo y las secciones que lleva. Cambiá lo que quieras.';
+    var FIJAS = { conv: 1, darkpro: 1, cine: 1 };
+    ay.textContent = FIJAS[piezaActual]
+      ? '· esta pieza tiene su estructura armada. Acá elegís el color, la tipografía y las secciones.'
+      : '· ya te dejé el estilo y las secciones que lleva. Cambiá lo que quieras.';
     var vol = document.createElement('a');
     vol.href = 'index.html#galeria';
     vol.style.cssText = 'margin-left:auto;color:#17c3b2;text-decoration:none;font-weight:700';
     vol.textContent = 'Elegir otra pieza';
     aviso.appendChild(et); aviso.appendChild(nm); aviso.appendChild(ay); aviso.appendChild(vol);
     document.body.insertBefore(aviso, document.body.firstChild);
+
+    /* la mini pantalla puede mostrar la demo real de la pieza elegida */
+    var urlDemo = DEMOS[piezaActual];
+    if (urlDemo) {
+      var barra = document.getElementById('cambiaVista');
+      var marco = document.getElementById('pvDemo');
+      var mia = document.getElementById('vMia');
+      var dem = document.getElementById('vDemo');
+      var nota = document.getElementById('notaPrev');
+      barra.style.display = 'flex';
+      function verDemo(si) {
+        if (si && !marco.src) marco.src = urlDemo;      /* recién se baja cuando se pide */
+        marco.style.display = si ? 'block' : 'none';
+        $('pv').style.display = si ? 'none' : '';
+        mia.setAttribute('aria-pressed', si ? 'false' : 'true');
+        dem.setAttribute('aria-pressed', si ? 'true' : 'false');
+        mia.style.background = si ? 'transparent' : '#2a78d6';
+        mia.style.color = si ? '#8d87a5' : '#fff';
+        mia.style.border = si ? '1px solid #322d45' : 'none';
+        dem.style.background = si ? '#2a78d6' : 'transparent';
+        dem.style.color = si ? '#fff' : '#8d87a5';
+        dem.style.border = si ? 'none' : '1px solid #322d45';
+        nota.textContent = si
+          ? 'La demo original de esta pieza, andando de verdad. Tocá "Tu página" para volver a lo tuyo.'
+          : 'Vista previa en vivo — así se verá en un celular. Podés hacer scroll adentro.';
+      }
+      mia.addEventListener('click', function () { verDemo(false); });
+      dem.addEventListener('click', function () { verDemo(true); });
+    }
   }
 
   // preselección por URL: crea-tu-pagina.html?estilo=neon&nombre=Mi%20Negocio&vista=proyecto

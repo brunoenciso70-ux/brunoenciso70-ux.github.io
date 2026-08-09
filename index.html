@@ -668,9 +668,18 @@
     document.getElementById('lbTitulo').childNodes[0].textContent = s.nombre;
     document.getElementById('lbPara').textContent = s.para;
     document.getElementById('lbAbrir').href = s.demo;
-    /* el botón abre el editor apuntado a ESTA pieza: estilo, secciones y nombre ya puestos */
-    document.getElementById('lbArmar').href = 'crea-tu-pagina.html?pieza=' + encodeURIComponent(key);
-    document.getElementById('lbArmar').textContent = 'Editar esta pieza';
+    /* Dos caminos según la pieza:
+       las que el editor sabe dibujar se abren para editar;
+       las que construyo a mano van al cuestionario, que arma el pedido con su código. */
+    var EDITABLES = ['clasico','minimal','prof','bold','neon','grad','tech','revista','edit','conv','darkpro','cine'];
+    var armar = document.getElementById('lbArmar');
+    if (EDITABLES.indexOf(key) >= 0) {
+      armar.href = 'crea-tu-pagina.html?pieza=' + encodeURIComponent(key);
+      armar.textContent = 'Editar esta pieza';
+    } else {
+      armar.href = 'pedido.html?pieza=' + encodeURIComponent(key);
+      armar.textContent = 'Pedir esta pieza';
+    }
     lbFrame.src = s.demo;
     teñir(key);
     lb.classList.add('on');
