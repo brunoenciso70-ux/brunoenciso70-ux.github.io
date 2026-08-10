@@ -253,6 +253,94 @@
   .btn:hover{background:var(--rojoT)}
   .ficha[hidden]{display:none}
 
+  /* ---------- el probador ---------- */
+  .probador{padding:clamp(46px,9vh,90px) 0 0}
+  .pbGrid{
+    display:grid; gap:22px; grid-template-columns:1fr; align-items:start;
+    margin-top:6px;
+  }
+  .pbEscena{
+    position:relative; width:100%; max-width:420px; margin:0 auto;
+    aspect-ratio:3/5; background:var(--papel2);
+    border:1px solid var(--linea); overflow:hidden;
+  }
+  .pbEscena::after{
+    content:""; position:absolute; left:8%; right:8%; bottom:5%; height:2.2%;
+    border-radius:50%; background:rgba(17,17,17,.13); filter:blur(6px);
+  }
+  .pbCapa{
+    position:absolute; display:block; opacity:0;
+    transition:opacity .28s ease;
+    will-change:opacity;
+  }
+  .pbCapa.on{opacity:1}
+  @media (prefers-reduced-motion: reduce){ .pbCapa{transition:none} }
+  .pbVacio{
+    position:absolute; inset:auto 0 42% 0; text-align:center;
+    font-size:13px; color:var(--tinta2); letter-spacing:.04em;
+  }
+  .pbLinea{
+    display:flex; gap:8px; margin:0 0 18px; padding:0; list-style:none;
+  }
+  .pbLinea button{
+    -webkit-appearance:none; appearance:none; cursor:pointer;
+    font:inherit; font-size:13px; letter-spacing:.14em; text-transform:uppercase;
+    min-height:44px; padding:0 18px; border:1px solid var(--linea);
+    background:transparent; color:var(--tinta2);
+  }
+  .pbLinea button[aria-pressed="true"]{
+    background:var(--tinta); color:var(--papel); border-color:var(--tinta);
+  }
+  .pbRot{
+    margin:0 0 8px; font-size:12px; letter-spacing:.18em;
+    text-transform:uppercase; color:var(--rojoT);
+  }
+  .pbFila{
+    display:flex; gap:10px; margin:0 0 20px; padding:0 0 4px; list-style:none;
+    overflow-x:auto; -webkit-overflow-scrolling:touch;
+  }
+  .pbFila li{flex:0 0 auto}
+  .pbPrenda{
+    -webkit-appearance:none; appearance:none; cursor:pointer;
+    display:block; width:88px; min-height:88px; padding:6px 4px 8px;
+    border:1px solid var(--linea); background:var(--papel2);
+    color:var(--tinta); font:inherit; text-align:center;
+  }
+  .pbPrenda img{display:block; width:100%; height:auto; margin:0 auto 4px}
+  .pbPrenda .pbN{display:block; font-size:11px; line-height:1.25; color:var(--tinta2)}
+  .pbPrenda[aria-pressed="true"]{
+    border-color:var(--tinta); background:var(--papel);
+    box-shadow:inset 0 0 0 1px var(--tinta);
+  }
+  .pbPrenda[aria-pressed="true"] .pbN{color:var(--tinta); font-weight:600}
+  .pbResumen{
+    border-top:1px solid var(--linea); padding-top:16px;
+  }
+  .pbResumen dl{margin:0 0 14px; font-size:14px}
+  .pbResumen dt{
+    font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--tinta2); margin-bottom:2px;
+  }
+  .pbResumen dd{margin:0 0 10px}
+  .pbTotal{
+    font-size:clamp(22px,4vw,32px); font-weight:600; letter-spacing:-.02em;
+    margin:0 0 14px;
+  }
+  .pbFalta{margin:-8px 0 14px; font-size:13px; color:var(--rojoT)}
+  .pbTalles{display:flex; gap:8px; margin:0 0 16px; padding:0; list-style:none}
+  .pbTalles button{
+    -webkit-appearance:none; appearance:none; cursor:pointer; font:inherit;
+    min-width:44px; min-height:44px; border:1px solid var(--linea);
+    background:transparent; color:var(--tinta2);
+  }
+  .pbTalles button[aria-pressed="true"]{
+    background:var(--tinta); color:var(--papel); border-color:var(--tinta);
+  }
+  @media (min-width:860px){
+    .pbGrid{grid-template-columns:minmax(300px,420px) 1fr; gap:40px}
+    .pbEscena{margin:0}
+  }
+
   /* ---------- la talla ---------- */
   .talla{padding:clamp(48px,9vh,92px) 0 clamp(20px,4vh,40px)}
   .tallesBar{display:flex; flex-wrap:wrap; gap:8px; margin:18px 0 26px; padding:0; list-style:none}
@@ -426,7 +514,7 @@
   <section class="prendas" aria-labelledby="hPrendas">
     <div class="env">
       <h2 class="tit rev" id="hPrendas" data-letras="1">Las prendas</h2>
-      <p class="nota">Seis. Las siluetas están dibujadas con código, no fotografiadas: en la tienda real de un cliente van las fotos de sus prendas. Precios de ejemplo en guaraníes.</p>
+      <p class="nota">Seis. Acá las siluetas están dibujadas con código —cero peso, cero fotos— y más abajo, en el probador, están las fotos reales. Las dos formas conviven: la que se usa depende de si el cliente tiene fotos parejas de todo el catálogo. Precios de ejemplo en guaraníes.</p>
 
       <div class="grilla" id="grilla">
         <!-- remera -->
@@ -552,6 +640,54 @@
         <div>
           <p class="desc" style="margin-top:0">Talles disponibles</p>
           <ul class="talles" id="fTal"></ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============ el probador ============ -->
+  <section class="probador" aria-labelledby="hProb">
+    <div class="env">
+      <h2 class="tit rev" id="hProb" data-letras="1">El probador</h2>
+      <p class="nota">Elegí una prenda de arriba y una de abajo: el maniquí se viste solo. Son fotos reales de prendas sobre maniquí invisible, recortadas y alineadas para que cualquier combinación quede bien puesta. Precios de ejemplo.</p>
+
+      <ul class="pbLinea" role="list">
+        <li><button class="pbL" type="button" data-linea="h" aria-pressed="true">Hombre</button></li>
+        <li><button class="pbL" type="button" data-linea="m" aria-pressed="false">Mujer</button></li>
+      </ul>
+
+      <div class="pbGrid">
+        <div class="pbEscena" id="pbEscena" aria-hidden="true">
+          <p class="pbVacio" id="pbVacio">Elegí una prenda</p>
+        </div>
+
+        <div>
+          <p class="pbRot">Arriba</p>
+          <ul class="pbFila" id="pbArriba" role="list"></ul>
+
+          <p class="pbRot">Abajo</p>
+          <ul class="pbFila" id="pbAbajo" role="list"></ul>
+
+          <div class="pbResumen">
+            <dl>
+              <dt>Conjunto</dt>
+              <dd id="pbNom">Todavía no elegiste nada</dd>
+            </dl>
+            <p class="pbTotal" id="pbTotal">—</p>
+            <p class="pbFalta" id="pbFalta" hidden>Falta elegir la otra prenda.</p>
+
+            <p class="pbRot">Talle</p>
+            <ul class="pbTalles" id="pbTalles" role="list">
+              <li><button type="button" data-t="S" aria-pressed="false">S</button></li>
+              <li><button type="button" data-t="M" aria-pressed="true">M</button></li>
+              <li><button type="button" data-t="L" aria-pressed="false">L</button></li>
+              <li><button type="button" data-t="XL" aria-pressed="false">XL</button></li>
+            </ul>
+
+            <a class="btn" id="pbBtn" href="https://wa.me/595983518856" target="_blank" rel="noopener noreferrer">Pedir este conjunto</a>
+            <p class="nota" id="pbAviso" style="margin:14px 0 0" role="status">El pedido se manda por WhatsApp con las dos prendas y el talle.</p>
+          </div>
         </div>
       </div>
     </div>
@@ -1126,7 +1262,182 @@
   });
 
   /* ============================================================
-     12 · la tabla de talles
+     12 · el probador — el maniquí se viste con lo que elegís
+     ------------------------------------------------------------
+     Cada prenda es un PNG recortado sobre un lienzo virtual de 900x1500.
+     Guardo la caja de cada una en fracciones de ese lienzo, así la escena
+     escala sola: no hay medidas en píxeles en ningún lado.
+     La de arriba se dibuja después que la de abajo y la tapa en la cintura.
+     ============================================================ */
+  var PB = {
+    h: { arriba: [
+      { k:'nuwave', n:'Remera Nuwave', p:185000, f:'h-arriba-nuwave', x:0.18556,y:0.062,w:0.60222,h:0.35 },
+      { k:'marron', n:'Remera Essentials marrón', p:195000, f:'h-arriba-marron', x:0.23,y:0.06,w:0.55444,h:0.35533 },
+      { k:'essentials', n:'Remera Essentials negra', p:195000, f:'h-arriba-essentials', x:0.21222,y:0.06067,w:0.57556,h:0.34133 }
+    ], abajo: [
+      { k:'gris', n:'Cargo denim gris', p:340000, f:'h-abajo-gris', x:0.20889,y:0.336,w:0.60556,h:0.59 },
+      { k:'negro', n:'Cargo negro', p:355000, f:'h-abajo-negro', x:0.21444,y:0.336,w:0.54333,h:0.59067 },
+      { k:'oliva', n:'Cargo oliva', p:345000, f:'h-abajo-oliva', x:0.22,y:0.336,w:0.56222,h:0.59 }
+    ]},
+    m: { arriba: [
+      { k:'stars', n:'Remera Chasing Stars', p:175000, f:'m-arriba-stars', x:0.11556,y:0.12667,w:0.76889,h:0.46133 },
+      { k:'ny90', n:'Jersey New York 90', p:210000, f:'m-arriba-ny90', x:0.14333,y:0.12667,w:0.71333,h:0.43133 }
+    ], abajo: [
+      { k:'pollera', n:'Pollera cargo', p:250000, f:'m-abajo-pollera', x:0.23556,y:0.44,w:0.52778,h:0.26267 },
+      { k:'jean', n:'Jean ancho gris', p:320000, f:'m-abajo-jean', x:0.29333,y:0.44,w:0.41333,h:0.54 },
+      { k:'negro', n:'Jean negro tiro alto', p:330000, f:'m-abajo-negro', x:0.21333,y:0.44,w:0.57222,h:0.54 }
+    ]}
+  };
+
+  (function probador(){
+    var escena = doc.getElementById('pbEscena');
+    if (!escena) return;
+    var vacio  = doc.getElementById('pbVacio'),
+        filaA  = doc.getElementById('pbArriba'),
+        filaB  = doc.getElementById('pbAbajo'),
+        elNom  = doc.getElementById('pbNom'),
+        elTot  = doc.getElementById('pbTotal'),
+        elBtn  = doc.getElementById('pbBtn'),
+        elFalta= doc.getElementById('pbFalta'),
+        elAv   = doc.getElementById('pbAviso'),
+        linea  = 'h', talle = 'M',
+        puesto = { arriba:null, abajo:null },
+        capas  = {};   /* archivo -> <img> ya creada, se reusa */
+
+    function gs(n){ return 'Gs. ' + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.'); }
+
+    function capa(d){
+      if (capas[d.f]) return capas[d.f];
+      var im = doc.createElement('img');
+      im.className = 'pbCapa';
+      im.src = 'img/probador/' + d.f + '.webp';
+      im.alt = '';
+      im.decoding = 'async';
+      im.style.left   = (d.x * 100) + '%';
+      im.style.top    = (d.y * 100) + '%';
+      im.style.width  = (d.w * 100) + '%';
+      im.style.height = (d.h * 100) + '%';
+      escena.appendChild(im);
+      capas[d.f] = im;
+      return im;
+    }
+
+    function vestir(parte, d){
+      var previo = puesto[parte];
+      if (previo && capas[previo.f]) capas[previo.f].classList.remove('on');
+      puesto[parte] = d;
+      if (d){
+        var im = capa(d);
+        /* el navegador necesita un cuadro con la capa ya en el DOM
+           para que la transición de opacidad tenga de dónde salir */
+        requestAnimationFrame(function(){ im.classList.add('on'); });
+      }
+      resumen();
+    }
+
+    function resumen(){
+      var a = puesto.arriba, b = puesto.abajo;
+      vacio.style.display = (a || b) ? 'none' : '';
+      if (!a && !b){
+        elNom.textContent = 'Todavía no elegiste nada';
+        elTot.textContent = '—';
+        elFalta.hidden = true;
+        elBtn.removeAttribute('href');
+        elBtn.setAttribute('aria-disabled','true');
+        return;
+      }
+      var partes = [];
+      if (a) partes.push(a.n);
+      if (b) partes.push(b.n);
+      elNom.textContent = partes.join(' + ');
+      var total = (a ? a.p : 0) + (b ? b.p : 0);
+      elTot.textContent = gs(total);
+      elFalta.hidden = !!(a && b);
+      var txt = 'Hola! Armé este conjunto en el probador de Yvoty:\n';
+      if (a) txt += '• ' + a.n + ' — ' + gs(a.p) + '\n';
+      if (b) txt += '• ' + b.n + ' — ' + gs(b.p) + '\n';
+      txt += 'Talle ' + talle + '\nTotal: ' + gs(total) + '\n(KTW-HHEVG)';
+      elBtn.href = 'https://wa.me/595983518856?text=' + encodeURIComponent(txt);
+      elBtn.removeAttribute('aria-disabled');
+    }
+
+    function chip(d, parte){
+      var li = doc.createElement('li');
+      var b  = doc.createElement('button');
+      b.type = 'button'; b.className = 'pbPrenda';
+      b.setAttribute('aria-pressed','false');
+      var im = doc.createElement('img');
+      im.src = 'img/probador/t-' + d.f + '.webp';
+      im.alt = ''; im.width = 80; im.height = 80;
+      im.loading = 'lazy'; im.decoding = 'async';
+      var sp = doc.createElement('span');
+      sp.className = 'pbN'; sp.textContent = d.n;
+      b.appendChild(im); b.appendChild(sp);
+      b.addEventListener('click', function(){
+        var fila = parte === 'arriba' ? filaA : filaB;
+        var yaEstaba = b.getAttribute('aria-pressed') === 'true';
+        Array.prototype.forEach.call(fila.querySelectorAll('.pbPrenda'), function(o){
+          o.setAttribute('aria-pressed','false');
+        });
+        if (yaEstaba){ vestir(parte, null); return; }
+        b.setAttribute('aria-pressed','true');
+        vestir(parte, d);
+      });
+      li.appendChild(b);
+      return li;
+    }
+
+    function armarLinea(l){
+      linea = l;
+      /* apagar lo puesto y vaciar las filas */
+      vestir('arriba', null); vestir('abajo', null);
+      [filaA, filaB].forEach(function(f){ while (f.firstChild) f.removeChild(f.firstChild); });
+      PB[l].arriba.forEach(function(d){ filaA.appendChild(chip(d,'arriba')); });
+      PB[l].abajo .forEach(function(d){ filaB.appendChild(chip(d,'abajo')); });
+      elAv.textContent = l === 'm'
+        ? 'La línea de mujer son prendas fotografiadas apoyadas, no sobre maniquí: por eso el conjunto se ve más plano. Con las fotos del cliente sobre maniquí se ve igual que la de hombre.'
+        : 'El pedido se manda por WhatsApp con las dos prendas y el talle.';
+      /* la escena nunca arranca vacía: se pone la primera de cada fila */
+      var pA = filaA.querySelector('.pbPrenda'), pB = filaB.querySelector('.pbPrenda');
+      if (pA) pA.click();
+      if (pB) pB.click();
+    }
+
+    Array.prototype.forEach.call(doc.querySelectorAll('.pbL'), function(b){
+      b.addEventListener('click', function(){
+        if (b.getAttribute('aria-pressed') === 'true') return;
+        Array.prototype.forEach.call(doc.querySelectorAll('.pbL'), function(o){
+          o.setAttribute('aria-pressed', o === b ? 'true' : 'false');
+        });
+        armarLinea(b.getAttribute('data-linea'));
+      });
+    });
+
+    Array.prototype.forEach.call(doc.querySelectorAll('#pbTalles button'), function(b){
+      b.addEventListener('click', function(){
+        Array.prototype.forEach.call(doc.querySelectorAll('#pbTalles button'), function(o){
+          o.setAttribute('aria-pressed', o === b ? 'true' : 'false');
+        });
+        talle = b.getAttribute('data-t');
+        resumen();
+      });
+    });
+
+    /* no se arma nada hasta que la sección entra en pantalla: así las fotos
+       de las prendas no se bajan si el visitante nunca llega hasta acá, y una
+       miniatura de la galería no paga ese peso. */
+    var armado = false;
+    function arrancar(){ if (armado) return; armado = true; armarLinea('h'); }
+    if ('IntersectionObserver' in window){
+      var io = new IntersectionObserver(function(ent){
+        ent.forEach(function(e){ if (e.isIntersecting){ arrancar(); io.disconnect(); } });
+      }, { rootMargin: '300px' });
+      io.observe(escena);
+    } else { arrancar(); }
+  })();
+
+  /* ============================================================
+     13 · la tabla de talles
      ============================================================ */
   var nums = doc.querySelectorAll('#medidas .num');
   Array.prototype.forEach.call(doc.querySelectorAll('.tb'), function(b){
@@ -1143,7 +1454,7 @@
   });
 
   /* ============================================================
-     13 · escuchar (todo pasivo) y el control de intensidad
+     14 · escuchar (todo pasivo) y el control de intensidad
      ============================================================ */
   if (!ESTATICA){
     window.addEventListener('scroll', despertar, { passive:true });
@@ -1176,7 +1487,7 @@
   });
 
   /* ============================================================
-     14 · arranque
+     15 · arranque
      ============================================================ */
   function arrancar(){
     medir();
