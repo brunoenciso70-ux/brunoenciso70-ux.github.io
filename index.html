@@ -31,6 +31,10 @@
   nav .links { display: flex; gap: 20px; font-size: 13.5px; color: var(--gris); }
   nav .links a { text-decoration: none; }
   nav .links a:hover { color: var(--blanco); }
+  /* error viejo: los enlaces de la barra y del pie medían 22 y 15 px de alto.
+     En un celular eso es imposible de acertar con el pulgar. */
+  nav .links a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 2px; }
+  footer a, .pie a { display: inline-block; min-height: 44px; line-height: 44px; }
   @media (max-width: 640px) { nav .links { display: none; } }
   .btn {
     display: inline-block; background: var(--fucsia); color: var(--negro); text-decoration: none;
@@ -172,11 +176,13 @@
 
   /* precios */
   .planes { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; }
+  @media (min-width: 1060px) { .planes { grid-template-columns: repeat(4, 1fr); } }
   .plan { background: var(--panel); border: 1px solid var(--linea); border-radius: 14px; padding: 26px 22px; position: relative; }
   .plan.destacado { border-color: var(--fucsia); }
   .plan .tag { position: absolute; top: -11px; left: 20px; background: var(--fucsia); color: var(--negro); font-size: 11px; font-weight: 800; padding: 3px 12px; border-radius: 99px; text-transform: uppercase; }
   .plan h3 { font-size: 16px; }
-  .plan .precio { font-size: 26px; font-weight: 900; color: var(--amarillo); margin-top: 8px; }
+  .plan .precio { font-size: clamp(21px, 2.1vw, 26px); font-weight: 900; color: var(--amarillo); margin-top: 8px; white-space: nowrap; }
+  .plan .precio .de { display: block; font-size: 13px; font-weight: 700; color: var(--gris); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 2px; }
   .plan .det { font-size: 12.5px; color: var(--gris); }
   .plan ul { list-style: none; margin-top: 14px; }
   .plan li { font-size: 13.5px; color: var(--gris); padding-left: 22px; position: relative; margin-top: 7px; }
@@ -195,45 +201,39 @@
     background: var(--wa); color: #fff; display: flex; align-items: center; justify-content: center;
     font-size: 29px; text-decoration: none; box-shadow: 0 6px 18px rgba(0,0,0,0.4); z-index: 50;
   }
+
+  /* ===== los dos caminos: la única decisión de la portada ===== */
+  .caminos {
+    display: grid; gap: 14px; grid-template-columns: 1fr;
+    max-width: 820px; margin: 34px auto 0; text-align: left;
+  }
+  @media (min-width: 720px) { .caminos { grid-template-columns: 1fr 1fr; gap: 18px; } }
+  .camino {
+    display: flex; flex-direction: column; gap: 8px;
+    padding: 24px 22px 20px; border-radius: 18px; text-decoration: none;
+    border: 1px solid var(--linea); background: var(--panel); color: var(--blanco);
+    min-height: 44px; transition: transform .25s ease, border-color .25s ease;
+  }
+  .camino:hover { transform: translateY(-3px); }
+  .c-hacer { border-color: rgba(233,30,140,.55); background: linear-gradient(160deg, rgba(233,30,140,.16), var(--panel) 62%); }
+  .c-hacer:hover { border-color: var(--fucsia); }
+  .c-ver:hover { border-color: var(--teal); }
+  .camino .cn { font-size: clamp(21px, 3.4vw, 27px); font-weight: 900; line-height: 1.1; }
+  .camino .cd { font-size: 14.5px; color: var(--gris); line-height: 1.5; }
+  .camino .cf { font-size: 13.5px; font-weight: 800; letter-spacing: .04em; margin-top: 4px; }
+  .c-hacer .cf { color: var(--fucsia); }
+  .c-ver .cf { color: var(--teal); }
+  .hero .chico { font-size: 13px; color: var(--gris); margin-top: 20px; }
+  .link3d {
+    color: var(--gris); text-decoration: underline; text-underline-offset: 3px;
+    display: inline-block; min-height: 44px; line-height: 44px;
+  }
+  .link3d:hover { color: var(--teal); }
+  @media (prefers-reduced-motion: reduce) { .camino:hover { transform: none; } }
+
   .reveal { opacity: 0; transform: translateY(22px); transition: opacity 0.55s ease, transform 0.55s ease; }
   .reveal.vis { opacity: 1; transform: none; }
 
-  /* ===== Portal de entrada: 2 modos (Idea #1) ===== */
-  .portal { position: fixed; inset: 0; z-index: 300; display: flex; }
-  @media (max-width: 700px) { .portal { flex-direction: column; } }
-  .portal.oculto { display: none; }
-  .portal .mitad {
-    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-    text-align: center; padding: 30px 24px; cursor: pointer; position: relative; overflow: hidden;
-    transition: flex 0.55s cubic-bezier(0.2, 0.7, 0.2, 1), opacity 0.4s ease;
-  }
-  .portal.decidido .mitad { pointer-events: none; }
-  .portal .mitad.elegida { flex: 14; }
-  .portal .mitad.descartada { flex: 0.001; opacity: 0; }
-  .m-clasico { background: #f4f2ec; color: #1c1a24; }
-  .m-3d { background: radial-gradient(ellipse at 50% 30%, #221d3a 0%, #0a0a14 70%); color: #f2f0fa; }
-  .portal .kick2 { font-size: 12px; letter-spacing: 0.3em; text-transform: uppercase; font-weight: 800; opacity: 0.7; }
-  .portal h2.pt { font-size: clamp(26px, 4.5vw, 44px); font-weight: 900; text-transform: uppercase; margin-top: 10px; letter-spacing: 0.01em; }
-  .m-3d h2.pt { color: var(--teal); text-shadow: 0 0 24px rgba(23,195,178,0.5); }
-  .portal p.pd { font-size: 14.5px; opacity: 0.75; margin-top: 10px; max-width: 34ch; }
-  .portal .pbtn {
-    margin-top: 24px; padding: 13px 30px; border-radius: 99px; font-weight: 800; font-size: 14px;
-    border: 2px solid currentColor; background: transparent; color: inherit; cursor: pointer;
-  }
-  .m-clasico .pbtn:hover { background: #1c1a24; color: #f4f2ec; }
-  .m-3d .pbtn:hover { background: var(--teal); border-color: var(--teal); color: #0a0a14; }
-  .portal .divisor {
-    position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 2;
-    background: var(--fucsia); color: #fff; font-weight: 900; font-size: 12px; letter-spacing: 0.15em;
-    padding: 10px 16px; border-radius: 99px; pointer-events: none; box-shadow: 0 0 30px rgba(233,30,140,0.6);
-  }
-  .m-3d .estrella-p { position: absolute; width: 3px; height: 3px; border-radius: 99px; background: #fff; animation: parp 2.4s ease-in-out infinite; }
-  @keyframes parp { 0%,100% { opacity: 0.15; } 50% { opacity: 0.9; } }
-  .m-3d .cubo {
-    position: absolute; width: 54px; height: 54px; border: 1.5px solid rgba(23,195,178,0.5); border-radius: 8px;
-    animation: girocubo 9s linear infinite; pointer-events: none;
-  }
-  @keyframes girocubo { from { transform: rotate3d(1, 1, 0, 0deg); } to { transform: rotate3d(1, 1, 0, 360deg); } }
 </style>
 <script>
 /* Antimarco: si alguien intenta mostrar esta página dentro de otra web ajena
@@ -251,24 +251,6 @@
 </script>
 </head>
 <body>
-
-<div class="portal" id="portal">
-  <div class="mitad m-clasico" id="mClasico">
-    <div class="kick2">Directo al grano</div>
-    <h2 class="pt">Modo clásico</h2>
-    <p class="pd">El sitio completo: estilos, precios y tu página en 5 minutos.</p>
-    <button class="pbtn">Entrar así</button>
-  </div>
-  <div class="divisor">ELEGÍ TU MODO</div>
-  <div class="mitad m-3d" id="m3d">
-    <div class="cubo" style="left:14%; top:18%"></div>
-    <div class="cubo" style="right:12%; bottom:16%; width:34px; height:34px; animation-duration:6s"></div>
-    <div class="kick2" style="color:var(--teal)">Una experiencia</div>
-    <h2 class="pt">Modo 3D</h2>
-    <p class="pd">Viajá por el espacio, respondé flotando y descubrí tu página ideal.</p>
-    <button class="pbtn">Entrar al viaje</button>
-  </div>
-</div>
 
 <div class="cinta"><div class="cinta-in" id="cinta"></div></div>
 
@@ -299,10 +281,21 @@
   </h1>
   <p>Páginas web, menús con QR y catálogos para comercios paraguayos. Rápidas, lindas y con
   WhatsApp al frente — porque ahí es donde se vende.</p>
-  <div class="ctas">
-    <a class="btn" href="crea-tu-pagina.html">✨ Armá tu página vos mismo</a>
-    <a class="btn ghost" href="#estilos">Ver los estilos</a>
+  <div class="caminos">
+    <a class="camino c-hacer" href="#estilos">
+      <span class="cn">Quiero mi página</span>
+      <span class="cd">Tres preguntas y te digo cuál va con tu negocio. Después la armás vos, en cinco minutos.</span>
+      <span class="cf">Empezar →</span>
+    </a>
+    <a class="camino c-ver" href="#galeria">
+      <span class="cn">Quiero ver ejemplos</span>
+      <span class="cd">Veintinueve páginas de verdad, andando. Tocá cualquiera y probala como si fuera tuya.</span>
+      <span class="cf">Ver la galería →</span>
+    </a>
   </div>
+  <p class="chico">
+    <a class="link3d" href="modo-3d.html">O mirá el sitio en 3D</a> · lo mismo, pero volando
+  </p>
 </div>
 
 <section id="estilos">
@@ -352,7 +345,7 @@
     </div>
   </div>
 
-  <div class="h2-big" style="font-size:20px">La galería — <span id="galConteo">24</span> páginas vivas</div>
+  <div class="h2-big" id="galeria" style="font-size:20px; scroll-margin-top:70px">La galería — <span id="galConteo">24</span> páginas vivas</div>
   <p class="sub">Cada cuadro es una página real funcionando en miniatura. Pasá el mouse y se inclina;
   tocá y se agranda.</p>
   <div class="minis" id="minis"></div>
@@ -459,6 +452,18 @@
       </ul>
       <a class="btn" href="https://wa.me/595983518856?text=Hola!%20Quiero%20el%20Cat%C3%A1logo%20Online">Lo quiero</a>
     </div>
+    <div class="plan reveal">
+      <h3>Catálogo grande y a medida</h3>
+      <div class="precio"><span class="de">desde</span>Gs. 3.500.000</div>
+      <div class="det">entrega en 2 a 3 semanas</div>
+      <ul>
+        <li>Todo lo de Catálogo Online</li>
+        <li>Sin tope de productos, con buscador y filtros</li>
+        <li>Pedido armado con varios productos y total sumado</li>
+        <li>Ferretería CM: 136 productos con 84 fotos</li>
+      </ul>
+      <a class="btn" href="https://wa.me/595983518856?text=Hola!%20Quiero%20un%20cat%C3%A1logo%20grande%20a%20medida">Lo quiero</a>
+    </div>
   </div>
   <p class="sub" style="margin-top:16px; margin-bottom:0">¿Cambios frecuentes? <strong style="color:var(--blanco)">Mantenimiento: Gs. 150.000/mes</strong> — hasta 4 actualizaciones mensuales de precios, fotos o menú.</p>
 </section>
@@ -481,39 +486,10 @@
 <script>
 (function () {
   'use strict';
-  // ===== Portal de 2 modos (Idea #1): expansión por selección =====
-  var portal = document.getElementById('portal');
-  try {
-    if (sessionStorage.getItem('katuweb_modo')) portal.classList.add('oculto');
-  } catch (e) {}
-  // estrellas del lado 3D
-  var m3d = document.getElementById('m3d');
-  for (var si = 0; si < 26; si++) {
-    var st = document.createElement('div');
-    st.className = 'estrella-p';
-    st.style.left = (Math.random() * 96) + '%';
-    st.style.top = (Math.random() * 94) + '%';
-    st.style.animationDelay = (Math.random() * 2.4) + 's';
-    m3d.appendChild(st);
-  }
-  document.getElementById('mClasico').addEventListener('click', function () {
-    portal.classList.add('decidido');
-    this.classList.add('elegida');
-    m3d.classList.add('descartada');
-    try { sessionStorage.setItem('katuweb_modo', 'clasico'); } catch (e) {}
-    setTimeout(function () {
-      portal.style.transition = 'opacity 0.5s ease';
-      portal.style.opacity = 0;
-      setTimeout(function () { portal.classList.add('oculto'); }, 500);
-    }, 550);
-  });
-  m3d.addEventListener('click', function () {
-    portal.classList.add('decidido');
-    this.classList.add('elegida');
-    document.getElementById('mClasico').classList.add('descartada');
-    try { sessionStorage.setItem('katuweb_modo', '3d'); } catch (e) {}
-    setTimeout(function () { window.location.href = 'modo-3d.html'; }, 650);
-  });
+  /* El peaje de "elegí tu modo" se sacó a propósito. La primera decisión que
+     tomaba el visitante era sobre NUESTRO sitio, no sobre su negocio, y encima
+     tapaba la promesa de las 48 horas. El modo 3D no desapareció: pasó a ser un
+     botón chico, para el que tenga curiosidad. Dejó de ser peaje y pasó a ser premio. */
 
   // cinta E3
   var items = ['Tu negocio online en 48h', '★', 'Menú con QR', '★', 'Catálogos con WhatsApp', '★', 'Diseño que vende', '★'];
@@ -581,6 +557,10 @@
                'videobucle', 'fondoscroll', 'gira3d', 'rescate',
                'ropa', 'imanes', 'menuqr', 'turnos', 'instaweb'];
   var minisEl = document.getElementById('minis');
+  /* el conteo sale de ORDER, no de un número escrito a mano: ya se había
+     quedado en 24 cuando la galería tenía 26 */
+  var galC = document.getElementById('galConteo');
+  if (galC) galC.textContent = ORDER.length;
   ORDER.forEach(function (key) {
     var s = STYLES[key];
     var tile = document.createElement('div');
