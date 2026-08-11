@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; frame-src 'self'; media-src 'self' data:; form-action 'none'; object-src 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#f4f1ea">
+<title>Ficha de Google al día — la ficha de tu negocio, antes y después</title>
+<meta name="description" content="Servicio de KatuWeb: dejamos la ficha del negocio completa, con horarios, fotos, categoría y reseñas respondidas. Mirá el antes y el después con un deslizador.">
+<!--
+  DEMO KatuWeb · Ficha de Google al día · KTW-6KXNB
+  Negocio, reseñas y datos de ejemplo. Al usarla con un cliente real,
+  reemplazar todo por sus datos, fotos y horarios verdaderos.
+
+  SOBRE LA FICHA DIBUJADA — leer antes de tocar nada
+  --------------------------------------------------------------
+  La tarjeta que se cruza NO imita la interfaz de ningún buscador.
+  Es una planilla propia de KatuWeb: filas numeradas, etiquetas en
+  monoespaciada, paleta de tierra. Nada de logotipos ajenos, nada de
+  la "G" de colores, nada de la paleta ni la tipografía de Google.
+  Se nombra el servicio con palabras porque describir un servicio real
+  es legítimo; imitar su imagen, no. Si alguien la "acerca" al original
+  para que se entienda mejor, rompe lo único que no se puede romper acá.
+
+  EL CRUCE
+  --------------------------------------------------------------
+  Dos fichas puestas una al lado de la otra dentro de un marco que
+  muestra una sola. El deslizador mueve el riel con translateX: no hay
+  clip-path ni width animados, solo transform. Los campos se encienden
+  por umbral a medida que el riel cruza.
+-->
+<style>
+  *,*::before,*::after{box-sizing:border-box}
+
+  :root{
+    --papel:#f4f1ea;         /* fondo */
+    --papel2:#eae5da;        /* bloques y chips */
+    --tarjeta:#fffdf8;       /* la ficha */
+    --tinta:#15120e;         /* texto principal · 16.5:1 sobre papel */
+    --tinta2:#524a3e;        /* texto secundario · 7.5:1 sobre papel */
+    --tenue:#6e6659;         /* texto terciario · 5.1:1 sobre papel */
+    --acento:#a83a17;        /* ladrillo · 5.7:1 sobre papel */
+    --acento-claro:#e8845c;  /* el mismo acento, para el bloque oscuro */
+    --linea:#d9d2c4;
+    --linea2:#c6bdaa;
+    --oscuro:#1c1813;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+
+  html{background:var(--papel); -webkit-text-size-adjust:100%; overflow-x:hidden}
+  body{
+    margin:0; background:var(--papel); color:var(--tinta);
+    font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+    line-height:1.6; overflow-x:hidden; -webkit-font-smoothing:antialiased;
+  }
+  svg{display:block}
+  img{max-width:100%}
+
+  .sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+  .salto{position:absolute;left:8px;top:-70px;z-index:60;background:var(--tinta);color:var(--papel);padding:12px 16px;text-decoration:none;border-radius:3px}
+  .salto:focus{top:8px}
+  :focus-visible{outline:2px solid var(--acento); outline-offset:3px}
+
+  .env{max-width:1080px; margin:0 auto; padding:0 18px}
+
+  /* ---------- barra ---------- */
+  .barra{
+    position:sticky; top:0; z-index:40;
+    display:flex; align-items:center; justify-content:space-between; gap:14px;
+    padding:10px 18px; background:rgba(244,241,234,.92);
+    backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--linea);
+  }
+  .marca{font-size:15px; font-weight:700; letter-spacing:-.01em; color:var(--tinta)}
+  .marca i{font-style:normal; color:var(--acento)}
+  .wa{
+    display:inline-flex; align-items:center; min-height:44px; padding:0 16px;
+    border:1px solid var(--linea2); border-radius:3px; text-decoration:none;
+    color:var(--acento); font-size:13px; font-weight:600;
+  }
+  .wa:hover{background:var(--papel2)}
+
+  /* ---------- tipografía ---------- */
+  h1,h2,h3{margin:0; font-weight:700; letter-spacing:-.022em; line-height:1.1}
+  .rot{
+    margin:0 0 10px; font-family:var(--mono); font-size:11px;
+    letter-spacing:.22em; text-transform:uppercase; color:var(--acento);
+  }
+  h1{font-size:clamp(30px,7vw,58px)}
+  .h2{font-size:clamp(24px,4.6vw,40px); margin:0 0 12px}
+  .bajada{margin:0 0 20px; color:var(--tinta2); max-width:60ch; font-size:clamp(15px,2.1vw,18px)}
+  .nota{font-size:13px; color:var(--tenue); max-width:66ch; line-height:1.65}
+  .sec{padding:clamp(46px,7vh,84px) 0}
+
+  /* ---------- portada ---------- */
+  .portada{padding:clamp(34px,6vh,64px) 0 clamp(24px,4vh,38px)}
+  .chips{margin:22px 0 0; padding:0; list-style:none}
+  .chips li{
+    display:inline-block; margin:0 8px 8px 0;
+    border:1px solid var(--linea2); border-radius:3px; background:var(--papel2);
+    padding:7px 11px; font-size:12.5px; color:var(--tinta2); line-height:1.5;
+  }
+  .chips b{color:var(--tinta); font-weight:600}
+  .chips i{font-style:normal; white-space:nowrap}
+
+  /* ============================================================
+     EL CRUCE
+     ============================================================ */
+  .cruce{padding-top:clamp(20px,3vh,30px)}
+  .mando{
+    border:1px solid var(--linea); border-radius:4px; background:var(--papel2);
+    padding:14px 14px 12px; margin:0 0 22px;
+  }
+  .mandoTit{
+    display:block; font-family:var(--mono); font-size:11px; letter-spacing:.18em;
+    text-transform:uppercase; color:var(--tenue); margin:0 0 10px;
+  }
+  .dial{display:flex; align-items:center; gap:12px; max-width:620px}
+  .dLab{font-family:var(--mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--tenue); white-space:nowrap}
+  .dLab.viva{color:var(--acento)}
+  input[type=range]{
+    -webkit-appearance:none; appearance:none; flex:1 1 auto; min-width:80px;
+    height:44px; background:transparent; cursor:pointer; margin:0;
+  }
+  input[type=range]::-webkit-slider-runnable-track{height:3px; background:var(--linea2); border-radius:2px}
+  input[type=range]::-moz-range-track{height:3px; background:var(--linea2); border-radius:2px}
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none; appearance:none; width:26px; height:26px; border-radius:50%;
+    background:var(--acento); margin-top:-11.5px; border:3px solid var(--tarjeta);
+    box-shadow:0 1px 3px rgba(0,0,0,.28);
+  }
+  input[type=range]::-moz-range-thumb{
+    width:26px; height:26px; border-radius:50%; background:var(--acento);
+    border:3px solid var(--tarjeta); box-shadow:0 1px 3px rgba(0,0,0,.28);
+  }
+  .botones{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:12px 0 0}
+  .bt{
+    -webkit-appearance:none; appearance:none; font:inherit; cursor:pointer;
+    display:inline-flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:1px; min-height:56px; padding:6px 14px; border-radius:3px;
+    border:1px solid var(--linea2); background:var(--tarjeta); color:var(--tinta2);
+    text-align:center; line-height:1.25;
+  }
+  .bt b{font-size:16px; font-weight:700; color:var(--tinta)}
+  .bt span{font-family:var(--mono); font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--tenue)}
+  .bt[aria-pressed="true"]{background:var(--acento); border-color:var(--acento)}
+  .bt[aria-pressed="true"] b{color:#fff}
+  .bt[aria-pressed="true"] span{color:#f7ded4}
+  .bt:hover{border-color:var(--acento)}
+  .lectura{
+    margin:12px 0 0; font-family:var(--mono); font-size:12px;
+    letter-spacing:.08em; color:var(--tinta2);
+  }
+  .quietoNota{display:none; margin:0; font-size:13px; color:var(--tinta2)}
+
+  .tablero{display:grid; gap:26px; grid-template-columns:1fr}
+  /* min-width:0 en las columnas: sin esto el ancho mínimo del contenido de la
+     ficha empuja la grilla y la tarjeta se sale del marco en celular. */
+  .tablero>div{min-width:0}
+
+  /* ---------- el marco y el riel ---------- */
+  /* la ficha no crece más allá de 460: estirada a 700 px deja de leerse como
+     una ficha y pasa a ser una tabla. */
+  .marco{overflow:hidden; max-width:460px}
+  .riel{display:flex; width:200%; will-change:transform}
+  .hoja{flex:0 0 50%; width:50%; max-width:50%; min-width:0; padding:0 6px}
+  .hojaEt{
+    margin:0 0 8px; font-family:var(--mono); font-size:10.5px; letter-spacing:.2em;
+    text-transform:uppercase; color:var(--tenue);
+  }
+  .hojaEt b{color:var(--acento); font-weight:700}
+
+  /* ---------- la ficha (planilla propia de KatuWeb) ---------- */
+  .ficha{
+    background:var(--tarjeta); border:1px solid var(--linea2); border-radius:4px;
+    overflow:hidden; box-shadow:0 1px 0 var(--linea); max-width:100%;
+  }
+  .fCab{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    padding:9px 12px; border-bottom:1px solid var(--linea);
+    background:var(--papel2);
+  }
+  .fRot{font-family:var(--mono); font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:var(--tenue)}
+  .fChip{
+    font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase;
+    border:1px solid var(--linea2); border-radius:2px; padding:3px 7px; color:var(--tinta2);
+    background:var(--tarjeta); white-space:nowrap;
+  }
+  .fChip--bien{border-color:var(--acento); color:var(--acento)}
+
+  .fTope{padding:14px 12px 10px; border-bottom:1px solid var(--linea)}
+  .fNom{font-size:clamp(18px,2.6vw,22px); margin:0 0 4px}
+  .fLugar{margin:0; font-size:12.5px; color:var(--tenue)}
+  .fAbierto{
+    display:inline-flex; align-items:center; gap:6px; margin:9px 0 0;
+    font-size:12px; font-weight:600; color:var(--acento);
+    border:1px solid var(--acento); border-radius:2px; padding:3px 8px;
+    opacity:0; transform:translateY(-4px);
+    transition:opacity .35s ease, transform .35s ease;
+  }
+  .ficha--llena.horas .fAbierto{opacity:1; transform:none}
+  .fAbierto span{width:7px; height:7px; border-radius:50%; background:var(--acento); flex:0 0 auto}
+
+  .fFilas{margin:0; padding:0}
+  .fFila{
+    display:grid; grid-template-columns:26px minmax(0,1fr); gap:10px;
+    padding:11px 12px; border-bottom:1px solid var(--linea);
+    transition:background .35s ease;
+  }
+  .fFila:last-child{border-bottom:0}
+  .fNum{
+    font-family:var(--mono); font-size:10px; color:var(--tenue); padding-top:2px;
+    letter-spacing:.04em;
+  }
+  .fEt{
+    display:block; font-family:var(--mono); font-size:9.5px; letter-spacing:.18em;
+    text-transform:uppercase; color:var(--tenue); margin:0 0 4px;
+  }
+  .fVal{margin:0; font-size:13.5px; color:var(--tinta2); line-height:1.5}
+  .fVal b{color:var(--tinta); font-weight:600}
+  /* la fila encendida: barra de acento a la izquierda del número */
+  .ficha--llena .fFila{position:relative}
+  .ficha--llena .fFila::before{
+    content:""; position:absolute; left:0; top:6px; bottom:6px; width:3px;
+    background:var(--acento); opacity:0; transform:scaleY(.3);
+    transform-origin:50% 50%; transition:opacity .3s ease, transform .3s ease;
+  }
+  .ficha--llena .fFila.on::before{opacity:1; transform:none}
+  .ficha--llena .fFila.on .fEt{color:var(--acento)}
+  .ficha--llena .fFila.on .fVal{color:var(--tinta)}
+
+  /* etiqueta de campo vacío o equivocado */
+  .tag{
+    display:inline-block; font-family:var(--mono); font-size:10px; letter-spacing:.1em;
+    text-transform:uppercase; border:1px dashed var(--linea2); border-radius:2px;
+    padding:2px 6px; color:var(--tenue); background:var(--papel);
+  }
+  .tag--mal{border-style:solid; border-color:var(--acento); color:var(--acento)}
+  .hueco{
+    display:block; height:9px; margin:7px 0 0; border-radius:2px;
+    background:repeating-linear-gradient(135deg,var(--papel2) 0 5px,var(--papel) 5px 10px);
+    border:1px solid var(--linea);
+  }
+  .hueco.corto{width:56%}
+  .mini{display:flex; flex-wrap:wrap; gap:6px; margin:7px 0 0}
+  .mini span{
+    font-size:11.5px; border:1px solid var(--linea2); border-radius:2px;
+    padding:2px 7px; color:var(--tinta2); background:var(--papel);
+  }
+
+  /* ---------- las fotos (dibujadas, no cargadas) ----------
+     Grilla de cinco columnas que se achican solas: en un celular de 360 la
+     tira entra igual, sin desbordar la ficha ni obligar a envolver. */
+  .fotos{
+    display:grid; grid-template-columns:repeat(5,minmax(0,1fr));
+    gap:6px; margin:8px 0 0;
+  }
+  .foto{
+    border-radius:3px; overflow:hidden; aspect-ratio:1/1;
+    border:1px solid var(--linea2); background:var(--papel2);
+  }
+  .foto svg{width:100%; height:100%}
+  .foto--mala{filter:blur(2.4px) saturate(.25); transform:rotate(-2.5deg)}
+  .fotos--una .foto{grid-column:span 2}
+  .masFotos{
+    border-radius:3px; aspect-ratio:1/1;
+    border:1px dashed var(--linea2); display:grid; place-items:center;
+    font-family:var(--mono); font-size:10px; color:var(--tenue); text-align:center; line-height:1.3;
+  }
+
+  /* ---------- reseñas ---------- */
+  .res{margin:8px 0 0; padding:0; list-style:none}
+  .res li{border-top:1px dotted var(--linea2); padding:8px 0 0; margin:8px 0 0}
+  .res li:first-child{border-top:0; padding-top:0; margin-top:0}
+  .pips{display:flex; gap:3px; margin:0 0 4px}
+  .pips i{width:8px; height:8px; border-radius:1px; background:var(--linea2); display:block}
+  .pips i.on{background:var(--acento)}
+  .resTxt{margin:0; font-size:12.5px; color:var(--tinta2); line-height:1.45}
+  .resResp{
+    margin:6px 0 0; padding:7px 9px; font-size:12px; color:var(--tinta2);
+    background:var(--papel2); border-left:3px solid var(--acento); border-radius:0 2px 2px 0;
+  }
+  .resResp b{color:var(--tinta); font-weight:600}
+
+  /* ---------- la lista de campos ---------- */
+  .campos{list-style:none; margin:0; padding:0}
+  .campo{
+    display:grid; grid-template-columns:30px 1fr; gap:12px;
+    padding:14px 0 14px 10px; border-top:1px solid var(--linea);
+    position:relative;
+  }
+  .campo:last-child{border-bottom:1px solid var(--linea)}
+  .campo::before{
+    content:""; position:absolute; left:0; top:12px; bottom:12px; width:3px;
+    background:var(--acento); opacity:0; transform:scaleY(.3);
+    transition:opacity .3s ease, transform .3s ease;
+  }
+  .campo.on::before{opacity:1; transform:none}
+  .cNum{font-family:var(--mono); font-size:11px; color:var(--tenue); padding-top:3px}
+  .cNom{
+    margin:0 0 5px; font-size:15px; font-weight:700; color:var(--tinta2);
+    transition:color .3s ease;
+  }
+  .campo.on .cNom{color:var(--tinta)}
+  .campo.on .cNum{color:var(--acento)}
+  .cStack{display:grid}
+  .cStack>p{grid-area:1/1; margin:0; font-size:13.5px; line-height:1.55; transition:opacity .3s ease}
+  .cAntes{color:var(--tenue)}
+  .cDesp{color:var(--tinta2); opacity:0}
+  .campo.on .cAntes{opacity:0}
+  .campo.on .cDesp{opacity:1}
+  .cStack em{font-style:normal; font-family:var(--mono); font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--tenue)}
+  .campo.on .cDesp em{color:var(--acento)}
+
+  /* ---------- bloque oscuro: lo que sí y lo que no ---------- */
+  .oscura{background:var(--oscuro); color:var(--papel)}
+  .oscura .rot{color:var(--acento-claro)}
+  .oscura .bajada{color:#cfc7b8}
+  .oscura .nota{color:#b3ab9c}
+  .dosCol{display:grid; gap:26px; grid-template-columns:1fr; margin-top:26px}
+  .caja{
+    border:1px solid #3a332a; border-radius:4px; padding:18px 16px;
+    background:#221d17;
+  }
+  .caja h3{
+    font-size:17px; margin:0 0 12px; display:flex; align-items:center; gap:9px;
+  }
+  .caja h3 svg{width:20px; height:20px; flex:0 0 auto}
+  .caja ul{list-style:none; margin:0; padding:0}
+  .caja li{
+    padding:9px 0 9px 20px; border-top:1px solid #332c24; position:relative;
+    font-size:14.5px; color:#ded6c7; line-height:1.55;
+  }
+  .caja li:first-child{border-top:0}
+  .caja li::before{
+    content:""; position:absolute; left:0; top:17px; width:9px; height:2px;
+    background:var(--acento-claro);
+  }
+  .caja--no li::before{background:#7d7266}
+  .caja li b{color:#fff; font-weight:600}
+
+  /* ---------- lo que necesitamos ---------- */
+  .pedidos{list-style:none; margin:24px 0 0; padding:0; display:grid; gap:0}
+  .pedidos li{
+    display:grid; grid-template-columns:34px 1fr; gap:12px;
+    padding:16px 0; border-top:1px solid var(--linea);
+  }
+  .pedidos li:last-child{border-bottom:1px solid var(--linea)}
+  .pedidos .n{font-family:var(--mono); font-size:12px; color:var(--acento); padding-top:3px}
+  .pedidos h3{font-size:16px; margin:0 0 4px}
+  .pedidos p{margin:0; font-size:14px; color:var(--tinta2); max-width:62ch}
+
+  /* ---------- cierre ---------- */
+  .cierre{border-top:1px solid var(--linea)}
+  .btGrande{
+    display:inline-flex; align-items:center; justify-content:center;
+    min-height:54px; padding:0 26px; border-radius:3px; text-decoration:none;
+    background:var(--acento); color:#fff; font-weight:700; font-size:15px;
+    margin:6px 0 14px;
+  }
+  .btGrande:hover{background:#8f3013}
+
+  /* ---------- pie ---------- */
+  .katu-pie{
+    margin-top:10px; border-top:1px solid var(--linea);
+    padding:20px 16px 32px; text-align:center;
+    font-size:13px; color:var(--tenue); line-height:2;
+  }
+  .katu-pie a{
+    color:var(--acento); text-decoration:none; font-weight:600;
+    display:inline-block; min-height:44px; line-height:44px; padding:0 8px;
+  }
+  .katu-pie a:hover{text-decoration:underline}
+
+  /* ---------- anchos ---------- */
+  @media (min-width:760px){
+    .dosCol{grid-template-columns:1fr 1fr; gap:22px}
+  }
+  @media (min-width:900px){
+    .tablero{grid-template-columns:minmax(320px,420px) 1fr; gap:40px; align-items:start}
+    .botones{grid-template-columns:auto auto; justify-content:start}
+    .bt{padding:0 22px}
+    .pedidos{grid-template-columns:1fr}
+  }
+  /* en celular manda con dos botones grandes: un deslizador de 3 px de riel
+     es una tortura con el pulgar, y acá el cruce solo tiene dos extremos. */
+  @media (max-width:520px){
+    .dial{display:none}
+    .botones{margin-top:0}
+    .bt{min-height:60px}
+    .bt b{font-size:17px}
+  }
+
+  /* ---------- modo miniatura ----------
+     Adentro del iframe bajito de la galería no hay lugar para la bajada ni
+     para el control: se recorta la portada para que en 300 px de alto entren
+     el título y la ficha al día, que es lo que la pieza tiene para mostrar. */
+  .mini .barra{position:static; padding:8px 18px}
+  .mini .portada{padding:12px 0 2px}
+  .mini .portada .bajada,.mini .chips,.mini .mando,
+  .mini .cruce .rot,.mini .cruce .h2,.mini .cruce .bajada{display:none}
+  .mini h1{font-size:26px}
+  .mini .sec{padding:10px 0}
+  .mini .env{padding:0 14px}
+  @media (hover:none){
+    .wa:hover,.bt:hover{background:inherit}
+    .bt[aria-pressed="true"]:hover{background:var(--acento)}
+    .btGrande:hover{background:var(--acento)}
+  }
+
+  /* Movimiento reducido: no hay cruce. Las dos fichas se ponen una debajo de
+     la otra, con su etiqueta, y cada campo muestra las dos líneas —la de antes
+     y la de después— una arriba de la otra. Nada queda esperando una animación. */
+  @media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{
+      animation-duration:.001ms !important; animation-iteration-count:1 !important;
+      transition-duration:.001ms !important; scroll-behavior:auto !important;
+    }
+    .marco{overflow:visible}
+    .riel{display:block; width:100%; transform:none !important}
+    .hoja{width:100%; max-width:100%; padding:0; margin:0 0 28px}
+    .mando .dial,.mando .botones,.mando .lectura{display:none}
+    .quietoNota{display:block}
+    .cStack{display:block}
+    .cStack>p{opacity:1 !important}
+    .cDesp{margin-top:5px !important}
+    .ficha--llena .fAbierto{opacity:1; transform:none}
+  }
+</style>
+</head>
+<body>
+
+<a class="salto" href="#contenido">Ir al contenido</a>
+
+<header class="barra">
+  <span class="marca">Katu<i>Web</i></span>
+  <a class="wa" href="https://wa.me/595983518856?text=Hola!%20Quiero%20preguntar%20por%20la%20ficha%20de%20Google%20de%20mi%20negocio.%20(KTW-6KXNB)" target="_blank" rel="noopener noreferrer">Escribinos</a>
+</header>
+
+<main id="contenido">
+
+  <!-- ============ portada ============ -->
+  <section class="portada" aria-labelledby="h1">
+    <div class="env">
+      <p class="rot">Servicio de KatuWeb · Asunción</p>
+      <h1 id="h1">Ficha de Google al día</h1>
+      <p class="bajada">En Paraguay mucha gente busca en Google Maps antes que en la web. Dejar la ficha completa, con horarios, fotos y categoría correcta, suele traer más llamadas que la página misma.</p>
+      <ul class="chips">
+        <li><i>Entrega ·</i> <b>1 a 2 días</b></li>
+        <li><i>Te pedimos ·</i> <b>acceso a la ficha, o la creamos de cero</b></li>
+        <li><i>La carga ·</i> <b>la hacemos nosotros, vos revisás</b></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ el cruce ============ -->
+  <section class="sec cruce" aria-labelledby="hCruce">
+    <div class="env">
+      <p class="rot">Antes y después</p>
+      <h2 class="h2" id="hCruce">La misma ficha, abandonada y al día</h2>
+      <p class="bajada">Movés el control y la ficha cruza de un estado al otro. Cada campo que se completa se enciende y explica, en una línea, qué cambia para el que te busca.</p>
+
+      <div class="mando" role="group" aria-labelledby="mandoTit">
+        <span class="mandoTit" id="mandoTit">Control del cruce</span>
+        <div class="dial">
+          <span class="dLab viva" id="dlA">Abandonada</span>
+          <input type="range" id="cruce" min="0" max="100" step="1" value="0"
+                 aria-label="Cruce entre la ficha abandonada y la ficha al día"
+                 aria-valuetext="Ficha abandonada, 0 de 6 campos cargados">
+          <span class="dLab" id="dlB">Al día</span>
+        </div>
+        <div class="botones">
+          <button class="bt" id="bAntes" type="button" aria-pressed="true"><b>Antes</b><span>abandonada</span></button>
+          <button class="bt" id="bDesp" type="button" aria-pressed="false"><b>Después</b><span>al día</span></button>
+        </div>
+        <p class="lectura" id="lectura">Campos cargados: 0 de 6</p>
+        <p class="quietoNota">Pediste menos movimiento: en vez de cruzar, mostramos las dos fichas una debajo de la otra, completas.</p>
+      </div>
+
+      <div class="tablero">
+
+        <!-- ---------- el marco con las dos fichas ---------- -->
+        <div>
+          <div class="marco" id="marco">
+            <div class="riel" id="riel">
+
+              <!-- ficha abandonada -->
+              <div class="hoja">
+                <p class="hojaEt"><b>Antes</b> · ficha abandonada</p>
+                <article class="ficha ficha--vacia" aria-label="Ficha abandonada del negocio de ejemplo">
+                  <header class="fCab">
+                    <span class="fRot">Ficha del negocio</span>
+                    <span class="fChip">Incompleta</span>
+                  </header>
+                  <div class="fTope">
+                    <h3 class="fNom">Panadería Aramí</h3>
+                    <p class="fLugar">[barrio], Asunción</p>
+                  </div>
+                  <div class="fFilas">
+                    <div class="fFila">
+                      <span class="fNum" aria-hidden="true">01</span>
+                      <div>
+                        <span class="fEt">Categoría</span>
+                        <p class="fVal">Tienda de comestibles <span class="tag tag--mal">equivocada</span></p>
+                      </div>
+                    </div>
+                    <div class="fFila">
+                      <span class="fNum" aria-hidden="true">02</span>
+                      <div>
+                        <span class="fEt">Horarios</span>
+                        <p class="fVal"><span class="tag">sin cargar</span></p>
+                        <span class="hueco" aria-hidden="true"></span>
+                        <span class="hueco corto" aria-hidden="true"></span>
+                      </div>
+                    </div>
+                    <div class="fFila">
+                      <span class="fNum" aria-hidden="true">03</span>
+                      <div>
+                        <span class="fEt">Teléfono y cómo llegar</span>
+                        <p class="fVal"><span class="tag">sin teléfono</span></p>
+                        <span class="hueco corto" aria-hidden="true"></span>
+                      </div>
+                    </div>
+                    <div class="fFila">
+                      <span class="fNum" aria-hidden="true">04</span>
+                      <div>
+                        <span class="fEt">Fotos</span>
+                        <div class="fotos fotos--una">
+                          <span class="foto foto--mala" aria-hidden="true">
+                            <svg viewBox="0 0 60 60"><rect width="60" height="60" fill="#cfcac1"/><rect x="6" y="30" width="48" height="26" fill="#b3ada2"/><path d="M4 22h52l-4 8H8z" fill="#9c8f84"/><rect x="12" y="36" width="14" height="20" fill="#e2ded7"/><rect x="34" y="36" width="14" height="12" fill="#e2ded7"/></svg>
+                          </span>
+                        </div>
+                        <p class="fVal" style="margin-top:7px">1 foto, movida y de noche</p>
+                      </div>
+                    </div>
+                    <div class="fFila">
+                      <span class="fNum" aria-hidden="true">05</span>
+                      <div>
+                        <span class="fEt">Descripción</span>
+                        <p class="fVal"><span class="tag">sin cargar</span></p>
+                        <span class="hueco" aria-hidden="true"></span>
+                        <span class="hueco corto" aria-hidden="true"></span>
+                      </div>
+                    </div>
+                    <div class="fFila">
+                      <span class="fNum" aria-hidden="true">06</span>
+                      <div>
+                        <span class="fEt">Reseñas</span>
+                        <ul class="res">
+                          <li>
+                            <span class="pips" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span>
+                            <p class="resTxt">“El pan sale a las seis y a las siete ya no hay. Vale la pena madrugar.”</p>
+                            <p class="fVal" style="margin-top:5px"><span class="tag">sin respuesta</span></p>
+                          </li>
+                          <li>
+                            <span class="pips" aria-hidden="true"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span>
+                            <p class="resTxt">“Fui un domingo a la tarde y estaba cerrado. En la ficha no dice nada.”</p>
+                            <p class="fVal" style="margin-top:5px"><span class="tag">sin respuesta</span></p>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              </div>
+
+              <!-- ficha al día -->
+              <div class="hoja">
+                <p class="hojaEt"><b>Después</b> · ficha al día</p>
+                <article class="ficha ficha--llena" id="fichaLlena" aria-label="La misma ficha, completa">
+                  <header class="fCab">
+                    <span class="fRot">Ficha del negocio</span>
+                    <span class="fChip fChip--bien">Al día</span>
+                  </header>
+                  <div class="fTope">
+                    <h3 class="fNom">Panadería Aramí</h3>
+                    <p class="fLugar">[dirección], [barrio], Asunción</p>
+                    <span class="fAbierto"><span aria-hidden="true"></span>Abierto ahora · cierra 13:00</span>
+                  </div>
+                  <div class="fFilas">
+                    <div class="fFila" data-i="0">
+                      <span class="fNum" aria-hidden="true">01</span>
+                      <div>
+                        <span class="fEt">Categoría</span>
+                        <p class="fVal"><b>Panadería</b></p>
+                        <div class="mini"><span>Rotisería</span><span>Confitería</span><span>Pedidos por encargo</span></div>
+                      </div>
+                    </div>
+                    <div class="fFila" data-i="1">
+                      <span class="fNum" aria-hidden="true">02</span>
+                      <div>
+                        <span class="fEt">Horarios</span>
+                        <p class="fVal"><b>Lun a sáb</b> · 05:30 a 13:00 y 15:30 a 20:30<br><b>Domingo</b> · 06:00 a 12:00<br>Feriados, hasta el mediodía</p>
+                      </div>
+                    </div>
+                    <div class="fFila" data-i="2">
+                      <span class="fNum" aria-hidden="true">03</span>
+                      <div>
+                        <span class="fEt">Teléfono y cómo llegar</span>
+                        <p class="fVal"><b>[teléfono del local]</b> · también por WhatsApp<br>Llegamos a [barrio], [barrio] y [barrio]</p>
+                        <div class="mini"><span>Llamar</span><span>Cómo llegar</span><span>WhatsApp</span></div>
+                      </div>
+                    </div>
+                    <div class="fFila" data-i="3">
+                      <span class="fNum" aria-hidden="true">04</span>
+                      <div>
+                        <span class="fEt">Fotos</span>
+                        <div class="fotos">
+                          <span class="foto" aria-hidden="true">
+                            <svg viewBox="0 0 60 60"><rect width="60" height="60" fill="#efe4d1"/><rect x="6" y="30" width="48" height="26" fill="#d8c4a3"/><path d="M4 22h52l-4 8H8z" fill="#a83a17"/><rect x="12" y="36" width="14" height="20" fill="#fffdf8"/><rect x="34" y="36" width="14" height="12" fill="#fffdf8"/><rect x="6" y="56" width="48" height="4" fill="#8d7a5f"/></svg>
+                          </span>
+                          <span class="foto" aria-hidden="true">
+                            <svg viewBox="0 0 60 60"><rect width="60" height="60" fill="#f0e7d8"/><rect x="4" y="34" width="52" height="16" rx="2" fill="#b98c5a"/><rect x="4" y="50" width="52" height="8" fill="#8d6a3f"/><ellipse cx="16" cy="30" rx="9" ry="5" fill="#c98a3c"/><ellipse cx="33" cy="30" rx="8" ry="5" fill="#d79a4e"/><ellipse cx="47" cy="30" rx="7" ry="4" fill="#c07b2e"/></svg>
+                          </span>
+                          <span class="foto" aria-hidden="true">
+                            <svg viewBox="0 0 60 60"><rect width="60" height="60" fill="#f2ece0"/><ellipse cx="21" cy="24" rx="13" ry="9" fill="#cf9a52"/><path d="M12 22h18" stroke="#a4732f" stroke-width="2"/><ellipse cx="41" cy="38" rx="12" ry="8" fill="#dcae6a"/><path d="M33 37h16" stroke="#a4732f" stroke-width="2"/><circle cx="16" cy="46" r="7" fill="#e0c48f"/></svg>
+                          </span>
+                          <span class="foto" aria-hidden="true">
+                            <svg viewBox="0 0 60 60"><rect width="60" height="60" fill="#ece5d6"/><rect x="7" y="8" width="46" height="44" rx="2" fill="#fffdf8" stroke="#c6bdaa"/><rect x="11" y="16" width="38" height="3" fill="#b98c5a"/><rect x="11" y="30" width="38" height="3" fill="#b98c5a"/><rect x="11" y="44" width="38" height="3" fill="#b98c5a"/><circle cx="18" cy="12" r="3" fill="#c98a3c"/><circle cx="28" cy="12" r="3" fill="#c98a3c"/><circle cx="20" cy="26" r="3.5" fill="#d79a4e"/><circle cx="32" cy="26" r="3.5" fill="#d79a4e"/><circle cx="22" cy="40" r="3.5" fill="#c07b2e"/></svg>
+                          </span>
+                          <span class="masFotos" aria-hidden="true">+[cant.]</span>
+                        </div>
+                        <p class="fVal" style="margin-top:7px">Fachada, mostrador, vidriera y productos. Todas con luz de día.</p>
+                      </div>
+                    </div>
+                    <div class="fFila" data-i="4">
+                      <span class="fNum" aria-hidden="true">05</span>
+                      <div>
+                        <span class="fEt">Descripción</span>
+                        <p class="fVal">Pan casero, chipa y factura hechas en el día. Abrimos temprano y tomamos pedidos por encargo con [plazo] de aviso.</p>
+                      </div>
+                    </div>
+                    <div class="fFila" data-i="5">
+                      <span class="fNum" aria-hidden="true">06</span>
+                      <div>
+                        <span class="fEt">Reseñas · respondidas</span>
+                        <ul class="res">
+                          <li>
+                            <span class="pips" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span>
+                            <p class="resTxt">“El pan sale a las seis y a las siete ya no hay. Vale la pena madrugar.”</p>
+                            <p class="resResp"><b>Respuesta del negocio:</b> Gracias. La segunda horneada sale a las [hora], por si te queda mejor.</p>
+                          </li>
+                          <li>
+                            <span class="pips" aria-hidden="true"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span>
+                            <p class="resTxt">“Fui un domingo a la tarde y estaba cerrado. En la ficha no dice nada.”</p>
+                            <p class="resResp"><b>Respuesta del negocio:</b> Tenés razón, los domingos cerramos a las 12. Ya está cargado en la ficha. Gracias por avisar.</p>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              </div>
+
+            </div>
+          </div>
+
+          <p class="nota" style="margin-top:14px">La ficha dibujada acá es una representación esquemática propia de KatuWeb: no reproduce la interfaz, el logotipo ni los colores de ningún buscador. Sirve para mostrar qué campos se completan, no para imitar una pantalla.</p>
+        </div>
+
+        <!-- ---------- qué cambia en cada campo ---------- -->
+        <div>
+          <p class="rot">Campo por campo</p>
+          <ol class="campos" id="campos">
+            <li class="campo" data-i="0">
+              <span class="cNum" aria-hidden="true">01</span>
+              <div>
+                <h3 class="cNom">Categoría</h3>
+                <div class="cStack">
+                  <p class="cAntes"><em>Antes ·</em> figurás como “tienda de comestibles”, así que competís con las despensas del barrio en vez de aparecer entre las panaderías.</p>
+                  <p class="cDesp"><em>Ahora ·</em> la categoría decide en qué búsquedas entrás. Con “panadería” como principal y dos secundarias, aparecés cuando alguien busca lo que realmente hacés.</p>
+                </div>
+              </div>
+            </li>
+            <li class="campo" data-i="1">
+              <span class="cNum" aria-hidden="true">02</span>
+              <div>
+                <h3 class="cNom">Horarios</h3>
+                <div class="cStack">
+                  <p class="cAntes"><em>Antes ·</em> sin horarios, la ficha no sabe si estás abierto, y el que busca a las seis de la mañana no te ve.</p>
+                  <p class="cDesp"><em>Ahora ·</em> con los horarios cargados aparecés en las búsquedas de “abierto ahora” y la ficha muestra sola a qué hora abrís y cuándo cerrás al mediodía.</p>
+                </div>
+              </div>
+            </li>
+            <li class="campo" data-i="2">
+              <span class="cNum" aria-hidden="true">03</span>
+              <div>
+                <h3 class="cNom">Teléfono y cómo llegar</h3>
+                <div class="cStack">
+                  <p class="cAntes"><em>Antes ·</em> sin teléfono no hay botón para llamar, y el que te encontró tiene que salir a buscarte a otro lado.</p>
+                  <p class="cDesp"><em>Ahora ·</em> la llamada y el “cómo llegar” salen de la ficha, sin abrir tu página ni pedirle nada a nadie. Es el camino más corto entre buscar y entrar.</p>
+                </div>
+              </div>
+            </li>
+            <li class="campo" data-i="3">
+              <span class="cNum" aria-hidden="true">04</span>
+              <div>
+                <h3 class="cNom">Fotos</h3>
+                <div class="cStack">
+                  <p class="cAntes"><em>Antes ·</em> una sola foto, movida y sacada de noche. Es la primera impresión y está diciendo “acá no hay nadie”.</p>
+                  <p class="cDesp"><em>Ahora ·</em> fachada, mostrador, vidriera y productos con luz de día. Las fotos del mostrador son las que hacen que alguien entre en vez de seguir de largo.</p>
+                </div>
+              </div>
+            </li>
+            <li class="campo" data-i="4">
+              <span class="cNum" aria-hidden="true">05</span>
+              <div>
+                <h3 class="cNom">Descripción</h3>
+                <div class="cStack">
+                  <p class="cAntes"><em>Antes ·</em> el campo está vacío, así que la ficha no dice con tus palabras qué vendés.</p>
+                  <p class="cDesp"><em>Ahora ·</em> la descripción usa las palabras que la gente escribe de verdad: “chipa”, “pan casero”, “pedidos por encargo”. No es relleno, es vocabulario.</p>
+                </div>
+              </div>
+            </li>
+            <li class="campo" data-i="5">
+              <span class="cNum" aria-hidden="true">06</span>
+              <div>
+                <h3 class="cNom">Reseñas respondidas</h3>
+                <div class="cStack">
+                  <p class="cAntes"><em>Antes ·</em> hay una reseña que se queja de un domingo cerrado y nadie contestó. Lo que queda es el reclamo solo.</p>
+                  <p class="cDesp"><em>Ahora ·</em> responder una reseña —sobre todo una mala— es lo que lee el próximo. Una respuesta corta y sin excusas cambia más que diez estrellas.</p>
+                </div>
+              </div>
+            </li>
+          </ol>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ honestidad ============ -->
+  <section class="sec oscura" aria-labelledby="hHonesto">
+    <div class="env">
+      <p class="rot">Sin vueltas</p>
+      <h2 class="h2" id="hHonesto">Lo que sí depende de la ficha y lo que no</h2>
+      <p class="bajada">Esto no es magia. Una ficha ordenada trabaja todos los días a favor tuyo, pero hay cosas que no puede hacer y preferimos decirlas antes y no después.</p>
+
+      <div class="dosCol">
+        <div class="caja caja--si">
+          <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="#e8845c" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 13l5 5L20 6"/></svg>
+            Sí depende de la ficha
+          </h3>
+          <ul>
+            <li>Que <b>aparezcas en las búsquedas de tu zona</b>: “panadería cerca”, “panadería abierta ahora”, “chipa en [barrio]”.</li>
+            <li>Que el que te encuentra vea <b>horarios, fotos y un botón para llamar</b> o para llegar, sin dar más vueltas.</li>
+            <li>Que la ficha <b>diga lo mismo que tu local</b>: si cambiás el horario o cerrás por feriado, se cambia ahí.</li>
+            <li>Que las reseñas <b>tengan respuesta tuya</b>, que es lo que lee el que viene después.</li>
+            <li>Que dejes de perder llamadas por un dato que faltaba.</li>
+          </ul>
+        </div>
+        <div class="caja caja--no">
+          <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="#a89c8c" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14"/></svg>
+            No depende de la ficha
+          </h3>
+          <ul>
+            <li><b>No reemplaza a tu página.</b> La ficha es la vidriera; la página es el local. Sirven para cosas distintas y se necesitan.</li>
+            <li><b>No garantiza que salgas primero.</b> El orden lo decide el buscador con datos que no controlamos: dónde está parado el que busca, cuántas reseñas tenés, hace cuánto.</li>
+            <li><b>No es inmediato.</b> Los cambios tardan en asentarse y no todos los días se ven iguales.</li>
+            <li><b>No inventa demanda.</b> Si en tu zona nadie busca tu rubro, una ficha ordenada no lo cambia.</li>
+            <li><b>No arregla la atención.</b> Las reseñas cuentan lo que pasa adentro del local, y eso lo hacés vos.</li>
+          </ul>
+        </div>
+      </div>
+
+      <p class="nota" style="margin-top:22px">Si alguien te promete el primer puesto en Google, te está vendiendo algo que no puede cumplir. Nosotros te dejamos la ficha impecable y te explicamos qué mirar después.</p>
+    </div>
+  </section>
+
+  <!-- ============ qué necesitamos ============ -->
+  <section class="sec" aria-labelledby="hPido">
+    <div class="env">
+      <p class="rot">De tu lado</p>
+      <h2 class="h2" id="hPido">Qué necesitamos para hacer el trabajo</h2>
+      <p class="bajada">Cinco cosas. Si las tenés juntas, la ficha queda al día en <b>1 a 2 días</b>.</p>
+
+      <ol class="pedidos">
+        <li>
+          <span class="n" aria-hidden="true">01</span>
+          <div>
+            <h3>Acceso a la ficha, o los datos para crearla</h3>
+            <p>Si ya existe, nos das acceso desde tu cuenta. Si no existe, la creamos de cero: para eso hace falta el nombre exacto del negocio y la dirección.</p>
+          </div>
+        </li>
+        <li>
+          <span class="n" aria-hidden="true">02</span>
+          <div>
+            <h3>Fotos del local</h3>
+            <p>Fachada, mostrador, vidriera y los productos. Con el celular está bien; lo que importa es que haya luz de día y que se vea lo que vendés.</p>
+          </div>
+        </li>
+        <li>
+          <span class="n" aria-hidden="true">03</span>
+          <div>
+            <h3>Los horarios reales</h3>
+            <p>Los de verdad, incluido el corte del mediodía si cerrás, y qué hacés los domingos y feriados. Un horario mal cargado es peor que no tener ninguno.</p>
+          </div>
+        </li>
+        <li>
+          <span class="n" aria-hidden="true">04</span>
+          <div>
+            <h3>La categoría</h3>
+            <p>A qué te dedicás en una palabra, y las dos o tres cosas que también hacés. Nosotros te decimos cuál conviene como principal.</p>
+          </div>
+        </li>
+        <li>
+          <span class="n" aria-hidden="true">05</span>
+          <div>
+            <h3>La zona a la que llegás</h3>
+            <p>Los barrios o ciudades donde entregás, o de dónde te vienen a buscar. Sirve para que la ficha no aparezca donde no podés atender.</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============ cierre ============ -->
+  <section class="sec cierre" aria-labelledby="hCierre">
+    <div class="env">
+      <p class="rot">Empezar</p>
+      <h2 class="h2" id="hCierre">Mandanos el nombre de tu negocio</h2>
+      <p class="bajada">Miramos cómo está hoy tu ficha, te decimos qué le falta y cuánto sale dejarla al día. Eso no se cobra.</p>
+      <a class="btGrande" href="https://wa.me/595983518856?text=Hola!%20Quiero%20la%20ficha%20de%20mi%20negocio%20al%20d%C3%ADa.%20(KTW-6KXNB)" target="_blank" rel="noopener noreferrer">Escribinos por WhatsApp</a>
+      <p class="nota">El negocio, las reseñas y las fotos de esta página son de ejemplo y están dibujados con código. Los datos que no podemos inventar van entre corchetes.</p>
+    </div>
+  </section>
+
+</main>
+
+<div class="katu-pie">
+  Demo de <strong>KatuWeb</strong> · <a href="../catalogo.html">Volver al catálogo</a> ·
+  <a href="https://wa.me/595983518856?text=Hola!%20Vi%20la%20demo%20Ficha%20de%20Google%20al%20d%C3%ADa%20(KTW-6KXNB)%20y%20quiero%20esto%20para%20mi%20negocio." target="_blank" rel="noopener noreferrer">Quiero esto para mi negocio</a>
+  <br><span style="font-size:12px">Negocio y datos de ejemplo · KTW-6KXNB</span>
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  var doc = document;
+
+  /* ============================================================
+     0 · terreno
+     ------------------------------------------------------------
+     QUIETO: el visitante pidió menos movimiento. No hay cruce; el CSS
+     apila las dos fichas y muestra las dos líneas de cada campo. El JS
+     igual enciende los campos, porque nada tiene que quedar apagado.
+     MINI: adentro del iframe bajito de la galería. Arranca compuesta,
+     en el estado final y sin una sola animación.
+     ============================================================ */
+  var QUIETO = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var MINI   = (window.self !== window.top) && (window.innerHeight < 520);
+
+  var riel     = doc.getElementById('riel');
+  var rango    = doc.getElementById('cruce');
+  var bA       = doc.getElementById('bAntes');
+  var bB       = doc.getElementById('bDesp');
+  var lectura  = doc.getElementById('lectura');
+  var dlA      = doc.getElementById('dlA');
+  var dlB      = doc.getElementById('dlB');
+  var llena    = doc.getElementById('fichaLlena');
+  var filas    = Array.prototype.slice.call(doc.querySelectorAll('.ficha--llena .fFila'));
+  var campos   = Array.prototype.slice.call(doc.querySelectorAll('.campo'));
+
+  /* Cada campo se enciende cuando el riel pasó su umbral. Repartidos para
+     que, cuando el cruce lo dispara un botón, se enciendan en cascada y se
+     lea el orden; con el deslizador, el ritmo lo pone el pulgar. */
+  var UMBRAL = [0.16, 0.30, 0.44, 0.58, 0.72, 0.86];
+
+  var estado = { p:0, meta:0 };
+  var rafId = 0;
+
+  /* ============================================================
+     1 · pintar: una sola función escribe todo lo que depende de p
+     ============================================================ */
+  function pintar(){
+    var p = estado.p, n = 0, i;
+
+    /* el cruce: el riel mide el doble del marco, así que -50% del riel
+       es exactamente el ancho de una ficha. Solo transform. */
+    if (!QUIETO) riel.style.transform = 'translateX(' + (-50 * p).toFixed(3) + '%)';
+
+    for (i = 0; i < UMBRAL.length; i++){
+      var on = p >= UMBRAL[i];
+      if (on) n++;
+      if (filas[i])  filas[i].classList.toggle('on', on);
+      if (campos[i]) campos[i].classList.toggle('on', on);
+    }
+    llena.classList.toggle('horas', p >= UMBRAL[1]);
+
+    lectura.textContent = 'Campos cargados: ' + n + ' de 6';
+    rango.setAttribute('aria-valuetext',
+      (p <= 0.02 ? 'Ficha abandonada, ' : p >= 0.98 ? 'Ficha al día, ' : 'A medio cruzar, ') +
+      n + ' de 6 campos cargados');
+
+    bA.setAttribute('aria-pressed', p <= 0.02 ? 'true' : 'false');
+    bB.setAttribute('aria-pressed', p >= 0.98 ? 'true' : 'false');
+    dlA.classList.toggle('viva', p < 0.5);
+    dlB.classList.toggle('viva', p >= 0.5);
+  }
+
+  /* ============================================================
+     2 · el único requestAnimationFrame de la página
+     ------------------------------------------------------------
+     No corre de fondo: se pide cuando hay algo que mover y se apaga
+     solo al llegar. Con el deslizador ni se enciende, porque ahí el
+     valor va directo.
+     ============================================================ */
+  function bucle(){
+    rafId = 0;
+    var d = estado.meta - estado.p;
+    if (Math.abs(d) < 0.0015){
+      estado.p = estado.meta;
+      pintar();
+      return;
+    }
+    estado.p += d * 0.14;
+    pintar();
+    rafId = requestAnimationFrame(bucle);
+  }
+  function irHasta(v){
+    estado.meta = v;
+    if (QUIETO || MINI){ estado.p = v; pintar(); return; }
+    if (!rafId) rafId = requestAnimationFrame(bucle);
+  }
+
+  /* ============================================================
+     3 · las tres entradas: deslizador, botones y teclado
+     ============================================================ */
+  rango.addEventListener('input', function(){
+    var v = (parseInt(rango.value, 10) || 0) / 100;
+    estado.meta = v;
+    estado.p = v;              /* directo: el control tiene que pegarse al dedo */
+    if (rafId){ cancelAnimationFrame(rafId); rafId = 0; }
+    pintar();
+  }, { passive:true });
+
+  bA.addEventListener('click', function(){ rango.value = 0;   irHasta(0); });
+  bB.addEventListener('click', function(){ rango.value = 100; irHasta(1); });
+
+  /* ============================================================
+     4 · arranque
+     ============================================================ */
+  if (QUIETO || MINI){
+    estado.p = 1; estado.meta = 1; rango.value = 100;
+  }
+  if (MINI) doc.documentElement.classList.add('mini');
+  pintar();
+
+})();
+</script>
+</body>
+</html>

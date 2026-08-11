@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; frame-src 'self'; media-src 'self' data:; form-action 'none'; object-src 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#f7f4ee">
+<title>De Instagram a página web — demo de KatuWeb</title>
+<meta name="description" content="Los posteos pasan a ser secciones y los destacados a menú: mové el control y mirá cómo la grilla de un perfil se acomoda sola en una página propia. Entrega en 2 a 3 días.">
+<!--
+  DEMO KatuWeb · De Instagram a página web · KTW-9RTQM
+  Negocio, precios y datos de ejemplo. Al usarla con un cliente real,
+  reemplazar todo por sus productos, precios y fotos verdaderas.
+
+  MARCAS REGISTRADAS — LEER ANTES DE TOCAR NADA
+  --------------------------------------------------------------
+  Acá NO se reproduce la interfaz de Instagram ni la de ningún mapa
+  comercial. La grilla, las fichas de destacados, el ícono de cámara y el
+  mapa son dibujos propios y esquemáticos, hechos con CSS y SVG en línea.
+  Se nombra el servicio con palabras porque describir un servicio real es
+  legítimo; imitar su imagen no lo es. Si alguien "mejora" esto acercándolo
+  al original, está empeorando la página. La aclaración visible vive en
+  <p class="aviso"> abajo de la escena: no sacarla.
+
+  POR QUÉ EL ARGUMENTO NO ESTÁ ESCRITO EN UN CARTEL
+  --------------------------------------------------------------
+  "El contenido ya lo tenés, lo que no tenés es dónde ponerlo" no aparece
+  como frase. Lo dice la mecánica: al terminar la conversión la grilla
+  queda como un molde vacío y la página queda llena, y el visitante ve que
+  no entró nada nuevo. Por eso los huecos de origen NO se ocultan al final:
+  quedan a la vista, vacíos. Ese vacío es el argumento.
+-->
+<style>
+  *,*::before,*::after{box-sizing:border-box}
+
+  :root{
+    --papel:#f7f4ee;
+    --papel2:#efeadf;
+    --tinta:#17150f;        /* 15.9:1 sobre papel */
+    --tinta2:#514c42;       /* 7.6:1 sobre papel  */
+    --linea:#dbd3c4;
+    --linea2:#c6bcaa;
+    --verde:#0d5646;        /* 7.6:1 sobre papel  */
+    --tierra:#9c3a11;       /* 5.9:1 sobre papel  */
+    --sombra:0 1px 2px rgba(23,21,15,.06), 0 8px 22px -14px rgba(23,21,15,.35);
+  }
+
+  html{background:var(--papel); -webkit-text-size-adjust:100%; overflow-x:hidden}
+  body{
+    margin:0; background:var(--papel); color:var(--tinta);
+    font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+    line-height:1.6; overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  svg{display:block}
+  .sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+  .salto{position:absolute;left:8px;top:-60px;z-index:60;background:var(--tinta);color:var(--papel);padding:12px 16px;text-decoration:none}
+  .salto:focus{top:8px}
+  :focus-visible{outline:3px solid var(--tierra); outline-offset:3px}
+  .env{max-width:1140px; margin:0 auto; padding:0 20px}
+
+  /* ---------- barra ---------- */
+  .barra{
+    position:sticky; top:0; z-index:30;
+    background:rgba(247,244,238,.94);
+    backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--linea);
+  }
+  .barra-in{
+    max-width:1140px; margin:0 auto; padding:0 20px; min-height:58px;
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+  }
+  .marca{font-size:14px; font-weight:700; letter-spacing:.04em}
+  .marca em{font-style:normal; color:var(--tierra)}
+  .barra .wa{
+    display:inline-flex; align-items:center; min-height:44px; padding:0 14px;
+    color:var(--tinta); text-decoration:none; font-size:13px; font-weight:650;
+    border:1.5px solid var(--tinta);
+  }
+  .barra .wa:hover{background:var(--tinta); color:var(--papel)}
+
+  /* ---------- tipografía ---------- */
+  h1,h2,h3{margin:0; line-height:1.08; letter-spacing:-.02em; font-weight:700}
+  .rot{
+    margin:0 0 10px; font-size:11.5px; letter-spacing:.2em; text-transform:uppercase;
+    color:var(--tierra); font-weight:700;
+  }
+  .h1{font-size:clamp(28px,5.2vw,48px); margin:0 0 14px; max-width:20ch}
+  .h2{font-size:clamp(24px,4.4vw,40px); margin:0 0 14px}
+  .bajada{margin:0 0 24px; color:var(--tinta2); max-width:60ch; font-size:clamp(15px,1.7vw,18px)}
+  .sec{padding:clamp(44px,7vh,84px) 0}
+  .sec-b{background:var(--papel2); border-block:1px solid var(--linea)}
+
+  /* ---------- mando ---------- */
+  .mando{
+    display:flex; align-items:center; gap:14px 18px; flex-wrap:wrap;
+    margin:0 0 22px; padding:14px 16px;
+    border:1px solid var(--linea); background:#fff; box-shadow:var(--sombra);
+  }
+  .bt-conv{
+    -webkit-appearance:none; appearance:none; cursor:pointer; font:inherit;
+    display:inline-flex; align-items:center; justify-content:center; gap:9px;
+    min-height:48px; padding:0 20px; border:0;
+    background:var(--verde); color:#fff; font-weight:700; font-size:15px;
+    letter-spacing:.01em;
+  }
+  .bt-conv:hover{background:#0a4739}
+  .bt-conv .fl{width:16px; height:16px; flex:0 0 auto; transition:transform .3s ease}
+  .bt-conv[aria-pressed="true"] .fl{transform:rotate(180deg)}
+  .mando-lbl{font-size:13px; color:var(--tinta2)}
+  .mando input[type=range]{
+    -webkit-appearance:none; appearance:none; flex:1 1 190px; min-width:150px;
+    height:44px; background:transparent; cursor:pointer; margin:0;
+  }
+  .mando input[type=range]::-webkit-slider-runnable-track{height:4px; background:var(--linea2)}
+  .mando input[type=range]::-moz-range-track{height:4px; background:var(--linea2)}
+  .mando input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none; appearance:none; width:24px; height:24px; border-radius:50%;
+    background:var(--verde); margin-top:-10px; border:3px solid #fff; box-shadow:0 0 0 1px var(--verde);
+  }
+  .mando input[type=range]::-moz-range-thumb{
+    width:22px; height:22px; border:3px solid #fff; border-radius:50%;
+    background:var(--verde); box-shadow:0 0 0 1px var(--verde);
+  }
+  .mando output{
+    font-variant-numeric:tabular-nums; font-size:13px; font-weight:700;
+    color:var(--tinta2); min-width:4ch; text-align:right;
+  }
+
+  /* ============================================================
+     LA ESCENA
+     ------------------------------------------------------------
+     .lados hace el layout y se puede escalar entero para que entre
+     en una pantalla angosta. La capa de vuelo vive FUERA de ese
+     escalado, en coordenadas de pantalla, así los rectángulos que
+     mide el JS se usan tal cual: sin dividir por nada.
+     ============================================================ */
+  .escena{position:relative; overflow:hidden}
+  .lados{
+    display:grid; grid-template-columns:1fr; gap:22px;
+    transform-origin:top center;
+  }
+  .lado-t{
+    display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;
+    margin:0 0 10px; font-size:11.5px; letter-spacing:.16em;
+    text-transform:uppercase; color:var(--tinta2); font-weight:700;
+  }
+  .lado-t b{color:var(--tinta)}
+
+  /* ---------- panel del perfil (dibujo propio y esquemático) ---------- */
+  .panel-ig{
+    border:1px solid var(--linea2); background:#fff; padding:14px;
+    box-shadow:var(--sombra);
+  }
+  .ig-cab{display:flex; align-items:center; gap:10px; margin:0 0 10px}
+  .ig-av{
+    width:42px; height:42px; flex:0 0 auto; border-radius:50%;
+    background:linear-gradient(140deg,#e7d3ac,#c08a4a);
+    display:grid; place-items:center; color:#43301a;
+  }
+  .ig-av svg{width:20px; height:20px}
+  .ig-n{font-size:14px; font-weight:700; line-height:1.25}
+  .ig-u{font-size:12px; color:var(--tinta2); line-height:1.25}
+  .ig-bio{margin:0 0 8px; font-size:12.5px; color:var(--tinta2)}
+  .ig-link{
+    display:flex; align-items:center; gap:7px; margin:0 0 14px;
+    padding:7px 9px; border:1px dashed var(--linea2); background:var(--papel);
+    font-size:12px; color:var(--tinta2);
+  }
+  .ig-link svg{width:14px; height:14px; flex:0 0 auto; color:var(--tinta2)}
+  .ig-link b{color:var(--tinta); font-weight:700}
+
+  .destacados{display:flex; gap:10px; margin:0 0 16px; padding:0 0 2px; list-style:none; flex-wrap:wrap}
+  .destacados li{flex:1 1 0; min-width:64px; text-align:center}
+  .hueco{
+    position:relative; display:block; width:100%;
+    border:1px dashed var(--linea2); background:var(--papel2);
+    overflow:hidden;
+  }
+  .destacados .hueco{aspect-ratio:7/5; border-radius:10px}
+  .grilla .hueco{aspect-ratio:1/1}
+  .cap{
+    display:block; margin-top:5px; font-size:10.5px; line-height:1.35;
+    color:var(--tinta2); letter-spacing:.01em;
+  }
+  .grilla{display:grid; grid-template-columns:repeat(3,1fr); gap:8px}
+  .grilla .celda{min-width:0}
+
+  /* los dibujos: no son fotos, son manchas de color con forma de foto */
+  .dib{position:absolute; inset:0; display:block; overflow:hidden}
+  .dib::before,.dib::after{content:""; position:absolute; display:block}
+  .dib-promo{background:linear-gradient(150deg,#e79b34,#b13c0f)}
+  .dib-promo::before{
+    left:50%; top:52%; width:62%; aspect-ratio:1; margin:0; border-radius:50%;
+    transform:translate(-50%,-50%);
+    background:radial-gradient(circle at 38% 32%,rgba(255,255,255,.5),rgba(255,255,255,.12) 62%,rgba(255,255,255,0) 70%);
+    border:2px solid rgba(255,255,255,.35);
+  }
+  .dib-promo::after{
+    left:12%; top:9%; width:44%; height:11%; border-radius:99px;
+    background:rgba(255,255,255,.5);
+  }
+  .dib-sopa{background:linear-gradient(155deg,#f0cf72,#a9781f)}
+  .dib-sopa::before{
+    left:14%; top:20%; right:14%; bottom:20%; border-radius:6px;
+    background:linear-gradient(180deg,rgba(255,255,255,.42),rgba(255,255,255,.06));
+    box-shadow:inset 0 0 0 2px rgba(255,255,255,.28);
+  }
+  .dib-sopa::after{
+    left:24%; top:36%; width:52%; height:8%; border-radius:99px; background:rgba(120,74,12,.35);
+    box-shadow:0 210% 0 rgba(120,74,12,.28), 0 420% 0 rgba(120,74,12,.2);
+  }
+  .dib-chipa{background:linear-gradient(160deg,#cfd08a,#6f7a2c)}
+  .dib-chipa::before{
+    left:50%; top:50%; width:66%; aspect-ratio:1/.78; transform:translate(-50%,-50%);
+    border-radius:8px; background:linear-gradient(200deg,rgba(255,255,255,.46),rgba(255,255,255,.05));
+  }
+  .dib-chipa::after{
+    left:22%; top:22%; width:16%; aspect-ratio:1; border-radius:50%;
+    background:rgba(255,255,255,.4);
+  }
+  .dib-mbeju{background:linear-gradient(145deg,#efe0c0,#bf9a63)}
+  .dib-mbeju::before{
+    left:50%; top:50%; width:58%; aspect-ratio:1; transform:translate(-50%,-50%);
+    border-radius:50%; background:rgba(255,255,255,.42);
+    box-shadow:0 0 0 3px rgba(255,255,255,.22);
+  }
+  .dib-mbeju::after{
+    left:50%; top:50%; width:22%; aspect-ratio:1; transform:translate(-50%,-50%);
+    border-radius:50%; background:rgba(140,101,52,.3);
+  }
+  /* el de horarios se estira a lo ancho: por eso son líneas, no formas */
+  .dib-hora{background:#3b3a33}
+  .dib-hora::before{
+    left:9%; top:20%; right:9%; height:9%; border-radius:2px; background:rgba(255,255,255,.82);
+    box-shadow:0 190% 0 rgba(255,255,255,.5), 0 380% 0 rgba(255,255,255,.5), 0 570% 0 rgba(255,255,255,.5);
+  }
+  .dib-hora::after{
+    left:9%; top:20%; width:20%; height:9%; border-radius:2px; background:rgba(233,164,63,.95);
+  }
+  .dib-saludo{background:linear-gradient(140deg,#9fb3c8,#4e6379)}
+  .dib-saludo::before{
+    left:18%; top:38%; right:18%; height:10%; border-radius:99px; background:rgba(255,255,255,.62);
+  }
+  .dib-saludo::after{
+    left:32%; top:56%; right:32%; height:8%; border-radius:99px; background:rgba(255,255,255,.42);
+  }
+  .dib-fi{background:var(--papel2); box-shadow:inset 0 0 0 1px var(--linea)}
+  .dib-fi svg{position:absolute; inset:0; width:100%; height:100%; color:var(--verde)}
+
+  /* ---------- panel de la página ---------- */
+  /* el tope de ancho no es capricho: pasado eso el mockup deja de leerse
+     como "una página adentro de la escena" y compite con la página real */
+  .panel-web{
+    border:1px solid var(--linea2); background:#fff; box-shadow:var(--sombra);
+    overflow:hidden; max-width:580px;
+  }
+  .bar-nav{
+    display:flex; align-items:center; gap:6px; padding:8px 10px;
+    background:var(--papel2); border-bottom:1px solid var(--linea);
+  }
+  .bar-nav i{width:8px; height:8px; border-radius:50%; background:var(--linea2); flex:0 0 auto}
+  .bar-nav .url{
+    flex:1 1 auto; margin-left:6px; padding:3px 8px; background:#fff;
+    border:1px solid var(--linea); font-size:10.5px; color:var(--tinta2);
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  /* el mockup arranca pálido y se "llena" con la conversión */
+  .web{padding:12px; --llenado:0}
+  .web .tenue{opacity:calc(.28 + .72 * var(--llenado))}
+
+  .web-nav{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    padding-bottom:10px; border-bottom:1px solid var(--linea); margin-bottom:12px;
+    flex-wrap:wrap;
+  }
+  .web-marca{font-size:13px; font-weight:800; letter-spacing:.12em; text-transform:uppercase}
+  .web-menu{display:flex; align-items:center; gap:7px; flex-wrap:wrap; font-size:11px}
+  .web-menu>span{color:var(--tinta2)}
+  .slot{position:relative; display:block}
+  .slot-mini{
+    min-width:56px; min-height:22px; border:1px dashed var(--linea2);
+    display:inline-flex; align-items:center; justify-content:center; padding:0 7px;
+  }
+  .slot-caja{border:1px dashed var(--linea2); background:var(--papel)}
+  .ap{opacity:0}
+
+  .web-hero{display:flex; gap:12px; align-items:stretch; margin-bottom:14px}
+  .web-hero .slot{flex:0 0 40%; aspect-ratio:1/1; overflow:hidden}
+  .hero-tx{flex:1 1 0; min-width:0; display:flex; flex-direction:column; justify-content:center}
+  .hero-et{font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:var(--tierra); font-weight:700}
+  .hero-h{font-size:clamp(15px,2.1vw,21px); margin:4px 0 6px; line-height:1.15}
+  .hero-p{font-size:12px; color:var(--tinta2); margin:0 0 8px}
+  .hero-pr{font-size:clamp(15px,2vw,19px); font-weight:800; color:var(--verde); margin:0 0 8px}
+  .falso-bt{
+    display:inline-flex; align-items:center; align-self:flex-start;
+    padding:7px 12px; background:var(--verde); color:#fff;
+    font-size:11px; font-weight:700;
+  }
+
+  .web-tit{font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--tinta2); font-weight:700; margin:0 0 7px}
+  .web-cat{display:grid; grid-template-columns:repeat(3,1fr); gap:9px; margin-bottom:14px}
+  .prod{min-width:0}
+  .prod .slot{aspect-ratio:1/1; overflow:hidden; margin-bottom:5px}
+  .prod b{display:block; font-size:11.5px; line-height:1.25}
+  .prod span{display:block; font-size:10.5px; color:var(--tinta2)}
+  .prod .pr{display:block; font-size:12px; font-weight:800; color:var(--verde); margin-top:2px}
+  .prod .mini-bt{
+    display:block; margin-top:5px; padding:4px 6px; text-align:center;
+    border:1px solid var(--verde); color:var(--verde); font-size:10px; font-weight:700;
+  }
+
+  .web-hor{margin-bottom:14px}
+  .web-hor .slot{min-height:74px; padding:10px 12px}
+  .hor-l{list-style:none; margin:0; padding:0; font-size:12px}
+  .hor-l li{display:flex; justify-content:space-between; gap:10px; padding:2px 0; border-bottom:1px solid var(--linea)}
+  .hor-l li:last-child{border-bottom:0}
+  .hor-l b{font-weight:700}
+  .hor-l span{color:var(--tinta2)}
+
+  .web-map .slot{min-height:104px; overflow:hidden; display:flex}
+  .mapa{position:relative; flex:1 1 0; min-width:0; display:flex}
+  .mapa svg{position:absolute; inset:0; width:100%; height:100%}
+  .mapa-tx{
+    position:relative; align-self:flex-end; margin:auto 0 8px 8px;
+    background:#fff; border:1px solid var(--linea2); padding:6px 9px; max-width:78%;
+  }
+  .mapa-tx b{display:block; font-size:11.5px}
+  .mapa-tx span{display:block; font-size:10.5px; color:var(--tinta2)}
+
+  /* ---------- capas de vuelo ---------- */
+  .vuelo,.etqs{position:absolute; inset:0; pointer-events:none}
+  .pz{position:absolute; left:0; top:0; transform-origin:0 0; will-change:transform}
+  .pz .dib{border-radius:2px}
+  .etqs{--f:1}
+  /* el rótulo vive afuera del escalado de la escena, así que se achica solo:
+     si no, en un celular queda un cartel gigante encima de una maqueta chica */
+  .etq{
+    position:absolute; left:0; top:0; opacity:0; white-space:nowrap;
+    background:var(--tinta); color:#fff; font-weight:650; letter-spacing:.01em;
+    font-size:calc(11px * var(--f));
+    padding:calc(4px * var(--f)) calc(9px * var(--f));
+    will-change:transform,opacity;
+  }
+  .etq i{font-style:normal; color:#f0b45f}
+
+  .aviso{
+    margin:16px 0 0; font-size:12.5px; color:var(--tinta2); max-width:74ch;
+    border-left:2px solid var(--linea2); padding-left:12px;
+  }
+
+  /* ---------- razones ---------- */
+  .razones{display:grid; grid-template-columns:1fr; gap:14px; margin:26px 0 0; padding:0; list-style:none}
+  .razon{background:#fff; border:1px solid var(--linea); padding:18px; box-shadow:var(--sombra)}
+  .razon .n{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:26px; height:26px; border-radius:50%; background:var(--verde); color:#fff;
+    font-size:12px; font-weight:800; margin-bottom:10px;
+  }
+  .razon h3{font-size:17px; margin:0 0 6px}
+  .razon p{margin:0; font-size:14.5px; color:var(--tinta2)}
+  .honesto{
+    margin:22px 0 0; font-size:14.5px; color:var(--tinta2);
+    border-left:2px solid var(--tierra); padding-left:14px; max-width:62ch;
+  }
+
+  /* ---------- cómo se hace ---------- */
+  .fichas{display:grid; grid-template-columns:1fr; gap:0; margin:22px 0 0; padding:0; list-style:none; border-top:1px solid var(--linea)}
+  .fichas li{padding:16px 0; border-bottom:1px solid var(--linea)}
+  .fichas b{display:block; font-size:11.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--tierra); margin-bottom:4px}
+  .fichas span{font-size:15px; color:var(--tinta2)}
+  .fichas span em{font-style:normal; color:var(--tinta); font-weight:650}
+
+  /* ---------- pie ---------- */
+  .katu-pie{
+    border-top:1px solid var(--linea); padding:22px 16px 34px; text-align:center;
+    font-size:13px; color:var(--tinta2); line-height:2;
+  }
+  .katu-pie a{
+    color:var(--verde); text-decoration:none; font-weight:700;
+    display:inline-block; min-height:44px; line-height:44px; padding:0 8px;
+  }
+  .katu-pie a:hover{text-decoration:underline}
+
+  /* ---------- anchos ----------
+     El orden importa: primero la versión compacta del mockup (vale hasta
+     999 px, o sea también en las dos columnas angostas), después la de dos
+     columnas, y al final la holgada. Así cada una pisa a la anterior donde
+     corresponde y no hay que repetir reglas. */
+  @media (max-width:999px){
+    .panel-ig{padding:12px}
+    .ig-bio{display:none}
+    .ig-link{margin-bottom:11px; padding:6px 8px}
+    .destacados{gap:8px; margin-bottom:12px}
+    .destacados .hueco{aspect-ratio:2/1}
+    .grilla{gap:7px}
+    .cap{font-size:9.5px; line-height:1.3; margin-top:4px}
+    .ig-cab{gap:8px; margin-bottom:8px}
+    .ig-av{width:34px; height:34px}
+    .ig-av svg{width:17px; height:17px}
+    .ig-n{font-size:13px}
+    .ig-link .ig-corto, .mapa-tx .ig-corto{display:none}   /* gana por especificidad, no por !important */
+    .web{padding:10px}
+    .web-nav{padding-bottom:8px; margin-bottom:10px}
+    .web-menu{gap:5px; font-size:10px}
+    .slot-mini{min-width:46px; padding:0 5px}
+    .web-marca{font-size:12px}
+    .web-hero{margin-bottom:10px}
+    .web-hero .slot{flex-basis:35%}
+    .web-cat{gap:7px; margin-bottom:10px}
+    .prod .mini-bt{display:none}
+    .prod .pr{font-size:11.5px}
+    .web-hor{margin-bottom:10px}
+    .web-hor .slot{min-height:56px; padding:8px 10px}
+    .web-map .slot{min-height:76px}
+    .web-tit{margin-bottom:5px}
+    .hero-h{margin:3px 0 4px; font-size:14px}
+    .hero-p{display:none}
+    .hero-pr{margin-bottom:6px; font-size:15px}
+    .falso-bt{padding:6px 10px; font-size:10.5px}
+  }
+  /* apilado: la escena se achica entera para que los dos lados entren juntos */
+  @media (max-width:559px){
+    .lados{gap:14px}
+    .lado-t{margin-bottom:6px; font-size:10.5px; letter-spacing:.14em}
+  }
+  /* dos columnas apenas hay lugar: ver salir y llegar a la vez es la pieza */
+  @media (min-width:560px){
+    .lados{
+      grid-template-columns:minmax(200px,340px) minmax(0,580px);
+      gap:18px; justify-content:center;
+      /* arriba y no al medio: así los dos rótulos, ANTES y DESPUÉS, arrancan
+         en la misma línea y la diferencia de alto se lee como lo que es */
+      align-items:start;
+    }
+  }
+  @media (min-width:760px){
+    .razones{grid-template-columns:1fr 1fr}
+    .fichas{grid-template-columns:repeat(3,1fr); gap:0 26px}
+    .lados{gap:26px}
+  }
+  @media (min-width:1000px){
+    .lados{gap:34px}
+    .web{padding:16px}
+    .web-hero .slot{flex-basis:40%}
+    .prod b{font-size:13px}
+    .prod span{font-size:11.5px}
+    .web-menu{font-size:12px}
+    .cap{font-size:10.5px}
+  }
+
+  @media (hover:none){
+    .barra .wa:hover{background:transparent; color:var(--tinta)}
+    .bt-conv:hover{background:var(--verde)}
+  }
+
+  /* Sin movimiento: la escena arranca CONVERTIDA. Nada queda invisible
+     esperando una animación que no va a correr, y el control sigue
+     funcionando para quien quiera volver a ver la grilla llena. */
+  @media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{
+      animation-duration:.001ms !important; animation-iteration-count:1 !important;
+      transition-duration:.001ms !important; scroll-behavior:auto !important;
+    }
+  }
+</style>
+<script>
+/* Antimarco: si alguien intenta mostrar esta página dentro de una web ajena,
+   la sacamos del marco. Los iframes propios —la galería del inicio y las
+   tarjetas del catálogo— siguen funcionando, y ahí arranca quieta. */
+(function () {
+  var root = document.documentElement;
+  var enMarco = (window.top !== window.self);
+  if (enMarco && window.location.protocol !== 'file:') {
+    var propio = false;
+    try { propio = (window.top.location.origin === window.location.origin); } catch (e) { propio = false; }
+    if (!propio) {
+      try { window.top.location = window.location.href; }
+      catch (e2) { root.style.display = 'none'; }
+      return;
+    }
+  }
+  if (enMarco || window.innerHeight < 430) root.className += ' quieta';
+})();
+</script>
+</head>
+<body>
+
+<a class="salto" href="#contenido">Ir al contenido</a>
+
+<header class="barra">
+  <div class="barra-in">
+    <span class="marca">De Instagram a página web<em>.</em></span>
+    <a class="wa" href="https://wa.me/595983518856?text=Hola!%20Quiero%20pasar%20mi%20Instagram%20a%20una%20p%C3%A1gina%20web%20(KTW-9RTQM)." target="_blank" rel="noopener noreferrer">Quiero la mía</a>
+  </div>
+</header>
+
+<main id="contenido">
+
+  <!-- ============ entrada + conversión ============
+       Van juntas a propósito: la mecánica es el argumento, así que no puede
+       quedar debajo de una portada larga. También hace que la miniatura de
+       la galería muestre la escena y no un título solo. -->
+  <section class="sec" aria-labelledby="h1">
+    <div class="env">
+      <p class="rot">Servicio · entrega en 2 a 3 días</p>
+      <h1 class="h1" id="h1">Tu perfil, acomodado en una página propia</h1>
+      <p class="bajada">Abajo está el perfil de <b>Ña Cata</b>, un negocio de ejemplo, y al lado su página. Tocá <b>Convertir</b> —o movés la barra vos y la parás donde quieras— y mirá adónde va cada posteo. No entra nada nuevo: los posteos pasan a ser secciones, los destacados pasan a ser menú, y el enlace de la bio deja de ser el único lugar donde vive el negocio.</p>
+
+      <div class="mando">
+        <button class="bt-conv" id="btConv" type="button" aria-pressed="false" aria-controls="escena">
+          <svg class="fl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13"/><path d="M13 6l6 6-6 6"/></svg>
+          <span id="btTxt">Convertir</span>
+        </button>
+        <label class="mando-lbl" for="rgConv">o movela vos</label>
+        <input type="range" id="rgConv" min="0" max="100" step="1" value="0">
+        <output id="outConv" for="rgConv">0%</output>
+      </div>
+
+      <div class="escena" id="escena">
+        <div class="lados" id="lados">
+
+          <!-- ----- lado perfil ----- -->
+          <div class="lado">
+            <p class="lado-t"><b>Antes</b> · el perfil</p>
+            <div class="panel-ig">
+              <div class="ig-cab">
+                <span class="ig-av" aria-hidden="true">
+                  <!-- cámara genérica, dibujada acá: cuerpo, visor y lente -->
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round">
+                    <path d="M2.5 7.5h4l1.4-2h8.2l1.4 2h4v11h-19z"/>
+                    <circle cx="12" cy="13" r="3.6"/>
+                    <path d="M19.4 10.2h1.2"/>
+                  </svg>
+                </span>
+                <span>
+                  <span class="ig-n">Ña Cata · comida casera</span>
+                  <span class="ig-u">@nacata.py</span>
+                </span>
+              </div>
+              <p class="ig-bio">Sopa, chipa guasu y mbeju para llevar. Pedidos por mensaje.</p>
+              <p class="ig-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M10 13.5a4 4 0 0 0 5.7 0l2.6-2.6a4 4 0 0 0-5.7-5.7l-1.3 1.3"/><path d="M14 10.5a4 4 0 0 0-5.7 0l-2.6 2.6a4 4 0 0 0 5.7 5.7l1.3-1.3"/></svg>
+                <span><b>1 enlace</b> en la bio<span class="ig-corto">, y todo lo demás adentro de la app</span></span>
+              </p>
+
+              <ul class="destacados" id="destacados">
+                <li>
+                  <span class="hueco" data-o="llegar"><span class="dib dib-fi"><svg viewBox="0 0 70 50" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M35 13a6 6 0 0 1 6 6c0 4.4-6 11-6 11s-6-6.6-6-11a6 6 0 0 1 6-6z"/><path d="M14 38h42"/></svg></span></span>
+                  <span class="cap">Cómo llegar</span>
+                </li>
+                <li>
+                  <span class="hueco" data-o="precios"><span class="dib dib-fi"><svg viewBox="0 0 70 50" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16h26"/><path d="M22 25h26"/><path d="M22 34h16"/></svg></span></span>
+                  <span class="cap">Precios</span>
+                </li>
+                <li>
+                  <span class="hueco" data-o="envios"><span class="dib dib-fi"><svg viewBox="0 0 70 50" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 18h20v14H18z"/><path d="M38 22h8l6 6v4h-14z"/><circle cx="25" cy="34" r="3"/><circle cx="45" cy="34" r="3"/></svg></span></span>
+                  <span class="cap">Envíos</span>
+                </li>
+              </ul>
+
+              <div class="grilla" id="grilla">
+                <div class="celda"><span class="hueco" data-o="promo"><span class="dib dib-promo"></span></span><span class="cap">Promo del domingo</span></div>
+                <div class="celda"><span class="hueco" data-o="sopa"><span class="dib dib-sopa"></span></span><span class="cap">Sopa paraguaya</span></div>
+                <div class="celda"><span class="hueco" data-o="chipa"><span class="dib dib-chipa"></span></span><span class="cap">Chipa guasu</span></div>
+                <div class="celda"><span class="hueco" data-o="mbeju"><span class="dib dib-mbeju"></span></span><span class="cap">Mbeju</span></div>
+                <div class="celda"><span class="hueco" data-o="hora"><span class="dib dib-hora"></span></span><span class="cap">Horarios</span></div>
+                <div class="celda"><span class="hueco"><span class="dib dib-saludo"></span></span><span class="cap">Saludo · se queda</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ----- lado página ----- -->
+          <div class="lado">
+            <p class="lado-t"><b>Después</b> · la página</p>
+            <div class="panel-web">
+              <div class="bar-nav" aria-hidden="true">
+                <i></i><i></i><i></i>
+                <span class="url">www.[tu-negocio].com.py</span>
+              </div>
+              <div class="web" id="web">
+
+                <div class="web-nav">
+                  <span class="web-marca tenue">Ña Cata</span>
+                  <nav class="web-menu" aria-label="Menú de ejemplo de la página">
+                    <span class="tenue">Inicio</span>
+                    <span class="slot slot-mini" data-d="precios"><span class="ap" data-a="precios">Precios</span></span>
+                    <span class="slot slot-mini" data-d="envios"><span class="ap" data-a="envios">Envíos</span></span>
+                    <span class="tenue">WhatsApp</span>
+                  </nav>
+                </div>
+
+                <div class="web-hero">
+                  <span class="slot slot-caja" data-d="promo"><span class="ap dib dib-promo" data-a="promo"></span></span>
+                  <div class="hero-tx">
+                    <span class="hero-et ap" data-a="promo">Promo del domingo</span>
+                    <h3 class="hero-h ap" data-a="promo">Sopa paraguaya + chipa guasu, bandeja para cuatro</h3>
+                    <p class="hero-p ap" data-a="promo">Se encarga hasta el sábado a la noche y se retira el domingo.</p>
+                    <p class="hero-pr ap" data-a="promo">Gs. 85.000</p>
+                    <span class="falso-bt ap" data-a="promo" aria-hidden="true">Pedir por WhatsApp</span>
+                  </div>
+                </div>
+
+                <p class="web-tit tenue">Catálogo</p>
+                <div class="web-cat">
+                  <div class="prod">
+                    <span class="slot slot-caja" data-d="sopa"><span class="ap dib dib-sopa" data-a="sopa"></span></span>
+                    <b class="ap" data-a="sopa">Sopa paraguaya</b>
+                    <span class="ap" data-a="sopa">Bandeja mediana</span>
+                    <span class="pr ap" data-a="sopa">Gs. 45.000</span>
+                    <span class="mini-bt ap" data-a="sopa" aria-hidden="true">Pedir</span>
+                  </div>
+                  <div class="prod">
+                    <span class="slot slot-caja" data-d="chipa"><span class="ap dib dib-chipa" data-a="chipa"></span></span>
+                    <b class="ap" data-a="chipa">Chipa guasu</b>
+                    <span class="ap" data-a="chipa">Bandeja mediana</span>
+                    <span class="pr ap" data-a="chipa">Gs. 48.000</span>
+                    <span class="mini-bt ap" data-a="chipa" aria-hidden="true">Pedir</span>
+                  </div>
+                  <div class="prod">
+                    <span class="slot slot-caja" data-d="mbeju"><span class="ap dib dib-mbeju" data-a="mbeju"></span></span>
+                    <b class="ap" data-a="mbeju">Mbeju</b>
+                    <span class="ap" data-a="mbeju">Docena</span>
+                    <span class="pr ap" data-a="mbeju">Gs. 35.000</span>
+                    <span class="mini-bt ap" data-a="mbeju" aria-hidden="true">Pedir</span>
+                  </div>
+                </div>
+
+                <p class="web-tit tenue">Horarios</p>
+                <div class="web-hor">
+                  <span class="slot slot-caja" data-d="hora">
+                    <ul class="hor-l ap" data-a="hora">
+                      <li><b>Lunes a viernes</b><span>[horario]</span></li>
+                      <li><b>Sábado</b><span>[horario]</span></li>
+                      <li><b>Domingo</b><span>solo encargues</span></li>
+                    </ul>
+                  </span>
+                </div>
+
+                <p class="web-tit tenue">Cómo llegar</p>
+                <div class="web-map">
+                  <span class="slot slot-caja" data-d="llegar">
+                    <span class="mapa ap" data-a="llegar">
+                      <!-- mapa dibujado acá: calles, esquina y chincheta. No copia ninguna app -->
+                      <svg viewBox="0 0 320 110" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+                        <rect width="320" height="110" fill="#e9e5d8"/>
+                        <g stroke="#fbfaf6" stroke-width="9" stroke-linecap="square">
+                          <path d="M-10 34h340"/><path d="M-10 80h340"/>
+                          <path d="M74 -10v130"/><path d="M198 -10v130"/><path d="M272 -10v130"/>
+                        </g>
+                        <g fill="#dcd7c6">
+                          <rect x="14" y="44" width="46" height="26"/>
+                          <rect x="90" y="44" width="42" height="26"/>
+                          <rect x="212" y="44" width="46" height="26"/>
+                          <rect x="90" y="88" width="42" height="20"/>
+                        </g>
+                        <g fill="#0d5646">
+                          <path d="M160 30a11 11 0 0 1 11 11c0 8-11 21-11 21s-11-13-11-21a11 11 0 0 1 11-11z"/>
+                        </g>
+                        <circle cx="160" cy="41" r="4" fill="#e9e5d8"/>
+                      </svg>
+                      <span class="mapa-tx">
+                        <b>Ña Cata</b>
+                        <span>[dirección], Asunción<span class="ig-corto"> · a [tiempo] de [referencia]</span></span>
+                      </span>
+                    </span>
+                  </span>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <div class="vuelo" id="vuelo" aria-hidden="true"></div>
+        <div class="etqs" id="etqs" aria-hidden="true"></div>
+      </div>
+
+      <p class="aviso">La grilla de posteos, las fichas de destacados y el mapa de esta demo son <b>representaciones propias y esquemáticas</b>, dibujadas con CSS y SVG: no reproducen la interfaz de Instagram ni la de ninguna aplicación de mapas. Las fotos también están dibujadas con código — en tu página van las tuyas, las que ya tenés posteadas.</p>
+    </div>
+  </section>
+
+  <!-- ============ lo que ganás ============ -->
+  <section class="sec sec-b" aria-labelledby="hGana">
+    <div class="env">
+      <p class="rot">Lo concreto</p>
+      <h2 class="h2" id="hGana">Lo que ganás al salir del link de la bio</h2>
+      <p class="bajada">Cuatro cosas que hoy no podés hacer, y que no dependen de postear más seguido.</p>
+
+      <ul class="razones">
+        <li class="razon">
+          <span class="n" aria-hidden="true">1</span>
+          <h3>Aparecés cuando alguien busca</h3>
+          <p>Una página tiene dirección propia, textos y precios que los buscadores pueden leer e indexar. Dentro de la app, el que busca “sopa paraguaya para llevar en [barrio]” no te encuentra: ahí se busca de otra manera y solo entre quienes ya están adentro.</p>
+        </li>
+        <li class="razon">
+          <span class="n" aria-hidden="true">2</span>
+          <h3>El precio deja de estar en un comentario</h3>
+          <p>En la página el precio es un dato: se ve al lado del producto, se busca, se ordena y se cambia en un solo lugar. Hoy el precio de la sopa está en el pie de un posteo de hace tres semanas, o contestado uno por uno por mensaje.</p>
+        </li>
+        <li class="razon">
+          <span class="n" aria-hidden="true">3</span>
+          <h3>El pedido llega con el producto adentro</h3>
+          <p>Cada producto tiene su botón, y ese botón abre WhatsApp con el mensaje ya escrito: qué es, cuánto sale y cuántos. Se termina la ida y vuelta de “¿cuál era?, ¿el de la foto de arriba o el de abajo?”.</p>
+        </li>
+        <li class="razon">
+          <span class="n" aria-hidden="true">4</span>
+          <h3>El negocio no vive en una cuenta ajena</h3>
+          <p>El dominio y la página son tuyos. Si mañana la cuenta se cae, te la roban o cambian las reglas de lo que se ve, tu página sigue en pie con tu catálogo, tus horarios y tu dirección.</p>
+        </li>
+      </ul>
+
+      <p class="honesto">Esto no reemplaza a Instagram: seguí posteando ahí, es donde te ven todos los días. Lo que cambia es que deje de ser el único lugar donde vive el negocio.</p>
+    </div>
+  </section>
+
+  <!-- ============ cómo se hace ============ -->
+  <section class="sec" aria-labelledby="hComo">
+    <div class="env">
+      <p class="rot">Cómo se hace</p>
+      <h2 class="h2" id="hComo">Vos mandás cuatro cosas</h2>
+      <ul class="fichas">
+        <li><b>Lo que mandás</b><span>Tu <em>usuario de Instagram</em>, tus <em>horarios</em>, tu <em>dirección</em> y tu <em>WhatsApp</em>. Nada más: las fotos y los textos ya están posteados.</span></li>
+        <li><b>Entrega</b><span>De <em>2 a 3 días</em> desde que llegan esos cuatro datos.</span></li>
+        <li><b>Lo que queda</b><span>Una página propia con tu catálogo, tus precios, tus horarios y un botón de pedido por cada producto.</span></li>
+      </ul>
+    </div>
+  </section>
+
+</main>
+
+<div class="katu-pie">
+  Demo de <strong>KatuWeb</strong> · <a href="../catalogo.html">Volver al catálogo</a> ·
+  <a href="https://wa.me/595983518856?text=Hola!%20Vi%20la%20demo%20De%20Instagram%20a%20p%C3%A1gina%20web%20(KTW-9RTQM)%20y%20quiero%20esto%20para%20mi%20negocio." target="_blank" rel="noopener noreferrer">Quiero esto para mi negocio</a>
+  <br><span style="font-size:12px">Negocio y datos de ejemplo · KTW-9RTQM</span>
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  /* ============================================================
+     0 · terreno
+     ============================================================ */
+  var doc = document;
+  var QUIETO = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var MINI = doc.documentElement.className.indexOf('quieta') >= 0;
+
+  var escena = doc.getElementById('escena');
+  var lados  = doc.getElementById('lados');
+  var vuelo  = doc.getElementById('vuelo');
+  var etqs   = doc.getElementById('etqs');
+  var web    = doc.getElementById('web');
+  var rango  = doc.getElementById('rgConv');
+  var salida = doc.getElementById('outConv');
+  var boton  = doc.getElementById('btConv');
+  var botTxt = doc.getElementById('btTxt');
+
+  /* ============================================================
+     1 · el mapa de la conversión
+     ------------------------------------------------------------
+     Cada entrada es "de dónde sale" → "adónde llega". El orden es el
+     orden del vuelo, y es narrativo: primero la portada, después el
+     catálogo, después los datos, y el menú al final.
+
+     modo 'cubrir'  → escala uniforme y centrado en el destino. El dibujo
+                      no se deforma; lo que crece alrededor es el texto real.
+     modo 'estirar' → escala en los dos ejes. Solo para el posteo de
+                      horarios, que está dibujado con líneas horizontales
+                      justamente para poder estirarse sin verse mal.
+     ============================================================ */
+  var MAPA = [
+    { k:'promo',   modo:'cubrir',  lado:'arriba', etq:'Posteo de la promo → Portada' },
+    { k:'sopa',    modo:'cubrir',  lado:'arriba', etq:'Posteo → Catálogo, con precio' },
+    { k:'chipa',   modo:'cubrir',  lado:'abajo',  etq:'Posteo → Catálogo, con precio' },
+    { k:'mbeju',   modo:'cubrir',  lado:'arriba', etq:'Posteo → Catálogo, con precio' },
+    { k:'hora',    modo:'estirar', lado:'arriba', etq:'Posteo de horarios → Bloque de horarios' },
+    { k:'llegar',  modo:'cubrir',  lado:'arriba', etq:'Destacado “Cómo llegar” → Mapa y dirección' },
+    { k:'precios', modo:'cubrir',  lado:'arriba', etq:'Destacado → Menú' },
+    { k:'envios',  modo:'cubrir',  lado:'abajo',  etq:'Destacado → Menú' }
+  ];
+
+  var piezas = [];
+  for (var i = 0; i < MAPA.length; i++){
+    var d = MAPA[i];
+    var org = doc.querySelector('.hueco[data-o="' + d.k + '"]');
+    var dst = doc.querySelector('.slot[data-d="' + d.k + '"]');
+    if (!org || !dst) continue;
+
+    var pz = doc.createElement('div');
+    pz.className = 'pz';
+    var dibujo = org.querySelector('.dib');
+    if (dibujo) pz.appendChild(dibujo.cloneNode(true));
+    vuelo.appendChild(pz);
+
+    var et = doc.createElement('span');
+    et.className = 'etq';
+    et.textContent = d.etq;
+    etqs.appendChild(et);
+
+    piezas.push({
+      k:d.k, modo:d.modo, lado:d.lado,
+      org:org, dst:dst, pz:pz, et:et,
+      dibOrg: dibujo,
+      aps: Array.prototype.slice.call(doc.querySelectorAll('.ap[data-a="' + d.k + '"]')),
+      geo: null, marcada:false, t0:0, opEt:0
+    });
+  }
+
+  /* ============================================================
+     2 · medir
+     ------------------------------------------------------------
+     En pantalla angosta la escena entera se achica para que el origen y
+     el destino entren juntos: si el visitante no ve los dos lados a la
+     vez, la mecánica no se entiende. El escalado se aplica a .lados; la
+     capa de vuelo queda afuera, en coordenadas de pantalla, así los
+     rectángulos medidos se usan tal cual.
+     ============================================================ */
+  var fit = 1;
+
+  function medir(){
+    lados.style.transform = 'none';
+    escena.style.height = '';
+
+    var natural = lados.getBoundingClientRect().height;
+    fit = 1;
+    /* Se achica en cualquier ancho, no solo en celular: en una notebook de
+       768 px de alto la escena tampoco entra, y una mecánica que no se ve
+       entera no se entiende. El piso de 0.68 es donde el texto del mockup
+       deja de leerse; abajo de eso conviene que el visitante scrollee. */
+    if (!MINI){
+      var disp = Math.min((window.innerHeight || 700) * 0.90, 900);
+      if (natural > disp) fit = Math.max(0.68, disp / natural);
+    }
+    if (fit < 1) lados.style.transform = 'scale(' + fit.toFixed(4) + ')';
+    escena.style.height = Math.round(natural * fit) + 'px';
+
+    etqs.style.setProperty('--f', fit.toFixed(3));
+
+    var rE = escena.getBoundingClientRect();
+    var anchoE = rE.width;
+
+    for (var i = 0; i < piezas.length; i++){
+      var p = piezas[i];
+      var a = p.org.getBoundingClientRect();
+      var b = p.dst.getBoundingClientRect();
+      var g = {
+        ox:a.left - rE.left, oy:a.top - rE.top, ow:a.width, oh:a.height,
+        dx:b.left - rE.left, dy:b.top - rE.top, dw:b.width, dh:b.height
+      };
+      if (g.ow < 1 || g.oh < 1) g.ow = g.oh = 1;
+
+      if (p.modo === 'estirar'){
+        g.sx = g.dw / g.ow; g.sy = g.dh / g.oh;
+        g.tx = g.dx - g.ox;  g.ty = g.dy - g.oy;
+      } else {
+        var s = Math.min(g.dw / g.ow, g.dh / g.oh);
+        g.sx = s; g.sy = s;
+        g.tx = (g.dx + (g.dw - g.ow * s) / 2) - g.ox;
+        g.ty = (g.dy + (g.dh - g.oh * s) / 2) - g.oy;
+      }
+      p.geo = g;
+
+      p.pz.style.left   = g.ox + 'px';
+      p.pz.style.top    = g.oy + 'px';
+      p.pz.style.width  = g.ow + 'px';
+      p.pz.style.height = g.oh + 'px';
+
+      /* la etiqueta: pegada al destino y encajada adentro de la escena,
+         para que nunca empuje el ancho de la página */
+      var we = p.et.offsetWidth || 120, he = p.et.offsetHeight || 20;
+      var ex = g.dx + (g.dw - we) / 2;
+      ex = Math.max(2, Math.min(ex, anchoE - we - 2));
+      var ey = (p.lado === 'abajo') ? (g.dy + g.dh + 6) : (g.dy - he - 6);
+      ey = Math.max(2, Math.min(ey, rE.height - he - 2));
+      p.et.style.left = Math.round(ex) + 'px';
+      p.et.style.top  = Math.round(ey) + 'px';
+    }
+    pintar(true);
+  }
+
+  /* ============================================================
+     3 · el estado: una sola verdad
+     ============================================================ */
+  var arranque = (QUIETO || MINI) ? 1 : 0;
+  var est = { t:arranque, meta:arranque, arrastrando:false, anim:null };
+  var DUR_MS = 2300;   /* lo que tarda la conversión entera de punta a punta */
+  var N = piezas.length || 1;
+  var PASO = 0.06, DUR = Math.max(0.3, 1 - PASO * (N - 1));
+
+  function suave(x){ return x < .5 ? 4*x*x*x : 1 - Math.pow(-2*x + 2, 3) / 2; }
+  function clamp(x){ return x < 0 ? 0 : (x > 1 ? 1 : x); }
+
+  function pintar(forzar){
+    var t = est.t;
+    web.style.setProperty('--llenado', t.toFixed(3));
+    var ahora = performance.now();
+    var vivas = false;
+
+    for (var i = 0; i < piezas.length; i++){
+      var p = piezas[i], g = p.geo;
+      if (!g) continue;
+      var pr = clamp((t - i * PASO) / DUR);
+      var e = suave(pr);
+
+      /* el vuelo */
+      var sx = 1 + (g.sx - 1) * e;
+      var sy = 1 + (g.sy - 1) * e;
+      var arco = QUIETO ? 0 : Math.sin(Math.PI * e) * -14;
+      /* el que se estira no gira: una barra ancha inclinada se lee como un
+         error de maqueta, no como una pieza en el aire */
+      var giro = (QUIETO || p.modo === 'estirar') ? 0 : Math.sin(Math.PI * e) * (i % 2 ? -2.6 : 2.6);
+      p.pz.style.transform =
+        'translate(' + (g.tx * e).toFixed(2) + 'px,' + (g.ty * e + arco).toFixed(2) + 'px)' +
+        ' rotate(' + giro.toFixed(2) + 'deg)' +
+        ' scale(' + sx.toFixed(4) + ',' + sy.toFixed(4) + ')';
+      /* se apaga justo al aterrizar: abajo ya está el contenido de verdad */
+      p.pz.style.opacity = (pr > .86 ? Math.max(0, 1 - (pr - .86) / .14) : 1).toFixed(3);
+
+      /* el hueco de origen queda vacío. Eso es el argumento. */
+      if (p.dibOrg) p.dibOrg.style.opacity = (1 - clamp(pr / .12)).toFixed(3);
+
+      /* lo que aparece en la página */
+      var ap = clamp((pr - .7) / .3);
+      for (var j = 0; j < p.aps.length; j++){
+        p.aps[j].style.opacity = ap.toFixed(3);
+        p.aps[j].style.transform = ap < 1 ? 'translateY(' + ((1 - ap) * 6).toFixed(2) + 'px)' : 'none';
+      }
+
+      /* se anota el aterrizaje; el rótulo se decide después */
+      if (pr > .9 && !p.marcada){ p.marcada = true; p.t0 = ahora; }
+      if (pr < .6 && p.marcada){ p.marcada = false; p.t0 = 0; }
+    }
+
+    /* UN rótulo por vez: el del último que aterrizó. Ocho carteles juntos
+       tapan justo lo que la demo quiere mostrar, y ninguno se llega a leer. */
+    var ult = -1, mejor = -1;
+    for (var m = 0; m < piezas.length; m++){
+      if (piezas[m].marcada && piezas[m].t0 > mejor){ mejor = piezas[m].t0; ult = m; }
+    }
+    for (var n = 0; n < piezas.length; n++){
+      var q = piezas[n], op = 0;
+      /* con movimiento reducido no hay rótulos: aparecen y se van solos, o sea
+         son movimiento, y además la escena arranca ya convertida, con lo cual
+         el primero saldría sin que nadie haya tocado nada */
+      if (n === ult && !MINI && !QUIETO){
+        var v = ahora - q.t0;
+        op = v < 130 ? (v / 130) : Math.max(0, Math.min(1, 1 - (v - 1100) / 380));
+        if (op > 0) vivas = true;
+      }
+      if (op !== q.opEt || forzar){
+        q.opEt = op;
+        q.et.style.opacity = op.toFixed(3);
+        q.et.style.transform = 'translateY(' + ((1 - op) * 5).toFixed(2) + 'px)';
+      }
+    }
+    return vivas;
+  }
+
+  /* ============================================================
+     4 · el bucle. UNO SOLO, y se apaga cuando no hay nada que mover.
+     ============================================================ */
+  var corriendo = false;
+
+  /* El tiempo del botón corre LINEAL a propósito. La curva ya la pone cada
+     pieza por separado; si además se frenara el reloj global, las últimas
+     cuatro piezas aterrizarían todas juntas contra el final y no se leería
+     de dónde salió cada una, que es lo único que esta demo tiene que mostrar. */
+  function animar(hasta){
+    if (QUIETO){ est.anim = null; est.t = est.meta = hasta; return; }
+    est.anim = { desde:est.t, hasta:hasta, t0:performance.now(),
+                 dur:Math.max(280, DUR_MS * Math.abs(hasta - est.t)) };
+    est.meta = hasta;
+  }
+
+  function bucle(ts){
+    if (!est.arrastrando && est.anim){
+      var a = est.anim;
+      var u = clamp((ts - a.t0) / a.dur);
+      est.t = a.desde + (a.hasta - a.desde) * u;
+      if (u >= 1){ est.t = a.hasta; est.anim = null; }
+    }
+
+    var vivas = pintar(false);
+    sincronizarBarra();
+
+    if (est.anim || vivas || est.arrastrando) requestAnimationFrame(bucle);
+    else corriendo = false;
+  }
+  function pedir(){
+    if (corriendo) return;
+    corriendo = true;
+    requestAnimationFrame(bucle);
+  }
+
+  function sincronizarBarra(){
+    var v = Math.round(est.t * 100);
+    if (!est.arrastrando && rango.value !== String(v)) rango.value = String(v);
+    var txt = v + '%';
+    if (salida.textContent !== txt) salida.textContent = txt;
+    var conv = est.meta > .5;
+    var quiere = conv ? 'Volver a la grilla' : 'Convertir';
+    if (botTxt.textContent !== quiere){
+      botTxt.textContent = quiere;
+      boton.setAttribute('aria-pressed', conv ? 'true' : 'false');
+    }
+  }
+
+  /* ============================================================
+     5 · los dos controles escriben el mismo estado
+     ============================================================ */
+  rango.addEventListener('input', function(){
+    est.arrastrando = true;
+    est.anim = null;
+    est.t = est.meta = parseInt(rango.value, 10) / 100;
+    pedir();
+  }, { passive:true });
+
+  ['change','pointerup','pointercancel','blur','touchend'].forEach(function(ev){
+    rango.addEventListener(ev, function(){
+      est.arrastrando = false;
+      est.meta = est.t;
+      pedir();
+    }, { passive:true });
+  });
+
+  boton.addEventListener('click', function(){
+    est.arrastrando = false;
+    animar(est.meta > .5 ? 0 : 1);
+    sincronizarBarra();
+    pedir();
+  });
+
+  /* ============================================================
+     6 · arranque
+     ------------------------------------------------------------
+     En miniatura y con movimiento reducido arranca convertida y quieta:
+     se ve la composición, no el movimiento. En el resto, la conversión
+     corre sola una vez cuando la escena entra en pantalla — una sola vez,
+     nunca en bucle.
+     ============================================================ */
+  var yaCorrio = (QUIETO || MINI);
+  if ('IntersectionObserver' in window && !yaCorrio){
+    var io = new IntersectionObserver(function(ent){
+      for (var i = 0; i < ent.length; i++){
+        if (ent[i].isIntersecting && !yaCorrio){
+          yaCorrio = true;
+          io.disconnect();
+          setTimeout(function(){ animar(1); sincronizarBarra(); pedir(); }, 620);
+        }
+      }
+    }, { threshold:.35 });
+    io.observe(escena);
+  }
+
+  var tmr = 0;
+  window.addEventListener('resize', function(){
+    clearTimeout(tmr);
+    tmr = setTimeout(function(){ medir(); pedir(); }, 170);
+  }, { passive:true });
+
+  medir();
+  sincronizarBarra();
+  requestAnimationFrame(function(){ medir(); });
+  window.addEventListener('load', function(){ medir(); }, { passive:true });
+})();
+</script>
+</body>
+</html>

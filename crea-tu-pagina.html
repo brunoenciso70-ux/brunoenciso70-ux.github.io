@@ -680,7 +680,8 @@ Sopa paraguaya — 10.000"></textarea>
     tech:'ejemplos/tech-bento-startup.html', revista:'ejemplos/revista-collage-tienda.html',
     edit:'ejemplos/editorial-90s-tatuajes.html', conv:'ejemplos/conversion-smb-servicio.html',
     darkpro:'ejemplos/dark-premium-ferreteria.html', cine:'ejemplos/scroll-cine-constructora.html',
-    ropa:'ejemplos/ropa-cinetica.html'
+    ropa:'ejemplos/ropa-cinetica.html',
+    imanes:'ejemplos/reloj-imanes.html'
   };
 
   var PIEZAS = {
@@ -712,7 +713,8 @@ Sopa paraguaya — 10.000"></textarea>
     fondoscroll:{ n: 'Fondo conducido por scroll', e: 'prof',  sec: ['servicios','galeria','sobre','horarios'] },
     gira3d:    { n: 'Producto 3D que gira',      e: 'tech',    sec: ['catalogo','galeria','sobre','horarios'] },
     rescate:   { n: 'Fotos rescatadas',          e: 'clasico', sec: ['galeria','sobre','horarios'] },
-    ropa:      { n: 'Tipografía cinética',      e: 'edit',    sec: ['catalogo','galeria','sobre','horarios'] }
+    ropa:      { n: 'Tipografía cinética',      e: 'edit',    sec: ['catalogo','galeria','sobre','horarios'] },
+    imanes:    { n: 'Neón y cristal',            e: 'darkpro', sec: ['catalogo','galeria','sobre','horarios'] }
   };
   var piezaActual = null;
 
@@ -1258,7 +1260,7 @@ Sopa paraguaya — 10.000"></textarea>
     nm.textContent = P.n;
     var ay = document.createElement('span');
     ay.style.cssText = 'color:#8d87a5';
-    var FIJAS = { conv: 1, darkpro: 1, cine: 1, ropa: 1 };
+    var FIJAS = { conv: 1, darkpro: 1, cine: 1, ropa: 1, imanes: 1 };
     ay.textContent = FIJAS[piezaActual]
       ? '· esta pieza tiene su estructura armada. Acá elegís el color, la tipografía y las secciones.'
       : '· ya te dejé el estilo y las secciones que lleva. Cambiá lo que quieras.';

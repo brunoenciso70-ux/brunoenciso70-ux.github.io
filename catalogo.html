@@ -152,6 +152,8 @@
   .it .desc { font-size: 13.5px; color: var(--tinta2); margin-top: 8px; flex: 1; }
 
   .meta { margin-top: 13px; padding-top: 12px; border-top: 1px solid var(--linea); }
+  .meta > .chip + .chip { margin-left: 6px; }
+  .chip.precio { background: #fff; border-color: var(--tinta); }
   .chip { display: inline-flex; align-items: center; gap: 7px; background: var(--hueco); border: 1px solid var(--linea); border-radius: 99px; padding: 4px 11px 4px 9px; font-size: 11.5px; font-weight: 700; color: var(--tinta); }
   .chip i { position: relative; flex: none; width: 11px; height: 11px; border: 1.5px solid var(--gris); border-radius: 99px; }
   .chip i::after { content: ''; position: absolute; left: 3px; top: 1.4px; width: 1.5px; height: 3.6px; background: var(--gris); }
@@ -434,6 +436,9 @@
       req:'El producto físico, o fotos crudas para retocar', t:'2 a 4 días', v:'ejemplos/set-fotografia-producto.html', wa:'set de fotografía de producto' },
 
     /* ============ SE PUEDE CONSTRUIR — movimiento con IA ============ */
+    { g:'nuevo', cat:'Movimiento generado', n:'Neón y cristal', r:'Productos de diseño y tecnología', e:'listo',
+      d:'Fondo negro real —el que apaga los píxeles en una pantalla OLED— y todo lo que brilla dibujado con luz propia: halos en capas, cristal esmerilado con ruido y un objeto que se desarma en cinco planos con el scroll. El visitante elige el color del neón y se reilumina la página entera.',
+      req:'El producto y sus datos reales', t:'4 a 5 días', v:'ejemplos/reloj-imanes.html', wa:'neón y cristal' },
     { g:'nuevo', cat:'Movimiento generado', n:'Tipografía cinética', r:'Moda, tiendas y marcas', e:'listo',
       d:'La letra responde a lo que hace el visitante: se estira si baja rápido, se comprime si sube, engorda bajo el mouse y cae en diagonal al cambiar de sección. El movimiento no decora, es el producto.',
       req:'Los textos y las prendas o productos', t:'3 a 4 días', v:'ejemplos/ropa-cinetica.html', wa:'tipografía cinética' },
@@ -451,27 +456,21 @@
       req:'Las fotos como estén', t:'1 día', v:'ejemplos/fotos-rescatadas.html', wa:'rescate de fotos' },
 
     /* ============ SE PUEDE CONSTRUIR — servicios ============ */
-    { g:'nuevo', cat:'Servicios sueltos', n:'De Instagram a página web', r:'Comercios con Instagram activo', e:'pedido',
+    { g:'nuevo', cat:'Servicios sueltos', n:'De Instagram a página web', r:'Comercios con Instagram activo', e:'listo',
       d:'El perfil de Instagram se convierte en una página propia: los posteos pasan a ser secciones, los destacados a menú, y el link de la bio deja de ser el único lugar donde vive el negocio.',
-      req:'Usuario de Instagram, horarios, dirección, WhatsApp', t:'2 a 3 días', wa:'Instagram a página web' },
-    { g:'nuevo', cat:'Servicios sueltos', n:'Auditoría de la web actual', r:'El que ya tiene web y no le funciona', e:'pedido',
+      req:'Usuario de Instagram, horarios, dirección, WhatsApp', t:'2 a 3 días', pr:'Gs. 950.000', v:'ejemplos/instagram-a-web.html', wa:'Instagram a página web' },
+    { g:'nuevo', cat:'Servicios sueltos', n:'Auditoría de la web actual', r:'El que ya tiene web y no le funciona', e:'listo',
       d:'Informe con semáforo: título y descripción, encabezados, textos alternativos, peso de las imágenes, velocidad, ficha de Google y datos de negocio local. Cada hallazgo con su prioridad y qué hacer.',
-      req:'La dirección de la web', t:'2 días', wa:'auditoría de la web' },
-    { g:'nuevo', cat:'Servicios sueltos', n:'Ficha de Google al día', r:'Cualquier comercio con local', e:'pedido',
+      req:'La dirección de la web', t:'2 días', pr:'Gs. 350.000', v:'ejemplos/auditoria-web.html', wa:'auditoría de la web' },
+    { g:'nuevo', cat:'Servicios sueltos', n:'Ficha de Google al día', r:'Cualquier comercio con local', e:'listo',
       d:'En Paraguay mucha gente busca en Google Maps antes que en la web. Dejar la ficha completa, con horarios, fotos y categoría correcta, suele traer más llamadas que la página misma.',
-      req:'Acceso a la ficha o crearla de cero', t:'1 a 2 días', wa:'ficha de Google' },
-    { g:'nuevo', cat:'Servicios sueltos', n:'Presupuestos automáticos', r:'Uso interno de KatuWeb', e:'pedido',
-      d:'Genera el presupuesto en PDF con alcance, qué incluye, qué no incluye, plazo, forma de pago y validez. Numeración correlativa y montos en guaraníes.',
-      req:'Los datos del cliente y el alcance', t:'Al momento', wa:'presupuestos automáticos' },
-    { g:'nuevo', cat:'Servicios sueltos', n:'Lista de prospección', r:'Uso interno de KatuWeb', e:'pedido',
-      d:'Busca comercios paraguayos sin web o con web vieja, los ordena por prioridad y arma el mensaje de primer contacto. Sin spam: uno por uno y con motivo.',
-      req:'Rubro y zona a buscar', t:'1 día', wa:'lista de prospección' },
+      req:'Acceso a la ficha o crearla de cero', t:'1 a 2 días', pr:'Gs. 250.000', v:'ejemplos/ficha-google.html', wa:'ficha de Google' },
     { g:'nuevo', cat:'Servicios sueltos', n:'Menú con QR imprimible', r:'Restaurantes y bares', e:'listo',
       d:'El menú online más el código QR listo para imprimir y plastificar para las mesas. Se actualiza el precio sin reimprimir nada.',
-      req:'Menú con precios', t:'24 h', wa:'menú con QR' },
-    { g:'nuevo', cat:'Servicios sueltos', n:'Turnos por WhatsApp', r:'Barberías, consultorios, estética', e:'pedido',
+      req:'Menú con precios', t:'24 h', pr:'Gs. 500.000', v:'ejemplos/menu-qr.html', wa:'menú con QR' },
+    { g:'nuevo', cat:'Servicios sueltos', n:'Turnos por WhatsApp', r:'Barberías, consultorios, estética', e:'listo',
       d:'El cliente elige servicio, día y hora en la página, y el mensaje llega a WhatsApp ya escrito con todo cargado. Sin sistema de reservas ni costo mensual.',
-      req:'Servicios, duración y horarios de atención', t:'2 días', wa:'turnos por WhatsApp' }
+      req:'Servicios, duración y horarios de atención', t:'2 días', pr:'Gs. 650.000', v:'ejemplos/turnos-whatsapp.html', wa:'turnos por WhatsApp' }
   ];
 
   var GRUPOS = [
@@ -626,11 +625,21 @@
     var sr = document.createElement('span'); sr.className = 'sr'; sr.textContent = 'Tarda: ';
     chip.appendChild(sr);
     chip.appendChild(document.createTextNode(it.t));
+    meta.appendChild(chip);
+    /* el precio solo aparece si el servicio siempre cuesta lo mismo. Los que
+       varían de verdad siguen sin número: poner uno falso es peor que no ponerlo. */
+    if (it.pr) {
+      var pc = document.createElement('span'); pc.className = 'chip precio';
+      var prSr = document.createElement('span'); prSr.className = 'sr'; prSr.textContent = 'Precio: ';
+      pc.appendChild(prSr);
+      pc.appendChild(document.createTextNode(it.pr));
+      meta.appendChild(pc);
+    }
     var need = document.createElement('p'); need.className = 'need';
     var nb = document.createElement('b'); nb.className = 'mono'; nb.textContent = 'Necesito';
     need.appendChild(nb);
     need.appendChild(document.createTextNode(it.req));
-    meta.appendChild(chip); meta.appendChild(need);
+    meta.appendChild(need);
 
     var acc = document.createElement('div'); acc.className = 'acc';
     if (it.v) {

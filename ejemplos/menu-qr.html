@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; frame-src 'self'; media-src 'self' data:; form-action 'none'; object-src 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#15120f">
+<title>Menú con QR imprimible — el menú online y el cartel para la mesa</title>
+<meta name="description" content="Servicio de KatuWeb: el menú del local en el celular más el código QR listo para imprimir y plastificar. Se cambia el precio en la página y el QR impreso sigue sirviendo.">
+<!--
+  DEMO KatuWeb · Menú con QR imprimible · KTW-3YFHZ
+  Local, platos y precios de ejemplo. Al usarla con un cliente real,
+  reemplazar todo por su carta, sus precios y su dirección verdaderos.
+
+  EL QR ES DE VERDAD — leer antes de tocar nada
+  --------------------------------------------------------------
+  El código que se dibuja abajo no es una imagen ni un dibujito con
+  pinta de QR: está generado acá, en el navegador, por el codificador
+  que vive en este mismo archivo (modo byte, corrección de errores M,
+  versión mínima que entre, las ocho máscaras probadas y la de menor
+  penalización elegida, información de formato con su BCH(15,5)).
+  Se escanea con la cámara de cualquier celular.
+  Si alguien lo reemplaza por un PNG "para que pese menos", la pieza
+  pierde lo único que la hace esta pieza.
+
+  POR QUÉ HAY CUATRO LIENZOS Y NO UNO
+  --------------------------------------------------------------
+  Uno en el cartel de pantalla, uno chico en la sección del precio
+  —que existe para mostrar que el código no cambió— y dos en la hoja
+  de impresión, porque el cartel de mesa se dobla al medio y la cara
+  y el dorso llevan el mismo código. Los cuatro se pintan de la misma
+  matriz: se codifica una sola vez por cada cambio de texto.
+-->
+<style>
+  *,*::before,*::after{box-sizing:border-box}
+
+  :root{
+    --noche:#15120f;        /* fondo de la página */
+    --noche2:#211c16;       /* bloques sobre el fondo */
+    --papel:#faf6ec;        /* la carta */
+    --papel2:#efe8d6;
+    --tinta:#191512;        /* texto sobre papel · 15:1 */
+    --tinta2:#544c3c;       /* texto secundario sobre papel · 7.4:1 */
+    --luz:#f7f0e3;          /* texto sobre noche · 15:1 */
+    --luz2:#c2b6a4;         /* secundario sobre noche · 8.6:1 */
+    --ambar:#f0b544;        /* acento sobre noche · 10:1 */
+    --brasa:#9c3b12;        /* acento sobre papel · 6.4:1 */
+    --linea:rgba(247,240,227,.16);
+    --lineaP:#ded4bd;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    --qrmm:45mm;            /* lado del código impreso, sin contar el margen */
+    --qrfactor:1.24;        /* el margen blanco obligatorio, en proporción */
+  }
+
+  /* Sin overflow-x:hidden a propósito: esconderlo en html o en body rompe
+     position:sticky en toda la página, y acá dos cosas dependen de eso —la
+     barra de pedido de la carta y la explicación al costado. En vez de tapar
+     el desborde, no lo hay: se probó a 360, 390, 768 y 1280 px. */
+  html{background:var(--noche); -webkit-text-size-adjust:100%}
+  body{
+    margin:0; background:var(--noche); color:var(--luz);
+    font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+    line-height:1.6; -webkit-font-smoothing:antialiased;
+  }
+  svg{display:block}
+  canvas{display:block}
+
+  .env{max-width:1080px; margin:0 auto; padding:0 18px}
+  .salto{
+    position:absolute; left:-9999px; top:0; background:var(--ambar); color:#1a1206;
+    padding:12px 18px; z-index:99; font-weight:700;
+  }
+  .salto:focus{left:8px; top:8px}
+
+  /* ---------- barra ---------- */
+  .barra{
+    display:flex; align-items:center; justify-content:space-between; gap:14px;
+    padding:10px 18px; border-bottom:1px solid var(--linea);
+  }
+  .marca{font-size:15px; font-weight:700; letter-spacing:.02em}
+  .marca i{font-style:normal; color:var(--ambar)}
+  .wa{
+    display:inline-flex; align-items:center; min-height:44px; padding:0 16px;
+    border:1px solid var(--ambar); color:var(--ambar); text-decoration:none;
+    font-size:13px; font-weight:650; border-radius:2px;
+  }
+  .wa:hover{background:var(--ambar); color:#1a1206}
+
+  /* ---------- tipografía ---------- */
+  h1,h2,h3{margin:0; font-weight:700; letter-spacing:-.015em; line-height:1.12}
+  h1{font-size:clamp(30px,7vw,54px)}
+  .h2{font-size:clamp(24px,4.6vw,38px); margin:0 0 12px}
+  .rot{
+    margin:0 0 10px; font-size:11px; letter-spacing:.24em; text-transform:uppercase;
+    color:var(--ambar); font-weight:700;
+  }
+  .bajada{margin:14px 0 0; color:var(--luz2); max-width:60ch; font-size:16px}
+  .sec{padding:clamp(38px,7vw,70px) 0; border-top:1px solid var(--linea)}
+  .nota{font-size:13px; color:var(--luz2); max-width:64ch; margin:14px 0 0}
+
+  /* ---------- portada ---------- */
+  .portada{padding:clamp(26px,6vw,58px) 0 clamp(24px,5vw,44px)}
+  .chips{list-style:none; display:flex; flex-wrap:wrap; gap:10px; margin:22px 0 0; padding:0}
+  .chips li{
+    border:1px solid var(--linea); border-radius:2px; padding:9px 13px;
+    font-size:13px; color:var(--luz2); background:var(--noche2);
+  }
+  .chips b{color:var(--luz); font-weight:650}
+  .chips i{font-style:normal; color:var(--ambar); font-weight:700}
+
+  /* ---------- el teléfono con la carta ----------
+     min-width:0 en los hijos de las grillas: sin eso el ancho mínimo de la
+     carta empuja la columna y la página se va de ancho en un celular de 360. */
+  .dosCol{display:grid; gap:26px}
+  .dosCol>*,.taller>*,.precioCaja>*{min-width:0}
+  .telMarco{
+    position:relative; margin:0 auto; width:100%; max-width:380px;
+    padding:12px 12px 14px; background:#0c0a08; border-radius:34px;
+    border:1px solid rgba(247,240,227,.22);
+    box-shadow:0 22px 50px -28px #000;
+  }
+  .telMarco::before{
+    content:""; position:absolute; left:50%; top:6px; width:74px; height:5px;
+    border-radius:3px; background:rgba(247,240,227,.28); transform:translateX(-50%);
+  }
+  /* Sin overflow:hidden acá tampoco: recortar la tarjeta encerraría la barra
+     de pedido y dejaría de pegarse al borde de la pantalla. Las esquinas las
+     redondean la cabecera y la barra, que son las que tocan los bordes. */
+  .tel{
+    background:var(--papel); color:var(--tinta); border-radius:24px;
+    position:relative;
+  }
+  .telCab{
+    padding:20px 18px 16px; border-bottom:1px solid var(--lineaP); background:var(--papel2);
+    border-radius:24px 24px 0 0;
+  }
+  .telCab h3{font-family:Georgia,"Times New Roman",serif; font-size:26px; letter-spacing:-.01em}
+  .telCab p{margin:6px 0 0; font-size:13px; color:var(--tinta2)}
+  .telCab .abre{
+    display:inline-flex; align-items:center; gap:7px; margin-top:10px;
+    font-size:12px; font-weight:700; color:var(--brasa);
+  }
+  .telCab .abre i{width:8px; height:8px; border-radius:50%; background:var(--brasa); display:block}
+
+  /* filtros */
+  .filtros{
+    display:flex; gap:8px; overflow-x:auto; padding:12px 14px;
+    border-bottom:1px solid var(--lineaP); background:var(--papel);
+    scrollbar-width:thin;
+  }
+  .filtros::-webkit-scrollbar{height:4px}
+  .filtros::-webkit-scrollbar-thumb{background:var(--lineaP)}
+  .cat{
+    flex:0 0 auto; min-height:44px; padding:0 15px; border-radius:22px;
+    border:1px solid var(--lineaP); background:transparent; color:var(--tinta2);
+    font:inherit; font-size:13px; font-weight:650; cursor:pointer; white-space:nowrap;
+  }
+  .cat[aria-pressed="true"]{background:var(--tinta); color:var(--papel); border-color:var(--tinta)}
+  .cat:focus-visible,.plato:focus-visible,.mini2:focus-visible{outline:2px solid var(--brasa); outline-offset:2px}
+
+  .vegBarra{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    padding:8px 16px; border-bottom:1px solid var(--lineaP); background:var(--papel);
+  }
+  .vegBt{
+    display:inline-flex; align-items:center; gap:9px; min-height:44px; padding:0 6px;
+    background:none; border:0; font:inherit; font-size:13px; font-weight:650;
+    color:var(--tinta2); cursor:pointer;
+  }
+  .vegBt .caja{
+    width:40px; height:23px; border-radius:12px; border:1px solid var(--lineaP);
+    background:var(--papel2); position:relative; flex:0 0 auto;
+  }
+  .vegBt .caja i{
+    position:absolute; top:2px; left:2px; width:17px; height:17px; border-radius:50%;
+    background:#9a927f; transition:transform .2s ease, background .2s ease;
+  }
+  .vegBt[aria-pressed="true"]{color:#1f5c2f}
+  .vegBt[aria-pressed="true"] .caja{background:#dff0e0; border-color:#8fbf96}
+  .vegBt[aria-pressed="true"] .caja i{transform:translateX(17px); background:#1f5c2f}
+  .cuenta{font-size:12px; color:var(--tinta2)}
+
+  /* los platos */
+  .grupo{padding:0}
+  .grupoTit{
+    font-family:Georgia,serif; font-size:13px; letter-spacing:.18em; text-transform:uppercase;
+    color:var(--brasa); padding:20px 16px 8px; margin:0; font-weight:700;
+  }
+  .plato{
+    display:grid; grid-template-columns:1fr auto; gap:4px 12px; width:100%;
+    text-align:left; background:none; border:0; border-top:1px solid var(--lineaP);
+    padding:13px 16px; font:inherit; color:var(--tinta); cursor:pointer;
+    min-height:44px; position:relative;
+  }
+  .plato:first-of-type{border-top:0}
+  .plato .nom{font-weight:650; font-size:16px; line-height:1.3}
+  .plato .des{grid-column:1/2; font-size:13px; color:var(--tinta2); line-height:1.45; margin:2px 0 0}
+  .plato .pre{
+    font-variant-numeric:tabular-nums; font-weight:700; font-size:15px; white-space:nowrap;
+    align-self:start;
+  }
+  .plato .etq{
+    display:inline-block; margin:6px 6px 0 0; font-size:11px; font-weight:700;
+    letter-spacing:.04em; padding:3px 7px; border-radius:2px;
+    background:#dff0e0; color:#1c5029;
+  }
+  .plato .mas{
+    grid-column:2/3; justify-self:end; align-self:end; font-size:12px; font-weight:700;
+    color:var(--brasa);
+  }
+  .plato[aria-pressed="true"]{background:#f4ecd8}
+  .plato[aria-pressed="true"]::before{
+    content:""; position:absolute; left:0; top:0; bottom:0; width:4px; background:var(--brasa);
+  }
+  .plato[aria-pressed="true"] .mas{color:#1c5029}
+  .plato .pre.cambia{color:var(--brasa)}
+
+  .vacio{padding:26px 16px; font-size:14px; color:var(--tinta2)}
+
+  .pedir{
+    position:sticky; bottom:0; z-index:5;
+    display:flex; align-items:center; gap:12px; justify-content:space-between;
+    padding:11px 14px; background:var(--tinta); color:var(--papel);
+    border-top:1px solid var(--tinta); border-radius:0 0 24px 24px;
+  }
+  .pedir .res{font-size:12px; line-height:1.35; color:#e6dcc4; min-width:0}
+  .pedir .res b{display:block; font-size:14px; color:#fff; font-variant-numeric:tabular-nums}
+  .pedir a{
+    display:inline-flex; align-items:center; min-height:44px; padding:0 14px;
+    background:var(--ambar); color:#1a1206; text-decoration:none; font-weight:700;
+    font-size:14px; border-radius:2px; white-space:nowrap;
+  }
+
+  /* En pantallas angostas la barra de pedido se apila: el resumen arriba en
+     una línea y el botón entero abajo. Alcanza el ancho para que "Pedir por
+     WhatsApp" no se parta en dos. */
+  @media (max-width:430px){
+    .pedir{flex-direction:column; align-items:stretch; gap:9px; padding:11px 13px 12px}
+    .pedir .res{display:flex; justify-content:space-between; align-items:baseline; gap:12px}
+    .pedir .res b{display:inline}
+    .pedir a{justify-content:center}
+  }
+
+  /* ---------- el generador de QR ---------- */
+  .taller{display:grid; gap:24px; margin-top:26px}
+  .campo{display:block}
+  .campo label{display:block; font-size:13px; font-weight:650; color:var(--luz); margin:0 0 7px}
+  .campo input{
+    width:100%; min-height:52px; padding:12px 14px; font:inherit; font-size:15px;
+    color:var(--luz); background:var(--noche2); border:1px solid var(--linea);
+    border-radius:3px; font-family:var(--mono);
+  }
+  .campo input:focus-visible{outline:2px solid var(--ambar); outline-offset:1px}
+  .campo .pista{margin:7px 0 0; font-size:12px; color:var(--luz2)}
+
+  .ficha{
+    background:var(--noche2); border:1px solid var(--linea); border-radius:4px;
+    padding:16px 16px 18px;
+  }
+  .ficha h3{font-size:15px; margin:0 0 10px}
+  .datos{list-style:none; margin:0; padding:0; font-family:var(--mono); font-size:12.5px}
+  .datos li{
+    display:flex; justify-content:space-between; gap:14px; padding:7px 0;
+    border-bottom:1px dotted var(--linea); color:var(--luz2);
+  }
+  .datos li:last-child{border-bottom:0}
+  .datos b{color:var(--luz); font-weight:650; text-align:right; word-break:break-all}
+
+  /* el cartel en pantalla */
+  .cartelCaja{display:flex; flex-direction:column; align-items:center; gap:14px}
+  .cartel{
+    width:100%; max-width:330px; background:#fff; color:#101010;
+    border:1px solid #d8d0bd; border-radius:3px; padding:22px 20px 20px;
+    text-align:center; box-shadow:0 20px 44px -26px #000;
+  }
+  .cartel .nom{
+    font-family:Georgia,serif; font-size:23px; font-weight:700; margin:0;
+    line-height:1.15; letter-spacing:-.01em; word-break:break-word;
+  }
+  .cartel .fr{margin:8px 0 16px; font-size:14px; color:#3d372c; font-weight:600}
+  .cartel .qrHueco{
+    width:min(62%,190px); margin:0 auto; aspect-ratio:1/1;
+    display:grid; place-items:center;
+  }
+  .cartel canvas{width:100%; height:auto; image-rendering:pixelated}
+  .cartel .pie{
+    margin:14px 0 0; font-size:11.5px; color:#4c4536; line-height:1.5;
+  }
+  .cartel .reglita{
+    display:block; width:38px; height:3px; background:var(--brasa);
+    margin:14px auto 0; border-radius:2px;
+  }
+  .cartelPieTxt{font-size:12px; color:var(--luz2); text-align:center; max-width:34ch}
+
+  .mando{display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin:18px 0 0}
+  .mini2{
+    min-height:44px; padding:0 14px; border-radius:2px; font:inherit; font-size:13px;
+    font-weight:650; cursor:pointer; background:transparent; color:var(--luz2);
+    border:1px solid var(--linea);
+  }
+  .mini2[aria-pressed="true"]{background:var(--luz); color:var(--noche); border-color:var(--luz)}
+  .mandoTit{font-size:12px; color:var(--luz2); letter-spacing:.14em; text-transform:uppercase; width:100%; margin:0}
+  .imprimir{
+    display:inline-flex; align-items:center; gap:9px; min-height:52px; padding:0 20px;
+    background:var(--ambar); color:#1a1206; border:0; border-radius:3px; font:inherit;
+    font-size:15px; font-weight:700; cursor:pointer;
+  }
+  .imprimir:hover{filter:brightness(1.08)}
+  .aviso{
+    margin:12px 0 0; font-size:13px; color:#ffb4a0; min-height:1.2em;
+  }
+
+  /* ---------- el argumento del precio ---------- */
+  .precioCaja{display:grid; gap:18px; margin-top:22px}
+  .tarjeta{
+    background:var(--noche2); border:1px solid var(--linea); border-radius:4px; padding:18px;
+  }
+  .filaPlato{
+    background:var(--papel); color:var(--tinta); border-radius:3px; padding:14px 16px;
+    display:grid; grid-template-columns:1fr auto; gap:4px 12px;
+  }
+  .filaPlato .nom{font-weight:700; font-size:16px}
+  .filaPlato .des{grid-column:1/2; font-size:13px; color:var(--tinta2); margin:2px 0 0}
+  .filaPlato .pre{font-weight:700; font-variant-numeric:tabular-nums; font-size:17px}
+  .btPrecio{
+    margin-top:14px; min-height:48px; padding:0 18px; border-radius:3px; font:inherit;
+    font-size:14px; font-weight:700; cursor:pointer;
+    background:var(--luz); color:var(--noche); border:0;
+  }
+  .btPrecio:focus-visible,.imprimir:focus-visible,.vegBt:focus-visible{outline:2px solid var(--ambar); outline-offset:2px}
+  .estado{
+    margin:14px 0 0; font-size:14px; color:var(--luz); background:rgba(240,181,68,.12);
+    border-left:3px solid var(--ambar); padding:11px 13px;
+  }
+
+  /* ---------- entrega ---------- */
+  .pasos{list-style:none; margin:22px 0 0; padding:0; display:grid; gap:12px}
+  .pasos li{
+    display:grid; grid-template-columns:34px 1fr; gap:14px; align-items:start;
+    border-top:1px solid var(--linea); padding:16px 0 0;
+  }
+  .pasos .n{
+    font-family:var(--mono); font-size:13px; color:var(--ambar); font-weight:700;
+    border:1px solid var(--linea); border-radius:50%; width:34px; height:34px;
+    display:grid; place-items:center;
+  }
+  .pasos b{display:block; font-size:16px; margin:0 0 3px}
+  .pasos span{font-size:14px; color:var(--luz2)}
+
+  .cierre{
+    background:var(--noche2); border:1px solid var(--linea); border-radius:4px;
+    padding:24px 20px; margin-top:26px; text-align:center;
+  }
+  .cierre p{margin:0 0 16px; color:var(--luz2); font-size:15px}
+  .btGrande{
+    display:inline-flex; align-items:center; min-height:54px; padding:0 24px;
+    background:var(--ambar); color:#1a1206; text-decoration:none; font-weight:700;
+    font-size:16px; border-radius:3px;
+  }
+
+  /* ---------- pie ---------- */
+  .katu-pie{
+    margin-top:10px; border-top:1px solid var(--linea);
+    padding:20px 16px 32px; text-align:center;
+    font-size:13px; color:var(--luz2); line-height:2;
+  }
+  .katu-pie a{
+    color:var(--ambar); text-decoration:none; font-weight:600;
+    display:inline-block; min-height:44px; line-height:44px; padding:0 8px;
+  }
+  .katu-pie a:hover{text-decoration:underline}
+
+  /* foco visible en todo lo que se puede recorrer con el teclado */
+  .wa:focus-visible,.btGrande:focus-visible,.katu-pie a:focus-visible,
+  .salto:focus-visible{outline:2px solid var(--ambar); outline-offset:3px}
+  .pedir a:focus-visible{outline:2px solid var(--papel); outline-offset:3px}
+
+  /* ---------- anchos ---------- */
+  @media (min-width:820px){
+    /* la carta es larga: la explicación se queda al lado mientras se baja */
+    .dosCol{grid-template-columns:minmax(320px,380px) 1fr; gap:44px; align-items:start}
+    .dosCol>div:last-child{position:sticky; top:26px}
+    .taller{grid-template-columns:1fr minmax(300px,360px); gap:40px; align-items:start}
+    .precioCaja{grid-template-columns:1fr minmax(240px,300px); align-items:center}
+    .pasos{grid-template-columns:1fr 1fr; gap:12px 34px}
+  }
+
+  /* ---------- la hoja de impresión ----------
+     En pantalla no ocupa lugar: queda de 1 px, recortada y transparente, pero
+     existe y se pinta, así que los dos lienzos del cartel de mesa ya tienen su
+     código dibujado cuando el navegador arma la vista de impresión. */
+  .hoja{
+    position:fixed; left:0; top:0; width:1px; height:1px; overflow:hidden;
+    opacity:0; pointer-events:none; z-index:-1;
+    background:#fff; color:#000;
+  }
+  .tarj{
+    width:105mm; margin:0 auto; border:1px dashed #9a9a9a; background:#fff; color:#000;
+  }
+  .cara{
+    padding:5mm 7mm; text-align:center;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+  }
+  /* El dorso va cabeza abajo: cuando se dobla por el medio, las dos caras
+     quedan derechas. La línea del doblez la dibuja la cara de arriba, que no
+     está rotada; si la pusiera la de abajo, se iría al pie de la hoja. */
+  .cara:first-child{border-bottom:1px dashed #9a9a9a}
+  .cara + .cara{transform:rotate(180deg)}
+  .cara .nomImp{
+    font-family:Georgia,serif; font-size:20pt; font-weight:700; margin:0; line-height:1.1;
+    word-break:break-word;
+  }
+  .cara .frImp{margin:2.5mm 0 4mm; font-size:11pt; font-weight:600; color:#1a1a1a}
+  /* El lienzo trae adentro la zona de silencio: para que el código mida de
+     verdad los centímetros que dice el botón, se lo agranda en esa proporción. */
+  .cara canvas{
+    width:calc(var(--qrmm) * var(--qrfactor));
+    height:calc(var(--qrmm) * var(--qrfactor));
+    image-rendering:pixelated;
+  }
+  .cara .abajo{margin:3.5mm 0 0; font-size:8.5pt; color:#333; line-height:1.4}
+  .cara .marcaImp{margin:3mm 0 0; font-size:7pt; color:#555; letter-spacing:.1em}
+  .hojaNota{
+    width:105mm; margin:4mm auto 0; font-size:8.5pt; color:#444; text-align:center;
+    line-height:1.5; font-family:system-ui,sans-serif;
+  }
+
+  @media print{
+    @page{ size:A4 portrait; margin:10mm }
+    html,body{background:#fff !important; color:#000 !important}
+    body>*{display:none !important}
+    body>.hoja{
+      display:block !important; position:static; width:auto; height:auto;
+      overflow:visible; opacity:1; z-index:auto;
+      padding-top:3mm;
+      -webkit-print-color-adjust:exact; print-color-adjust:exact;
+    }
+  }
+
+  /* ---------- modo miniatura ----------
+     Adentro del iframe bajito de la galería entra una sola cosa: el cartel con
+     el código. Es lo que distingue a esta pieza de cualquier otro menú. */
+  .mini .sec,.mini .bajada,.mini .chips,.mini .barra .wa,
+  .mini .portada .rot,.mini .katu-pie{display:none}
+  .mini .portada{padding:10px 0 2px}
+  .mini h1{font-size:20px}
+  .mini .rot{margin-bottom:4px; font-size:10px}
+  .mini .barra{padding:7px 16px}
+  .mini .secQR{display:block; padding:8px 0 10px; border-top:0}
+  .mini .secQR .rot,.mini .secQR .h2,.mini .secQR .bajada,
+  .mini .secQR .nota,.mini .taller>div:first-child,
+  .mini .cartelPieTxt,.mini .imprimir{display:none}
+  .mini .taller{grid-template-columns:1fr; margin-top:0; gap:0}
+  .mini .cartel{max-width:172px; padding:11px 11px 12px; margin:0 auto}
+  .mini .cartel .nom{font-size:14px}
+  .mini .cartel .fr{font-size:10.5px; margin:3px 0 7px}
+  .mini .cartel .pie,.mini .cartel .reglita{display:none}
+  .mini .cartel .qrHueco{width:min(78%,104px)}
+  .mini .env{padding:0 16px}
+
+  @media (hover:none){
+    .wa:hover{background:transparent; color:var(--ambar)}
+    .imprimir:hover{filter:none}
+  }
+
+  /* Movimiento reducido: acá no hay nada que aparezca con una animación —
+     la carta, el cartel y el código están dibujados desde el arranque. Solo
+     se apagan las transiciones de los interruptores. */
+  @media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{
+      animation-duration:.001ms !important; animation-iteration-count:1 !important;
+      transition-duration:.001ms !important; scroll-behavior:auto !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<a class="salto" href="#contenido">Ir al contenido</a>
+
+<header class="barra">
+  <span class="marca">Katu<i>Web</i></span>
+  <a class="wa" href="https://wa.me/595983518856?text=Hola!%20Quiero%20el%20men%C3%BA%20con%20QR%20imprimible%20para%20mi%20local.%20(KTW-3YFHZ)" target="_blank" rel="noopener noreferrer">Escribinos</a>
+</header>
+
+<main id="contenido">
+
+  <!-- ============ portada ============ -->
+  <section class="portada" aria-labelledby="h1">
+    <div class="env">
+      <p class="rot">Servicio de KatuWeb · Asunción</p>
+      <h1 id="h1">Menú con QR imprimible</h1>
+      <p class="bajada">El menú online más el código QR listo para imprimir y plastificar para las mesas. Se actualiza el precio sin reimprimir nada.</p>
+      <ul class="chips">
+        <li><i>Entrega ·</i> <b>24 horas</b></li>
+        <li><i>Te pedimos ·</i> <b>el menú con precios</b></li>
+        <li><i>Después ·</i> <b>cambiás precios cuando quieras</b></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ la carta ============ -->
+  <section class="sec" aria-labelledby="hCarta">
+    <div class="env dosCol">
+
+      <div class="telMarco">
+        <div class="tel">
+          <div class="telCab">
+            <h3>Comedor Guavirá</h3>
+            <p>Cocina paraguaya y parrilla · [barrio], Asunción</p>
+            <span class="abre"><i aria-hidden="true"></i>Abierto de [horario]</span>
+          </div>
+
+          <div class="filtros" id="filtros" role="group" aria-label="Categorías del menú"></div>
+
+          <div class="vegBarra">
+            <button class="vegBt" id="vegBt" type="button" aria-pressed="false">
+              <span class="caja" aria-hidden="true"><i></i></span>
+              <span>Solo vegetarianos</span>
+            </button>
+            <span class="cuenta" id="cuentaTxt" role="status"></span>
+          </div>
+
+          <div id="lista"></div>
+
+          <div class="pedir">
+            <span class="res" id="res">Tocá un plato<b id="resTot">Sin pedido</b></span>
+            <a id="btPedir" href="https://wa.me/595983518856?text=Hola!%20Quiero%20hacer%20un%20pedido%20del%20men%C3%BA.%20(Demo%20KTW-3YFHZ)" target="_blank" rel="noopener noreferrer">Pedir por WhatsApp</a>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <p class="rot">La mitad que mira el cliente</p>
+        <h2 class="h2" id="hCarta">Un menú que se lee con una mano</h2>
+        <p class="bajada">Así se usa de verdad: alguien sentado en la mesa, con el celular en una mano y el tereré en la otra. Por eso la carta arranca por categorías, cada plato dice qué lleva, los vegetarianos están marcados y el botón de pedir siempre queda a la vista.</p>
+        <p class="nota">Tocá los platos: se van sumando abajo y el mensaje de WhatsApp sale escrito con el pedido. Nada se guarda en el celular del cliente.</p>
+        <p class="nota">Local, platos y precios de ejemplo. Con tu carta verdadera son tus categorías, tus descripciones y tus precios.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ el QR ============ -->
+  <section class="sec secQR" aria-labelledby="hQR">
+    <div class="env">
+      <p class="rot">La mitad que va a la mesa</p>
+      <h2 class="h2" id="hQR">El código se dibuja acá, en el momento</h2>
+      <p class="bajada">Escribí la dirección de tu menú y mirá el cartel armarse. El código no es una imagen bajada de ningún lado: lo genera esta misma página, módulo por módulo, y se escanea con la cámara de cualquier celular. Probá con el tuyo.</p>
+
+      <div class="taller">
+        <div>
+          <p class="campo">
+            <label for="dir">Dirección de tu menú</label>
+            <input type="text" id="dir" inputmode="url" spellcheck="false" autocomplete="off"
+                   aria-describedby="dirPista">
+            <span class="pista" id="dirPista">Se codifica tal cual lo escribís, sin agregarle nada.</span>
+          </p>
+          <p class="aviso" id="aviso" role="status"></p>
+
+          <div class="ficha">
+            <h3>Lo que salió</h3>
+            <ul class="datos">
+              <li><span>Versión</span><b id="dVer">—</b></li>
+              <li><span>Módulos</span><b id="dMod">—</b></li>
+              <li><span>Corrección</span><b>M · aguanta suciedad y rayas</b></li>
+              <li><span>Máscara elegida</span><b id="dMask">—</b></li>
+              <li><span>Bytes codificados</span><b id="dBytes">—</b></li>
+            </ul>
+          </div>
+
+          <div class="mando" role="group" aria-labelledby="mandoTit">
+            <p class="mandoTit" id="mandoTit">Tamaño del código impreso</p>
+            <button class="mini2" type="button" data-mm="35" aria-pressed="false">3,5 cm</button>
+            <button class="mini2" type="button" data-mm="45" aria-pressed="true">4,5 cm</button>
+            <button class="mini2" type="button" data-mm="55" aria-pressed="false">5,5 cm</button>
+          </div>
+          <p class="nota">Cuanto más larga la dirección, más finito el módulo. Con 4,5 cm y una dirección corta, un celular lo lee desde el otro lado de la mesa. El margen blanco de alrededor no es adorno: sin él ningún lector engancha el código.</p>
+        </div>
+
+        <div class="cartelCaja">
+          <div class="cartel">
+            <p class="nom" id="cNom">Comedor Guavirá</p>
+            <p class="fr" id="cFr">Escaneá y mirá el menú</p>
+            <div class="qrHueco">
+              <canvas id="qrPant" width="300" height="300" role="img" aria-label="Código QR del menú"></canvas>
+            </div>
+            <p class="pie">Apuntá la cámara del celular al código.<br>No hace falta instalar nada.</p>
+            <span class="reglita" aria-hidden="true"></span>
+          </div>
+          <p class="cartelPieTxt">Así queda el cartelito, para imprimir, doblar y plastificar.</p>
+          <button class="imprimir" id="btImp" type="button">Imprimir el cartel</button>
+        </div>
+      </div>
+
+      <p class="nota">La hoja que sale de la impresora lleva solo el cartel, centrado y del tamaño que elegiste, con la línea de corte y la del doblez. El resto de esta página no se imprime.</p>
+    </div>
+  </section>
+
+  <!-- ============ el argumento ============ -->
+  <section class="sec" aria-labelledby="hPrecio">
+    <div class="env">
+      <p class="rot">Por qué conviene</p>
+      <h2 class="h2" id="hPrecio">Sube la carne, no reimprimís nada</h2>
+      <p class="bajada">El QR impreso nunca cambia: siempre apunta a la misma dirección. Lo que cambia es la página que hay del otro lado. Probalo.</p>
+
+      <div class="precioCaja">
+        <div class="tarjeta">
+          <div class="filaPlato">
+            <span class="nom">Milanesa napolitana</span>
+            <span class="pre" id="preMila">Gs. 45.000</span>
+            <span class="des">Milanesa de carne, jamón, queso y salsa. Con mandioca frita.</span>
+          </div>
+          <button class="btPrecio" id="btPrecio" type="button">Subir el precio a Gs. 48.000</button>
+          <p class="estado" id="estadoPrecio">El precio está como estaba. El cartel de la mesa, también.</p>
+        </div>
+        <div class="tarjeta" style="text-align:center">
+          <p class="nota" style="margin:0 0 12px; text-align:left">El mismo cartel, después del cambio:</p>
+          <div class="cartel" style="max-width:210px; margin:0 auto">
+            <p class="nom" id="cNom2" style="font-size:17px">Comedor Guavirá</p>
+            <p class="fr" style="font-size:12px; margin:5px 0 10px">Escaneá y mirá el menú</p>
+            <div class="qrHueco" style="width:min(70%,140px)">
+              <canvas id="qrChico" width="300" height="300" role="img" aria-label="El mismo código QR, sin cambios"></canvas>
+            </div>
+            <p class="pie" style="font-size:10px">Idéntico al de arriba.</p>
+          </div>
+        </div>
+      </div>
+
+      <p class="nota">Es el argumento entero del servicio. La carta plastificada se reimprime cada vez que se mueve un precio; esto se edita una vez y ya está para todas las mesas.</p>
+    </div>
+  </section>
+
+  <!-- ============ entrega ============ -->
+  <section class="sec" aria-labelledby="hEntrega">
+    <div class="env">
+      <p class="rot">Cómo es el trabajo</p>
+      <h2 class="h2" id="hEntrega">En 24 horas está en la mesa</h2>
+      <ol class="pasos">
+        <li><span class="n">1</span><span><b>Nos pasás el menú con precios</b><span>Una foto de la carta, un PDF o un audio. Como lo tengas.</span></span></li>
+        <li><span class="n">2</span><span><b>Cargamos todo</b><span>Categorías, descripciones, precios y los vegetarianos marcados.</span></span></li>
+        <li><span class="n">3</span><span><b>Te mandamos la hoja del QR</b><span>Lista para imprimir en cualquier imprenta o en la de la esquina.</span></span></li>
+        <li><span class="n">4</span><span><b>Cambiás precios cuando quieras</b><span>Nos escribís y queda actualizado. El cartel de la mesa sigue siendo el mismo.</span></span></li>
+      </ol>
+
+      <div class="cierre">
+        <p>¿Tenés un local y querés la carta en el celular de tus clientes?</p>
+        <a class="btGrande" href="https://wa.me/595983518856?text=Hola!%20Vi%20la%20demo%20Men%C3%BA%20con%20QR%20imprimible%20(KTW-3YFHZ)%20y%20quiero%20esto%20para%20mi%20local." target="_blank" rel="noopener noreferrer">Pedilo por WhatsApp</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<div class="katu-pie">
+  Demo de <strong>KatuWeb</strong> · <a href="../catalogo.html">Volver al catálogo</a> ·
+  <a href="https://wa.me/595983518856?text=Hola!%20Vi%20la%20demo%20Men%C3%BA%20con%20QR%20imprimible%20(KTW-3YFHZ)%20y%20quiero%20esto%20para%20mi%20negocio." target="_blank" rel="noopener noreferrer">Quiero esto para mi negocio</a>
+  <br><span style="font-size:12px">Negocio y datos de ejemplo · KTW-3YFHZ</span>
+</div>
+
+<!-- La hoja de impresión: el cartel de mesa, cara y dorso. -->
+<div class="hoja" aria-hidden="true">
+  <div class="tarj">
+    <div class="cara">
+      <p class="nomImp" id="iNom1">Comedor Guavirá</p>
+      <p class="frImp" id="iFr1">Escaneá y mirá el menú</p>
+      <canvas id="qrImp1" width="300" height="300"></canvas>
+      <p class="abajo">Apuntá la cámara del celular al código.<br>No hace falta instalar nada.</p>
+      <p class="marcaImp" id="iDir1">—</p>
+    </div>
+    <div class="cara">
+      <p class="nomImp" id="iNom2">Comedor Guavirá</p>
+      <p class="frImp" id="iFr2">Escaneá y mirá el menú</p>
+      <canvas id="qrImp2" width="300" height="300"></canvas>
+      <p class="abajo">Apuntá la cámara del celular al código.<br>No hace falta instalar nada.</p>
+      <p class="marcaImp" id="iDir2">—</p>
+    </div>
+  </div>
+  <p class="hojaNota">Cortá por el borde de puntos, doblá por la línea del medio y plastificá. Queda parado en la mesa, con el código de los dos lados.</p>
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  var doc = document;
+  /* Miniatura: adentro del iframe bajito de la galería del inicio. Se ve el
+     cartel con el código y nada más; no hay nada que animar. */
+  var MINI = (window.self !== window.top) && (window.innerHeight < 520);
+  if (MINI) doc.documentElement.classList.add('mini');
+
+  /* ============================================================
+     1 · EL CODIFICADOR QR
+     ------------------------------------------------------------
+     Modo byte, corrección de errores M, versión mínima que entre.
+     Reed-Solomon sobre GF(256) con 0x11D, las ocho máscaras probadas
+     y elegida la de menor penalización, información de formato con
+     su BCH(15,5). Devuelve la matriz de módulos.
+     ============================================================ */
+  function hacerQR(texto){
+    var ECC = [0,10,16,26,18,24,16,18,22,22,26,30,22,22,24,24,28,28,26,26,26,
+               26,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28];
+    var BLOQ = [0,1,1,1,2,2,4,4,4,5,5,5,8,9,9,10,10,11,13,14,16,
+                17,17,18,20,21,23,25,26,28,29,31,33,35,37,38,40,43,45,47,49];
+
+    function modulosCrudos(v){
+      var r = (16*v + 128)*v + 64;
+      if (v >= 2){
+        var n = Math.floor(v/7) + 2;
+        r -= (25*n - 10)*n - 55;
+        if (v >= 7) r -= 36;
+      }
+      return r;
+    }
+    function palabrasDatos(v){ return Math.floor(modulosCrudos(v)/8) - ECC[v]*BLOQ[v]; }
+
+    /* texto a bytes UTF-8, sin depender de TextEncoder */
+    function aBytes(s){
+      var out = [], i, c;
+      for (i = 0; i < s.length; i++){
+        c = s.charCodeAt(i);
+        if (c < 0x80) out.push(c);
+        else if (c < 0x800) out.push(0xC0 | (c>>6), 0x80 | (c & 63));
+        else if (c >= 0xD800 && c <= 0xDBFF && i+1 < s.length){
+          var cp = 0x10000 + ((c - 0xD800) << 10) + (s.charCodeAt(i+1) - 0xDC00);
+          i++;
+          out.push(0xF0 | (cp>>18), 0x80 | ((cp>>12) & 63), 0x80 | ((cp>>6) & 63), 0x80 | (cp & 63));
+        } else out.push(0xE0 | (c>>12), 0x80 | ((c>>6) & 63), 0x80 | (c & 63));
+      }
+      return out;
+    }
+
+    var datos = aBytes(texto), i, j, x, y;
+    var ver = 0;
+    for (i = 1; i <= 40; i++){
+      if (4 + (i <= 9 ? 8 : 16) + 8*datos.length <= palabrasDatos(i)*8){ ver = i; break; }
+    }
+    if (!ver) return null;
+
+    var size = ver*4 + 17;
+
+    /* bits: modo, cuenta, datos, terminador y relleno */
+    var bits = [];
+    function meter(val, len){ for (var k = len-1; k >= 0; k--) bits.push((val >>> k) & 1); }
+    meter(4, 4);
+    meter(datos.length, ver <= 9 ? 8 : 16);
+    for (i = 0; i < datos.length; i++) meter(datos[i], 8);
+    var cap = palabrasDatos(ver)*8;
+    meter(0, Math.min(4, cap - bits.length));
+    meter(0, (8 - bits.length % 8) % 8);
+    for (var relleno = 0xEC; bits.length < cap; relleno ^= 0xEC ^ 0x11) meter(relleno, 8);
+
+    var palabras = [];
+    for (i = 0; i < bits.length; i += 8){
+      var b = 0;
+      for (j = 0; j < 8; j++) b = (b << 1) | bits[i+j];
+      palabras.push(b);
+    }
+
+    /* Reed-Solomon */
+    function mul(a, c){
+      var z = 0;
+      for (var k = 7; k >= 0; k--){
+        z = (z << 1) ^ ((z >>> 7) * 0x11D);
+        z ^= ((c >>> k) & 1) * a;
+      }
+      return z & 0xFF;
+    }
+    function generador(grado){
+      var g = new Array(grado).fill(0), raiz = 1;
+      g[grado-1] = 1;
+      for (var k = 0; k < grado; k++){
+        for (var m = 0; m < grado; m++){
+          g[m] = mul(g[m], raiz);
+          if (m + 1 < grado) g[m] ^= g[m+1];
+        }
+        raiz = mul(raiz, 2);
+      }
+      return g;
+    }
+    function resto(bloque, g){
+      var r = new Array(g.length).fill(0);
+      for (var k = 0; k < bloque.length; k++){
+        var factor = bloque[k] ^ r[0];
+        r.shift(); r.push(0);
+        for (var m = 0; m < g.length; m++) r[m] ^= mul(g[m], factor);
+      }
+      return r;
+    }
+
+    var nb = BLOQ[ver], ecLen = ECC[ver], totalDatos = palabrasDatos(ver);
+    var cortos = nb - (totalDatos % nb), largoCorto = Math.floor(totalDatos / nb);
+    var gen = generador(ecLen), bloquesD = [], bloquesE = [], k0 = 0;
+    for (i = 0; i < nb; i++){
+      var d = palabras.slice(k0, k0 + largoCorto + (i < cortos ? 0 : 1));
+      k0 += d.length;
+      bloquesD.push(d); bloquesE.push(resto(d, gen));
+    }
+    var finales = [];
+    for (i = 0; i <= largoCorto; i++)
+      for (j = 0; j < nb; j++) if (i < bloquesD[j].length) finales.push(bloquesD[j][i]);
+    for (i = 0; i < ecLen; i++)
+      for (j = 0; j < nb; j++) finales.push(bloquesE[j][i]);
+
+    /* la matriz */
+    var mod = [], fija = [];
+    for (y = 0; y < size; y++){ mod.push(new Array(size).fill(0)); fija.push(new Array(size).fill(0)); }
+    function ponerF(px, py, v){
+      if (px < 0 || py < 0 || px >= size || py >= size) return;
+      mod[py][px] = v ? 1 : 0; fija[py][px] = 1;
+    }
+    for (i = 0; i < size; i++){ ponerF(6, i, i % 2 === 0); ponerF(i, 6, i % 2 === 0); }
+    function buscador(cx, cy){
+      for (var dy = -4; dy <= 4; dy++)
+        for (var dx = -4; dx <= 4; dx++){
+          var d = Math.max(Math.abs(dx), Math.abs(dy));
+          ponerF(cx + dx, cy + dy, d !== 2 && d !== 4);
+        }
+    }
+    buscador(3, 3); buscador(size-4, 3); buscador(3, size-4);
+
+    function alineacion(v){
+      if (v === 1) return [];
+      var n = Math.floor(v/7) + 2;
+      var paso = (v === 32) ? 26 : Math.floor((v*4 + n*2 + 1) / (n*2 - 2)) * 2;
+      var res = [6];
+      for (var pos = v*4 + 10; res.length < n; pos -= paso) res.splice(1, 0, pos);
+      return res;
+    }
+    var al = alineacion(ver);
+    for (i = 0; i < al.length; i++)
+      for (j = 0; j < al.length; j++){
+        if ((i === 0 && j === 0) || (i === 0 && j === al.length-1) || (i === al.length-1 && j === 0)) continue;
+        for (var dy2 = -2; dy2 <= 2; dy2++)
+          for (var dx2 = -2; dx2 <= 2; dx2++)
+            ponerF(al[j] + dx2, al[i] + dy2, Math.max(Math.abs(dx2), Math.abs(dy2)) !== 1);
+      }
+
+    function formato(mascara){
+      var d = mascara, r = d;   /* nivel M son dos ceros adelante */
+      for (var k = 0; k < 10; k++) r = (r << 1) ^ ((r >>> 9) * 0x537);
+      var b = ((d << 10) | (r & 0x3FF)) ^ 0x5412;
+      function bit(n){ return (b >>> n) & 1; }
+      for (var m = 0; m <= 5; m++) ponerF(8, m, bit(m));
+      ponerF(8, 7, bit(6)); ponerF(8, 8, bit(7)); ponerF(7, 8, bit(8));
+      for (m = 9; m < 15; m++) ponerF(14 - m, 8, bit(m));
+      for (m = 0; m < 8; m++) ponerF(size-1-m, 8, bit(m));
+      for (m = 8; m < 15; m++) ponerF(8, size-15+m, bit(m));
+      ponerF(8, size-8, 1);
+    }
+    formato(0);
+
+    if (ver >= 7){
+      var rv = ver;
+      for (i = 0; i < 12; i++) rv = (rv << 1) ^ ((rv >>> 11) * 0x1F25);
+      var bv = (ver << 12) | (rv & 0xFFF);
+      for (i = 0; i < 18; i++){
+        var bb = (bv >>> i) & 1, a = size - 11 + i % 3, c = Math.floor(i/3);
+        ponerF(a, c, bb); ponerF(c, a, bb);
+      }
+    }
+
+    /* los datos, en zigzag de abajo a la derecha */
+    var idx = 0;
+    for (var der = size - 1; der >= 1; der -= 2){
+      if (der === 6) der = 5;
+      for (var v2 = 0; v2 < size; v2++){
+        for (j = 0; j < 2; j++){
+          x = der - j;
+          y = (((der + 1) & 2) === 0) ? size - 1 - v2 : v2;
+          if (!fija[y][x] && idx < finales.length * 8){
+            mod[y][x] = (finales[idx >>> 3] >>> (7 - (idx & 7))) & 1;
+            idx++;
+          }
+        }
+      }
+    }
+
+    /* las ocho máscaras */
+    function condicion(m, px, py){
+      switch (m){
+        case 0: return (px + py) % 2 === 0;
+        case 1: return py % 2 === 0;
+        case 2: return px % 3 === 0;
+        case 3: return (px + py) % 3 === 0;
+        case 4: return (Math.floor(px/3) + Math.floor(py/2)) % 2 === 0;
+        case 5: return (px*py) % 2 + (px*py) % 3 === 0;
+        case 6: return ((px*py) % 2 + (px*py) % 3) % 2 === 0;
+        default: return ((px + py) % 2 + (px*py) % 3) % 2 === 0;
+      }
+    }
+    function aplicar(m){
+      for (var py = 0; py < size; py++)
+        for (var px = 0; px < size; px++)
+          if (!fija[py][px] && condicion(m, px, py)) mod[py][px] ^= 1;
+    }
+    var pat = [1,0,1,1,1,0,1,0,0,0,0];
+    function penalizar(){
+      var p = 0, py, px, run, color, oscuros = 0, s, t, val, ok, okInv;
+      for (py = 0; py < size; py++){
+        run = 1; color = mod[py][0];
+        for (px = 1; px < size; px++){
+          if (mod[py][px] === color){ run++; if (run === 5) p += 3; else if (run > 5) p += 1; }
+          else { color = mod[py][px]; run = 1; }
+        }
+      }
+      for (px = 0; px < size; px++){
+        run = 1; color = mod[0][px];
+        for (py = 1; py < size; py++){
+          if (mod[py][px] === color){ run++; if (run === 5) p += 3; else if (run > 5) p += 1; }
+          else { color = mod[py][px]; run = 1; }
+        }
+      }
+      for (py = 0; py < size-1; py++)
+        for (px = 0; px < size-1; px++){
+          var c = mod[py][px];
+          if (c === mod[py][px+1] && c === mod[py+1][px] && c === mod[py+1][px+1]) p += 3;
+        }
+      for (py = 0; py < size; py++)
+        for (s = 0; s + 11 <= size; s++){
+          ok = true; okInv = true;
+          for (t = 0; t < 11; t++){
+            val = mod[py][s+t];
+            if (val !== pat[t]) ok = false;
+            if (val !== pat[10-t]) okInv = false;
+          }
+          if (ok || okInv) p += 40;
+        }
+      for (px = 0; px < size; px++)
+        for (s = 0; s + 11 <= size; s++){
+          ok = true; okInv = true;
+          for (t = 0; t < 11; t++){
+            val = mod[s+t][px];
+            if (val !== pat[t]) ok = false;
+            if (val !== pat[10-t]) okInv = false;
+          }
+          if (ok || okInv) p += 40;
+        }
+      for (py = 0; py < size; py++)
+        for (px = 0; px < size; px++) if (mod[py][px]) oscuros++;
+      p += Math.floor(Math.abs(oscuros*20 - size*size*10) / (size*size)) * 10;
+      return p;
+    }
+
+    var mejor = 0, mejorP = Infinity;
+    for (var m2 = 0; m2 < 8; m2++){
+      aplicar(m2); formato(m2);
+      var pen = penalizar();
+      if (pen < mejorP){ mejorP = pen; mejor = m2; }
+      aplicar(m2);
+    }
+    aplicar(mejor); formato(mejor);
+
+    return { size: size, version: ver, mascara: mejor, bytes: datos.length, mod: mod };
+  }
+
+  /* ============================================================
+     2 · pintar la matriz en un lienzo
+     ------------------------------------------------------------
+     Zona de silencio de 4 módulos —sin ella ningún lector engancha—
+     y módulos de tamaño entero para que no queden bordes borrosos.
+     Techo: nunca más de 900.000 píxeles de lienzo.
+     ============================================================ */
+  function pintar(cv, q){
+    var lado = q.size + 8;
+    var esc = Math.max(2, Math.floor(Math.sqrt(900000) / lado));
+    var px = lado * esc;
+    if (cv.width !== px){ cv.width = px; cv.height = px; }
+    var cx = cv.getContext('2d', { alpha:false });
+    cx.fillStyle = '#ffffff';
+    cx.fillRect(0, 0, px, px);
+    cx.fillStyle = '#000000';
+    for (var y = 0; y < q.size; y++)
+      for (var x = 0; x < q.size; x++)
+        if (q.mod[y][x]) cx.fillRect((x+4)*esc, (y+4)*esc, esc, esc);
+  }
+  function vaciar(cv){
+    var cx = cv.getContext('2d', { alpha:false });
+    cx.fillStyle = '#ffffff';
+    cx.fillRect(0, 0, cv.width, cv.height);
+  }
+
+  /* ============================================================
+     3 · la carta
+     ============================================================ */
+  var CATS = [
+    { id:'picar',   nom:'Para picar' },
+    { id:'platos',  nom:'Platos' },
+    { id:'brasa',   nom:'De la brasa' },
+    { id:'postres', nom:'Postres' },
+    { id:'bebidas', nom:'Bebidas' }
+  ];
+  var PLATOS = [
+    { c:'picar', n:'Empanadas de carne (3)', d:'Carne picada a cuchillo, cebolla y huevo duro. Masa hecha en casa.', p:24000 },
+    { c:'picar', n:'Chipa guasú', d:'Choclo rallado, queso Paraguay y cebolla, al horno.', p:22000, v:true },
+    { c:'picar', n:'Sopa paraguaya', d:'Harina de maíz, queso y cebolla. La de siempre.', p:18000, v:true },
+    { c:'picar', n:'Croquetas de mandioca (6)', d:'Mandioca pisada con queso y perejil. Con salsa de tomate.', p:26000, v:true },
+    { c:'platos', n:'Milanesa napolitana', d:'Milanesa de carne, jamón, queso y salsa. Con mandioca frita.', p:45000, id:'mila' },
+    { c:'platos', n:'Bori bori de gallina', d:'Caldo espeso con bolitas de maíz y queso. Porción grande.', p:42000 },
+    { c:'platos', n:'Guiso de fideo', d:'Fideo, carne y verduras, cocido despacio.', p:38000 },
+    { c:'platos', n:'Surubí a la plancha', d:'Surubí del día con ensalada y mandioca hervida.', p:62000 },
+    { c:'platos', n:'Tortilla de acelga', d:'Huevo, acelga y queso. Con ensalada de tomate.', p:32000, v:true },
+    { c:'brasa', n:'Costilla de vaca', d:'A la brasa, lento. Con mandioca y ensalada.', p:58000 },
+    { c:'brasa', n:'Vacío', d:'Al punto que pidas. Con chimichurri de la casa.', p:55000 },
+    { c:'brasa', n:'Chorizo casero (2)', d:'Con pan y salsa criolla.', p:28000 },
+    { c:'brasa', n:'Provoleta a la brasa', d:'Queso a la parrilla con orégano y aceite de oliva.', p:30000, v:true },
+    { c:'postres', n:'Dulce de mamón con queso', d:'Mamón en almíbar con queso Paraguay.', p:16000, v:true },
+    { c:'postres', n:'Kaguyjy', d:'Mazamorra de maíz blanco con leche, tibia.', p:14000, v:true },
+    { c:'postres', n:'Ensalada de frutas', d:'Fruta de estación, cortada al momento.', p:12000, v:true },
+    { c:'bebidas', n:'Mosto de caña (jarra)', d:'Jugo de caña recién exprimido.', p:15000, v:true },
+    { c:'bebidas', n:'Jugo de guavirá', d:'Natural, sin azúcar agregada.', p:12000, v:true },
+    { c:'bebidas', n:'Cerveza tirada', d:'Chopp de medio litro, bien helado.', p:18000, v:true },
+    { c:'bebidas', n:'Gaseosa', d:'Vaso o botella chica.', p:10000, v:true }
+  ];
+
+  var estado = { cat:'todo', soloVeg:false, elegidos:[], milaSubida:false };
+
+  function gs(n){
+    var s = String(n), out = '', k = 0;
+    for (var i = s.length - 1; i >= 0; i--){
+      out = s.charAt(i) + out;
+      if (++k % 3 === 0 && i > 0) out = '.' + out;
+    }
+    return 'Gs. ' + out;
+  }
+  function precioDe(pl){
+    return (pl.id === 'mila' && estado.milaSubida) ? 48000 : pl.p;
+  }
+
+  var elFiltros = doc.getElementById('filtros');
+  var elLista = doc.getElementById('lista');
+  var elCuenta = doc.getElementById('cuentaTxt');
+  var elRes = doc.getElementById('res');
+  var elResTot = doc.getElementById('resTot');
+  var btPedir = doc.getElementById('btPedir');
+
+  /* los botones de categoría */
+  (function(){
+    var todos = [{ id:'todo', nom:'Todo' }].concat(CATS);
+    for (var i = 0; i < todos.length; i++){
+      var b = doc.createElement('button');
+      b.type = 'button';
+      b.className = 'cat';
+      b.textContent = todos[i].nom;
+      b.setAttribute('data-cat', todos[i].id);
+      b.setAttribute('aria-pressed', todos[i].id === 'todo' ? 'true' : 'false');
+      elFiltros.appendChild(b);
+    }
+  })();
+
+  elFiltros.addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('.cat') : null;
+    if (!b) return;
+    estado.cat = b.getAttribute('data-cat');
+    var bs = elFiltros.querySelectorAll('.cat');
+    for (var i = 0; i < bs.length; i++)
+      bs[i].setAttribute('aria-pressed', bs[i] === b ? 'true' : 'false');
+    pintarLista();
+  });
+
+  var vegBt = doc.getElementById('vegBt');
+  vegBt.addEventListener('click', function(){
+    estado.soloVeg = !estado.soloVeg;
+    vegBt.setAttribute('aria-pressed', estado.soloVeg ? 'true' : 'false');
+    pintarLista();
+  });
+
+  function visibles(){
+    var out = [];
+    for (var i = 0; i < PLATOS.length; i++){
+      var p = PLATOS[i];
+      if (estado.cat !== 'todo' && p.c !== estado.cat) continue;
+      if (estado.soloVeg && !p.v) continue;
+      out.push(p);
+    }
+    return out;
+  }
+
+  function pintarLista(){
+    var lista = visibles();
+    while (elLista.firstChild) elLista.removeChild(elLista.firstChild);
+
+    if (!lista.length){
+      var vacio = doc.createElement('p');
+      vacio.className = 'vacio';
+      vacio.textContent = 'En esta categoría no hay platos vegetarianos. Probá con otra.';
+      elLista.appendChild(vacio);
+    }
+
+    var catActual = '';
+    for (var i = 0; i < lista.length; i++){
+      var p = lista[i];
+      if (p.c !== catActual){
+        catActual = p.c;
+        var h = doc.createElement('h4');
+        h.className = 'grupoTit';
+        for (var k = 0; k < CATS.length; k++) if (CATS[k].id === p.c) h.textContent = CATS[k].nom;
+        elLista.appendChild(h);
+      }
+      var b = doc.createElement('button');
+      b.type = 'button';
+      b.className = 'plato';
+      b.setAttribute('data-i', String(PLATOS.indexOf(p)));
+      b.setAttribute('aria-pressed', estado.elegidos.indexOf(PLATOS.indexOf(p)) >= 0 ? 'true' : 'false');
+
+      var nom = doc.createElement('span');
+      nom.className = 'nom';
+      nom.textContent = p.n;
+
+      var pre = doc.createElement('span');
+      pre.className = 'pre' + (p.id === 'mila' && estado.milaSubida ? ' cambia' : '');
+      pre.textContent = gs(precioDe(p));
+
+      var des = doc.createElement('span');
+      des.className = 'des';
+      des.textContent = p.d;
+      if (p.v && p.c !== 'bebidas'){
+        var et = doc.createElement('span');
+        et.className = 'etq';
+        et.textContent = 'Vegetariano';
+        des.appendChild(doc.createElement('br'));
+        des.appendChild(et);
+      }
+
+      var mas = doc.createElement('span');
+      mas.className = 'mas';
+      mas.textContent = estado.elegidos.indexOf(PLATOS.indexOf(p)) >= 0 ? 'Agregado ✓' : '+ Agregar';
+
+      b.appendChild(nom); b.appendChild(pre); b.appendChild(des); b.appendChild(mas);
+      elLista.appendChild(b);
+    }
+    elCuenta.textContent = lista.length + (lista.length === 1 ? ' plato' : ' platos');
+  }
+
+  elLista.addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('.plato') : null;
+    if (!b) return;
+    var i = parseInt(b.getAttribute('data-i'), 10);
+    var pos = estado.elegidos.indexOf(i);
+    if (pos >= 0) estado.elegidos.splice(pos, 1); else estado.elegidos.push(i);
+    pintarLista();
+    pintarPedido();
+  });
+
+  function pintarPedido(){
+    var total = 0, nombres = [];
+    for (var i = 0; i < estado.elegidos.length; i++){
+      var p = PLATOS[estado.elegidos[i]];
+      total += precioDe(p);
+      nombres.push(p.n);
+    }
+    if (!nombres.length){
+      elRes.firstChild.nodeValue = 'Tocá un plato';
+      elResTot.textContent = 'Sin pedido';
+      btPedir.href = 'https://wa.me/595983518856?text=' +
+        encodeURIComponent('Hola! Quiero hacer un pedido del menú. (Demo KTW-3YFHZ)');
+    } else {
+      elRes.firstChild.nodeValue = nombres.length + (nombres.length === 1 ? ' plato' : ' platos');
+      elResTot.textContent = gs(total);
+      btPedir.href = 'https://wa.me/595983518856?text=' +
+        encodeURIComponent('Hola! Del menú quiero: ' + nombres.join(', ') + '. Total ' + gs(total) + '. (Demo KTW-3YFHZ)');
+    }
+  }
+
+  pintarLista();
+  pintarPedido();
+
+  /* ============================================================
+     4 · el generador: un texto, tres lienzos
+     ============================================================ */
+  var elDir = doc.getElementById('dir');
+  var elAviso = doc.getElementById('aviso');
+  var cvPant = doc.getElementById('qrPant');
+  var cvChico = doc.getElementById('qrChico');
+  var cvImp1 = doc.getElementById('qrImp1');
+  var cvImp2 = doc.getElementById('qrImp2');
+  var dVer = doc.getElementById('dVer'), dMod = doc.getElementById('dMod');
+  var dMask = doc.getElementById('dMask'), dBytes = doc.getElementById('dBytes');
+  var iDir1 = doc.getElementById('iDir1'), iDir2 = doc.getElementById('iDir2');
+
+  /* La dirección de arranque es la de esta misma página cuando se sirve por
+     web: así el código que se dibuja apunta a algo que existe de verdad y se
+     puede escanear ahora mismo. Con file:// cae a un ejemplo escrito. */
+  function direccionInicial(){
+    var l = window.location;
+    if (l.protocol === 'http:' || l.protocol === 'https:')
+      return l.origin + l.pathname;
+    return 'https://ejemplo.com.py/menu';
+  }
+
+  function generar(texto){
+    if (!texto){
+      elAviso.textContent = 'Escribí una dirección para que se dibuje el código.';
+      dVer.textContent = '—'; dMod.textContent = '—';
+      dMask.textContent = '—'; dBytes.textContent = '—';
+      vaciar(cvPant); vaciar(cvChico); vaciar(cvImp1); vaciar(cvImp2);
+      cvPant.setAttribute('aria-label', 'Todavía no hay código: falta escribir la dirección');
+      iDir1.textContent = '—'; iDir2.textContent = '—';
+      return;
+    }
+    var q = hacerQR(texto);
+    if (!q){
+      elAviso.textContent = 'Esa dirección es demasiado larga para un código QR. Acortala.';
+      return;
+    }
+    elAviso.textContent = '';
+    pintar(cvPant, q); pintar(cvChico, q); pintar(cvImp1, q); pintar(cvImp2, q);
+    /* el lienzo incluye la zona de silencio; el papel la descuenta */
+    doc.documentElement.style.setProperty('--qrfactor', ((q.size + 8) / q.size).toFixed(4));
+    dVer.textContent = String(q.version);
+    dMod.textContent = q.size + ' × ' + q.size;
+    dMask.textContent = String(q.mascara);
+    dBytes.textContent = q.bytes + ' bytes';
+    cvPant.setAttribute('aria-label', 'Código QR que lleva a ' + texto);
+    cvChico.setAttribute('aria-label', 'El mismo código QR, sin cambios');
+    iDir1.textContent = texto;
+    iDir2.textContent = texto;
+  }
+
+  elDir.value = direccionInicial();
+  generar(elDir.value);
+
+  elDir.addEventListener('input', function(){ generar(elDir.value); });
+
+  /* tamaño del código impreso */
+  var mmBts = doc.querySelectorAll('.mini2[data-mm]');
+  Array.prototype.forEach.call(mmBts, function(b){
+    b.addEventListener('click', function(){
+      Array.prototype.forEach.call(mmBts, function(o){
+        o.setAttribute('aria-pressed', o === b ? 'true' : 'false');
+      });
+      doc.documentElement.style.setProperty('--qrmm', b.getAttribute('data-mm') + 'mm');
+    });
+  });
+
+  doc.getElementById('btImp').addEventListener('click', function(){ window.print(); });
+
+  /* ============================================================
+     5 · el precio de la milanesa: cambia la página, no el cartel
+     ============================================================ */
+  var btPrecio = doc.getElementById('btPrecio');
+  var preMila = doc.getElementById('preMila');
+  var estadoPrecio = doc.getElementById('estadoPrecio');
+
+  btPrecio.addEventListener('click', function(){
+    estado.milaSubida = !estado.milaSubida;
+    var nuevo = estado.milaSubida ? 48000 : 45000;
+    preMila.textContent = gs(nuevo);
+    preMila.style.color = estado.milaSubida ? 'var(--brasa)' : '';
+    btPrecio.textContent = estado.milaSubida ? 'Volver a Gs. 45.000' : 'Subir el precio a Gs. 48.000';
+    estadoPrecio.textContent = estado.milaSubida
+      ? 'Listo: la milanesa está a Gs. 48.000 en la carta y en el celular de todas las mesas. El QR impreso quedó igual, porque apunta a la dirección, no al precio.'
+      : 'El precio está como estaba. El cartel de la mesa, también.';
+    pintarLista();
+    pintarPedido();
+  });
+
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; frame-src 'self'; media-src 'self' data:; form-action 'none'; object-src 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#14110e">
+<title>Turnos por WhatsApp — demo de KatuWeb</title>
+<meta name="description" content="El cliente elige servicio, día y hora en la página y el mensaje llega a WhatsApp ya escrito con todo cargado. Sin sistema de reservas ni costo mensual. Entrega en 2 días.">
+<!--
+  DEMO KatuWeb · Turnos por WhatsApp · KTW-8LMVC
+  Negocio, servicios, precios y horarios de ejemplo. Al usarla con un cliente
+  real, reemplazar todo por sus servicios, sus duraciones y su horario.
+
+  MARCAS REGISTRADAS — LEER ANTES DE TOCAR NADA
+  --------------------------------------------------------------
+  Acá NO se reproduce la interfaz de WhatsApp. La tarjeta del mensaje es un
+  dibujo propio y esquemático: no hay barra verde, ni tilde doble, ni logo,
+  ni tipografía de la aplicación. Se nombra el servicio con palabras porque
+  describir un servicio real es legítimo; imitar su imagen no lo es. Si
+  alguien "mejora" esto acercándolo al original, está empeorando la página.
+  La aclaración visible vive en <p class="aviso">: no sacarla.
+
+  DE DÓNDE SALEN LAS HORAS — ESTO ES LA PIEZA, NO UN ADORNO
+  --------------------------------------------------------------
+  No hay ninguna lista de horas escrita a mano. Cada hueco se calcula con
+  tres datos: el horario de atención de ese día (HORARIO), la duración del
+  servicio elegido y la agenda ocupada de ese día. Un corte de 30 minutos y
+  un color de 120 no ofrecen los mismos huecos, y el sábado cierra antes.
+  Los días arrancan de new Date(): la fecha es la del visitante, no una
+  fecha escrita en el código.
+
+  La agenda ocupada se genera con un LCG sembrado con la fecha (semilla()),
+  así cada día tiene siempre la misma agenda pero distinta de la del día
+  anterior. Es simulación: en la página real esos bloques los pasa el
+  negocio. Está dicho en la página, en la línea de abajo de la grilla.
+-->
+<style>
+  *,*::before,*::after{box-sizing:border-box}
+
+  :root{
+    --fondo:#14110e;        /* casi negro, cálido */
+    --fondo2:#1b1713;
+    --panel:#221c17;
+    --linea:#352c25;
+    --linea2:#4a3d33;
+    --tinta:#f6f1e9;        /* 16.3:1 sobre fondo */
+    --tinta2:#c8bcac;       /* 9.9:1 sobre fondo  */
+    --tinta3:#a39483;       /*  6.4:1 sobre fondo */
+    --cobre:#e8a34c;        /* 10.4:1 sobre fondo */
+    --cobre2:#c07d2a;
+    --verde:#6fd39b;        /* 10.9:1 sobre fondo */
+    --hoja:#fbf7f0;         /* la tarjeta del mensaje */
+    --hojaT:#17130f;        /* 17:1 sobre hoja */
+    --hojaT2:#544738;       /* 7.4:1 sobre hoja */
+    --hojaL:#e3dbcc;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+
+  html{background:var(--fondo); -webkit-text-size-adjust:100%; overflow-x:hidden}
+  body{
+    margin:0; background:var(--fondo); color:var(--tinta);
+    font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+    line-height:1.6; overflow-x:hidden; -webkit-font-smoothing:antialiased;
+  }
+  svg{display:block}
+  .sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+  .salto{position:absolute;left:8px;top:-60px;z-index:60;background:var(--cobre);color:#1a1206;padding:12px 16px;text-decoration:none;font-weight:700}
+  .salto:focus{top:8px}
+  :focus-visible{outline:3px solid var(--cobre); outline-offset:3px}
+  .env{max-width:1160px; margin:0 auto; padding:0 20px}
+
+  /* ---------- barra ---------- */
+  .barra{
+    position:sticky; top:0; z-index:30;
+    background:rgba(20,17,14,.93);
+    backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--linea);
+  }
+  .barra-in{
+    max-width:1160px; margin:0 auto; padding:0 20px; min-height:58px;
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+  }
+  .marca{font-size:14px; font-weight:700; letter-spacing:.03em}
+  .marca em{font-style:normal; color:var(--cobre)}
+  .barra .wa{
+    display:inline-flex; align-items:center; min-height:44px; padding:0 14px;
+    color:var(--tinta); text-decoration:none; font-size:13px; font-weight:650;
+    border:1.5px solid var(--linea2);
+  }
+  .barra .wa:hover{border-color:var(--cobre); color:var(--cobre)}
+
+  /* ---------- tipografía ---------- */
+  h1,h2,h3{margin:0; line-height:1.1; letter-spacing:-.02em; font-weight:700}
+  .rot{margin:0 0 10px; font-size:11.5px; letter-spacing:.2em; text-transform:uppercase; color:var(--cobre); font-weight:700}
+  .h1{font-size:clamp(27px,5vw,46px); margin:0 0 14px; max-width:19ch}
+  .h2{font-size:clamp(23px,4.2vw,38px); margin:0 0 14px}
+  .bajada{margin:0 0 26px; color:var(--tinta2); max-width:62ch; font-size:clamp(15px,1.7vw,17.5px)}
+  .sec{padding:clamp(40px,6.5vh,78px) 0}
+  .sec-b{background:var(--fondo2); border-block:1px solid var(--linea)}
+  .nota{font-size:13.5px; color:var(--tinta3); max-width:70ch}
+
+  /* ---------- el taller: pasos + mensaje ---------- */
+  .taller{display:grid; grid-template-columns:minmax(0,1fr); gap:22px; align-items:start}
+
+  .paso{border-top:1px solid var(--linea); padding:18px 0 4px}
+  .paso:first-child{border-top:0; padding-top:0}
+  .paso-t{
+    display:flex; align-items:baseline; gap:10px; margin:0 0 14px;
+    font-size:12px; letter-spacing:.16em; text-transform:uppercase; color:var(--tinta3); font-weight:700;
+  }
+  .paso-t .n{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:24px; height:24px; border-radius:50%; flex:0 0 auto;
+    border:1.5px solid var(--linea2); color:var(--tinta2);
+    font-size:12px; letter-spacing:0; align-self:center;
+  }
+  .paso.hecho .paso-t .n{background:var(--cobre); border-color:var(--cobre); color:#1a1206}
+  .paso-t b{color:var(--tinta); font-weight:700; letter-spacing:.16em}
+
+  /* servicios */
+  .servicios{list-style:none; margin:0; padding:0; display:grid; grid-template-columns:minmax(0,1fr); gap:8px}
+  .sv{
+    -webkit-appearance:none; appearance:none; font:inherit; cursor:pointer;
+    width:100%; text-align:left; min-height:56px; padding:11px 14px;
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+    background:var(--panel); border:1.5px solid var(--linea); color:var(--tinta);
+    min-width:0;
+  }
+  .sv>span{min-width:0}
+  .sv:hover{border-color:var(--linea2)}
+  .sv .n{font-weight:650; font-size:15.5px; display:block}
+  .sv .d{display:block; font-size:13px; color:var(--tinta3); margin-top:1px}
+  .sv .p{font-size:14px; color:var(--tinta2); white-space:nowrap; font-variant-numeric:tabular-nums}
+  .sv[aria-pressed="true"]{border-color:var(--cobre); background:#2a2016}
+  .sv[aria-pressed="true"] .p{color:var(--cobre)}
+
+  /* días */
+  .dias-env{position:relative}
+  .dias{
+    display:flex; gap:8px; padding:2px 0 10px; margin:0; list-style:none;
+    overflow-x:auto; scroll-snap-type:x proximity; -webkit-overflow-scrolling:touch;
+    scrollbar-width:thin;
+  }
+  .dia{
+    -webkit-appearance:none; appearance:none; font:inherit; cursor:pointer;
+    flex:0 0 auto; width:66px; min-height:78px; padding:8px 4px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px;
+    background:var(--panel); border:1.5px solid var(--linea); color:var(--tinta);
+    scroll-snap-align:start;
+  }
+  .dia .sem{font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--tinta3)}
+  .dia .num{font-size:21px; font-weight:700; line-height:1.1}
+  .dia .mes{font-size:11px; color:var(--tinta3); letter-spacing:.04em}
+  .dia[aria-pressed="true"]{border-color:var(--cobre); background:#2a2016}
+  .dia[aria-pressed="true"] .sem,.dia[aria-pressed="true"] .mes{color:var(--cobre)}
+  .dia[disabled]{cursor:default; opacity:1; background:transparent; border-style:dashed; color:var(--tinta3)}
+  .dia[disabled] .num{color:var(--tinta3); font-weight:600}
+  .dia.hoy .sem{color:var(--cobre)}
+
+  /* horas */
+  .horas-cab{display:flex; flex-wrap:wrap; gap:6px 12px; align-items:baseline; margin:0 0 12px; font-size:14px; color:var(--tinta2)}
+  .horas-cab b{color:var(--tinta)}
+  .franja{margin:0 0 6px; font-size:11.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--tinta3); font-weight:700}
+  .horas{
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(80px,1fr));
+    gap:8px; margin:0 0 16px; padding:0; list-style:none;
+  }
+  .hr{
+    -webkit-appearance:none; appearance:none; font:inherit; cursor:pointer;
+    width:100%; min-height:52px; padding:6px 4px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px;
+    background:var(--panel); border:1.5px solid var(--linea); color:var(--tinta);
+    font-variant-numeric:tabular-nums;
+  }
+  .hr .t{font-size:16px; font-weight:650; line-height:1.15}
+  .hr .e{font-size:10.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--tinta3)}
+  .hr:hover{border-color:var(--linea2)}
+  .hr[aria-pressed="true"]{background:var(--cobre); border-color:var(--cobre); color:#1a1206}
+  .hr[aria-pressed="true"] .e{color:#4a3208}
+  .hr[disabled]{
+    cursor:default; background:transparent; border-style:dashed; border-color:var(--linea);
+    color:var(--tinta3);
+  }
+  .hr[disabled] .t{font-weight:600; text-decoration:line-through; text-decoration-thickness:1.5px}
+  .vacio{
+    margin:0 0 14px; padding:16px; border:1.5px dashed var(--linea2);
+    color:var(--tinta2); font-size:14.5px;
+  }
+  .vacio b{color:var(--tinta)}
+
+  /* la línea del día */
+  .linea-dia{display:flex; gap:10px; margin:0 0 10px; height:26px}
+  .blq{position:relative; background:#2f2720; border:1px solid var(--linea2); overflow:hidden}
+  .blq .ocu{position:absolute; top:0; bottom:0; background:repeating-linear-gradient(-45deg,#4a3d33 0 4px,#2f2720 4px 8px)}
+  .blq .mio{position:absolute; top:0; bottom:0; background:var(--cobre)}
+  /* la hora de apertura y la de cierre van encima de la barra, y a veces
+     les toca caer justo arriba del bloque de tu turno: el fondo propio es
+     lo que las mantiene legibles ahí. */
+  .blq .rot-h{
+    position:absolute; left:4px; top:50%; transform:translateY(-50%);
+    font-size:10.5px; color:var(--tinta2); letter-spacing:.04em;
+    background:rgba(20,17,14,.86); padding:1px 4px; border-radius:2px;
+  }
+  .blq .rot-h.fin{left:auto; right:4px}
+  .leyenda{display:flex; flex-wrap:wrap; gap:6px 16px; margin:0 0 12px; padding:0; list-style:none; font-size:12.5px; color:var(--tinta3)}
+  .leyenda li{display:flex; align-items:center; gap:7px}
+  .leyenda i{width:14px; height:14px; flex:0 0 auto; border:1px solid var(--linea2)}
+  .leyenda .l-lib{background:#2f2720}
+  .leyenda .l-ocu{background:repeating-linear-gradient(-45deg,#4a3d33 0 4px,#2f2720 4px 8px)}
+  .leyenda .l-mio{background:var(--cobre); border-color:var(--cobre)}
+  .aviso{
+    margin:0 0 4px; font-size:12.5px; color:var(--tinta3); max-width:76ch;
+    border-left:2px solid var(--linea2); padding-left:12px;
+  }
+
+  /* nombre */
+  .campo{display:block; margin:2px 0 0}
+  .campo span{display:block; font-size:13px; color:var(--tinta2); margin:0 0 6px}
+  .campo input{
+    font:inherit; width:100%; max-width:340px; min-height:48px; padding:0 14px;
+    background:var(--panel); border:1.5px solid var(--linea); color:var(--tinta);
+  }
+  .campo input::placeholder{color:#8a7c6c}
+  .campo input:focus{border-color:var(--cobre); outline:none}
+
+  /* ---------- la tarjeta del mensaje ---------- */
+  .mensaje{position:sticky; top:74px}
+  .msg-t{
+    display:flex; align-items:center; gap:8px; margin:0 0 10px;
+    font-size:11.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--tinta3); font-weight:700;
+  }
+  .msg-t i{width:8px; height:8px; border-radius:50%; background:var(--verde); flex:0 0 auto}
+  .burbuja{
+    position:relative; background:var(--hoja); color:var(--hojaT);
+    border:1px solid var(--hojaL); padding:16px 16px 12px;
+    box-shadow:0 20px 40px -28px #000;
+  }
+  .burbuja::after{
+    content:""; position:absolute; left:22px; bottom:-9px; width:16px; height:16px;
+    background:var(--hoja); border-right:1px solid var(--hojaL); border-bottom:1px solid var(--hojaL);
+    transform:rotate(45deg);
+  }
+  .msg-para{
+    margin:0 0 10px; padding:0 0 9px; border-bottom:1px solid var(--hojaL);
+    font-size:12px; color:var(--hojaT2); letter-spacing:.02em;
+  }
+  .msg-para b{color:var(--hojaT); font-weight:700}
+  .msg-txt{
+    margin:0; font-family:var(--mono); font-size:13.5px; line-height:1.72;
+    white-space:pre-wrap; word-break:break-word; min-height:190px; color:var(--hojaT);
+  }
+  .cursor{
+    display:inline-block; width:8px; height:15px; vertical-align:-2px;
+    background:var(--hojaT); margin-left:1px;
+    animation:parpadeo 1.1s steps(1,end) infinite;
+  }
+  .cursor[hidden]{display:none}
+  @keyframes parpadeo{0%,49%{opacity:1}50%,100%{opacity:0}}
+  .msg-pie{
+    display:flex; justify-content:flex-end; gap:8px; margin:8px 0 0;
+    font-size:11px; color:var(--hojaT2); letter-spacing:.04em;
+  }
+  .enviar{
+    -webkit-appearance:none; appearance:none; font:inherit; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; gap:9px;
+    width:100%; min-height:56px; margin:16px 0 0; padding:0 18px;
+    background:var(--verde); color:#08210f; border:0;
+    font-weight:750; font-size:16px; text-decoration:none; letter-spacing:.01em;
+  }
+  .enviar:hover{background:#8ae0b1}
+  .enviar svg{width:19px; height:19px; flex:0 0 auto}
+  .enviar[aria-disabled="true"]{
+    background:transparent; color:var(--tinta3); border:1.5px dashed var(--linea2);
+    cursor:default;
+  }
+  .falta{margin:10px 0 0; font-size:13px; color:var(--tinta3); text-align:center}
+
+  /* ---------- horario y razones ---------- */
+  .razones{display:grid; grid-template-columns:minmax(0,1fr); gap:0; margin:24px 0 0; padding:0; list-style:none; border-top:1px solid var(--linea)}
+  .razones li{padding:16px 0; border-bottom:1px solid var(--linea)}
+  .razones b{display:block; font-size:11.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--cobre); margin-bottom:5px}
+  .razones span{font-size:15px; color:var(--tinta2)}
+  .razones span em{font-style:normal; color:var(--tinta); font-weight:650}
+
+  .horario{width:100%; border-collapse:collapse; margin:20px 0 0; font-size:14.5px}
+  .horario th,.horario td{text-align:left; padding:10px 12px 10px 0; border-bottom:1px solid var(--linea); color:var(--tinta2)}
+  .horario th{color:var(--tinta3); font-size:11.5px; letter-spacing:.14em; text-transform:uppercase; font-weight:700}
+  .horario td:first-child{color:var(--tinta); font-weight:650}
+  .horario td.cerrado{color:var(--tinta3)}
+
+  /* ---------- honestidad ---------- */
+  .franco{border-left:3px solid var(--cobre); padding:2px 0 2px 18px; margin:0 0 22px}
+  .franco p{margin:0 0 12px; color:var(--tinta2); font-size:15.5px; max-width:64ch}
+  .franco p:last-child{margin-bottom:0}
+  .franco strong{color:var(--tinta)}
+  .cuando{display:grid; grid-template-columns:minmax(0,1fr); gap:14px; margin:22px 0 0; padding:0; list-style:none}
+  .cuando li{background:var(--panel); border:1px solid var(--linea); padding:16px 18px}
+  .cuando h3{font-size:16.5px; margin:0 0 6px}
+  .cuando p{margin:0; font-size:14.5px; color:var(--tinta2)}
+  .cuando .si h3{color:var(--verde)}
+  .cuando .no h3{color:var(--cobre)}
+
+  .fichas{display:grid; grid-template-columns:minmax(0,1fr); gap:0; margin:22px 0 0; padding:0; list-style:none; border-top:1px solid var(--linea)}
+  .fichas li{padding:16px 0; border-bottom:1px solid var(--linea)}
+  .fichas b{display:block; font-size:11.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--cobre); margin-bottom:4px}
+  .fichas span{font-size:15px; color:var(--tinta2)}
+  .fichas span em{font-style:normal; color:var(--tinta); font-weight:650}
+
+  /* ---------- pie ---------- */
+  .katu-pie{
+    border-top:1px solid var(--linea); padding:22px 16px 34px; text-align:center;
+    font-size:13px; color:var(--tinta3); line-height:2;
+  }
+  .katu-pie a{
+    color:var(--cobre); text-decoration:none; font-weight:700;
+    display:inline-block; min-height:44px; line-height:44px; padding:0 8px;
+  }
+  .katu-pie a:hover{text-decoration:underline}
+
+  /* ---------- anchos ---------- */
+  @media (min-width:560px){
+    .servicios{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .cuando{grid-template-columns:repeat(2,minmax(0,1fr))}
+  }
+  @media (min-width:960px){
+    .taller{grid-template-columns:minmax(0,1.28fr) minmax(300px,.72fr); gap:38px}
+    .razones{grid-template-columns:repeat(2,minmax(0,1fr)); column-gap:34px; border-top:0}
+    .razones li:nth-child(-n+2){border-top:1px solid var(--linea)}
+    .fichas{grid-template-columns:repeat(3,minmax(0,1fr)); column-gap:30px; border-top:0}
+    .fichas li{border-top:1px solid var(--linea)}
+  }
+  @media (max-width:400px){
+    .horas{grid-template-columns:repeat(auto-fill,minmax(72px,1fr)); gap:7px}
+    .dia{width:60px}
+  }
+
+  /* En pantallas sin puntero fino el hover no existe: los estados ya se ven
+     por el borde y el fondo, así que no hay nada que reponer, solo que
+     apagar para que no queden pegados después de tocar. */
+  @media (hover:none){
+    .sv:hover,.hr:hover{border-color:var(--linea)}
+    .barra .wa:hover{border-color:var(--linea2); color:var(--tinta)}
+    .enviar:hover{background:var(--verde)}
+  }
+
+  /* ---------- modo miniatura ----------
+     Adentro del iframe chico de la galería y de las tarjetas del catálogo
+     hay 300 px de alto: con el encabezado normal solo entraría el título y
+     la pieza se vería como cualquier otra. Así que ahí el mensaje sube al
+     primer lugar y el resto se comprime. Lo que tiene que verse en la
+     miniatura es el pedido ya escrito, que es lo que vende. */
+  .mini .barra{display:none}
+  .mini .sec{padding:12px 0}
+  .mini .env{padding:0 14px}
+  .mini .rot{display:none}
+  .mini .h1{font-size:17.5px; margin-bottom:9px; max-width:28ch}
+  .mini .bajada{display:none}
+  .mini .mensaje{order:-1; position:static}
+  .mini .msg-t{font-size:10px; margin-bottom:6px}
+  .mini .burbuja{padding:11px 12px 9px}
+  .mini .msg-para{margin-bottom:7px; padding-bottom:6px; font-size:10.5px}
+  .mini .msg-txt{font-size:10.5px; line-height:1.52; min-height:0}
+  .mini .msg-pie{display:none}
+  .mini .enviar{min-height:44px; font-size:14px; margin-top:10px}
+  .mini .falta{display:none}
+
+  /* Sin movimiento: el mensaje aparece entero de una y el cursor no
+     parpadea. Nada queda invisible esperando una animación que no corre —
+     la pieza sigue funcionando igual, solo que el texto no se escribe solo. */
+  @media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{
+      animation-duration:.001ms !important; animation-iteration-count:1 !important;
+      transition-duration:.001ms !important; scroll-behavior:auto !important;
+    }
+    .cursor{display:none}
+  }
+</style>
+<script>
+/* Antimarco: si alguien intenta mostrar esta página dentro de una web ajena,
+   la sacamos del marco. Los iframes propios —la galería del inicio y las
+   tarjetas del catálogo— siguen funcionando, y ahí arranca quieta. */
+(function () {
+  var root = document.documentElement;
+  var enMarco = (window.top !== window.self);
+  if (enMarco && window.location.protocol !== 'file:') {
+    var propio = false;
+    try { propio = (window.top.location.origin === window.location.origin); } catch (e) { propio = false; }
+    if (!propio) {
+      try { window.top.location = window.location.href; }
+      catch (e2) { root.style.display = 'none'; }
+      return;
+    }
+  }
+  if (enMarco || window.innerHeight < 430) root.className += ' quieta';
+  /* miniatura de verdad: adentro de un marco propio y con poco alto. Una
+     ventana de escritorio bajita queda 'quieta' pero no se recompone. */
+  if (enMarco && window.innerHeight < 430) root.className += ' mini';
+})();
+</script>
+</head>
+<body>
+
+<a class="salto" href="#contenido">Ir al contenido</a>
+
+<header class="barra">
+  <div class="barra-in">
+    <span class="marca">Turnos por WhatsApp<em>.</em></span>
+    <a class="wa" href="https://wa.me/595983518856?text=Hola!%20Quiero%20turnos%20por%20WhatsApp%20en%20mi%20p%C3%A1gina%20(KTW-8LMVC)." target="_blank" rel="noopener noreferrer">Quiero esto</a>
+  </div>
+</header>
+
+<main id="contenido">
+
+  <!-- ============ la mecánica, arriba de todo ============
+       El pedido de turno es el argumento, así que va antes que cualquier
+       explicación: en la miniatura de la galería se tiene que ver el mensaje
+       armado, no un título solo. -->
+  <section class="sec" aria-labelledby="h1">
+    <div class="env">
+      <p class="rot">Servicio · entrega en 2 días</p>
+      <h1 class="h1">Tres toques y el mensaje llega escrito</h1>
+      <p class="bajada">Así funciona en la página de <b>Barbería Karaí</b>, un negocio de ejemplo. Elegí servicio, día y hora y mirá abajo cómo se arma solo el mensaje. Sin formularios, sin cuenta, sin sistema de reservas: el turno se pide por WhatsApp, como ya se pide hoy, pero con todo cargado.</p>
+
+      <div class="taller">
+
+        <!-- ---------- los tres pasos ---------- -->
+        <div>
+          <div class="paso" id="paso1">
+            <p class="paso-t"><span class="n" aria-hidden="true">1</span> <b>Elegí el servicio</b></p>
+            <ul class="servicios" id="servicios" role="list">
+              <li><button class="sv" type="button" aria-pressed="false" data-i="0"><span><span class="n">Corte clásico</span><span class="d">30 min</span></span><span class="p">Gs. 45.000</span></button></li>
+              <li><button class="sv" type="button" aria-pressed="false" data-i="1"><span><span class="n">Corte + barba</span><span class="d">45 min</span></span><span class="p">Gs. 70.000</span></button></li>
+              <li><button class="sv" type="button" aria-pressed="false" data-i="2"><span><span class="n">Perfilado de barba</span><span class="d">30 min</span></span><span class="p">Gs. 35.000</span></button></li>
+              <li><button class="sv" type="button" aria-pressed="false" data-i="3"><span><span class="n">Corte para chicos</span><span class="d">30 min</span></span><span class="p">Gs. 38.000</span></button></li>
+              <li><button class="sv" type="button" aria-pressed="false" data-i="4"><span><span class="n">Tratamiento capilar</span><span class="d">60 min</span></span><span class="p">Gs. 95.000</span></button></li>
+              <li><button class="sv" type="button" aria-pressed="false" data-i="5"><span><span class="n">Color y decoloración</span><span class="d">2 h</span></span><span class="p">Gs. 190.000</span></button></li>
+            </ul>
+          </div>
+
+          <div class="paso" id="paso2">
+            <p class="paso-t"><span class="n" aria-hidden="true">2</span> <b>Elegí el día</b></p>
+            <p class="nota" id="hoyTxt" style="margin:-6px 0 12px"></p>
+            <div class="dias-env">
+              <ul class="dias" id="dias" role="list" aria-label="Próximos días"></ul>
+            </div>
+          </div>
+
+          <div class="paso" id="paso3">
+            <p class="paso-t"><span class="n" aria-hidden="true">3</span> <b>Elegí la hora</b></p>
+            <p class="horas-cab" id="horasCab">Elegí primero el servicio y el día.</p>
+            <div id="horasZona"></div>
+
+            <div class="linea-dia" id="lineaDia" aria-hidden="true"></div>
+            <ul class="leyenda" aria-hidden="true">
+              <li><i class="l-lib"></i> libre</li>
+              <li><i class="l-ocu"></i> ya tomado</li>
+              <li><i class="l-mio"></i> tu turno</li>
+            </ul>
+            <p class="aviso">Los huecos tachados están ocupados por otros turnos: es una agenda de ejemplo, distinta cada día, para que se vea cómo se comporta un negocio que trabaja. <b>En tu página esos bloques salen de la agenda que vos nos pasás</b> —los horarios que ya tenés tomados y los ratos que querés cerrar—, y se cambian cuando nos avisás.</p>
+
+            <label class="campo" for="nombre">
+              <span>Tu nombre, para que sepan quién pide (opcional)</span>
+              <input type="text" id="nombre" maxlength="34" autocomplete="name" placeholder="Escribí tu nombre">
+            </label>
+          </div>
+        </div>
+
+        <!-- ---------- el mensaje ---------- -->
+        <div class="mensaje">
+          <p class="msg-t"><i aria-hidden="true"></i> El mensaje que se manda</p>
+          <div class="burbuja">
+            <p class="msg-para">Para: <b>Barbería Karaí</b> · WhatsApp</p>
+            <p class="msg-txt" id="msgTxt" aria-hidden="true"><span id="msgVivo"></span><span class="cursor" id="cursor" aria-hidden="true"></span></p>
+            <p class="msg-pie"><span id="relojTxt">ahora</span></p>
+          </div>
+          <div class="sr" id="msgLector" role="status" aria-live="polite"></div>
+
+          <a class="enviar" id="btEnviar" href="https://wa.me/595983518856" target="_blank" rel="noopener noreferrer" aria-disabled="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11.5 20.5 4l-7 16.5-2.4-6.6z"/><path d="M11.1 13.9 20.5 4"/></svg>
+            <span id="btEnviarTxt">Elegí los tres datos</span>
+          </a>
+          <p class="falta" id="falta">Abre WhatsApp con el texto ya escrito. Nada se envía solo.</p>
+          <noscript><p class="falta">Esta demo necesita JavaScript para calcular los horarios libres.</p></noscript>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ de dónde salen las horas ============ -->
+  <section class="sec sec-b" aria-labelledby="hCalc">
+    <div class="env">
+      <p class="rot">Lo que hay abajo</p>
+      <h2 class="h2" id="hCalc">Las horas no son una lista escrita a mano</h2>
+      <p class="bajada">Cada hueco que ves arriba se calcula en el momento con tres datos tuyos. Por eso un corte de 30 minutos y un color de dos horas no ofrecen lo mismo, y el sábado se corta antes.</p>
+
+      <ul class="razones">
+        <li><b>La duración del servicio</b><span>Un turno solo aparece si <em>entra entero antes de cerrar</em>. Elegí <em>Color y decoloración</em> y mirá cómo desaparecen los huecos del final del día: dos horas no entran a las 18:00 si a las 19:30 se baja la persiana.</span></li>
+        <li><b>El horario de atención</b><span>De lunes a viernes hay <em>corte al mediodía</em>, el sábado se cierra a las 13:00 y el domingo no se atiende. El domingo ni siquiera se puede elegir: aparece cerrado.</span></li>
+        <li><b>La agenda ocupada</b><span>Los turnos ya tomados <em>bloquean todo lo que se pise con ellos</em>, no solo la hora exacta. Un turno de 45 minutos a las 9:45 se lleva puesto también el hueco de las 10:00.</span></li>
+        <li><b>La anticipación mínima</b><span>Hoy no se ofrecen huecos <em>de acá a 90 minutos</em>, porque nadie confirma un turno para dentro de diez minutos. Ese número lo elegís vos.</span></li>
+      </ul>
+
+      <table class="horario">
+        <caption class="sr">Horario de atención de la barbería de ejemplo</caption>
+        <thead><tr><th scope="col">Día</th><th scope="col">Mañana</th><th scope="col">Tarde</th></tr></thead>
+        <tbody>
+          <tr><td>Lunes a viernes</td><td>09:00 a 12:30</td><td>14:30 a 19:30</td></tr>
+          <tr><td>Sábado</td><td>08:00 a 13:00</td><td class="cerrado">cerrado</td></tr>
+          <tr><td>Domingo</td><td class="cerrado">cerrado</td><td class="cerrado">cerrado</td></tr>
+        </tbody>
+      </table>
+      <p class="nota" style="margin-top:14px">La tarjeta del mensaje de esta demo es un <b>dibujo propio y esquemático</b>, hecho con CSS: no reproduce la interfaz, los colores ni el logotipo de WhatsApp. Se nombra la aplicación con palabras porque el servicio es ese; lo que no se imita es su imagen.</p>
+    </div>
+  </section>
+
+  <!-- ============ honestidad ============ -->
+  <section class="sec" aria-labelledby="hNoEs">
+    <div class="env">
+      <p class="rot">Sin vueltas</p>
+      <h2 class="h2" id="hNoEs">Lo que esto no es</h2>
+
+      <div class="franco">
+        <p><strong>Esto no bloquea el horario.</strong> Cuando alguien manda el mensaje, el hueco sigue figurando libre para el que entre después. Dos personas pueden pedir las 10:00 del sábado, y las dos van a poder mandarlo.</p>
+        <p><strong>El turno lo confirmás vos cuando contestás.</strong> Hasta ese “dale, te espero” no hay turno, hay un pedido. Igual que hoy, con la diferencia de que el pedido llega completo y no hace falta preguntar nada.</p>
+        <p><strong>Y es exactamente por eso que no tiene costo mensual.</strong> No hay servidor guardando reservas ni cuenta que pagar todos los meses: la página hace la cuenta de los horarios en el celular del que la mira y arma un texto. Lo que se paga es hacerla, una sola vez.</p>
+      </div>
+
+      <ul class="cuando">
+        <li class="si">
+          <h3>Te conviene esto</h3>
+          <p>Si atendés hasta un puñado de turnos por día, contestás el WhatsApp vos o alguien del local, y el problema real es el ida y vuelta: “¿tenés lugar mañana?”, “¿a qué hora?”, “¿cuánto sale?”. Acá eso desaparece y el pedido llega listo para confirmar.</p>
+        </li>
+        <li class="no">
+          <h3>Te conviene un sistema de reservas</h3>
+          <p>Si tenés varios profesionales con agendas distintas, cobrás seña por adelantado, se te llenan los horarios y no llegás a contestar, o necesitás que el hueco quede bloqueado en el momento. Ahí hace falta un sistema de verdad, con su costo mensual. Te lo decimos antes, no después.</p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ cómo se hace ============ -->
+  <section class="sec sec-b" aria-labelledby="hComo">
+    <div class="env">
+      <p class="rot">Cómo se hace</p>
+      <h2 class="h2" id="hComo">Vos mandás tres cosas</h2>
+      <ul class="fichas">
+        <li><b>Lo que mandás</b><span>Tus <em>servicios</em> con lo que sale cada uno, <em>cuánto dura</em> cada servicio y tu <em>horario de atención</em>, día por día. Con eso alcanza.</span></li>
+        <li><b>Entrega</b><span><em>2 días</em> desde que llegan esos tres datos. Los cambios de precio o de horario después son un mensaje.</span></li>
+        <li><b>Lo que queda</b><span>Una página donde el cliente arma el turno en tres toques y te llega el mensaje escrito a tu WhatsApp de siempre. <em>Sin costo mensual.</em></span></li>
+      </ul>
+    </div>
+  </section>
+
+</main>
+
+<div class="katu-pie">
+  Demo de <strong>KatuWeb</strong> · <a href="../catalogo.html">Volver al catálogo</a> ·
+  <a href="https://wa.me/595983518856?text=Hola!%20Vi%20la%20demo%20Turnos%20por%20WhatsApp%20(KTW-8LMVC)%20y%20quiero%20esto%20para%20mi%20negocio." target="_blank" rel="noopener noreferrer">Quiero esto para mi negocio</a>
+  <br><span style="font-size:12px">Negocio, servicios, precios y horarios de ejemplo · KTW-8LMVC</span>
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  var doc = document;
+  var QUIETO = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var MINI = doc.documentElement.className.indexOf('quieta') >= 0;
+  var CONGELADO = QUIETO || MINI;
+
+  /* ============================================================
+     1 · los datos del negocio
+     ------------------------------------------------------------
+     Esto es todo lo que hay que cambiar para otro cliente: servicios con
+     su duración y su precio, y el horario día por día. Nada más abajo
+     tiene horas escritas.
+     ============================================================ */
+  var NEGOCIO = 'Barbería Karaí';
+
+  var SERVICIOS = [
+    { n:'Corte clásico',        dur:30,  precio:45000  },
+    { n:'Corte + barba',        dur:45,  precio:70000  },
+    { n:'Perfilado de barba',   dur:30,  precio:35000  },
+    { n:'Corte para chicos',    dur:30,  precio:38000  },
+    { n:'Tratamiento capilar',  dur:60,  precio:95000  },
+    { n:'Color y decoloración', dur:120, precio:190000 }
+  ];
+
+  /* minutos desde medianoche. 0 = domingo. */
+  var HORARIO = {
+    0: [],
+    1: [{ i:540, f:750, t:'Mañana' }, { i:870, f:1170, t:'Tarde' }],
+    6: [{ i:480, f:780, t:'Mañana' }]
+  };
+  HORARIO[2] = HORARIO[3] = HORARIO[4] = HORARIO[5] = HORARIO[1];
+
+  var PASO = 30;        /* cada cuánto se ofrece un hueco */
+  var ANTICIPO = 90;    /* hoy no se ofrece nada de acá a 90 minutos */
+  var DIAS_VISTA = 8;
+
+  var SEM = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+  var SEMC = ['dom','lun','mar','mié','jue','vie','sáb'];
+  var MES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  var MESC = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+
+  /* ============================================================
+     2 · herramientas
+     ============================================================ */
+  function hhmm(m){
+    var h = Math.floor(m/60), mm = m%60;
+    return (h<10?'0':'') + h + ':' + (mm<10?'0':'') + mm;
+  }
+  function guaranies(n){
+    var s = String(n), out = '', c = 0;
+    for (var i = s.length-1; i >= 0; i--){
+      out = s.charAt(i) + out;
+      if (++c % 3 === 0 && i > 0) out = '.' + out;
+    }
+    return 'Gs. ' + out;
+  }
+  function durTxt(m){
+    if (m < 60) return m + ' min';
+    var h = Math.floor(m/60), r = m%60;
+    return h + ' h' + (r ? ' ' + r + ' min' : '');
+  }
+  function mismoDia(a,b){
+    return a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate();
+  }
+  function claveDia(d){ return d.getFullYear()*10000 + (d.getMonth()+1)*100 + d.getDate(); }
+
+  /* ============================================================
+     3 · la agenda ocupada
+     ------------------------------------------------------------
+     Generador Lehmer sembrado con la fecha: cada día tiene siempre la
+     misma agenda —así el que vuelve no ve otra cosa— pero distinta de la
+     del día anterior. En la página real esto se reemplaza por los bloques
+     que pasa el negocio; el resto del cálculo no cambia ni una línea.
+     ============================================================ */
+  var cacheOcupados = {};
+
+  function ocupadosDe(fecha){
+    var k = claveDia(fecha);
+    if (cacheOcupados[k]) return cacheOcupados[k];
+    var s = (k % 2147483646) + 1;
+    function rnd(){ s = (s * 48271) % 2147483647; return s / 2147483647; }
+    rnd(); rnd();
+
+    var bloques = HORARIO[fecha.getDay()] || [];
+    /* 0.16 no es un número al azar: con eso la agenda queda ocupada cerca
+       del 35% del día, que es un negocio que trabaja y todavía tiene lugar.
+       Más arriba, el color de dos horas no entra nunca y la demo miente
+       hacia el otro lado. */
+    var res = [], durs = [30,45,60];
+    for (var b = 0; b < bloques.length; b++){
+      var t = bloques[b].i;
+      while (t + 30 <= bloques[b].f){
+        if (rnd() < 0.16){
+          var d = durs[Math.floor(rnd()*durs.length)];
+          if (t + d > bloques[b].f) d = 30;
+          res.push({ i:t, f:t+d });
+          t += d + 15;
+        } else {
+          t += 15;
+        }
+      }
+    }
+    cacheOcupados[k] = res;
+    return res;
+  }
+
+  /* ============================================================
+     4 · el cálculo de huecos — el corazón de la pieza
+     ------------------------------------------------------------
+     Un hueco existe si: entra entero adentro del bloque de atención, no
+     se pisa con ningún turno tomado y —si es hoy— falta más que el
+     anticipo. Lo que no da, igual se muestra, pero tachado y con el
+     motivo: eso es lo que hace creíble a la grilla.
+     ============================================================ */
+  function huecosDe(fecha, servicio){
+    var bloques = HORARIO[fecha.getDay()] || [];
+    var ocu = ocupadosDe(fecha);
+    var ahora = new Date();
+    var esHoy = mismoDia(fecha, ahora);
+    var minAhora = ahora.getHours()*60 + ahora.getMinutes();
+    var dur = servicio ? servicio.dur : PASO;
+    var salida = [];
+
+    for (var b = 0; b < bloques.length; b++){
+      var blq = bloques[b], lista = [];
+      for (var t = blq.i; t + PASO <= blq.f; t += PASO){
+        var estado = 'libre';
+        if (t + dur > blq.f) estado = 'no entra';
+        else {
+          for (var o = 0; o < ocu.length; o++){
+            if (t < ocu[o].f && t + dur > ocu[o].i){ estado = 'ocupado'; break; }
+          }
+        }
+        if (estado === 'libre' && esHoy && t < minAhora + ANTICIPO) estado = 'pasó';
+        lista.push({ ini:t, fin:t+dur, estado:estado });
+      }
+      salida.push({ titulo:blq.t, ini:blq.i, fin:blq.f, huecos:lista });
+    }
+    return salida;
+  }
+
+  /* ============================================================
+     5 · estado
+     ============================================================ */
+  var elegido = { sv:null, dia:null, hora:null };
+  var fechas = [];
+
+  var hoy = new Date();
+  for (var i = 0; i < DIAS_VISTA; i++){
+    var f = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() + i);
+    fechas.push(f);
+  }
+
+  /* ============================================================
+     6 · los días
+     ============================================================ */
+  var ulDias = doc.getElementById('dias');
+  var botDias = [];
+
+  doc.getElementById('hoyTxt').textContent =
+    'Desde hoy, ' + SEM[hoy.getDay()] + ' ' + hoy.getDate() + ' de ' + MES[hoy.getMonth()] + '. El domingo no se atiende.';
+
+  fechas.forEach(function(fe, idx){
+    var abierto = (HORARIO[fe.getDay()] || []).length > 0;
+    var li = doc.createElement('li');
+    var bt = doc.createElement('button');
+    bt.type = 'button';
+    bt.className = 'dia' + (idx === 0 ? ' hoy' : '');
+    var s1 = doc.createElement('span'); s1.className = 'sem';
+    s1.textContent = idx === 0 ? 'hoy' : SEMC[fe.getDay()];
+    var s2 = doc.createElement('span'); s2.className = 'num'; s2.textContent = String(fe.getDate());
+    var s3 = doc.createElement('span'); s3.className = 'mes';
+    s3.textContent = abierto ? MESC[fe.getMonth()] : 'cerrado';
+    bt.appendChild(s1); bt.appendChild(s2); bt.appendChild(s3);
+    bt.setAttribute('aria-label', (idx === 0 ? 'hoy, ' : '') + SEM[fe.getDay()] + ' ' + fe.getDate() + ' de ' + MES[fe.getMonth()] + (abierto ? '' : ', cerrado'));
+    if (!abierto){ bt.disabled = true; }
+    else {
+      bt.setAttribute('aria-pressed','false');
+      bt.addEventListener('click', function(){ elegirDia(idx); });
+    }
+    li.appendChild(bt); ulDias.appendChild(li);
+    botDias.push(bt);
+  });
+
+  /* ============================================================
+     7 · los servicios
+     ============================================================ */
+  var botSv = Array.prototype.slice.call(doc.querySelectorAll('.sv'));
+  botSv.forEach(function(bt){
+    bt.addEventListener('click', function(){
+      elegirServicio(parseInt(bt.getAttribute('data-i'), 10));
+    });
+  });
+
+  function elegirServicio(i){
+    elegido.sv = i;
+    botSv.forEach(function(b,k){ b.setAttribute('aria-pressed', k === i ? 'true' : 'false'); });
+    pintarHoras();
+  }
+  function elegirDia(i){
+    elegido.dia = i;
+    botDias.forEach(function(b,k){ if (!b.disabled) b.setAttribute('aria-pressed', k === i ? 'true' : 'false'); });
+    pintarHoras();
+  }
+
+  /* ============================================================
+     8 · la grilla de horas y la línea del día
+     ============================================================ */
+  var zona   = doc.getElementById('horasZona');
+  var cab    = doc.getElementById('horasCab');
+  var lineaD = doc.getElementById('lineaDia');
+
+  function vaciar(el){ while (el.firstChild) el.removeChild(el.firstChild); }
+
+  function pintarHoras(){
+    vaciar(zona); vaciar(lineaD);
+
+    if (elegido.sv === null || elegido.dia === null){
+      cab.textContent = elegido.sv === null && elegido.dia === null
+        ? 'Elegí primero el servicio y el día.'
+        : (elegido.sv === null ? 'Falta el servicio.' : 'Falta el día.');
+      elegido.hora = null;
+      actualizarMensaje();
+      return;
+    }
+
+    var sv = SERVICIOS[elegido.sv], fe = fechas[elegido.dia];
+    var franjas = huecosDe(fe, sv);
+    var libres = 0, sigueValida = false;
+
+    cab.textContent = '';
+    var c1 = doc.createElement('b'); c1.textContent = sv.n;
+    var c2 = doc.createTextNode(' · ' + durTxt(sv.dur) + ' · ' + SEM[fe.getDay()] + ' ' + fe.getDate() + ' de ' + MES[fe.getMonth()]);
+    cab.appendChild(c1); cab.appendChild(c2);
+
+    franjas.forEach(function(fr){
+      var hayLibre = false;
+      fr.huecos.forEach(function(h){ if (h.estado === 'libre'){ hayLibre = true; libres++; } });
+
+      var t = doc.createElement('p'); t.className = 'franja';
+      t.textContent = fr.titulo + ' · ' + hhmm(fr.ini) + ' a ' + hhmm(fr.fin);
+      zona.appendChild(t);
+
+      var ul = doc.createElement('ul'); ul.className = 'horas'; ul.setAttribute('role','list');
+      fr.huecos.forEach(function(h){
+        var li = doc.createElement('li');
+        var bt = doc.createElement('button');
+        bt.type = 'button'; bt.className = 'hr';
+        var st = doc.createElement('span'); st.className = 't'; st.textContent = hhmm(h.ini);
+        var se = doc.createElement('span'); se.className = 'e';
+        bt.appendChild(st); bt.appendChild(se);
+
+        if (h.estado === 'libre'){
+          se.textContent = 'a ' + hhmm(h.fin);
+          bt.setAttribute('aria-pressed', elegido.hora === h.ini ? 'true' : 'false');
+          bt.setAttribute('aria-label', hhmm(h.ini) + ', libre, termina ' + hhmm(h.fin));
+          if (elegido.hora === h.ini) sigueValida = true;
+          bt.addEventListener('click', function(){
+            elegido.hora = h.ini;
+            Array.prototype.forEach.call(zona.querySelectorAll('.hr'), function(o){
+              if (!o.disabled) o.setAttribute('aria-pressed', o === bt ? 'true' : 'false');
+            });
+            pintarLinea();
+            actualizarMensaje();
+          });
+        } else {
+          bt.disabled = true;
+          se.textContent = h.estado === 'no entra' ? 'no entra' : (h.estado === 'pasó' ? 'muy pronto' : 'ocupado');
+          bt.setAttribute('aria-label', hhmm(h.ini) + ', ' + (h.estado === 'no entra' ? 'no llega a terminar antes de cerrar' : (h.estado === 'pasó' ? 'demasiado sobre la hora' : 'ya tomado')));
+        }
+        li.appendChild(bt); ul.appendChild(li);
+      });
+      zona.appendChild(ul);
+      if (!hayLibre){
+        var v = doc.createElement('p'); v.className = 'nota'; v.style.margin = '-8px 0 16px';
+        v.textContent = 'Sin lugar en esta franja para ' + sv.n.toLowerCase() + '.';
+        zona.appendChild(v);
+      }
+    });
+
+    if (!sigueValida) elegido.hora = null;
+
+    if (libres === 0){
+      var av = doc.createElement('p'); av.className = 'vacio';
+      var b = doc.createElement('b'); b.textContent = sv.n;
+      av.appendChild(doc.createTextNode('No queda ningún hueco para '));
+      av.appendChild(b);
+      av.appendChild(doc.createTextNode(' el ' + SEM[fe.getDay()] + ' ' + fe.getDate() + '. Probá otro día, o un servicio más corto.'));
+      zona.insertBefore(av, zona.firstChild);
+    }
+
+    pintarLinea();
+    actualizarMensaje();
+  }
+
+  /* la línea del día: los bloques de atención a escala, con lo tomado
+     rayado y el turno elegido en cobre. Es el mismo cálculo, mirado de
+     costado; sirve para entender de un vistazo por qué falta un hueco. */
+  function pintarLinea(){
+    vaciar(lineaD);
+    if (elegido.dia === null) return;
+    var fe = fechas[elegido.dia];
+    var bloques = HORARIO[fe.getDay()] || [];
+    var ocu = ocupadosDe(fe);
+    var sv = elegido.sv !== null ? SERVICIOS[elegido.sv] : null;
+
+    bloques.forEach(function(blq){
+      var largo = blq.f - blq.i;
+      var d = doc.createElement('div');
+      d.className = 'blq'; d.style.flexGrow = String(largo); d.style.flexBasis = '0';
+
+      ocu.forEach(function(o){
+        if (o.f <= blq.i || o.i >= blq.f) return;
+        var a = Math.max(o.i, blq.i), z = Math.min(o.f, blq.f);
+        var s = doc.createElement('span'); s.className = 'ocu';
+        s.style.left = ((a - blq.i)/largo*100) + '%';
+        s.style.width = ((z - a)/largo*100) + '%';
+        d.appendChild(s);
+      });
+
+      if (elegido.hora !== null && sv && elegido.hora >= blq.i && elegido.hora < blq.f){
+        var m = doc.createElement('span'); m.className = 'mio';
+        m.style.left = ((elegido.hora - blq.i)/largo*100) + '%';
+        m.style.width = (Math.min(sv.dur, blq.f - elegido.hora)/largo*100) + '%';
+        d.appendChild(m);
+      }
+
+      var r1 = doc.createElement('span'); r1.className = 'rot-h'; r1.textContent = hhmm(blq.i);
+      var r2 = doc.createElement('span'); r2.className = 'rot-h fin'; r2.textContent = hhmm(blq.f);
+      d.appendChild(r1); d.appendChild(r2);
+      lineaD.appendChild(d);
+    });
+  }
+
+  /* ============================================================
+     9 · el mensaje que se escribe solo
+     ------------------------------------------------------------
+     Una sola fuente: armarTexto() devuelve el mensaje completo según lo
+     elegido. El tipeo compara el texto nuevo con el viejo, se queda con
+     el prefijo común y sigue escribiendo desde ahí: por eso cambiar la
+     hora reescribe solo el final y no todo el mensaje de nuevo.
+     ============================================================ */
+  var elVivo   = doc.getElementById('msgVivo');
+  var elCursor = doc.getElementById('cursor');
+  var elLector = doc.getElementById('msgLector');
+  var elBoton  = doc.getElementById('btEnviar');
+  var elBotTxt = doc.getElementById('btEnviarTxt');
+  var elFalta  = doc.getElementById('falta');
+  var elNombre = doc.getElementById('nombre');
+  var elReloj  = doc.getElementById('relojTxt');
+
+  function armarTexto(){
+    var L = ['Hola, ' + NEGOCIO + '! Quiero pedir un turno.'];
+    if (elegido.sv !== null){
+      var sv = SERVICIOS[elegido.sv];
+      L.push('');
+      L.push('Servicio: ' + sv.n + ' (' + durTxt(sv.dur) + ')');
+      if (elegido.dia !== null){
+        var fe = fechas[elegido.dia];
+        L.push('Día: ' + SEM[fe.getDay()] + ' ' + fe.getDate() + ' de ' + MES[fe.getMonth()]);
+        if (elegido.hora !== null){
+          L.push('Hora: ' + hhmm(elegido.hora) + ' a ' + hhmm(elegido.hora + sv.dur));
+        }
+      }
+      L.push('Precio: ' + guaranies(sv.precio));
+      if (elegido.dia !== null && elegido.hora !== null){
+        var nom = elNombre.value.replace(/\s+/g,' ').trim();
+        L.push('');
+        L.push('Mi nombre: ' + (nom || '[tu nombre]'));
+        L.push('Espero tu confirmación. Gracias!');
+      }
+    }
+    return L.join('\n');
+  }
+
+  function completo(){
+    return elegido.sv !== null && elegido.dia !== null && elegido.hora !== null;
+  }
+
+  function actualizarMensaje(){
+    var txt = armarTexto();
+    elLector.textContent = txt;
+    escribir(txt);
+
+    var listo = completo();
+    elBoton.setAttribute('aria-disabled', listo ? 'false' : 'true');
+    if (listo){
+      elBoton.href = 'https://wa.me/595983518856?text=' + encodeURIComponent(txt);
+      elBotTxt.textContent = 'Mandar por WhatsApp';
+      elFalta.textContent = 'Abre WhatsApp con el texto ya escrito. Vos apretás enviar.';
+    } else {
+      elBoton.removeAttribute('href');
+      elBotTxt.textContent = elegido.sv === null ? 'Elegí el servicio'
+        : (elegido.dia === null ? 'Elegí el día' : 'Elegí la hora');
+      elFalta.textContent = 'Faltan datos: el botón se enciende cuando están los tres.';
+    }
+
+    doc.getElementById('paso1').classList.toggle('hecho', elegido.sv !== null);
+    doc.getElementById('paso2').classList.toggle('hecho', elegido.dia !== null);
+    doc.getElementById('paso3').classList.toggle('hecho', elegido.hora !== null);
+  }
+
+  elBoton.addEventListener('click', function(e){
+    if (!completo()) e.preventDefault();
+  });
+  elNombre.addEventListener('input', actualizarMensaje);
+
+  /* --- el tipeo: un solo requestAnimationFrame para toda la página --- */
+  var meta = '', metaPrev = '', vistos = 0, corriendo = false, antes = 0;
+
+  function pintarVivo(){
+    elVivo.textContent = meta.slice(0, Math.floor(vistos));
+  }
+
+  function escribir(txt){
+    if (txt === metaPrev && Math.floor(vistos) >= meta.length) return;
+    var comun = 0, tope = Math.min(Math.floor(vistos), txt.length, metaPrev.length);
+    while (comun < tope && txt.charAt(comun) === metaPrev.charAt(comun)) comun++;
+    meta = txt; metaPrev = txt;
+    if (CONGELADO){
+      vistos = meta.length; pintarVivo();
+      elCursor.hidden = true;
+      return;
+    }
+    vistos = Math.min(vistos, comun);
+    pintarVivo();
+    elCursor.hidden = false;
+    if (!corriendo){ corriendo = true; antes = 0; requestAnimationFrame(bucle); }
+  }
+
+  function bucle(t){
+    var dt = antes ? Math.min((t - antes)/16.67, 3) : 1;
+    antes = t;
+    var falta = meta.length - vistos;
+    if (falta > 0){
+      vistos = Math.min(meta.length, vistos + Math.max(1.6, falta * 0.11) * dt);
+      pintarVivo();
+      requestAnimationFrame(bucle);
+    } else {
+      corriendo = false;
+      /* terminado de escribir: si el mensaje ya está completo el cursor se
+         apaga —el texto quedó listo—; si falta un dato sigue titilando,
+         que es la señal de que el mensaje todavía se está armando. */
+      elCursor.hidden = completo();
+    }
+  }
+
+  /* la hora del mensaje, como la marca de un chat: se pone una vez */
+  (function(){
+    var d = new Date();
+    elReloj.textContent = hhmm(d.getHours()*60 + d.getMinutes());
+  })();
+
+  /* ============================================================
+     10 · arranque
+     ------------------------------------------------------------
+     En miniatura y con movimiento reducido arranca con el turno ya
+     elegido y el mensaje entero: se ve la composición terminada, quieta,
+     y nada queda esperando una animación. Con pantalla normal arranca en
+     el paso uno, que es el punto de la pieza.
+     ============================================================ */
+  function primerDiaAbierto(){
+    for (var i = 0; i < fechas.length; i++){
+      if ((HORARIO[fechas[i].getDay()] || []).length) return i;
+    }
+    return 0;
+  }
+
+  if (CONGELADO){
+    elegirServicio(1);
+    var d0 = primerDiaAbierto();
+    elegirDia(d0);
+    /* la primera hora libre que haya, sea cual sea el día */
+    var intento = 0;
+    while (intento < fechas.length){
+      var fr = huecosDe(fechas[elegido.dia], SERVICIOS[elegido.sv]);
+      var puesta = null;
+      for (var a = 0; a < fr.length && puesta === null; a++){
+        for (var b2 = 0; b2 < fr[a].huecos.length; b2++){
+          if (fr[a].huecos[b2].estado === 'libre'){ puesta = fr[a].huecos[b2].ini; break; }
+        }
+      }
+      if (puesta !== null){
+        elegido.hora = puesta;
+        Array.prototype.forEach.call(zona.querySelectorAll('.hr'), function(o){
+          if (!o.disabled && o.querySelector('.t').textContent === hhmm(puesta)) o.setAttribute('aria-pressed','true');
+        });
+        pintarLinea(); actualizarMensaje();
+        break;
+      }
+      var sig = elegido.dia + 1;
+      while (sig < fechas.length && !(HORARIO[fechas[sig].getDay()] || []).length) sig++;
+      if (sig >= fechas.length) break;
+      elegirDia(sig);
+      intento++;
+    }
+  } else {
+    actualizarMensaje();
+  }
+})();
+</script>
+</body>
+</html>

@@ -147,6 +147,42 @@
      Tipos: 'texto' (una línea), 'largo' (varias), 'opcion' (elegir una de la lista).
      Las marcadas obl:true son las que sin ellas no puedo ni empezar. */
   var PIEZAS = {
+    menuqr: {
+      n: 'Menú con QR imprimible', cod: 'KTW-3YFHZ',
+      baja: 'El menú online más el cartelito con el código QR listo para imprimir y plastificar. El QR impreso no cambia nunca; lo que cambia es la página a la que apunta.',
+      qs: [
+        { id:'local', t:'¿Cómo se llama el local y qué cocina?', a:'El nombre como va en el cartel, y en una línea qué tipo de comida es.', tipo:'texto', obl:true },
+        { id:'menu', t:'El menú completo, con precios', a:'Pegalo tal cual lo tenés: en categorías, con el precio de cada plato. Si tenés una foto del menú de papel, también sirve.', tipo:'largo', obl:true },
+        { id:'aclara', t:'¿Hay platos que necesiten aclaración?', a:'Vegetariano, sin TACC, picante, para compartir, porción doble. Es lo que más preguntan en la mesa.', tipo:'largo' },
+        { id:'mesas', t:'¿Cuántas mesas tenés?', a:'Para saber cuántos carteles imprimir y de qué tamaño conviene el QR.', tipo:'texto' },
+        { id:'pedido', t:'¿Querés que el cliente pueda pedir desde la mesa?', a:'El pedido llega por WhatsApp con los platos y las cantidades ya cargados. Si preferís que solo mire el menú, también se puede.', tipo:'largo' },
+        { id:'wa', t:'¿A qué WhatsApp llegan los pedidos?', a:'El número que atiende de verdad durante el servicio.', tipo:'texto', obl:true }
+      ]
+    },
+    turnos: {
+      n: 'Turnos por WhatsApp', cod: 'KTW-8LMVC',
+      baja: 'El cliente elige servicio, día y hora, y el mensaje llega a tu WhatsApp ya escrito. Sin sistema de reservas y sin costo mensual: el turno lo confirmás vos al contestar.',
+      qs: [
+        { id:'negocio', t:'¿Qué negocio es?', a:'Barbería, consultorio, estética, taller. El nombre y el rubro.', tipo:'texto', obl:true },
+        { id:'serv', t:'Los servicios, con duración y precio', a:'Uno por línea, así: Corte clásico · 30 min · Gs. 45.000. La duración es la que manda: de ahí salen los horarios que se ofrecen.', tipo:'largo', obl:true },
+        { id:'horario', t:'Horario de atención, día por día', a:'Incluí el corte del mediodía si lo tenés, y qué días no abrís.', tipo:'largo', obl:true },
+        { id:'cuantos', t:'¿Atiende una sola persona o varias?', a:'Si son varias, el cálculo de horarios cambia: hay que saber cuántos turnos pueden pasar a la vez.', tipo:'texto' },
+        { id:'aviso', t:'¿Con cuánta anticipación se pide un turno?', a:'Por ejemplo: nada para hoy con menos de dos horas, o solo a partir de mañana.', tipo:'texto' },
+        { id:'wa', t:'¿A qué WhatsApp llegan los pedidos de turno?', a:'El número que atiende durante el horario de trabajo.', tipo:'texto', obl:true }
+      ]
+    },
+    instaweb: {
+      n: 'De Instagram a página web', cod: 'KTW-9RTQM',
+      baja: 'El contenido ya lo tenés: lo que no tenés es dónde ponerlo. Los posteos pasan a ser secciones, los destacados a menú, y el negocio deja de vivir en el link de la bio.',
+      qs: [
+        { id:'user', t:'¿Cuál es tu usuario de Instagram?', a:'De ahí sale todo el material. No necesito la contraseña ni acceso a la cuenta: miro lo que ya es público.', tipo:'texto', obl:true },
+        { id:'mejores', t:'¿Cuáles son tus mejores posteos?', a:'Pasame tres o cuatro enlaces. Son los que van a quedar arriba de todo en la página.', tipo:'largo' },
+        { id:'vende', t:'¿Qué vendés, y cuál es lo que más sale?', a:'Si tenés precios, mejor. Lo más pedido va primero.', tipo:'largo', obl:true },
+        { id:'datos', t:'Dirección, horarios y zona de entrega', a:'Esto es lo que Instagram no muestra bien y es justo lo que la gente busca en Google.', tipo:'largo', obl:true },
+        { id:'wa', t:'¿A qué WhatsApp llegan las consultas?', a:'El número que atiende de verdad.', tipo:'texto', obl:true },
+        { id:'dominio', t:'¿Ya tenés dominio propio?', a:'Si no, te digo cuánto sale y se registra a tu nombre. Un dominio .com.py cuesta Gs. 160.000 por año.', tipo:'texto' }
+      ]
+    },
     tienda: {
       n: 'Tienda monoproducto', cod: 'KTW-745AK',
       baja: 'Una página entera para un solo producto. Todo el peso va al relato y a una sola cosa para hacer.',
@@ -283,7 +319,9 @@
     setfoto:'ejemplos/set-fotografia-producto.html', videobucle:'ejemplos/hero-video-bucle.html',
     fondoscroll:'ejemplos/fondo-scroll.html', gira3d:'ejemplos/producto-3d-gira.html',
     rescate:'ejemplos/fotos-rescatadas.html', sala:'ejemplos/sala-3d-restaurante.html',
-    ar:'ejemplos/extra-menu-3d/menu-3d-ar.html', viajes:'ejemplos/inmersivo-agencia-viajes.html'
+    ar:'ejemplos/extra-menu-3d/menu-3d-ar.html', viajes:'ejemplos/inmersivo-agencia-viajes.html',
+    menuqr:'ejemplos/menu-qr.html', turnos:'ejemplos/turnos-whatsapp.html',
+    instaweb:'ejemplos/instagram-a-web.html'
   };
 
   function $(id) { return document.getElementById(id); }

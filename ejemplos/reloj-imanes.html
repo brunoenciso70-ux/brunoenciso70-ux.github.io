@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; frame-src 'self'; media-src 'self' data:; form-action 'none'; object-src 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#000000">
+<title>ORBE 01 — El reloj de bolitas guiadas por imanes</title>
+<meta name="description" content="Un reloj donde la hora la marcan bolitas de acero que ruedan por canales magnéticos. Negro OLED, cristal esmerilado y luz propia: la página no está iluminada, está encendida.">
+<!--
+  DEMO KatuWeb · Neón y cristal · KTW-AVSRG
+  Negocio, producto y precios de ejemplo. Al usarla con un cliente real,
+  reemplazar todo por sus datos, fotos y precios verdaderos.
+
+  POR QUÉ EL FONDO ES #000000 Y NO #0a0a0a
+  --------------------------------------------------------------
+  En una pantalla OLED el negro puro es un píxel apagado, no un gris
+  oscuro. Al lado de un cian saturado el ojo lee ese cian como una fuente
+  de luz física, no como un color. Casi ninguna página aprovecha esto
+  porque casi todas ponen #0a0a0a "por las dudas". Acá el negro es negro:
+  toda la estética cuelga de eso. No agregar sombras grises encima.
+-->
+<style>
+  *,*::before,*::after{box-sizing:border-box}
+
+  :root{
+    --neon:#22e0ff;          /* el acento; lo cambia la sección de colores */
+    --neon2:#7d5bff;         /* el segundo, siempre derivado del primero */
+    --luz:#e9f6fb;           /* texto principal: 16:1 sobre negro */
+    --luz2:#9fb4bd;          /* texto secundario: 7.6:1 sobre negro */
+    --linea:rgba(255,255,255,.14);
+    --vidrio:rgba(255,255,255,.055);
+  }
+
+  html{background:#000; -webkit-text-size-adjust:100%; overflow-x:hidden}
+  body{
+    margin:0; background:#000; color:var(--luz);
+    font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+    line-height:1.6; overflow-x:hidden;
+  }
+
+  .env{max-width:1120px; margin:0 auto; padding:0 20px}
+
+  /* ---------- barra ---------- */
+  .barra{
+    position:sticky; top:0; z-index:40;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:16px; padding:12px 20px;
+    background:rgba(0,0,0,.72); backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--linea);
+  }
+  .marca{
+    font-size:14px; letter-spacing:.42em; text-transform:uppercase;
+    font-weight:600; color:var(--luz);
+  }
+  .marca i{font-style:normal; color:var(--neon)}
+  .btBarra{
+    display:inline-flex; align-items:center; min-height:44px; padding:0 16px;
+    border:1px solid var(--neon); color:var(--neon); text-decoration:none;
+    font-size:12px; letter-spacing:.18em; text-transform:uppercase;
+  }
+
+  /* ---------- tipografía ---------- */
+  h1,h2,h3{margin:0; font-weight:600; letter-spacing:-.02em; line-height:1.05}
+  .rot{
+    margin:0 0 10px; font-size:11px; letter-spacing:.3em;
+    text-transform:uppercase; color:var(--neon);
+  }
+  .h2{font-size:clamp(28px,5.4vw,52px); margin:0 0 14px}
+  .bajada{margin:0 0 26px; color:var(--luz2); max-width:58ch; font-size:16px}
+
+  section{position:relative}
+  .sec{padding:clamp(60px,11vh,120px) 0}
+
+  /* ---------- portada ---------- */
+  .portada{
+    min-height:100svh; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; padding:30px 20px 40px;
+  }
+  .disco{
+    position:relative; width:min(86vw,520px); aspect-ratio:1/1;
+    display:grid; place-items:center;
+  }
+  .disco canvas{
+    display:block; width:100%; height:100%; border-radius:50%;
+    position:relative; z-index:2; touch-action:pan-y;
+  }
+  /* el cristal: un borde que atrapa la luz del neón */
+  .aro{
+    position:absolute; inset:0; border-radius:50%; z-index:3;
+    pointer-events:none;
+    border:1px solid rgba(255,255,255,.16);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.22),
+      inset 0 -14px 30px -20px var(--neon);
+  }
+  /* el halo: tres capas, nunca un box-shadow gigante */
+  .halo,.halo2{
+    position:absolute; border-radius:50%; z-index:1; pointer-events:none;
+    background:var(--neon); opacity:.13; filter:blur(40px);
+    inset:6%;
+  }
+  .halo2{inset:-14%; opacity:.06; filter:blur(80px)}
+  .sinLuz .halo,.sinLuz .halo2{display:none}
+  .sinLuz .aro{box-shadow:inset 0 1px 0 rgba(255,255,255,.14)}
+
+  .pista{
+    margin:38px 0 0; font-size:12px; letter-spacing:.26em;
+    text-transform:uppercase; color:var(--luz2);
+  }
+  .pista b{color:var(--neon); font-weight:600}
+
+  /* ---------- cristal esmerilado ---------- */
+  /* El ruido es lo que lo hace ver esmerilado en vez de borroso: sin él
+     parece un efecto de sistema operativo, con él parece vidrio. */
+  .vidrio{
+    position:relative; border:1px solid var(--linea);
+    background:var(--vidrio);
+    backdrop-filter:blur(18px) saturate(140%);
+    -webkit-backdrop-filter:blur(18px) saturate(140%);
+    overflow:hidden;
+  }
+  .vidrio::before{
+    content:""; position:absolute; inset:0; pointer-events:none; opacity:.5;
+    background-image:url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='r'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23r)' opacity='.16'/%3E%3C/svg%3E");
+  }
+  .vidrio>*{position:relative; z-index:1}
+
+  /* ---------- adentro ---------- */
+  .adentro .cols{display:grid; gap:30px; grid-template-columns:1fr}
+  .corte{
+    position:relative; aspect-ratio:1/1; width:100%; max-width:440px;
+    margin:0 auto; border-radius:50%; overflow:hidden;
+    border:1px solid var(--linea); background:#000;
+  }
+  .pieza{
+    position:absolute; inset:0; opacity:.16; transition:opacity .5s ease;
+  }
+  .pieza.viva{opacity:1}
+  .pieza svg{width:100%; height:100%; display:block}
+  .lista{list-style:none; margin:0; padding:0}
+  .lista li{
+    border-top:1px solid var(--linea); padding:18px 0;
+  }
+  .lista li:last-child{border-bottom:1px solid var(--linea)}
+  .lista h3{
+    font-size:17px; margin:0 0 4px; display:flex; align-items:center; gap:10px;
+    color:var(--luz2); transition:color .4s ease;
+  }
+  .lista li.viva h3{color:var(--luz)}
+  .lista h3 span{
+    width:7px; height:7px; border-radius:50%; background:var(--luz2);
+    flex:0 0 auto; transition:background .4s ease, box-shadow .4s ease;
+  }
+  .lista li.viva h3 span{
+    background:var(--neon); box-shadow:0 0 10px var(--neon);
+  }
+  .lista p{margin:0; color:var(--luz2); font-size:15px; max-width:48ch}
+
+  /* ---------- desarme ---------- */
+  .desarme{overflow:hidden}
+  .pila{
+    position:relative; height:min(72vh,520px); margin:10px auto 0;
+    max-width:520px; perspective:1700px;
+  }
+  .capa{
+    position:absolute; left:50%; top:50%; width:min(70vw,330px);
+    aspect-ratio:1/1; margin:0; transform-style:preserve-3d;
+    will-change:transform;
+  }
+  .capa .plato{
+    position:absolute; inset:0; border-radius:50%;
+    border:1px solid var(--linea);
+    background:rgba(255,255,255,.03);
+    box-shadow:inset 0 0 40px -18px var(--neon);
+  }
+  .capa .plato svg{position:absolute; inset:0; width:100%; height:100%}
+  .capa[data-c="0"] .plato{
+    border-color:rgba(255,255,255,.30);
+    background:rgba(255,255,255,.055);
+    box-shadow:inset 0 0 60px -20px var(--neon), inset 0 2px 0 rgba(255,255,255,.28);
+  }
+  .capa[data-c="4"] .plato{
+    background:rgba(255,255,255,.09); border-color:rgba(255,255,255,.20);
+    box-shadow:none;
+  }
+  .capa .et{
+    position:absolute; left:calc(100% + 10px); top:50%;
+    transform:translateY(-50%);
+    font-size:12px; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--luz2); white-space:nowrap;
+  }
+  .capa .et::before{
+    content:""; position:absolute; right:calc(100% + 6px); top:50%;
+    width:34px; height:1px; background:var(--linea);
+  }
+  .ctrl{
+    display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+    margin:26px 0 0;
+  }
+  .ctrl label{font-size:12px; letter-spacing:.2em; text-transform:uppercase; color:var(--luz2)}
+  input[type=range]{
+    -webkit-appearance:none; appearance:none; width:min(280px,60vw);
+    height:44px; background:transparent; cursor:pointer;
+  }
+  input[type=range]::-webkit-slider-runnable-track{height:2px; background:var(--linea)}
+  input[type=range]::-moz-range-track{height:2px; background:var(--linea)}
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none; appearance:none; width:22px; height:22px;
+    border-radius:50%; background:var(--neon); margin-top:-10px;
+    box-shadow:0 0 12px var(--neon);
+  }
+  input[type=range]::-moz-range-thumb{
+    width:22px; height:22px; border:0; border-radius:50%; background:var(--neon);
+    box-shadow:0 0 12px var(--neon);
+  }
+
+  /* ---------- colores ---------- */
+  .tonos{display:flex; gap:12px; flex-wrap:wrap; margin:6px 0 0; padding:0; list-style:none}
+  .tono{
+    -webkit-appearance:none; appearance:none; cursor:pointer;
+    width:56px; height:56px; border-radius:50%; padding:0;
+    border:1px solid var(--linea); background:#000; position:relative;
+  }
+  .tono i{
+    position:absolute; inset:12px; border-radius:50%; display:block;
+    background:var(--c); box-shadow:0 0 16px -2px var(--c);
+  }
+  .tono[aria-pressed="true"]{border-color:#fff}
+  .tono:focus-visible{outline:2px solid var(--luz); outline-offset:3px}
+
+  /* ---------- la noche ---------- */
+  .noche{
+    position:relative; min-height:86svh; display:grid; place-items:center;
+    text-align:center; padding:60px 20px;
+  }
+  .cuarto{
+    position:absolute; inset:0; pointer-events:none;
+    background:radial-gradient(circle at 50% 46%, rgba(255,255,255,.05), transparent 46%);
+  }
+  .sinLuz .cuarto{display:none}
+  .relojChico{
+    position:relative; width:min(62vw,260px); aspect-ratio:1/1;
+    display:grid; place-items:center; margin:0 auto 26px;
+  }
+  .relojChico canvas{
+    display:block; width:100%; height:100%; border-radius:50%;
+    position:relative; z-index:2;
+  }
+
+  /* ---------- comprar ---------- */
+  .panel{padding:30px 24px}
+  .precio{font-size:clamp(30px,6vw,46px); margin:0 0 6px; letter-spacing:-.03em}
+  .antes{color:var(--luz2); font-size:14px; margin:0 0 20px}
+  .datos{list-style:none; margin:0 0 24px; padding:0; color:var(--luz2); font-size:15px}
+  .datos li{padding:7px 0; border-bottom:1px solid var(--linea)}
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center;
+    min-height:52px; padding:0 26px; text-decoration:none;
+    background:var(--neon); color:#001016; font-weight:700;
+    letter-spacing:.1em; text-transform:uppercase; font-size:13px;
+  }
+  .btn:hover{filter:brightness(1.12)}
+
+  /* ---------- interruptor de ahorro ---------- */
+  .ahorro{
+    -webkit-appearance:none; appearance:none;
+    background:transparent; border:0; padding:0; font:inherit;
+    display:inline-flex; align-items:center; gap:12px; cursor:pointer;
+    min-height:44px; color:var(--luz2); font-size:13px;
+    letter-spacing:.14em; text-transform:uppercase;
+  }
+  .ahorro[aria-pressed="true"]{color:var(--neon)}
+  .ahorro .caja{
+    width:46px; height:26px; border-radius:13px; border:1px solid var(--linea);
+    position:relative; flex:0 0 auto; background:rgba(255,255,255,.05);
+  }
+  .ahorro .caja i{
+    position:absolute; top:3px; left:3px; width:18px; height:18px;
+    border-radius:50%; background:var(--luz2); transition:transform .22s ease, background .22s ease;
+  }
+  .ahorro[aria-pressed="true"] .caja i{transform:translateX(20px); background:var(--neon)}
+  .ahorro:focus-visible{outline:2px solid var(--luz); outline-offset:3px}
+
+  /* ---------- pie ---------- */
+  .katu-pie{
+    margin-top:20px; border-top:1px solid var(--linea);
+    padding:22px 16px 34px; text-align:center;
+    font-size:13px; color:var(--luz2); line-height:2;
+  }
+  .katu-pie a{
+    color:var(--neon); text-decoration:none; font-weight:600;
+    display:inline-block; min-height:44px; line-height:44px; padding:0 8px;
+  }
+  .katu-pie a:hover{text-decoration:underline}
+
+  .nota{font-size:13px; color:var(--luz2); max-width:60ch}
+
+  @media (min-width:880px){
+    .adentro .cols{grid-template-columns:minmax(280px,420px) 1fr; gap:52px; align-items:center}
+    .dos{display:grid; grid-template-columns:1fr 1fr; gap:48px; align-items:center}
+  }
+
+  @media (max-width:700px){
+    .capa{width:min(50vw,300px)}
+    .capa .et{left:calc(100% + 8px); font-size:10px; letter-spacing:.12em}
+    .capa .et::before{width:20px}
+  }
+
+  @media (hover:none){
+    .btn:hover{filter:none}
+  }
+
+  /* Sin movimiento: las bolitas se quedan en su lugar marcando la hora y
+     los brillos quedan fijos. Sigue siendo una página encendida; deja de
+     ser una animada. Nada queda invisible esperando una animación. */
+  @media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{
+      animation-duration:.001ms !important; animation-iteration-count:1 !important;
+      transition-duration:.001ms !important; scroll-behavior:auto !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header class="barra">
+  <span class="marca">ORBE<i>.</i></span>
+  <a class="btBarra" href="#comprar">Quiero uno</a>
+</header>
+
+<main id="contenido">
+
+  <!-- ============ portada ============ -->
+  <section class="portada" aria-labelledby="h1">
+    <h1 id="h1" class="sr" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap">ORBE 01, el reloj de bolitas guiadas por imanes</h1>
+    <div class="disco">
+      <span class="halo2" aria-hidden="true"></span>
+      <span class="halo" aria-hidden="true"></span>
+      <canvas id="reloj" width="520" height="520" role="img" aria-label="Reloj de bolitas de acero marcando la hora actual"></canvas>
+      <span class="aro" aria-hidden="true"></span>
+    </div>
+    <p class="pista">Marca <b id="horaTxt">tu hora</b> · tocá una bolita</p>
+  </section>
+
+  <!-- ============ adentro ============ -->
+  <section class="sec adentro" aria-labelledby="hAdentro">
+    <div class="env">
+      <p class="rot">Cómo funciona</p>
+      <h2 class="h2" id="hAdentro">Abajo del cristal no hay pantalla</h2>
+      <p class="bajada">Hay imanes. Cada bolita es una esfera de acero de 4 mm que no está pegada a nada: la sostiene un campo, y el campo se mueve.</p>
+
+      <div class="cols">
+        <div class="corte" id="corte" aria-hidden="true">
+          <div class="pieza" data-p="0"><svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="94" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--neon)" opacity=".9"/><circle cx="100" cy="100" r="86" fill="none" stroke="currentColor" stroke-width=".6" style="color:var(--neon)" opacity=".5"/></svg></div>
+          <div class="pieza" data-p="1"><svg viewBox="0 0 200 200"><g fill="none" stroke="currentColor" stroke-width="1.2" style="color:var(--neon)" opacity=".85"><path d="M40 70h120M40 90h120M40 110h120M40 130h120"/><path d="M60 60v80M100 60v80M140 60v80" opacity=".5"/></g></svg></div>
+          <div class="pieza" data-p="2"><svg viewBox="0 0 200 200"><g style="color:var(--neon)"><circle cx="66" cy="82" r="6" fill="currentColor"/><circle cx="86" cy="82" r="6" fill="currentColor"/><circle cx="114" cy="118" r="6" fill="currentColor"/><circle cx="134" cy="98" r="6" fill="currentColor"/><circle cx="94" cy="126" r="6" fill="currentColor"/></g></svg></div>
+          <div class="pieza" data-p="3"><svg viewBox="0 0 200 200"><g fill="none" stroke="currentColor" stroke-width="2" style="color:var(--neon)" opacity=".9"><rect x="52" y="64" width="18" height="26" rx="3"/><rect x="92" y="64" width="18" height="26" rx="3"/><rect x="132" y="64" width="18" height="26" rx="3"/><rect x="52" y="112" width="18" height="26" rx="3"/><rect x="92" y="112" width="18" height="26" rx="3"/><rect x="132" y="112" width="18" height="26" rx="3"/></g></svg></div>
+          <div class="pieza" data-p="4"><svg viewBox="0 0 200 200"><g fill="none" stroke="currentColor" stroke-width="1.6" style="color:var(--neon)" opacity=".8"><circle cx="100" cy="100" r="30"/><circle cx="100" cy="100" r="16"/><path d="M100 70v-12M100 130v12M70 100H58M130 100h12"/></g></svg></div>
+        </div>
+
+        <ul class="lista" id="lista">
+          <li data-p="0"><h3><span></span>El cristal</h3><p>Zafiro de 1,8 mm, esmerilado por dentro. Difunde la luz que sale de abajo: no se ve el brillo, se ve la bolita brillando.</p></li>
+          <li data-p="1"><h3><span></span>Los canales</h3><p>Surcos de medio milímetro tallados en la base. La bolita nunca elige por dónde ir; el canal ya decidió.</p></li>
+          <li data-p="2"><h3><span></span>Las bolitas</h3><p>Acero al cromo pulido. [cantidad] en total. Las que no forman número esperan en el anillo de afuera.</p></li>
+          <li data-p="3"><h3><span></span>Los imanes</h3><p>Una grilla de electroimanes abajo del canal. Se encienden de a uno, por milisegundos, y la bolita camina.</p></li>
+          <li data-p="4"><h3><span></span>El motor</h3><p>Un paso por minuto. El resto del tiempo el reloj no consume prácticamente nada, porque no hay nada prendido.</p></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ desarme ============ -->
+  <section class="sec desarme" aria-labelledby="hDes">
+    <div class="env">
+      <p class="rot">El desarme</p>
+      <h2 class="h2" id="hDes">Cinco capas y aire</h2>
+      <p class="bajada">Separalas con el scroll, o con la barra. Es el mismo plano técnico que va adentro de la caja.</p>
+
+      <div class="pila" id="pila" aria-hidden="true">
+        <div class="capa" data-c="0"><span class="plato"></span><span class="et">Cristal</span></div>
+        <div class="capa" data-c="1"><span class="plato"><svg viewBox="0 0 200 200"><g fill="none" stroke="currentColor" stroke-width="1" style="color:var(--neon)" opacity=".7"><path d="M42 76h116M42 100h116M42 124h116"/></g></svg></span><span class="et">Canales</span></div>
+        <div class="capa" data-c="2"><span class="plato"><svg viewBox="0 0 200 200"><g style="color:var(--neon)"><circle cx="78" cy="88" r="5" fill="currentColor"/><circle cx="100" cy="88" r="5" fill="currentColor"/><circle cx="122" cy="112" r="5" fill="currentColor"/><circle cx="88" cy="118" r="5" fill="currentColor"/></g></svg></span><span class="et">Bolitas</span></div>
+        <div class="capa" data-c="3"><span class="plato"><svg viewBox="0 0 200 200"><g fill="none" stroke="currentColor" stroke-width="1.6" style="color:var(--neon)" opacity=".7"><rect x="60" y="70" width="16" height="24" rx="3"/><rect x="92" y="70" width="16" height="24" rx="3"/><rect x="124" y="70" width="16" height="24" rx="3"/><rect x="60" y="108" width="16" height="24" rx="3"/><rect x="92" y="108" width="16" height="24" rx="3"/><rect x="124" y="108" width="16" height="24" rx="3"/></g></svg></span><span class="et">Imanes</span></div>
+        <div class="capa" data-c="4"><span class="plato"></span><span class="et">Base</span></div>
+      </div>
+
+      <div class="ctrl">
+        <label for="sep">Separación</label>
+        <input type="range" id="sep" min="0" max="100" value="0" aria-describedby="sepNota">
+        <output id="sepOut" for="sep">0%</output>
+      </div>
+      <p class="nota" id="sepNota" style="margin-top:10px">También se separan solas mientras bajás. La barra es para mirarlas con calma.</p>
+    </div>
+  </section>
+
+  <!-- ============ colores ============ -->
+  <section class="sec" aria-labelledby="hColor">
+    <div class="env dos">
+      <div>
+        <p class="rot">Los colores</p>
+        <h2 class="h2" id="hColor">No cambia el anillo: cambia la luz</h2>
+        <p class="bajada">Elegí uno y mirá el resto de la página. El borde del cristal, las estelas de las bolitas, el reflejo, el botón de comprar: todo se reilumina, porque todo estaba tomando el color de la misma fuente.</p>
+        <ul class="tonos" id="tonos" role="list">
+          <li><button class="tono" type="button" data-n="#22e0ff" data-n2="#7d5bff" aria-pressed="true" aria-label="Cian, el de fábrica" style="--c:#22e0ff"><i></i></button></li>
+          <li><button class="tono" type="button" data-n="#4dff9e" data-n2="#00c2a8" aria-pressed="false" aria-label="Verde ácido" style="--c:#4dff9e"><i></i></button></li>
+          <li><button class="tono" type="button" data-n="#ffb03a" data-n2="#ff5f4d" aria-pressed="false" aria-label="Ámbar" style="--c:#ffb03a"><i></i></button></li>
+          <li><button class="tono" type="button" data-n="#ff6fd0" data-n2="#9b5bff" aria-pressed="false" aria-label="Rosa" style="--c:#ff6fd0"><i></i></button></li>
+        </ul>
+        <p class="nota" style="margin-top:20px">Son cuatro y no una rueda libre a propósito: cada uno está medido para que el texto encima siga pasando 4,5:1 sobre negro. Un magenta puro se ve bárbaro y no se lee.</p>
+      </div>
+
+      <div class="vidrio panel">
+        <p class="rot">Modo ahorro</p>
+        <h3 style="font-size:22px; margin:0 0 10px">Apagá todo menos las bolitas</h3>
+        <p class="nota" style="margin:0 0 20px">Sin halos, sin estelas, sin reflejos. El reloj sigue dando la hora y la pantalla queda casi entera apagada. Es el argumento de consumo y, de paso, la demostración más limpia de lo que es un negro OLED.</p>
+        <button class="ahorro" id="ahorro" type="button" aria-pressed="false">
+          <span class="caja" aria-hidden="true"><i></i></span>
+          <span id="ahorroTxt">Encendido</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ la noche ============ -->
+  <section class="noche" aria-labelledby="hNoche">
+    <span class="cuarto" aria-hidden="true"></span>
+    <div class="env">
+      <div class="relojChico">
+        <span class="halo" aria-hidden="true" style="inset:14%"></span>
+        <canvas id="relojChico" width="300" height="300" role="img" aria-label="El mismo reloj, en un cuarto a oscuras"></canvas>
+        <span class="aro" aria-hidden="true"></span>
+      </div>
+      <p class="rot">A las tres de la mañana</p>
+      <h2 class="h2" id="hNoche">Se ve, y no despierta a nadie</h2>
+      <p class="bajada" style="margin-left:auto;margin-right:auto">Acá el argumento deja de ser de diseño y pasa a ser de uso. Un despertador con pantalla ilumina la pieza entera. Este ilumina cuatro números, porque el resto de la pantalla está apagado de verdad.</p>
+    </div>
+  </section>
+
+  <!-- ============ comprar ============ -->
+  <section class="sec" id="comprar" aria-labelledby="hComprar">
+    <div class="env dos">
+      <div>
+        <p class="rot">Tuyo</p>
+        <h2 class="h2" id="hComprar">ORBE 01</h2>
+        <p class="bajada">Aluminio mecanizado, cristal de zafiro y [cantidad] bolitas de acero. Entra en un escritorio y no se parece a nada de lo que ya tenés encima.</p>
+      </div>
+      <div class="vidrio panel">
+        <p class="precio">Gs. 1.450.000</p>
+        <p class="antes">o [cantidad] cuotas sin interés</p>
+        <ul class="datos">
+          <li>Envío a todo el país · [plazo] días hábiles</li>
+          <li>Garantía de [plazo] meses</li>
+          <li>Se carga por USB-C · dura [plazo] semanas</li>
+        </ul>
+        <a class="btn" id="btnWa" href="https://wa.me/595983518856" target="_blank" rel="noopener noreferrer">Pedir el mío</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<div class="katu-pie">
+  Demo de <strong>KatuWeb</strong> · <a href="../catalogo.html">Volver al catálogo</a> ·
+  <a href="https://wa.me/595983518856?text=Hola!%20Vi%20la%20demo%20Ne%C3%B3n%20y%20cristal%20(KTW-AVSRG)%20y%20quiero%20algo%20as%C3%AD%20para%20mi%20negocio." target="_blank" rel="noopener noreferrer">Quiero esto para mi negocio</a>
+  <br><span style="font-size:12px">Producto, precios y plazos de ejemplo · KTW-AVSRG</span>
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  /* ============================================================
+     0 · terreno
+     ============================================================ */
+  var doc = document, root = doc.documentElement;
+  var QUIETO = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var CHICO  = matchMedia('(max-width: 700px)').matches;
+  /* miniatura: adentro de un iframe bajito, en la galería del inicio.
+     Se ve la composición y la hora; no corre la física. */
+  var MINI = (window.self !== window.top) && (window.innerHeight < 520);
+  var CONGELADO = QUIETO || MINI;
+
+  /* ============================================================
+     1 · las bolitas, la fuente de puntos y la física
+     ------------------------------------------------------------
+     Cada dígito es una grilla de 3x5. El peor caso es el 8: trece
+     puntos. Cuatro dígitos más los dos del dos-puntos dan 54 bolitas
+     como mínimo absoluto para que la hora se pueda formar siempre.
+     Por eso no bajo de 56 en celular aunque cueste un poco más: con
+     cuarenta, sencillamente no hay hora que mostrar.
+     ============================================================ */
+  var FUENTE = {
+    '0':['111','101','101','101','111'],
+    '1':['010','110','010','010','111'],
+    '2':['111','001','111','100','111'],
+    '3':['111','001','111','001','111'],
+    '4':['101','101','111','001','001'],
+    '5':['111','100','111','001','111'],
+    '6':['111','100','111','101','111'],
+    '7':['111','001','001','001','001'],
+    '8':['111','101','111','101','111'],
+    '9':['111','101','111','001','111']
+  };
+  var TOTAL = CHICO ? 58 : 80;
+
+  function Reloj(lienzo, opts){
+    var cv = lienzo, cx = cv.getContext('2d', { alpha:false });
+    var o = opts || {};
+    var chico = !!o.chico;
+    var bolas = [], celda = 0, R = 0, W = 0, Hh = 0, dpr = 1;
+    var destinos = [], reserva = [];
+    var ultimoMin = -1;
+    var puntero = { x:-999, y:-999, activo:false };
+    var sprite = null, spriteR = 0, spriteColor = '';
+    var vivo = true;
+
+    function medir(){
+      var caja = cv.getBoundingClientRect();
+      var lado = Math.max(120, Math.min(caja.width, caja.height));
+      /* techo de dibujo: nunca más de 900.000 px por cuadro.
+         En un celular 3x se baja el dpr, no la calidad. */
+      dpr = Math.min(window.devicePixelRatio || 1, Math.sqrt(900000 / (lado*lado)));
+      dpr = Math.max(1, Math.min(dpr, 2));
+      W = Math.round(lado * dpr); Hh = W;
+      cv.width = W; cv.height = Hh;
+      R = W/2;
+      celda = R * 0.088;
+      sprite = null;
+      calcularDestinos(true);
+    }
+
+    /* las posiciones posibles: 4 dígitos de 3x5 más el dos-puntos */
+    function rejilla(){
+      var pts = [], cAncho = 15, cAlto = 5;
+      var x0 = R - (cAncho/2)*celda + celda/2;
+      var y0 = R - (cAlto/2)*celda + celda/2;
+      for (var col = 0; col < cAncho; col++)
+        for (var fil = 0; fil < cAlto; fil++)
+          pts.push({ x: x0 + col*celda, y: y0 + fil*celda, col:col, fil:fil });
+      return pts;
+    }
+
+    function puntosDeHora(h, m){
+      var txt = (h<10?'0':'') + h + (m<10?'0':'') + m;
+      var cols = [0, 4, 9, 13];  /* columna inicial de cada dígito */
+      var pts = [];
+      var x0 = R - 7.5*celda + celda/2;
+      var y0 = R - 2.5*celda + celda/2;
+      for (var d = 0; d < 4; d++){
+        var g = FUENTE[txt.charAt(d)];
+        for (var f = 0; f < 5; f++)
+          for (var c = 0; c < 3; c++)
+            if (g[f].charAt(c) === '1')
+              pts.push({ x: x0 + (cols[d]+c)*celda, y: y0 + f*celda });
+      }
+      /* el dos-puntos */
+      pts.push({ x: x0 + 7.6*celda, y: y0 + 1*celda });
+      pts.push({ x: x0 + 7.6*celda, y: y0 + 3*celda });
+      return pts;
+    }
+
+    function calcularDestinos(instant){
+      var d = new Date();
+      var pts = puntosDeHora(d.getHours(), d.getMinutes());
+      destinos = pts;
+      /* las que sobran esperan en el anillo de afuera */
+      var sobran = TOTAL - pts.length;
+      reserva = [];
+      for (var i = 0; i < sobran; i++){
+        var a = (i / Math.max(1,sobran)) * Math.PI * 2 - Math.PI/2;
+        reserva.push({ x: R + Math.cos(a)*R*0.90, y: R + Math.sin(a)*R*0.90 });
+      }
+      var todos = pts.concat(reserva);
+
+      if (!bolas.length){
+        for (var k = 0; k < TOTAL; k++){
+          var t = todos[k] || { x:R, y:R };
+          bolas.push({ x:t.x, y:t.y, px:t.x, py:t.y, vx:0, vy:0, tx:t.x, ty:t.y });
+        }
+      }
+      /* asignación golosa: cada destino se lleva la bolita más cercana.
+         Sin esto las bolitas se cruzan en diagonal y se ve a máquina. */
+      var libres = bolas.slice();
+      for (var j = 0; j < todos.length; j++){
+        var mejor = 0, dmin = Infinity;
+        for (var q = 0; q < libres.length; q++){
+          var dx = libres[q].x - todos[j].x, dy = libres[q].y - todos[j].y;
+          var dd = dx*dx + dy*dy;
+          if (dd < dmin){ dmin = dd; mejor = q; }
+        }
+        var b = libres.splice(mejor,1)[0];
+        if (!b) break;
+        b.tx = todos[j].x; b.ty = todos[j].y;
+        if (instant){ b.x = b.tx; b.y = b.ty; b.px = b.tx; b.py = b.ty; b.vx = 0; b.vy = 0; }
+      }
+      ultimoMin = d.getMinutes();
+    }
+
+    function hacerSprite(color, r){
+      var s = doc.createElement('canvas');
+      var lado = Math.ceil(r*6);
+      s.width = lado; s.height = lado;
+      var c = s.getContext('2d');
+      var cxx = lado/2;
+      if (!estado.ahorro){
+        var g = c.createRadialGradient(cxx, cxx, r*0.2, cxx, cxx, r*2.6);
+        g.addColorStop(0, color);
+        g.addColorStop(.28, hexA(color,.42));
+        g.addColorStop(1, hexA(color,0));
+        c.fillStyle = g; c.beginPath(); c.arc(cxx,cxx,r*2.6,0,6.2832); c.fill();
+      }
+      /* el núcleo: acero, con el neón rebotando arriba */
+      var n = c.createRadialGradient(cxx-r*0.35, cxx-r*0.4, r*0.1, cxx, cxx, r);
+      n.addColorStop(0, '#ffffff');
+      n.addColorStop(.45, color);
+      n.addColorStop(1, estado.ahorro ? '#3a4247' : hexA(color,.75));
+      c.fillStyle = n; c.beginPath(); c.arc(cxx,cxx,r,0,6.2832); c.fill();
+      spriteR = r; spriteColor = color; sprite = s;
+      return s;
+    }
+
+    function hexA(hex, a){
+      var n = parseInt(hex.slice(1),16);
+      return 'rgba(' + ((n>>16)&255) + ',' + ((n>>8)&255) + ',' + (n&255) + ',' + a + ')';
+    }
+
+    function dibujar(){
+      var color = estado.neon;
+      var r = celda * 0.34;
+      if (!sprite || spriteColor !== color || Math.abs(spriteR - r) > .5 || sprite._ah !== estado.ahorro){
+        hacerSprite(color, r); sprite._ah = estado.ahorro;
+      }
+
+      cx.fillStyle = '#000';
+      cx.fillRect(0,0,W,Hh);
+
+      if (!estado.ahorro){
+        /* los canales: la rejilla completa, muy tenue. Es la pista de por
+           dónde puede ir una bolita, no un adorno. */
+        cx.fillStyle = hexA(color,.085);
+        var rej = rejilla();
+        for (var i = 0; i < rej.length; i++){
+          cx.beginPath(); cx.arc(rej[i].x, rej[i].y, r*0.22, 0, 6.2832); cx.fill();
+        }
+        /* el anillo de espera */
+        cx.strokeStyle = hexA(color,.10); cx.lineWidth = Math.max(1, r*0.14);
+        cx.beginPath(); cx.arc(R,R,R*0.90,0,6.2832); cx.stroke();
+      }
+
+      for (var k = 0; k < bolas.length; k++){
+        var b = bolas[k];
+        if (!estado.ahorro){
+          var dx = b.x - b.px, dy = b.y - b.py;
+          var vel = Math.sqrt(dx*dx + dy*dy);
+          if (vel > r*0.16){
+            /* la estela: corta, y solo mientras se mueve */
+            cx.strokeStyle = hexA(color, Math.min(.5, vel/(r*7)));
+            cx.lineWidth = r*1.5; cx.lineCap = 'round';
+            cx.beginPath(); cx.moveTo(b.px, b.py); cx.lineTo(b.x, b.y); cx.stroke();
+          }
+        }
+        cx.drawImage(sprite, b.x - sprite.width/2, b.y - sprite.height/2);
+      }
+    }
+
+    function fisica(dt){
+      var k = 0.10, amort = 0.86;
+      var r = celda * 0.34, dmin = r*2.05;
+      for (var i = 0; i < bolas.length; i++){
+        var b = bolas[i];
+        b.px = b.x; b.py = b.y;
+        /* el imán tira del destino, con amortiguación */
+        b.vx += (b.tx - b.x) * k;
+        b.vy += (b.ty - b.y) * k;
+        if (puntero.activo){
+          var ex = b.x - puntero.x, ey = b.y - puntero.y;
+          var d2 = ex*ex + ey*ey, rad = celda*2.6;
+          if (d2 < rad*rad && d2 > 1){
+            var d = Math.sqrt(d2), f = (1 - d/rad) * celda * 0.9;
+            b.vx += (ex/d) * f; b.vy += (ey/d) * f;
+          }
+        }
+        b.vx *= amort; b.vy *= amort;
+        b.x += b.vx * dt; b.y += b.vy * dt;
+      }
+      /* choque elemental entre vecinas */
+      for (var a = 0; a < bolas.length; a++){
+        for (var c = a+1; c < bolas.length; c++){
+          var A = bolas[a], B = bolas[c];
+          var ddx = B.x - A.x, ddy = B.y - A.y;
+          var dd2 = ddx*ddx + ddy*ddy;
+          if (dd2 < dmin*dmin && dd2 > 0.01){
+            var dd = Math.sqrt(dd2), sol = (dmin - dd) * 0.5;
+            var nx = ddx/dd, ny = ddy/dd;
+            A.x -= nx*sol; A.y -= ny*sol;
+            B.x += nx*sol; B.y += ny*sol;
+          }
+        }
+      }
+    }
+
+    function paso(dt){
+      if (!vivo) return;
+      var m = new Date().getMinutes();
+      if (m !== ultimoMin) calcularDestinos(false);
+      if (!CONGELADO) fisica(dt);
+      dibujar();
+    }
+
+    if (!chico){
+      cv.addEventListener('pointerdown', function(e){
+        var c = cv.getBoundingClientRect();
+        puntero.x = (e.clientX - c.left) * (W / c.width);
+        puntero.y = (e.clientY - c.top)  * (Hh / c.height);
+        puntero.activo = true;
+      }, { passive:true });
+      cv.addEventListener('pointermove', function(e){
+        if (!puntero.activo) return;
+        var c = cv.getBoundingClientRect();
+        puntero.x = (e.clientX - c.left) * (W / c.width);
+        puntero.y = (e.clientY - c.top)  * (Hh / c.height);
+      }, { passive:true });
+      ['pointerup','pointercancel','pointerleave'].forEach(function(ev){
+        cv.addEventListener(ev, function(){ puntero.activo = false; }, { passive:true });
+      });
+    }
+
+    medir();
+    dibujar();
+    return {
+      paso: paso,
+      medir: function(){ medir(); dibujar(); },
+      ver: function(v){ vivo = v; }
+    };
+  }
+
+  /* ============================================================
+     2 · el estado: una sola verdad para toda la página
+     ============================================================ */
+  var estado = { neon:'#22e0ff', neon2:'#7d5bff', ahorro:false, sep:0, sepScroll:0 };
+
+  /* ============================================================
+     3 · los dos relojes
+     ============================================================ */
+  var relojes = [];
+  var cvA = doc.getElementById('reloj');
+  var cvB = doc.getElementById('relojChico');
+  var rA = Reloj(cvA, {});
+  var rB = Reloj(cvB, { chico:true });
+  relojes.push({ r:rA, el:cvA, ver:true });
+  relojes.push({ r:rB, el:cvB, ver:false });
+
+  var horaTxt = doc.getElementById('horaTxt');
+  function ponerHora(){
+    var d = new Date();
+    horaTxt.textContent = (d.getHours()<10?'0':'') + d.getHours() + ':' + (d.getMinutes()<10?'0':'') + d.getMinutes();
+  }
+  ponerHora();
+
+  /* lo que sale de pantalla, se frena */
+  if ('IntersectionObserver' in window){
+    var ioR = new IntersectionObserver(function(ent){
+      ent.forEach(function(e){
+        relojes.forEach(function(x){ if (x.el === e.target) x.ver = e.isIntersecting; });
+      });
+    }, { rootMargin:'120px' });
+    relojes.forEach(function(x){ ioR.observe(x.el); });
+  } else {
+    relojes.forEach(function(x){ x.ver = true; });
+  }
+
+  /* ============================================================
+     4 · el color: se escribe una variable y se reilumina todo
+     ============================================================ */
+  Array.prototype.forEach.call(doc.querySelectorAll('.tono'), function(b){
+    b.addEventListener('click', function(){
+      Array.prototype.forEach.call(doc.querySelectorAll('.tono'), function(o){
+        o.setAttribute('aria-pressed', o === b ? 'true' : 'false');
+      });
+      estado.neon  = b.getAttribute('data-n');
+      estado.neon2 = b.getAttribute('data-n2');
+      root.style.setProperty('--neon',  estado.neon);
+      root.style.setProperty('--neon2', estado.neon2);
+    });
+  });
+
+  /* ============================================================
+     5 · modo ahorro
+     ============================================================ */
+  var swA = doc.getElementById('ahorro'), swT = doc.getElementById('ahorroTxt');
+  swA.addEventListener('click', function(){
+    estado.ahorro = !estado.ahorro;
+    swA.setAttribute('aria-pressed', estado.ahorro ? 'true' : 'false');
+    swT.textContent = estado.ahorro ? 'Ahorro' : 'Encendido';
+    root.classList.toggle('sinLuz', estado.ahorro);
+    if (CONGELADO){ relojes.forEach(function(x){ x.r.medir(); }); }
+  });
+
+  /* ============================================================
+     6 · el desarme: una sola fuente, dos entradas (scroll y barra)
+     ============================================================ */
+  var pila = doc.getElementById('pila');
+  var capas = Array.prototype.slice.call(doc.querySelectorAll('.capa'));
+  var sep = doc.getElementById('sep'), sepOut = doc.getElementById('sepOut');
+  /* Con movimiento reducido el desarme arranca abierto y se queda quieto: si
+     dependiera del scroll, alguien que pidió no ver movimiento se quedaría
+     mirando cinco discos apilados y cinco etiquetas invisibles. */
+  var sepManual = QUIETO;
+  if (QUIETO){ estado.sep = .55; sep.value = 55; sepOut.textContent = '55%'; }
+
+  sep.addEventListener('input', function(){
+    sepManual = true;
+    estado.sep = parseInt(sep.value,10) / 100;
+    sepOut.textContent = sep.value + '%';
+    pintarCapas();
+  }, { passive:true });
+
+  /* El orden importa: primero se inclina el plato y recién después se lo
+     corre en Z. Así el desplazamiento va por la normal del plato —que es
+     lo que hace ver capas apiladas— y no por la pantalla. Al revés queda
+     un abanico plano, que es el error clásico de estos desarmes. */
+  function pintarCapas(){
+    var s = sepManual ? estado.sep : estado.sepScroll;
+    var alto = pila.getBoundingClientRect().height || 400;
+    var paso = alto * 0.155 * s;
+    var giro = 58 * s;
+    for (var i = 0; i < capas.length; i++){
+      var d = (capas.length-1)/2 - i;   /* 0 = cristal = arriba de todo */
+      capas[i].style.transform =
+        'translate(-50%,-50%) rotateX(' + giro.toFixed(2) + 'deg) translateZ(' + (d*paso).toFixed(1) + 'px)';
+      capas[i].style.opacity = (1 - Math.abs(d)*0.05*s).toFixed(3);
+      var et = capas[i].querySelector('.et');
+      if (et){
+        /* la etiqueta se desgira para seguir siendo legible de frente, y
+           no existe mientras las capas están juntas: si no, las cinco se
+           amontonan en el mismo renglón */
+        et.style.transform = 'translateY(-50%) rotateX(' + (-giro).toFixed(2) + 'deg)';
+        et.style.opacity = Math.max(0, (s - .08) / .25 > 1 ? 1 : (s - .08) / .25).toFixed(3);
+      }
+    }
+  }
+
+  /* ============================================================
+     7 · lo que se enciende cuando la explicación lo nombra
+     ============================================================ */
+  var items = Array.prototype.slice.call(doc.querySelectorAll('#lista li'));
+  var piezas = Array.prototype.slice.call(doc.querySelectorAll('.pieza'));
+  function encender(i){
+    items.forEach(function(li,k){ li.classList.toggle('viva', k === i); });
+    piezas.forEach(function(p,k){ p.classList.toggle('viva', k === i); });
+  }
+  encender(0);
+  if ('IntersectionObserver' in window){
+    var ioL = new IntersectionObserver(function(ent){
+      ent.forEach(function(e){
+        if (e.isIntersecting) encender(items.indexOf(e.target));
+      });
+    }, { rootMargin:'-42% 0px -42% 0px' });
+    items.forEach(function(li){ ioL.observe(li); });
+  }
+  items.forEach(function(li,k){
+    li.addEventListener('pointerenter', function(){ encender(k); }, { passive:true });
+  });
+
+  /* ============================================================
+     8 · el bucle. UNO SOLO para toda la página.
+     ============================================================ */
+  var antes = 0, acumSeg = 0;
+  function bucle(t){
+    var dt = antes ? Math.min((t - antes)/16.67, 3) : 1;
+    antes = t;
+
+    /* el desarme sigue al scroll cuando nadie tocó la barra */
+    if (!sepManual){
+      var c = pila.getBoundingClientRect();
+      var alto = window.innerHeight || 800;
+      var p = 1 - (c.top + c.height*0.35) / alto;
+      estado.sepScroll = Math.max(0, Math.min(1, p*1.35));
+      if (c.bottom > -200 && c.top < alto + 200) pintarCapas();
+    }
+
+    for (var i = 0; i < relojes.length; i++){
+      if (relojes[i].ver) relojes[i].r.paso(dt);
+    }
+
+    acumSeg += dt;
+    if (acumSeg > 120){ acumSeg = 0; ponerHora(); }
+
+    requestAnimationFrame(bucle);
+  }
+  requestAnimationFrame(bucle);
+
+  /* ============================================================
+     9 · medir de nuevo cuando cambia el tamaño, no en cada cuadro
+     ============================================================ */
+  var tmr = 0;
+  window.addEventListener('resize', function(){
+    clearTimeout(tmr);
+    tmr = setTimeout(function(){
+      relojes.forEach(function(x){ x.r.medir(); });
+      pintarCapas();
+    }, 180);
+  }, { passive:true });
+
+  /* ============================================================
+     10 · el pedido por WhatsApp lleva el color elegido
+     ============================================================ */
+  var btn = doc.getElementById('btnWa');
+  btn.addEventListener('click', function(){
+    var nombres = { '#22e0ff':'cian', '#4dff9e':'verde', '#ffb03a':'ámbar', '#ff6fd0':'rosa' };
+    var txt = 'Hola! Quiero el ORBE 01 en ' + (nombres[estado.neon] || 'cian') + '. ¿Tenés stock? (KTW-AVSRG)';
+    btn.href = 'https://wa.me/595983518856?text=' + encodeURIComponent(txt);
+  });
+
+  pintarCapas();
+})();
+</script>
+</body>
+</html>

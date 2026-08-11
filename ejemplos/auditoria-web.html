@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; frame-src 'self'; media-src 'self' data:; form-action 'none'; object-src 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#f7f6f3">
+<title>Auditoría de la web actual — informe de muestra</title>
+<meta name="description" content="Un informe de auditoría web entero, de muestra: nota general con semáforo, siete indicadores y cada hallazgo con su prioridad, qué significa en clientes y qué hay que hacer.">
+<!--
+  DEMO KatuWeb · Auditoría de la web actual · KTW-4WJPD
+  Negocio, web, mediciones y hallazgos de ejemplo. Al usarla con un cliente
+  real, se reemplaza todo por la auditoría verdadera de su sitio.
+
+  POR QUÉ ESTA PIEZA ES EL INFORME Y NO UNA PÁGINA DE PRODUCTO
+  --------------------------------------------------------------
+  El servicio se vende leyéndolo. El visitante tiene que poder recorrer una
+  auditoría completa de un negocio inventado y pensar "quiero saber qué dice
+  la mía". Por eso acá no hay promesas ni beneficios: hay hallazgos.
+  La contención es la propuesta. No agregar efectos.
+
+  SOBRE LAS MARCAS
+  --------------------------------------------------------------
+  Se nombra "Google" porque describir un servicio real es legítimo. No se
+  reproduce su interfaz, su logotipo ni su tarjeta de negocio. El recuadro
+  del hallazgo 6 es una lista de campos propia, con tipografía y disposición
+  nuestras. No convertirlo nunca en una imitación de la ficha real.
+-->
+<style>
+  *,*::before,*::after{box-sizing:border-box}
+
+  :root{
+    --papel:#f7f6f3;
+    --hoja:#ffffff;
+    --tinta:#14161a;      /* 16:1 sobre papel */
+    --tinta2:#55595f;     /* 6.4:1 sobre papel */
+    --linea:#dcd9d2;
+    --linea2:#eceae4;
+
+    --rojo:#b3261e;       /* 6.1:1 sobre papel — texto */
+    --ambar:#8a5a00;      /* 5.4:1 sobre papel — texto */
+    --verde:#1f6b3a;      /* 6.0:1 sobre papel — texto */
+    --rojoP:#d23b2c;      /* solo relleno de punto */
+    --ambarP:#e0a409;
+    --verdeP:#2f9e5a;
+    --grisP:#a9a49a;
+  }
+
+  html{background:var(--papel); -webkit-text-size-adjust:100%; overflow-x:hidden}
+  body{
+    margin:0; background:var(--papel); color:var(--tinta);
+    font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+    font-size:16px; line-height:1.62; overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  .env{max-width:960px; margin:0 auto; padding:0 16px}
+  @media (min-width:760px){ .env{padding:0 28px} }
+
+  h1,h2,h3{margin:0; line-height:1.2; letter-spacing:-.01em}
+  p{margin:0 0 12px}
+  p:last-child{margin-bottom:0}
+
+  .rot{
+    font-size:11px; letter-spacing:.22em; text-transform:uppercase;
+    color:var(--tinta2); font-weight:600; margin:0 0 10px;
+  }
+
+  /* ============================================================
+     membrete
+     ============================================================ */
+  .membrete{
+    border-bottom:1px solid var(--linea); background:var(--hoja);
+  }
+  .membrete .env{
+    display:flex; flex-wrap:wrap; gap:10px 18px;
+    align-items:center; justify-content:space-between;
+    padding-top:12px; padding-bottom:12px;
+  }
+  .sello{
+    font-size:12px; letter-spacing:.2em; text-transform:uppercase;
+    font-weight:700; color:var(--tinta);
+  }
+  .sello i{font-style:normal; color:var(--rojo)}
+  .muestra{
+    font-size:12px; color:var(--tinta2); letter-spacing:.04em;
+    border:1px solid var(--linea); padding:5px 10px; border-radius:2px;
+    background:var(--papel);
+  }
+
+  /* ============================================================
+     tapa del informe
+     ============================================================ */
+  .tapa{padding:34px 0 8px}
+  .tapa h1{
+    font-family:Georgia,"Times New Roman",serif; font-weight:400;
+    font-size:clamp(30px,6.6vw,54px); letter-spacing:-.02em; margin:0 0 6px;
+  }
+  .dir{
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:14px; color:var(--tinta2); word-break:break-all;
+  }
+  .fecha{font-size:14px; color:var(--tinta2); margin-top:4px}
+
+  /* la nota general */
+  .nota{
+    margin:26px 0 0; background:var(--hoja);
+    border:1px solid var(--linea); border-radius:3px;
+    padding:22px 18px;
+  }
+  @media (min-width:700px){ .nota{padding:26px 28px} }
+
+  .notaFila{display:flex; flex-wrap:wrap; align-items:baseline; gap:6px 16px}
+  .cifra{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:clamp(56px,15vw,86px); line-height:.9; font-weight:400;
+    letter-spacing:-.04em; font-variant-numeric:tabular-nums;
+  }
+  .cifra small{font-size:.34em; color:var(--tinta2); letter-spacing:0}
+  .banda{
+    display:inline-flex; align-items:center; gap:9px;
+    font-size:15px; font-weight:700; letter-spacing:.01em;
+  }
+  .pt{
+    width:13px; height:13px; border-radius:50%; flex:none;
+    background:var(--grisP); box-shadow:inset 0 0 0 1px rgba(0,0,0,.16);
+  }
+  .r .pt{background:var(--rojoP)} .r{color:var(--rojo)}
+  .a .pt{background:var(--ambarP)} .a{color:var(--ambar)}
+  .v .pt{background:var(--verdeP)} .v{color:var(--verde)}
+  .n .pt{background:transparent; box-shadow:inset 0 0 0 2px var(--grisP)} .n{color:var(--tinta2)}
+
+  .barra{
+    height:8px; background:var(--linea2); border-radius:99px;
+    margin:16px 0 14px; overflow:hidden;
+  }
+  .barra i{
+    display:block; height:100%; width:100%; border-radius:99px;
+    background:var(--rojoP); transform:scaleX(.41); transform-origin:left center;
+    transition:transform .5s ease, background-color .3s linear;
+  }
+  .quieta .barra i{transition:none}
+
+  .veredicto{font-size:17px; max-width:62ch; margin:0}
+  .veredicto b{font-weight:700}
+
+  .cuentas{
+    display:flex; flex-wrap:wrap; gap:8px 22px; margin:16px 0 0;
+    padding-top:14px; border-top:1px solid var(--linea2);
+    font-size:14px; color:var(--tinta2);
+  }
+  .cuentas span{display:inline-flex; align-items:center; gap:7px}
+  .cuentas b{color:var(--tinta); font-weight:700; font-variant-numeric:tabular-nums}
+
+  .aclara{
+    margin:14px 0 0; font-size:13px; color:var(--tinta2); max-width:70ch;
+  }
+
+  /* ============================================================
+     los siete indicadores
+     ============================================================ */
+  .indices{padding:30px 0 0}
+  .grilla{
+    display:grid; gap:8px; margin:0; padding:0; list-style:none;
+    grid-template-columns:repeat(auto-fit,minmax(148px,1fr));
+  }
+  /* el <li> se estira solo; el enlace de adentro hay que mandarlo, si no
+     queda una tarjeta más alta que las demás y la fila se ve rota */
+  .grilla li{display:flex}
+  /* la fila de siete, de verdad en una fila, recién cuando entra sin apretarse */
+  @media (min-width:900px){
+    .grilla{grid-template-columns:repeat(7,1fr); gap:6px}
+    .chip{padding:10px 9px}
+    .chip .nom{font-size:12.5px}
+    .chip .est{font-size:11.5px; padding-left:18px}
+  }
+  .chip{
+    display:flex; flex-direction:column; justify-content:flex-start; gap:5px;
+    min-height:82px; width:100%; height:100%; padding:10px 12px; text-align:left;
+    background:var(--hoja); border:1px solid var(--linea); border-radius:3px;
+    color:var(--tinta); text-decoration:none; font:inherit; cursor:pointer;
+    transition:transform .16s ease;
+  }
+  /* el punto se alinea con el primer renglón del nombre, no con el centro
+     del bloque: si no, en los nombres de dos renglones queda flotando */
+  .chip .cab{display:flex; align-items:flex-start; gap:8px}
+  .chip .cab .pt{margin-top:5px}
+  .chip .nom{font-size:13px; font-weight:700; line-height:1.25}
+  .chip .est{font-size:12px; color:var(--tinta2); padding-left:21px}
+  .chip:hover{transform:translateY(-2px)}
+  .chip:focus-visible{outline:2px solid var(--tinta); outline-offset:2px}
+  .quieta .chip{transition:none}
+  .quieta .chip:hover{transform:none}
+  @media (hover:none){ .chip:hover{transform:none} }
+
+  /* ============================================================
+     filtro
+     ============================================================ */
+  .filtro{
+    display:flex; flex-wrap:wrap; align-items:center; gap:8px;
+    margin:26px 0 0; padding:12px 0 0; border-top:1px solid var(--linea);
+  }
+  .filtro .et{font-size:13px; color:var(--tinta2); margin-right:4px}
+  @media (max-width:520px){
+    .filtro{display:grid; grid-template-columns:1fr 1fr; gap:8px}
+    .filtro .et{grid-column:1/-1; margin:0}
+  }
+  .bt{
+    min-height:44px; padding:0 16px; border-radius:3px; cursor:pointer;
+    border:1px solid var(--linea); background:var(--hoja); color:var(--tinta);
+    font:inherit; font-size:14px; font-weight:600;
+  }
+  .bt:focus-visible{outline:2px solid var(--tinta); outline-offset:2px}
+  .bt[aria-pressed="true"]{background:var(--tinta); color:#fff; border-color:var(--tinta)}
+
+  /* ============================================================
+     hallazgos
+     ============================================================ */
+  .cuerpo{padding:18px 0 0}
+  .hallazgo{
+    background:var(--hoja); border:1px solid var(--linea); border-radius:3px;
+    margin:0 0 10px;
+  }
+  .hallazgo[hidden]{display:none}
+  .hallazgo h3{margin:0}
+  .tapa2{
+    display:flex; align-items:flex-start; gap:12px; width:100%;
+    padding:14px 14px; min-height:60px; text-align:left; cursor:pointer;
+    background:none; border:0; font:inherit; color:var(--tinta);
+  }
+  .tapa2:focus-visible{outline:2px solid var(--tinta); outline-offset:-2px}
+  .num{
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:12px; color:var(--tinta2); padding-top:4px; flex:none; width:22px;
+  }
+  .tit{flex:1 1 auto; min-width:0}
+  .tit .t{font-size:17px; font-weight:700; line-height:1.3; display:block}
+  .tit .s{font-size:13px; color:var(--tinta2); display:block; margin-top:3px}
+  .pri{
+    flex:none; display:inline-flex; align-items:center; gap:7px;
+    font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+    padding-top:5px;
+  }
+  .pri .pt{width:11px; height:11px}
+  .flecha{
+    flex:none; width:22px; height:22px; margin-top:4px; color:var(--tinta2);
+    transition:transform .18s ease;
+  }
+  .quieta .flecha{transition:none}
+  .tapa2[aria-expanded="true"] .flecha{transform:rotate(180deg)}
+
+  /* En celular el número, la prioridad y la flecha van arriba en un renglón
+     propio, y el titular se queda con todo el ancho. Apretar el título
+     contra la etiqueta de prioridad lo parte en cuatro renglones. */
+  @media (max-width:620px){
+    .tapa2{flex-wrap:wrap; align-items:center; gap:10px}
+    .num{order:1; width:auto; padding-top:0}
+    .pri{order:2; flex:1 1 auto; padding-top:0}
+    .flecha{order:3; margin-top:0}
+    .tit{order:4; flex:0 0 100%}
+  }
+
+  .panel{
+    padding:0 14px 16px; border-top:1px solid var(--linea2); margin:0 14px;
+    padding-left:0; padding-right:0;
+    animation:entra .22s ease both;
+  }
+  .quieta .panel{animation:none}
+  @keyframes entra{from{opacity:0}to{opacity:1}}
+  .panel[hidden]{display:none}
+  .panel .bloque{padding-top:14px}
+  .panel .cabe{
+    font-size:11px; letter-spacing:.18em; text-transform:uppercase;
+    color:var(--tinta2); font-weight:700; margin:0 0 5px;
+  }
+  .panel p{max-width:68ch}
+  .panel .plata{
+    border-left:3px solid var(--linea); padding-left:14px;
+  }
+  .arreglo{
+    margin-top:14px; background:var(--papel); border:1px solid var(--linea);
+    border-radius:3px; padding:13px 14px;
+  }
+  .arreglo .cabe{margin-bottom:6px}
+  .tiempo{
+    display:inline-block; margin-top:8px; font-size:12.5px; color:var(--tinta2);
+    font-weight:600;
+  }
+  .ej{
+    display:inline-block; font-size:11.5px; color:var(--tinta2);
+    border:1px solid var(--linea); border-radius:2px; padding:1px 6px;
+    vertical-align:1px; white-space:nowrap; font-weight:600;
+  }
+
+  /* recuadro de campos — disposición propia, no imita ninguna interfaz */
+  .campos{
+    margin-top:12px; border:1px solid var(--linea); border-radius:3px;
+    overflow:hidden; max-width:420px;
+  }
+  .campos .ch{
+    background:var(--papel); padding:8px 12px; font-size:11px; font-weight:700;
+    letter-spacing:.16em; text-transform:uppercase; color:var(--tinta2);
+    border-bottom:1px solid var(--linea);
+  }
+  .campos ul{margin:0; padding:0; list-style:none}
+  .campos li{
+    display:flex; justify-content:space-between; gap:12px;
+    padding:9px 12px; font-size:14px; border-bottom:1px solid var(--linea2);
+  }
+  .campos li:last-child{border-bottom:0}
+  .campos li b{font-weight:600}
+  .campos .si{color:var(--verde); font-weight:700; font-size:13px}
+  .campos .no{color:var(--rojo); font-weight:700; font-size:13px}
+
+  .vacio{
+    display:none; padding:26px 16px; text-align:center; color:var(--tinta2);
+    border:1px dashed var(--linea); border-radius:3px; font-size:15px;
+  }
+
+  /* ============================================================
+     cierre
+     ============================================================ */
+  .cierre{padding:34px 0 0}
+  .cierre h2{
+    font-family:Georgia,"Times New Roman",serif; font-weight:400;
+    font-size:clamp(24px,4.6vw,34px); margin:0 0 16px; letter-spacing:-.02em;
+  }
+  .dos{display:grid; gap:10px}
+  @media (min-width:720px){ .dos{grid-template-columns:1fr 1fr; gap:14px} }
+  .caja{
+    background:var(--hoja); border:1px solid var(--linea); border-radius:3px;
+    padding:18px 16px;
+  }
+  .caja h3{font-size:16px; margin:0 0 10px}
+  .caja ul{margin:0; padding-left:18px}
+  .caja li{margin:0 0 7px; font-size:15px}
+  .caja li:last-child{margin-bottom:0}
+  .caja .cola{margin-top:12px; font-size:13.5px; color:var(--tinta2)}
+  .rehacer{border-color:#e3c9c6; background:#fffaf9}
+
+  .pedido{
+    margin:26px 0 0; padding:22px 18px; border-radius:3px;
+    background:var(--tinta); color:#f4f3f0;
+  }
+  .pedido h3{
+    font-family:Georgia,"Times New Roman",serif; font-weight:400;
+    font-size:clamp(21px,4vw,28px); margin:0 0 8px; color:#fff;
+  }
+  .pedido p{color:#cfcdc7; font-size:15px; max-width:56ch}
+  .pedido a.bt2{
+    display:inline-flex; align-items:center; min-height:48px; margin-top:12px;
+    padding:0 22px; background:#fff; color:var(--tinta); border-radius:3px;
+    text-decoration:none; font-weight:700; font-size:15px;
+  }
+  .pedido a.bt2:hover{background:#ece9e2}
+
+  .legal{
+    margin:24px 0 0; padding-top:16px; border-top:1px solid var(--linea);
+    font-size:12.5px; color:var(--tinta2); max-width:74ch;
+  }
+  .legal p{margin:0 0 7px}
+
+  /* ============================================================
+     pie de KatuWeb
+     ============================================================ */
+  .katu-pie{
+    margin-top:22px; border-top:1px solid var(--linea);
+    padding:20px 16px 34px; text-align:center;
+    font-size:13px; color:var(--tinta2); line-height:2;
+  }
+  .katu-pie a{
+    color:var(--rojo); text-decoration:none; font-weight:700;
+    display:inline-block; min-height:44px; line-height:44px; padding:0 8px;
+  }
+  .katu-pie a:hover{text-decoration:underline}
+
+  /* ============================================================
+     modo miniatura — la demo adentro de un iframe bajito
+     ------------------------------------------------------------
+     En 300 px de alto lo único que vale la pena mostrar es de qué negocio
+     es el informe y qué nota sacó. Todo lo demás se comprime; nada se
+     mueve. La página sigue entera abajo para el que la abre en grande.
+     ============================================================ */
+  .mini .membrete{display:none}
+  .mini .tapa{padding:14px 0 0}
+  .mini .tapa h1{font-size:26px; margin-bottom:3px}
+  .mini .rot{margin-bottom:6px}
+  .mini .fecha{display:none}
+  .mini .nota{margin-top:14px; padding:14px}
+  .mini .cifra{font-size:52px}
+  .mini .banda{font-size:14px}
+  .mini .barra{margin:12px 0 10px}
+  .mini .veredicto{font-size:14.5px}
+  .mini .aclara{display:none}
+  .mini .cuentas{margin-top:12px; padding-top:10px}
+
+  @media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{animation:none !important; transition:none !important}
+    html{scroll-behavior:auto}
+  }
+</style>
+</head>
+<body>
+
+<header class="membrete">
+  <div class="env">
+    <span class="sello">Katu<i>Web</i> · Auditoría</span>
+    <span class="muestra">Informe de muestra · negocio inventado</span>
+  </div>
+</header>
+
+<main class="env">
+
+  <!-- ============ TAPA ============ -->
+  <section class="tapa" aria-labelledby="tituloInf">
+    <p class="rot">Informe de auditoría de la web actual</p>
+    <h1 id="tituloInf">Ferretería y Corralón Takuara</h1>
+    <p class="dir">ferreteria-takuara.com.py <span class="ej">web de ejemplo</span></p>
+    <p class="fecha">Revisado el [6 de agosto de 2026] · 5 páginas miradas una por una</p>
+
+    <div class="nota">
+      <p class="rot">Nota general</p>
+      <div class="notaFila">
+        <span class="cifra"><span id="cifra">41</span><small> / 100</small></span>
+        <span class="banda r" id="banda"><span class="pt"></span><span id="bandaTxt">Hay que trabajar, y una parte hay que rehacerla</span></span>
+      </div>
+      <div class="barra" aria-hidden="true"><i id="barraFill"></i></div>
+      <p class="veredicto" id="veredicto">La web se ve prolija, y ese es el problema: <b>por dentro no le está diciendo casi nada al buscador y le está cobrando datos de más al que entra desde el celular.</b> Nada de esto es culpa de quien la hizo; son cosas que no se ven mirando la pantalla.</p>
+
+      <p class="cuentas">
+        <span><b id="cN">8</b> hallazgos</span>
+        <span class="r"><span class="pt"></span><b id="cA">4</b> urgentes</span>
+        <span class="a"><span class="pt"></span><b id="cM">3</b> para después</span>
+        <span class="v"><span class="pt"></span><b id="cB">1</b> que ya está bien</span>
+      </p>
+      <p class="aclara" id="aclara">La nota sale de los 8 hallazgos del informe. Si filtrás, se recalcula sobre lo que estás viendo.</p>
+    </div>
+  </section>
+
+  <!-- ============ SIETE INDICADORES ============ -->
+  <section class="indices" aria-labelledby="tInd">
+    <p class="rot" id="tInd">Los siete puntos que se miran</p>
+    <ul class="grilla" id="grilla">
+      <li><a class="chip" href="#h1" data-ind="titulo"><span class="cab"><span class="pt"></span><span class="nom">Título y descripción</span></span><span class="est">1 hallazgo</span></a></li>
+      <li><a class="chip" href="#h2" data-ind="encabezados"><span class="cab"><span class="pt"></span><span class="nom">Encabezados</span></span><span class="est">1 hallazgo</span></a></li>
+      <li><a class="chip" href="#h3" data-ind="alt"><span class="cab"><span class="pt"></span><span class="nom">Textos alternativos</span></span><span class="est">1 hallazgo</span></a></li>
+      <li><a class="chip" href="#h4" data-ind="peso"><span class="cab"><span class="pt"></span><span class="nom">Peso de las imágenes</span></span><span class="est">1 hallazgo</span></a></li>
+      <li><a class="chip" href="#h5" data-ind="velocidad"><span class="cab"><span class="pt"></span><span class="nom">Velocidad</span></span><span class="est">1 hallazgo</span></a></li>
+      <li><a class="chip" href="#h6" data-ind="ficha"><span class="cab"><span class="pt"></span><span class="nom">Ficha de Google</span></span><span class="est">2 hallazgos</span></a></li>
+      <li><a class="chip" href="#h8" data-ind="local"><span class="cab"><span class="pt"></span><span class="nom">Datos de negocio local</span></span><span class="est">1 hallazgo</span></a></li>
+    </ul>
+
+    <div class="filtro" role="group" aria-label="Filtrar los hallazgos">
+      <span class="et">Ver:</span>
+      <button type="button" class="bt" id="btTodo" aria-pressed="true">Todo el informe</button>
+      <button type="button" class="bt" id="btUrg" aria-pressed="false">Solo lo urgente</button>
+    </div>
+  </section>
+
+  <!-- ============ HALLAZGOS ============ -->
+  <section class="cuerpo" aria-labelledby="tHall">
+    <h2 class="rot" id="tHall">Los hallazgos, uno por uno</h2>
+
+    <!-- 1 -->
+    <article class="hallazgo" id="h1" data-pri="alta" data-ind="titulo">
+      <h3>
+        <button type="button" class="tapa2" aria-expanded="true" aria-controls="p1">
+          <span class="num">01</span>
+          <span class="tit">
+            <span class="t">Todas las páginas se llaman «Inicio»</span>
+            <span class="s">Título y descripción · las cinco páginas tienen el mismo título y cuatro no tienen descripción</span>
+          </span>
+          <span class="pri r"><span class="pt"></span>Alta</span>
+          <svg class="flecha" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+      </h3>
+      <div class="panel" id="p1">
+        <div class="bloque">
+          <p class="cabe">Qué se encontró</p>
+          <p>Las cinco páginas del sitio tienen exactamente el mismo título: <b>«Inicio»</b>. La descripción —esos dos renglones grises que salen abajo en el buscador— está vacía en cuatro de las cinco, y en la quinta dice «Sitio web creado con plantilla».</p>
+        </div>
+        <div class="bloque plata">
+          <p class="cabe">Por qué importa</p>
+          <p>El título es el renglón que la gente lee en el buscador antes de decidir a cuál entrar. Hoy, alguien que busca «cemento en Luque» ve un resultado que dice «Inicio» y no tiene forma de saber si sos una ferretería o una peluquería. Es el cartel del local en blanco: no está roto, simplemente nadie sabe qué vendés hasta entrar, y casi nadie entra a averiguarlo.</p>
+        </div>
+        <div class="arreglo">
+          <p class="cabe">Qué hay que hacer</p>
+          <p>Escribir un título distinto por página, con lo que vendés y dónde estás. Por ejemplo: «Ferretería y corralón en [barrio] — Takuara». Y dos renglones de descripción por página, redactados para que den ganas de entrar. Esto es texto, no diseño: no se toca nada de cómo se ve la web.</p>
+          <span class="tiempo">Se hace en una tarde · no necesita rehacer nada</span>
+        </div>
+      </div>
+    </article>
+
+    <!-- 2 -->
+    <article class="hallazgo" id="h2" data-pri="ok" data-ind="encabezados">
+      <h3>
+        <button type="button" class="tapa2" aria-expanded="false" aria-controls="p2">
+          <span class="num">02</span>
+          <span class="tit">
+            <span class="t">Los encabezados están bien puestos</span>
+            <span class="s">Encabezados · un solo título grande por página y el orden respetado</span>
+          </span>
+          <span class="pri v"><span class="pt"></span>Está bien</span>
+          <svg class="flecha" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+      </h3>
+      <div class="panel" id="p2" hidden>
+        <div class="bloque">
+          <p class="cabe">Qué se encontró</p>
+          <p>Cada página tiene un solo título grande y los subtítulos van ordenados abajo, del más importante al menos importante. No hay títulos usados solo para agrandar la letra. La plantilla con la que armaron el sitio hace esto bien sola.</p>
+        </div>
+        <div class="bloque plata">
+          <p class="cabe">Por qué importa</p>
+          <p>Los encabezados son el índice de la página: le dicen al buscador de qué se trata cada parte, y le permiten a alguien que usa el celular con lector de pantalla saltar directo a lo que busca. Acá funciona. Lo dejamos anotado porque es lo único que no vamos a tocar, y porque si mañana sumás secciones nuevas conviene no romperlo.</p>
+        </div>
+        <div class="arreglo">
+          <p class="cabe">Qué hay que hacer</p>
+          <p>Nada. Cuando agregues una sección nueva, seguí el mismo orden: un título grande arriba, los chicos abajo. Si alguien te ofrece «optimizar los encabezados», acá no hay nada que optimizar.</p>
+          <span class="tiempo">Sin trabajo pendiente</span>
+        </div>
+      </div>
+    </article>
+
+    <!-- 3 -->
+    <article class="hallazgo" id="h3" data-pri="media" data-ind="alt">
+      <h3>
+        <button type="button" class="tapa2" aria-expanded="false" aria-controls="p3">
+          <span class="num">03</span>
+          <span class="tit">
+            <span class="t">31 de 34 fotos no tienen texto alternativo</span>
+            <span class="s">Textos alternativos · y las tres que tienen dicen «imagen1», «foto» y «WhatsApp Image»</span>
+          </span>
+          <span class="pri a"><span class="pt"></span>Media</span>
+          <svg class="flecha" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+      </h3>
+      <div class="panel" id="p3" hidden>
+        <div class="bloque">
+          <p class="cabe">Qué se encontró</p>
+          <p>De las 34 imágenes del sitio, 31 no tienen texto alternativo. Las tres que sí tienen dicen «imagen1», «foto» y «WhatsApp Image» — el nombre con el que salieron del celular.</p>
+        </div>
+        <div class="bloque plata">
+          <p class="cabe">Por qué importa</p>
+          <p>El texto alternativo es la única forma que tiene un buscador de saber qué hay adentro de una foto, y es lo que escucha una persona ciega cuando el celular le lee tu página. Sin eso, tus 34 fotos de herramientas son cuadrados vacíos: no te traen ni una visita desde la búsqueda de imágenes, y dejan afuera a gente que te podría comprar por teléfono.</p>
+        </div>
+        <div class="arreglo">
+          <p class="cabe">Qué hay que hacer</p>
+          <p>Un renglón por foto, describiendo qué se ve, como se lo dirías a alguien por teléfono: «Amoladora angular de 4 pulgadas, sobre el mostrador». Empezá por las 12 fotos del catálogo, que son las que pueden traer búsquedas; el resto puede esperar.</p>
+          <span class="tiempo">Media hora las 12 del catálogo · una hora las 34</span>
+        </div>
+      </div>
+    </article>
+
+    <!-- 4 -->
+    <article class="hallazgo" id="h4" data-pri="alta" data-ind="peso">
+      <h3>
+        <button type="button" class="tapa2" aria-expanded="false" aria-controls="p4">
+          <span class="num">04</span>
+          <span class="tit">
+            <span class="t">La portada le baja 3,8 MB de fotos a cada visita</span>
+            <span class="s">Peso de las imágenes · la foto del frente pesa 2,1 MB y se muestra en un cuadro ocho veces más chico</span>
+          </span>
+          <span class="pri r"><span class="pt"></span>Alta</span>
+          <svg class="flecha" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+      </h3>
+      <div class="panel" id="p4" hidden>
+        <div class="bloque">
+          <p class="cabe">Qué se encontró</p>
+          <p>La página de inicio descarga <b>3,8 MB solo en fotos</b> <span class="ej">medición de ejemplo</span>. La del frente del local pesa 2,1 MB: es la foto tal como salió de la cámara del celular, de 4.000 píxeles de ancho, y en la pantalla se ve en un cuadro de 600. El navegador baja la foto entera y después la achica.</p>
+        </div>
+        <div class="bloque plata">
+          <p class="cabe">Por qué importa</p>
+          <p>Esos 3,8 MB salen del paquete de datos del que entra. Si te entran cien personas por día desde el celular, son casi 400 MB de fotos por día que nadie pidió ver a ese tamaño. Y en la calle, con una raya de señal, la página se queda en blanco justo mientras la persona está decidiendo si te llama o llama al de la esquina.</p>
+        </div>
+        <div class="arreglo">
+          <p class="cabe">Qué hay que hacer</p>
+          <p>Guardar cada foto al tamaño en que realmente se ve y en formato moderno. Son las mismas fotos, se ven igual, y la portada queda en <b>alrededor de 350 KB</b> <span class="ej">estimación</span>. No hay que rehacer la página: se reemplazan los archivos y listo.</p>
+          <span class="tiempo">Un día para las 34 fotos · no necesita rehacer nada</span>
+        </div>
+      </div>
+    </article>
+
+    <!-- 5 -->
+    <article class="hallazgo" id="h5" data-pri="media" data-ind="velocidad">
+      <h3>
+        <button type="button" class="tapa2" aria-expanded="false" aria-controls="p5">
+          <span class="num">05</span>
+          <span class="tit">
+            <span class="t">En celular tarda cerca de 6 segundos en mostrar algo</span>
+            <span class="s">Velocidad · en computadora con wifi tarda menos de 2</span>
+          </span>
+          <span class="pri a"><span class="pt"></span>Media</span>
+          <svg class="flecha" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+      </h3>
+      <div class="panel" id="p5" hidden>
+        <div class="bloque">
+          <p class="cabe">Qué se encontró</p>
+          <p>Medido en celular con una conexión 4G de las que se consiguen acá, la portada tarda <b>cerca de 6 segundos</b> hasta mostrar la foto grande de arriba <span class="ej">medición de ejemplo</span>. En computadora con wifi tarda menos de 2. Además, la página descarga tres archivos que la plantilla trae de fábrica y que este sitio no usa para nada.</p>
+        </div>
+        <div class="bloque plata">
+          <p class="cabe">Por qué importa</p>
+          <p>Casi toda tu gente entra del celular, muchas veces parada en la vereda. Seis segundos mirando una pantalla blanca es tiempo de sobra para volver atrás y abrir el resultado de abajo. Y esto no es un problema aparte: es sobre todo el peso de las fotos del punto anterior. Arreglando eso, la mitad de este punto se arregla sola.</p>
+        </div>
+        <div class="arreglo">
+          <p class="cabe">Qué hay que hacer</p>
+          <p>Primero las fotos. Después sacar los tres archivos que la plantilla carga y no se usan. Con las dos cosas, la portada debería quedar <b>entre 2 y 3 segundos</b> en celular <span class="ej">estimación</span>. Se vuelve a medir después, no antes: medir sin cambiar nada no sirve de nada.</p>
+          <span class="tiempo">Va enganchado al arreglo de las fotos</span>
+        </div>
+      </div>
+    </article>
+
+    <!-- 6 -->
+    <article class="hallazgo" id="h6" data-pri="alta" data-ind="ficha">
+      <h3>
+        <button type="button" class="tapa2" aria-expanded="false" aria-controls="p6">
+          <span class="num">06</span>
+          <span class="tit">
+            <span class="t">La ficha de Google no tiene horarios y el enlace al sitio está roto</span>
+            <span class="s">Ficha de Google · una sola foto, sin categoría principal y el botón «Sitio web» lleva a una página que no existe</span>
+          </span>
+          <span class="pri r"><span class="pt"></span>Alta</span>
+          <svg class="flecha" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+      </h3>
+      <div class="panel" id="p6" hidden>
+        <div class="bloque">
+          <p class="cabe">Qué se encontró</p>
+          <p>El negocio existe en el buscador y en el mapa, pero la ficha está a medio llenar. Así está hoy:</p>
+          <div class="campos">
+            <p class="ch">Ficha del negocio · estado de los campos</p>
+            <ul>
+              <li><b>Nombre del negocio</b> <span class="si">cargado</span></li>
+              <li><b>Categoría principal</b> <span class="no">falta</span></li>
+              <li><b>Horarios de atención</b> <span class="no">faltan</span></li>
+              <li><b>Teléfono</b> <span class="si">cargado</span></li>
+              <li><b>Fotos</b> <span class="no">1 sola</span></li>
+              <li><b>Enlace al sitio web</b> <span class="no">roto</span></li>
+            </ul>
+          </div>
+        </div>
+        <div class="bloque plata">
+          <p class="cabe">Por qué importa</p>
+          <p>Buena parte de la gente nunca llega a entrar a tu web: mira la ficha, ve si estás abierto y llama. Sin horarios, el que busca a las siete de la tarde no sabe si vas a estar, y llama al que sí los tiene puestos. Sin categoría, el buscador no termina de entender que sos una ferretería, así que te muestra menos cuando alguien busca ferreterías cerca. Y el botón «Sitio web» que no lleva a ningún lado se lo lleva puesto justo el que ya estaba interesado.</p>
+        </div>
+        <div class="arreglo">
+          <p class="cabe">Qué hay que hacer</p>
+          <p>Completar horarios —incluido el sábado y los feriados—, elegir la categoría principal correcta, corregir el enlace y subir seis fotos: el frente, el mostrador, los pasillos y el cartel. Se hace desde el celular, entrando con la cuenta que administra la ficha.</p>
+          <span class="tiempo">Media hora, y se hace desde el celular</span>
+        </div>
+      </div>
+    </article>
+
+    <!-- 7 -->
+    <article class="hallazgo" id="h7" data-pri="baja" data-ind="ficha">
+      <h3>
+        <button type="button" class="tapa2" aria-expanded="false" aria-controls="p7">
+          <span class="num">07</span>
+          <span class="tit">
+            <span class="t">Ninguna reseña está contestada</span>
+            <span class="s">Ficha de Google · las dos más recientes son de una estrella y las dos hablan de lo mismo</span>
+          </span>
+          <span class="pri a"><span class="pt"></span>Baja</span>
+          <svg class="flecha" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+      </h3>
+      <div class="panel" id="p7" hidden>
+        <div class="bloque">
+          <p class="cabe">Qué se encontró</p>
+          <p>Hay [cantidad] reseñas y ninguna tiene respuesta. Las dos más recientes son de una estrella y las dos se quejan de lo mismo: que llamaron y nadie atendió el teléfono.</p>
+        </div>
+        <div class="bloque plata">
+          <p class="cabe">Por qué importa</p>
+          <p>La respuesta a una reseña mala no es para el que se quejó: es para el próximo que entra a mirar antes de decidir. Dos quejas sin contestar se leen como «acá nadie mira esto». Dos quejas contestadas con calma, explicando qué pasó y qué cambiaste, se leen como un negocio que atiende. No borra el reclamo: lo pone en contexto.</p>
+        </div>
+        <div class="arreglo">
+          <p class="cabe">Qué hay que hacer</p>
+          <p>Contestar todas, empezando por las malas. Dos renglones cada una, sin discutir y sin plantilla: quién sos, qué pasó, qué hiciste para que no pase de nuevo. Y ya que las dos quejas son del teléfono, ver eso también.</p>
+          <span class="tiempo">Una hora · conviene hacerlo seguido, no una vez</span>
+        </div>
+      </div>
+    </article>
+
+    <!-- 8 -->
+    <article class="hallazgo" id="h8" data-pri="alta" data-ind="local">
+      <h3>
+        <button type="button" class="tapa2" aria-expanded="false" aria-controls="p8">
+          <span class="num">08</span>
+          <span class="tit">
+            <span class="t">El teléfono está dibujado adentro de una foto</span>
+            <span class="s">Datos de negocio local · y la dirección de la web no coincide con la de la ficha</span>
+          </span>
+          <span class="pri r"><span class="pt"></span>Alta</span>
+          <svg class="flecha" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+      </h3>
+      <div class="panel" id="p8" hidden>
+        <div class="bloque">
+          <p class="cabe">Qué se encontró</p>
+          <p>El teléfono aparece una sola vez, escrito adentro de la imagen del pie de página. La dirección figura como [dirección A] en la web y como [dirección B] en la ficha del buscador. Los horarios de atención no están en ninguna parte del sitio.</p>
+        </div>
+        <div class="bloque plata">
+          <p class="cabe">Por qué importa</p>
+          <p>Un número dibujado adentro de una foto no se puede tocar para llamar: la persona tiene que memorizarlo, salir de la página y marcarlo a mano. La mitad no lo hace. Y dos direcciones distintas para el mismo negocio le arruinan la cuenta al buscador, que no sabe cuál creer y termina mostrándote menos cuando alguien busca una ferretería cerca de acá.</p>
+        </div>
+        <div class="arreglo">
+          <p class="cabe">Qué hay que hacer</p>
+          <p>Poner teléfono, dirección y horarios como texto de verdad, iguales letra por letra a los de la ficha, y repetirlos en el pie de todas las páginas. Que el teléfono sea un enlace para llamar con un toque, y otro para escribir por WhatsApp.</p>
+          <span class="tiempo">Media tarde · no necesita rehacer nada</span>
+        </div>
+      </div>
+    </article>
+
+    <p class="vacio" id="vacio">No queda ningún hallazgo con ese filtro.</p>
+  </section>
+
+  <!-- ============ CIERRE ============ -->
+  <section class="cierre" aria-labelledby="tCierre">
+    <h2 id="tCierre">Qué se arregla en un día y qué necesita rehacer la página</h2>
+    <div class="dos">
+      <div class="caja">
+        <h3>Se arregla sin tocar el diseño</h3>
+        <ul>
+          <li>Títulos y descripciones de las cinco páginas.</li>
+          <li>Textos alternativos, empezando por el catálogo.</li>
+          <li>Teléfono, dirección y horarios como texto, iguales a la ficha.</li>
+          <li>Completar la ficha del buscador y contestar las reseñas.</li>
+          <li>Reemplazar las 34 fotos por versiones livianas.</li>
+        </ul>
+        <p class="cola">Seis de los ocho hallazgos. La web sigue siendo la misma, solo que ahora se la puede encontrar y carga rápido. Dos días de trabajo repartidos.</p>
+      </div>
+      <div class="caja rehacer">
+        <h3>Esto no se arregla con retoques</h3>
+        <ul>
+          <li>La página de catálogo es <b>una sola imagen larga</b> con los productos y los precios adentro.</li>
+          <li>Nadie puede buscar un producto ahí, ni copiar un precio, ni tocar para pedirlo.</li>
+          <li>El buscador tampoco lo lee: para él, esa página está vacía.</li>
+        </ul>
+        <p class="cola">Cambiar un precio hoy significa rehacer la imagen entera. Eso no se retoca: se rehace como catálogo de verdad, con cada producto por separado. Es el trabajo grande, y es el que más cambia el resultado.</p>
+      </div>
+    </div>
+
+    <div class="pedido">
+      <h3>Este informe es de un negocio inventado. El tuyo diría otra cosa.</h3>
+      <p>Mandanos la dirección de tu web y te devolvemos el informe completo en <b>2 días</b>, con el mismo formato: semáforo, cada hallazgo con su prioridad, y qué hacer con cada uno.</p>
+      <a class="bt2" href="https://wa.me/595983518856?text=Hola!%20Quiero%20la%20auditor%C3%ADa%20de%20mi%20web%20(KTW-4WJPD).%20La%20direcci%C3%B3n%20es%3A%20" target="_blank" rel="noopener noreferrer">Pedir el informe de mi web</a>
+    </div>
+
+    <div class="legal">
+      <p>Ferretería y Corralón Takuara es un negocio inventado para esta muestra. La web, los hallazgos, las mediciones y las reseñas son de ejemplo: sirven para mostrar cómo está armado el informe, no describen ningún sitio real.</p>
+      <p>Los tiempos y los pesos marcados como ejemplo o estimación son magnitudes típicas de una web chica; en el informe verdadero van los números medidos de tu sitio, con la fecha y la herramienta con la que se midieron.</p>
+      <p>Nombramos a Google porque el servicio incluye revisar la ficha del negocio en su buscador. El recuadro de campos del hallazgo 06 es una lista propia y esquemática: no reproduce la interfaz, la tipografía ni las marcas de Google.</p>
+    </div>
+  </section>
+
+  <div class="katu-pie">
+    Demo de <strong>KatuWeb</strong> · <a href="../catalogo.html">Volver al catálogo</a> ·
+    <a href="https://wa.me/595983518856?text=Hola!%20Vi%20la%20demo%20Auditor%C3%ADa%20de%20la%20web%20actual%20(KTW-4WJPD)%20y%20quiero%20el%20informe%20de%20mi%20negocio." target="_blank" rel="noopener noreferrer">Quiero esto para mi negocio</a>
+    <br><span style="font-size:12px">Negocio y datos de ejemplo · KTW-4WJPD</span>
+  </div>
+
+</main>
+
+<script>
+(function(){
+  'use strict';
+
+  var doc = document;
+
+  /* ============================================================
+     0 · terreno
+     ------------------------------------------------------------
+     REDUCE: movimiento apagado y todos los hallazgos abiertos, para que
+     nunca quede nada esperando una animación que no va a correr.
+     MINI: adentro de un iframe bajito, en la galería del inicio. Se ve la
+     tapa y los indicadores, quietos. Sin esto, veinte miniaturas
+     recalculando a la vez matan la página de inicio.
+     ============================================================ */
+  var REDUCE = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var MINI   = (window.self !== window.top) && (window.innerHeight < 520);
+  var QUIETA = REDUCE || MINI;
+  if (QUIETA) doc.documentElement.classList.add('quieta');
+  if (MINI)   doc.documentElement.classList.add('mini');
+
+  /* ============================================================
+     1 · el instrumento
+     ------------------------------------------------------------
+     Cada hallazgo vale un puntaje. La nota es el promedio de lo que se está
+     viendo, no una suma de castigos: así, al filtrar por urgente, la nota
+     baja de verdad en vez de subir por tener menos renglones.
+     ============================================================ */
+  var PUNTOS = { alta:15, media:50, baja:75, ok:95 };
+  var PALABRA = { alta:'Alta', media:'Media', baja:'Baja', ok:'Está bien' };
+
+  var BANDAS = [
+    { min:80, clase:'v', txt:'Está bien; queda afinar detalles' },
+    { min:50, clase:'a', txt:'Se arregla sin rehacer la página' },
+    { min:0,  clase:'r', txt:'Hay que trabajar, y una parte hay que rehacerla' }
+  ];
+
+  var arts = Array.prototype.slice.call(doc.querySelectorAll('.hallazgo'));
+  var chips = Array.prototype.slice.call(doc.querySelectorAll('.chip'));
+
+  var elCifra = doc.getElementById('cifra');
+  var elBanda = doc.getElementById('banda');
+  var elBandaTxt = doc.getElementById('bandaTxt');
+  var elFill  = doc.getElementById('barraFill');
+  var elAclara = doc.getElementById('aclara');
+  var elVacio = doc.getElementById('vacio');
+  var cN = doc.getElementById('cN'), cA = doc.getElementById('cA');
+  var cM = doc.getElementById('cM'), cB = doc.getElementById('cB');
+
+  var btTodo = doc.getElementById('btTodo');
+  var btUrg  = doc.getElementById('btUrg');
+
+  var filtro = 'todo';         /* estado en variable: nada de storage */
+  var notaMostrada = 41;       /* lo que dice la cifra ahora mismo */
+  var notaDestino  = 41;
+  var corriendo = false;
+
+  /* ============================================================
+     2 · recalcular sobre lo que se está viendo
+     ============================================================ */
+  function visibles(){
+    var out = [];
+    for (var i = 0; i < arts.length; i++){
+      if (filtro === 'todo' || arts[i].getAttribute('data-pri') === 'alta') out.push(arts[i]);
+    }
+    return out;
+  }
+
+  function banda(n){
+    for (var i = 0; i < BANDAS.length; i++){ if (n >= BANDAS[i].min) return BANDAS[i]; }
+    return BANDAS[BANDAS.length - 1];
+  }
+
+  function recalcular(){
+    var vis = visibles();
+    var suma = 0, n = { alta:0, media:0, baja:0, ok:0 };
+
+    for (var i = 0; i < vis.length; i++){
+      var p = vis[i].getAttribute('data-pri');
+      suma += (PUNTOS[p] || 50);
+      n[p] = (n[p] || 0) + 1;
+    }
+
+    var nota = vis.length ? Math.round(suma / vis.length) : 0;
+    var b = banda(nota);
+
+    /* la banda y su color */
+    elBanda.className = 'banda ' + b.clase;
+    elBandaTxt.textContent = b.txt;
+    elFill.style.transform = 'scaleX(' + (nota / 100) + ')';
+    elFill.style.backgroundColor =
+      b.clase === 'v' ? '#2f9e5a' : (b.clase === 'a' ? '#e0a409' : '#d23b2c');
+
+    /* los contadores */
+    cN.textContent = String(vis.length);
+    cA.textContent = String(n.alta);
+    cM.textContent = String(n.media + n.baja);
+    cB.textContent = String(n.ok);
+
+    elAclara.textContent = (filtro === 'todo')
+      ? 'La nota sale de los ' + arts.length + ' hallazgos del informe. Si filtrás, se recalcula sobre lo que estás viendo.'
+      : 'Esta nota es solo sobre los ' + vis.length + ' hallazgos urgentes. La del informe completo es ' + notaCompleta() + ' / 100.';
+
+    elVacio.style.display = vis.length ? 'none' : 'block';
+
+    ponerNota(nota);
+    marcarChips(vis);
+  }
+
+  function notaCompleta(){
+    var s = 0;
+    for (var i = 0; i < arts.length; i++) s += (PUNTOS[arts[i].getAttribute('data-pri')] || 50);
+    return Math.round(s / arts.length);
+  }
+
+  /* ============================================================
+     3 · los siete indicadores se recalculan también
+     ------------------------------------------------------------
+     El punto de color de cada indicador es su peor hallazgo visible. Si con
+     el filtro puesto no le queda ninguno, queda hueco y gris: decir que está
+     verde porque lo escondimos sería mentir.
+     ============================================================ */
+  var ORDEN = { alta:0, media:1, baja:2, ok:3 };
+
+  function marcarChips(vis){
+    for (var i = 0; i < chips.length; i++){
+      var ind = chips[i].getAttribute('data-ind');
+      var peor = null, cuenta = 0;
+      for (var j = 0; j < vis.length; j++){
+        if (vis[j].getAttribute('data-ind') !== ind) continue;
+        cuenta++;
+        var p = vis[j].getAttribute('data-pri');
+        if (peor === null || ORDEN[p] < ORDEN[peor]) peor = p;
+      }
+      var pt = chips[i].querySelector('.pt');
+      var est = chips[i].querySelector('.est');
+      var clase = 'n';
+      if (peor === 'alta') clase = 'r';
+      else if (peor === 'media' || peor === 'baja') clase = 'a';
+      else if (peor === 'ok') clase = 'v';
+      pt.parentNode.parentNode.className = 'chip ' + clase;
+      pt.className = 'pt';
+
+      if (!cuenta) est.textContent = 'sin urgencias';
+      else if (filtro === 'urgente') est.textContent = cuenta + (cuenta === 1 ? ' urgente' : ' urgentes');
+      else est.textContent = cuenta + (cuenta === 1 ? ' hallazgo' : ' hallazgos');
+    }
+  }
+
+  /* ============================================================
+     4 · la cifra. UN SOLO requestAnimationFrame para toda la página,
+     y se apaga solo cuando llega.
+     ============================================================ */
+  function ponerNota(n){
+    notaDestino = n;
+    if (QUIETA){
+      notaMostrada = n;
+      elCifra.textContent = String(n);
+      return;
+    }
+    if (!corriendo){ corriendo = true; requestAnimationFrame(paso); }
+  }
+
+  function paso(){
+    var d = notaDestino - notaMostrada;
+    if (Math.abs(d) < 0.6){
+      notaMostrada = notaDestino;
+      elCifra.textContent = String(notaDestino);
+      corriendo = false;
+      return;                       /* nada queda girando en vacío */
+    }
+    notaMostrada += d * 0.22;
+    elCifra.textContent = String(Math.round(notaMostrada));
+    requestAnimationFrame(paso);
+  }
+
+  /* ============================================================
+     5 · el filtro
+     ============================================================ */
+  function aplicar(cual){
+    filtro = cual;
+    btTodo.setAttribute('aria-pressed', cual === 'todo' ? 'true' : 'false');
+    btUrg.setAttribute('aria-pressed',  cual === 'urgente' ? 'true' : 'false');
+    for (var i = 0; i < arts.length; i++){
+      var mostrar = (cual === 'todo') || (arts[i].getAttribute('data-pri') === 'alta');
+      if (mostrar) arts[i].removeAttribute('hidden');
+      else arts[i].setAttribute('hidden', '');
+    }
+    recalcular();
+  }
+
+  btTodo.addEventListener('click', function(){ aplicar('todo'); });
+  btUrg.addEventListener('click',  function(){ aplicar('urgente'); });
+
+  /* ============================================================
+     6 · abrir y cerrar cada hallazgo
+     ============================================================ */
+  function abrir(bt, si){
+    var panel = doc.getElementById(bt.getAttribute('aria-controls'));
+    if (!panel) return;
+    bt.setAttribute('aria-expanded', si ? 'true' : 'false');
+    if (si) panel.removeAttribute('hidden');
+    else panel.setAttribute('hidden', '');
+  }
+
+  var botones = Array.prototype.slice.call(doc.querySelectorAll('.tapa2'));
+  botones.forEach(function(bt){
+    bt.addEventListener('click', function(){
+      abrir(bt, bt.getAttribute('aria-expanded') !== 'true');
+    });
+  });
+
+  /* con movimiento reducido no puede quedar nada plegado esperando un gesto */
+  if (REDUCE) botones.forEach(function(bt){ abrir(bt, true); });
+
+  /* ============================================================
+     7 · los indicadores llevan al hallazgo
+     ------------------------------------------------------------
+     Si el hallazgo está escondido por el filtro, primero se vuelve a todo:
+     un enlace que no lleva a ningún lado es peor que no tener enlace.
+     ============================================================ */
+  chips.forEach(function(a){
+    a.addEventListener('click', function(ev){
+      var id = (a.getAttribute('href') || '').slice(1);
+      var art = doc.getElementById(id);
+      if (!art) return;
+      ev.preventDefault();
+      if (art.hasAttribute('hidden')) aplicar('todo');
+      var bt = art.querySelector('.tapa2');
+      if (bt) abrir(bt, true);
+      try{
+        art.scrollIntoView({ behavior: QUIETA ? 'auto' : 'smooth', block:'start' });
+      }catch(e){ art.scrollIntoView(); }
+      if (bt) bt.focus({ preventScroll:true });
+    });
+  });
+
+  /* ============================================================
+     8 · arranque
+     ============================================================ */
+  recalcular();
+
+})();
+</script>
+</body>
+</html>
