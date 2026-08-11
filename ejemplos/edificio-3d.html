@@ -206,6 +206,27 @@
   }
   .plano svg{width:100%; height:100%; display:block}
 
+
+  /* ---------- los planos, extruidos en 3D ---------- */
+  .cara.t > svg{pointer-events:none}
+  .mueble .cara, .muro .cara{border:0}
+  .verPlano{
+    -webkit-appearance:none; appearance:none; cursor:pointer; font-family:inherit;
+    grid-column:1 / -1; margin-top:6px; display:inline-flex; align-items:center;
+    justify-content:center; min-height:44px; background:transparent;
+    border:1px solid var(--linea); color:var(--arena); font-size:11px;
+    letter-spacing:.14em; text-transform:uppercase; font-weight:700;
+  }
+  .verPlano:hover{border-color:var(--arena); color:var(--blanco)}
+  .leyenda{
+    position:absolute; right:12px; top:12px; z-index:3; max-width:170px;
+    background:rgba(10,10,10,.78); border:1px solid var(--linea); padding:11px 13px;
+    font-size:11px; color:var(--gris); line-height:1.5;
+  }
+  .leyenda b{display:block; color:var(--arena); font-size:12px; margin-bottom:4px;
+    letter-spacing:.1em; text-transform:uppercase}
+  .leyenda[hidden]{display:none}
+
   /* ---------- datos ---------- */
   .datos{display:grid; gap:1px; grid-template-columns:repeat(2,1fr); background:var(--linea); border:1px solid var(--linea)}
   @media (min-width:760px){ .datos{grid-template-columns:repeat(3,1fr)} }
@@ -516,7 +537,9 @@
       <div class="herramientas">
         <button class="herr" id="hObra" type="button" aria-pressed="false">Ver avance</button>
         <button class="herr" id="hReset" type="button">Enderezar</button>
+        <button class="herr" id="hVolver" type="button" hidden>← Volver al edificio</button>
       </div>
+      <div class="leyenda" id="leyenda" hidden></div>
       <p class="ayuda" id="ayuda">Arrastrá para girar · tocá un piso para ver sus unidades</p>
     </div>
     <aside class="lado" id="lado" aria-live="polite"></aside>
@@ -761,6 +784,204 @@
     st.torre.style.transform = 'rotateX(' + st.rx.toFixed(2) + 'deg) rotateY(' + st.ry.toFixed(2) + 'deg)';
   }
 
+
+  /* ============================================================
+     LOS PLANOS — dibujados, no fotografiados
+     ------------------------------------------------------------
+     Cada tipología es una lista de cuartos con su rectángulo. De ahí
+     salen solos el piso, los muros y las etiquetas. Los muros de afuera
+     van altos y los de adentro cortados a la mitad: así se ve para
+     adentro de cada ambiente, que es como se leen los planos 3D.
+     Un metro son 34 px. Cambiar un plano es cambiar números acá.
+     ============================================================ */
+  var MADERA = '#6b4f36', CLARO = '#cdc6b8', AGUA = '#9aa8ae', AIRE = '#7f7a71';
+
+  var PLANOS = {
+    A: { n:'Tipología A', m2:58, w:520, d:340, cuartos:[
+        { x:0,   y:0,   w:300, h:200, n:'Estar · comedor', m:'24 m²', c:MADERA },
+        { x:300, y:0,   w:220, h:110, n:'Cocina',          m:'9 m²',  c:CLARO },
+        { x:300, y:110, w:220, h:90,  n:'Baño',            m:'4 m²',  c:AGUA },
+        { x:0,   y:200, w:320, h:140, n:'Dormitorio',      m:'14 m²', c:MADERA },
+        { x:320, y:200, w:200, h:140, n:'Balcón',          m:'7 m²',  c:AIRE, aire:1 }
+      ], muebles:[
+        { x:30,  y:30,  w:150, h:60, a:12, c:'#4a4740' },   /* sofá */
+        { x:210, y:40,  w:70,  h:110,a:11, c:'#7a6a52' },   /* mesa */
+        { x:315, y:15,  w:190, h:38, a:15, c:'#3f3d39' },   /* mesada */
+        { x:330, y:130, w:44,  h:34, a:11, c:'#e8e6e0' },   /* inodoro */
+        { x:440, y:125, w:66,  h:66, a:8, c:'#dcdad4' },   /* ducha */
+        { x:40,  y:230, w:150, h:100,a:13, c:'#b9b2a4' }    /* cama */
+      ]},
+    B: { n:'Tipología B', m2:87, w:620, d:390, cuartos:[
+        { x:0,   y:0,   w:330, h:220, n:'Estar · comedor', m:'30 m²', c:MADERA },
+        { x:330, y:0,   w:290, h:130, n:'Cocina',          m:'11 m²', c:CLARO },
+        { x:330, y:130, w:160, h:90,  n:'Baño',            m:'5 m²',  c:AGUA },
+        { x:490, y:130, w:130, h:90,  n:'Lavadero',        m:'4 m²',  c:CLARO },
+        { x:0,   y:220, w:300, h:170, n:'Dormitorio 1',    m:'15 m²', c:MADERA },
+        { x:300, y:220, w:190, h:170, n:'Dormitorio 2',    m:'11 m²', c:MADERA },
+        { x:490, y:220, w:130, h:170, n:'Balcón',          m:'6 m²',  c:AIRE, aire:1 }
+      ], muebles:[
+        { x:30,  y:30,  w:170, h:62, a:12, c:'#4a4740' },
+        { x:230, y:40,  w:80,  h:130,a:11, c:'#7a6a52' },
+        { x:345, y:15,  w:255, h:40, a:15, c:'#3f3d39' },
+        { x:350, y:150, w:44,  h:34, a:11, c:'#e8e6e0' },
+        { x:420, y:145, w:56,  h:60, a:8, c:'#dcdad4' },
+        { x:40,  y:250, w:160, h:110,a:13, c:'#b9b2a4' },
+        { x:325, y:250, w:120, h:100,a:13, c:'#b9b2a4' },
+        { x:505, y:245, w:44,  h:44, a:9, c:'#5c6b4f' }
+      ]},
+    C: { n:'Tipología C', m2:92, w:640, d:400, cuartos:[
+        { x:0,   y:0,   w:250, h:150, n:'Cocina',          m:'12 m²', c:CLARO },
+        { x:250, y:0,   w:390, h:230, n:'Estar · comedor', m:'32 m²', c:MADERA },
+        { x:0,   y:150, w:250, h:100, n:'Baño',            m:'6 m²',  c:AGUA },
+        { x:0,   y:250, w:310, h:150, n:'Dormitorio 1',    m:'16 m²', c:MADERA },
+        { x:310, y:230, w:200, h:170, n:'Dormitorio 2',    m:'12 m²', c:MADERA },
+        { x:510, y:230, w:130, h:170, n:'Balcón',          m:'7 m²',  c:AIRE, aire:1 }
+      ], muebles:[
+        { x:15,  y:15,  w:220, h:40, a:15, c:'#3f3d39' },
+        { x:290, y:30,  w:180, h:64, a:12, c:'#4a4740' },
+        { x:500, y:50,  w:80,  h:140,a:11, c:'#7a6a52' },
+        { x:20,  y:170, w:44,  h:34, a:11, c:'#e8e6e0' },
+        { x:150, y:165, w:80,  h:66, a:8, c:'#dcdad4' },
+        { x:40,  y:280, w:170, h:110,a:13, c:'#b9b2a4' },
+        { x:335, y:265, w:130, h:100,a:13, c:'#b9b2a4' }
+      ]},
+    D: { n:'Tipología D', m2:124, w:720, d:450, cuartos:[
+        { x:0,   y:0,   w:420, h:250, n:'Estar · comedor', m:'40 m²', c:MADERA },
+        { x:420, y:0,   w:300, h:150, n:'Cocina',          m:'14 m²', c:CLARO },
+        { x:420, y:150, w:150, h:100, n:'Toilette',        m:'3 m²',  c:AGUA },
+        { x:570, y:150, w:150, h:100, n:'Lavadero',        m:'4 m²',  c:CLARO },
+        { x:0,   y:250, w:280, h:200, n:'Dormitorio 1',    m:'19 m²', c:MADERA },
+        { x:280, y:250, w:170, h:200, n:'Dormitorio 2',    m:'12 m²', c:MADERA },
+        { x:450, y:250, w:150, h:200, n:'Dormitorio 3',    m:'11 m²', c:MADERA },
+        { x:600, y:250, w:120, h:200, n:'Balcón',          m:'8 m²',  c:AIRE, aire:1 }
+      ], muebles:[
+        { x:40,  y:40,  w:200, h:66, a:12, c:'#4a4740' },
+        { x:290, y:50,  w:90,  h:160,a:11, c:'#7a6a52' },
+        { x:435, y:15,  w:265, h:40, a:15, c:'#3f3d39' },
+        { x:440, y:170, w:44,  h:34, a:11, c:'#e8e6e0' },
+        { x:50,  y:290, w:170, h:120,a:13, c:'#b9b2a4' },
+        { x:305, y:290, w:120, h:100,a:13, c:'#b9b2a4' },
+        { x:470, y:290, w:110, h:100,a:13, c:'#b9b2a4' },
+        { x:620, y:280, w:44,  h:44, a:9, c:'#5c6b4f' }
+      ]},
+    PH:{ n:'Penthouse', m2:186, w:820, d:470, cuartos:[
+        { x:0,   y:0,   w:470, h:270, n:'Estar · comedor', m:'52 m²', c:MADERA },
+        { x:470, y:0,   w:350, h:160, n:'Cocina isla',     m:'18 m²', c:CLARO },
+        { x:470, y:160, w:170, h:110, n:'Baño',            m:'6 m²',  c:AGUA },
+        { x:640, y:160, w:180, h:110, n:'Vestidor',        m:'7 m²',  c:CLARO },
+        { x:0,   y:270, w:320, h:200, n:'Dormitorio 1',    m:'23 m²', c:MADERA },
+        { x:320, y:270, w:200, h:200, n:'Dormitorio 2',    m:'14 m²', c:MADERA },
+        { x:520, y:270, w:300, h:200, n:'Terraza',         m:'26 m²', c:AIRE, aire:1 }
+      ], muebles:[
+        { x:40,  y:40,  w:230, h:70, a:12, c:'#4a4740' },
+        { x:320, y:60,  w:100, h:170,a:11, c:'#7a6a52' },
+        { x:485, y:20,  w:315, h:44, a:15, c:'#3f3d39' },
+        { x:560, y:80,  w:180, h:60, a:13, c:'#3f3d39' },
+        { x:490, y:180, w:56,  h:70, a:9, c:'#dcdad4' },
+        { x:50,  y:310, w:190, h:130,a:13, c:'#b9b2a4' },
+        { x:345, y:310, w:130, h:110,a:13, c:'#b9b2a4' },
+        { x:560, y:300, w:120, h:56, a:10, c:'#4a4740' },
+        { x:720, y:300, w:60,  h:60, a:9, c:'#5c6b4f' }
+      ]}
+  };
+
+  var MURO_FUERA = 40, MURO_DENTRO = 22, GRUESO = 7;
+
+  function construirPlano(destino, T){
+    T.k2 = T.k2 || T.n.replace(/[^A-Za-z]/g,'');
+    var esc = doc.createElement('div');
+    esc.className = 'escena';
+    var raiz = doc.createElement('div');
+    raiz.className = 'torre';
+    raiz.style.width = '1px'; raiz.style.height = '1px';
+
+    function ubicar(el, cx, cy, cz){
+      el.className = 'piso';
+      el.style.width = '1px'; el.style.height = '1px';
+      el.style.transform = 'translate(-50%,-50%) translate3d(' +
+        (cx - T.w/2).toFixed(1) + 'px,' + cy.toFixed(1) + 'px,' + (cz - T.d/2).toFixed(1) + 'px)';
+      raiz.appendChild(el);
+    }
+
+    /* la losa */
+    var losa = doc.createElement('div');
+    ubicar(losa, T.w/2, 8, T.d/2);
+    caja(losa, T.w + 18, 8, T.d + 18, false);
+    Array.prototype.forEach.call(losa.querySelectorAll('.cara'), function(c){
+      c.style.background = '#1a1917'; c.style.borderColor = 'rgba(247,246,242,.10)';
+    });
+
+    /* Un piso por ambiente, no una sola lámina grande.
+       El 3D de CSS no sabe cortar dos superficies que se cruzan: si el suelo es
+       un plano único, o tapa todos los muros o desaparece detrás de ellos. Con
+       una losita por ambiente, cada una se ordena bien contra los muros que la
+       rodean, y de paso cada una lleva su propio nombre escrito encima. */
+    T.cuartos.forEach(function(c, i){
+      var t = doc.createElement('div');
+      ubicar(t, c.x + c.w/2, -1, c.y + c.h/2);
+      caja(t, c.w, 4, c.h, false);
+      Array.prototype.forEach.call(t.querySelectorAll('.cara'), function(k){
+        k.style.background = c.c; k.style.border = '0';
+        if (c.aire) k.style.opacity = '.6';
+      });
+      var tapa = t.querySelector('.cara.t');
+      if (!tapa) return;
+      tapa.style.background = c.c;
+      var vet = (c.c === MADERA)
+        ? '<rect width="' + c.w + '" height="' + c.h + '" fill="url(#v' + i + T.k2 + ')"/>' +
+          '<defs><pattern id="v' + i + T.k2 + '" width="17" height="17" patternUnits="userSpaceOnUse">' +
+          '<path d="M0 0h17" stroke="rgba(0,0,0,.22)" stroke-width="1.5"/></pattern></defs>'
+        : '';
+      tapa.innerHTML =
+        '<svg viewBox="0 0 ' + c.w + ' ' + c.h + '" xmlns="http://www.w3.org/2000/svg" ' +
+        'style="width:100%;height:100%;display:block" aria-hidden="true">' + vet +
+        '<text x="12" y="24" fill="#F7F6F2" ' +
+        'font-family="system-ui,sans-serif" font-size="16" font-weight="600" ' +
+        'style="paint-order:stroke" stroke="rgba(0,0,0,.55)" stroke-width="3.5">' + c.n + '</text>' +
+        '<text x="12" y="42" fill="rgba(247,246,242,.85)" ' +
+        'font-family="system-ui,sans-serif" font-size="12.5" ' +
+        'style="paint-order:stroke" stroke="rgba(0,0,0,.5)" stroke-width="3">' + c.m + '</text>' +
+        '</svg>';
+    });
+
+    /* los muros: cuatro por ambiente. Los que caen sobre el borde de afuera
+       van altos; los de adentro, cortados, para poder ver los ambientes. */
+    T.cuartos.forEach(function(c){
+      if (c.aire) return;
+      [[c.x + c.w/2, c.y, c.w, GRUESO],
+       [c.x + c.w/2, c.y + c.h, c.w, GRUESO],
+       [c.x, c.y + c.h/2, GRUESO, c.h],
+       [c.x + c.w, c.y + c.h/2, GRUESO, c.h]].forEach(function(m){
+        var fuera = (m[1] <= 1 || m[1] >= T.d - 1 || m[0] <= 1 || m[0] >= T.w - 1);
+        var alto = fuera ? MURO_FUERA : MURO_DENTRO;
+        var el = doc.createElement('div');
+        ubicar(el, m[0], -5 - alto/2, m[1]);
+        el.className += ' muro';
+        caja(el, m[2], alto, m[3], false);
+        Array.prototype.forEach.call(el.querySelectorAll('.cara'), function(k){
+          k.style.background = fuera ? '#4a463f' : '#6d675e';
+        });
+      });
+    });
+
+    /* los muebles */
+    (T.muebles || []).forEach(function(m){
+      var el = doc.createElement('div');
+      ubicar(el, m.x + m.w/2, -5 - m.a/2, m.y + m.h/2);
+      el.className += ' mueble';
+      caja(el, m.w, m.a, m.h, false);
+      Array.prototype.forEach.call(el.querySelectorAll('.cara'), function(k){
+        k.style.background = m.c;
+      });
+      var techo = el.querySelector('.cara.t');
+      if (techo) techo.style.filter = 'brightness(1.25)';
+    });
+
+    esc.appendChild(raiz);
+    destino.appendChild(esc);
+    return { esc: esc, torre: raiz };
+  }
+
   /* ============================================================
      2 · LAS MAQUETAS DEL RELATO
      ============================================================ */
@@ -810,6 +1031,7 @@
   var visorEscena = doc.getElementById('visorEscena');
   var lado = doc.getElementById('lado');
   var elegido = null, stGrande = null, torreGrande = null, ultimoFoco = null;
+  var modo = 'torre', planoActual = null;
   var modoObra = false;
 
   function medidaGrande(){
@@ -836,6 +1058,61 @@
     stGrande = hacerRotable(o, { rx:10, ry:-24, interactivo:true, auto:0 });
     pintar(stGrande);
     if (elegido) marcarPiso(elegido);
+  }
+
+
+  /* ---- el plano de una tipología, en la misma escena ---- */
+  function limpiarEscena(){
+    while (visorEscena.querySelector('.escena')){
+      visorEscena.removeChild(visorEscena.querySelector('.escena'));
+    }
+    if (stGrande){
+      var i = rotables.indexOf(stGrande);
+      if (i >= 0) rotables.splice(i, 1);
+      stGrande = null;
+    }
+  }
+
+  function verPlano(tipo, unidad){
+    var T = PLANOS[tipo];
+    if (!T) return;
+    modo = 'plano'; planoActual = tipo;
+    limpiarEscena();
+    var o = construirPlano(visorEscena, T);
+    torreGrande = null;
+    /* el plano entra a la escena sin importar cuánto mida: se achica solo */
+    var caben = Math.min(
+      (visorEscena.clientWidth  * 0.80) / (T.w + 60),
+      (visorEscena.clientHeight * 0.80) / (T.d + 60)
+    );
+    o.torre.style.scale = Math.max(0.3, Math.min(1.5, caben)).toFixed(3);
+    stGrande = hacerRotable(o, { rx:-54, ry:-22, interactivo:true, auto:0 });
+    pintar(stGrande);
+
+    doc.getElementById('hVolver').hidden = false;
+    doc.getElementById('hObra').hidden = true;
+    doc.getElementById('ayuda').textContent = 'Arrastrá para girar el plano';
+    var ley = doc.getElementById('leyenda');
+    ley.hidden = false;
+    while (ley.firstChild) ley.removeChild(ley.firstChild);
+    var b = doc.createElement('b'); b.textContent = T.n;
+    ley.appendChild(b);
+    ley.appendChild(doc.createTextNode(
+      T.m2 + ' m² · ' + T.cuartos.length + ' ambientes' +
+      (unidad ? ' · unidad ' + unidad : '') +
+      '. Los muros de adentro van cortados para poder ver cada ambiente.'));
+    doc.getElementById('visorSub').textContent = T.n + ' · ' + T.m2 + ' m²';
+  }
+
+  function verTorre(){
+    modo = 'torre'; planoActual = null;
+    limpiarEscena();
+    armarGrande();
+    doc.getElementById('hVolver').hidden = true;
+    doc.getElementById('hObra').hidden = false;
+    doc.getElementById('leyenda').hidden = true;
+    doc.getElementById('ayuda').textContent = 'Arrastrá para girar · tocá un piso para ver sus unidades';
+    doc.getElementById('visorSub').textContent = 'Arrastrá para girar · tocá un piso';
   }
 
   function marcarPiso(n){
@@ -874,6 +1151,11 @@
       var ee = doc.createElement('span'); ee.className = 'e ' + u.est;
       ee.textContent = NOMBRE_EST[u.est];
       d.appendChild(nn); d.appendChild(dd); d.appendChild(ee); d.appendChild(pp);
+      var bp = doc.createElement('button');
+      bp.type = 'button'; bp.className = 'verPlano';
+      bp.textContent = 'Ver el plano en 3D';
+      bp.addEventListener('click', function(){ verPlano(u.tipo, u.id); });
+      d.appendChild(bp);
       if (u.est !== 'vend'){
         var a = doc.createElement('a'); a.className = 'wa';
         a.target = '_blank'; a.rel = 'noopener noreferrer';
@@ -900,6 +1182,11 @@
     ultimoFoco = doc.activeElement;
     visor.hidden = false;
     doc.body.style.overflow = 'hidden';
+    modo = 'torre'; planoActual = null;
+    doc.getElementById('hVolver').hidden = true;
+    doc.getElementById('hObra').hidden = false;
+    doc.getElementById('leyenda').hidden = true;
+    doc.getElementById('visorSub').textContent = 'Arrastrá para girar · tocá un piso';
     modoObra = (que === 'obra');
     doc.getElementById('hObra').setAttribute('aria-pressed', modoObra ? 'true' : 'false');
     /* medir en el mismo cuadro en que se muestra da una altura equivocada y la
@@ -934,8 +1221,11 @@
   doc.getElementById('cerrar').addEventListener('click', cerrar);
   doc.getElementById('hReset').addEventListener('click', function(){
     if (!stGrande) return;
-    stGrande.rx = 10; stGrande.ry = -24; stGrande.sucio = true;
+    stGrande.rx = (modo === 'plano') ? -54 : 10;
+    stGrande.ry = (modo === 'plano') ? -22 : -24;
+    stGrande.sucio = true;
   });
+  doc.getElementById('hVolver').addEventListener('click', verTorre);
   doc.getElementById('hObra').addEventListener('click', function(){
     modoObra = !modoObra;
     this.setAttribute('aria-pressed', modoObra ? 'true' : 'false');
@@ -951,7 +1241,7 @@
     if (!stGrande) return;
     if (e.key === 'ArrowLeft'){ stGrande.ry -= 8; stGrande.sucio = true; e.preventDefault(); }
     if (e.key === 'ArrowRight'){ stGrande.ry += 8; stGrande.sucio = true; e.preventDefault(); }
-    if (e.key === 'ArrowUp' || e.key === 'ArrowDown'){
+    if ((e.key === 'ArrowUp' || e.key === 'ArrowDown') && modo === 'torre'){
       var n = elegido || PROYECTO.primerVivienda;
       n += (e.key === 'ArrowUp' ? 1 : -1);
       n = Math.max(PROYECTO.primerVivienda, Math.min(PROYECTO.pisoPenthouse, n));
@@ -1073,7 +1363,10 @@
   var tmr = 0;
   window.addEventListener('resize', function(){
     clearTimeout(tmr);
-    tmr = setTimeout(function(){ if (!visor.hidden) armarGrande(); }, 200);
+    tmr = setTimeout(function(){
+      if (visor.hidden) return;
+      if (modo === 'plano') verPlano(planoActual, null); else { limpiarEscena(); armarGrande(); }
+    }, 200);
   }, { passive:true });
 
   vacio();
