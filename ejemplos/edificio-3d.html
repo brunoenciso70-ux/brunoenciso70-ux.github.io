@@ -226,6 +226,9 @@
   .leyenda b{display:block; color:var(--arena); font-size:12px; margin-bottom:4px;
     letter-spacing:.1em; text-transform:uppercase}
   .leyenda[hidden]{display:none}
+  /* en celular la leyenda tapaba el plano; la barra de arriba ya dice
+     tipología y metros, así que ahí la leyenda sobra */
+  @media (max-width:620px){ .leyenda{display:none} }
 
   /* ---------- datos ---------- */
   .datos{display:grid; gap:1px; grid-template-columns:repeat(2,1fr); background:var(--linea); border:1px solid var(--linea)}
@@ -794,187 +797,253 @@
      adentro de cada ambiente, que es como se leen los planos 3D.
      Un metro son 34 px. Cambiar un plano es cambiar números acá.
      ============================================================ */
-  var MADERA = '#6b4f36', CLARO = '#cdc6b8', AGUA = '#9aa8ae', AIRE = '#7f7a71';
+  /* ============================================================
+     LOS PLANOS — al estilo de los renders 3D de plano de departamento
+     ------------------------------------------------------------
+     Todo se define EN METROS: ambientes como rectángulos, y de ahí el
+     código genera solo los muros. Los muros entre dos ambientes vecinos
+     salen del cruce de sus rectángulos y llevan su HUECO DE PUERTA en el
+     medio; el borde de afuera va con muro alto, salvo donde hay balcón,
+     que lleva baranda baja. Pisos claros y cálidos, muebles con tapa y
+     costado, etiquetas oscuras sobre piso claro: la receta de los planos
+     3D inmobiliarios de verdad. Cambiar un plano es cambiar metros acá.
+     ============================================================ */
+  var ESC = 56;                      /* píxeles por metro */
+  var MURO_ALTO = 0.78, MURO_BAJO = 0.45, BARANDA = 0.34, GROSOR = 0.14; /* en metros */
+  var C_MURO = '#f2eee6', C_MURO_L = '#d6cfc1';
+  var CAMA  = ['#ece1d0','#d8cbb8'], SOFA = ['#ddd2c0','#c7baa6'],
+      MESA  = ['#d8c6a4','#c1af8f'], ROPERO = ['#e2d7c5','#cdc0ac'],
+      LOZA  = ['#ffffff','#e6e6e6'], TV = ['#2e2c29','#1c1b19'],
+      VERDE = ['#7d8f63','#66774f'], DUCHA = ['#eef2f2','#dde4e4'];
+  var P_MADERA = '#efe4d0', P_MADERA2 = '#e9dcc5', P_COCINA = '#fdf6e7',
+      P_BANO = '#e8f1f1', P_LAV = '#f1ece1', P_AIRE = '#d9d2c3', P_VEST = '#f1e9db';
 
   var PLANOS = {
-    A: { n:'Tipología A', m2:58, w:520, d:340, cuartos:[
-        { x:0,   y:0,   w:300, h:200, n:'Estar · comedor', m:'24 m²', c:MADERA },
-        { x:300, y:0,   w:220, h:110, n:'Cocina',          m:'9 m²',  c:CLARO },
-        { x:300, y:110, w:220, h:90,  n:'Baño',            m:'4 m²',  c:AGUA },
-        { x:0,   y:200, w:320, h:140, n:'Dormitorio',      m:'14 m²', c:MADERA },
-        { x:320, y:200, w:200, h:140, n:'Balcón',          m:'7 m²',  c:AIRE, aire:1 }
+    A: { n:'Tipología A', m2:58, wm:7.6, dm:6.4, cuartos:[
+        { x:0,   y:0,   w:4.2, h:3.6, n:'Estar · comedor', m:'15 m²', c:P_MADERA },
+        { x:4.2, y:0,   w:3.4, h:2.4, n:'Cocina',          m:'8 m²',  c:P_COCINA },
+        { x:4.2, y:2.4, w:1.9, h:2.2, n:'Baño',            m:'4 m²',  c:P_BANO },
+        { x:6.1, y:2.4, w:1.5, h:2.2, n:'Lavadero',        m:'3 m²',  c:P_LAV },
+        { x:0,   y:3.6, w:4.2, h:2.8, n:'Dormitorio',      m:'12 m²', c:P_MADERA2 },
+        { x:4.2, y:4.6, w:3.4, h:1.8, n:'Balcón',          m:'6 m²',  c:P_AIRE, aire:1 }
       ], muebles:[
-        { x:30,  y:30,  w:150, h:60, a:12, c:'#4a4740' },   /* sofá */
-        { x:210, y:40,  w:70,  h:110,a:11, c:'#7a6a52' },   /* mesa */
-        { x:315, y:15,  w:190, h:38, a:15, c:'#3f3d39' },   /* mesada */
-        { x:330, y:130, w:44,  h:34, a:11, c:'#e8e6e0' },   /* inodoro */
-        { x:440, y:125, w:66,  h:66, a:8, c:'#dcdad4' },   /* ducha */
-        { x:40,  y:230, w:150, h:100,a:13, c:'#b9b2a4' }    /* cama */
+        [0.4,3.72,1.7,2.0,.3,CAMA],  [2.75,3.75,1.3,0.55,.46,ROPERO],
+        [0.45,0.5,2.1,0.9,.3,SOFA],  [1.05,2.15,1.5,0.85,.34,MESA],
+        [3.8,0.6,0.15,1.3,.5,TV],
+        [4.35,0.15,3.0,0.6,.4,LOZA], [4.35,0.15,0.6,2.0,.4,LOZA],
+        [5.5,3.8,0.45,0.65,.2,LOZA], [5.25,2.55,0.7,0.7,.08,DUCHA],
+        [6.95,5.6,0.5,0.5,.3,VERDE]
       ]},
-    B: { n:'Tipología B', m2:87, w:620, d:390, cuartos:[
-        { x:0,   y:0,   w:330, h:220, n:'Estar · comedor', m:'30 m²', c:MADERA },
-        { x:330, y:0,   w:290, h:130, n:'Cocina',          m:'11 m²', c:CLARO },
-        { x:330, y:130, w:160, h:90,  n:'Baño',            m:'5 m²',  c:AGUA },
-        { x:490, y:130, w:130, h:90,  n:'Lavadero',        m:'4 m²',  c:CLARO },
-        { x:0,   y:220, w:300, h:170, n:'Dormitorio 1',    m:'15 m²', c:MADERA },
-        { x:300, y:220, w:190, h:170, n:'Dormitorio 2',    m:'11 m²', c:MADERA },
-        { x:490, y:220, w:130, h:170, n:'Balcón',          m:'6 m²',  c:AIRE, aire:1 }
+    B: { n:'Tipología B', m2:87, wm:9.6, dm:6.8, cuartos:[
+        { x:0,   y:0,   w:4.6, h:4.0, n:'Estar · comedor', m:'18 m²', c:P_MADERA },
+        { x:4.6, y:0,   w:2.8, h:4.0, n:'Cocina',          m:'11 m²', c:P_COCINA },
+        { x:7.4, y:0,   w:2.2, h:2.0, n:'Baño',            m:'4 m²',  c:P_BANO },
+        { x:7.4, y:2.0, w:2.2, h:2.0, n:'Lavadero',        m:'4 m²',  c:P_LAV },
+        { x:0,   y:4.0, w:3.6, h:2.8, n:'Dormitorio 1',    m:'10 m²', c:P_MADERA2 },
+        { x:3.6, y:4.0, w:3.0, h:2.8, n:'Dormitorio 2',    m:'8 m²',  c:P_MADERA2 },
+        { x:6.6, y:4.0, w:3.0, h:2.8, n:'Balcón',          m:'8 m²',  c:P_AIRE, aire:1 }
       ], muebles:[
-        { x:30,  y:30,  w:170, h:62, a:12, c:'#4a4740' },
-        { x:230, y:40,  w:80,  h:130,a:11, c:'#7a6a52' },
-        { x:345, y:15,  w:255, h:40, a:15, c:'#3f3d39' },
-        { x:350, y:150, w:44,  h:34, a:11, c:'#e8e6e0' },
-        { x:420, y:145, w:56,  h:60, a:8, c:'#dcdad4' },
-        { x:40,  y:250, w:160, h:110,a:13, c:'#b9b2a4' },
-        { x:325, y:250, w:120, h:100,a:13, c:'#b9b2a4' },
-        { x:505, y:245, w:44,  h:44, a:9, c:'#5c6b4f' }
+        [0.5,0.55,2.2,0.9,.3,SOFA], [1.2,2.3,1.5,0.85,.34,MESA], [4.25,0.7,0.15,1.4,.5,TV],
+        [4.75,0.15,2.5,0.6,.4,LOZA], [4.75,0.15,0.6,2.2,.4,LOZA],
+        [7.6,0.35,0.45,0.65,.2,LOZA], [8.75,1.1,0.7,0.7,.08,DUCHA],
+        [7.65,2.2,0.6,0.6,.4,LOZA],
+        [0.4,4.5,1.7,2.0,.3,CAMA], [3.95,4.55,1.4,1.9,.3,CAMA],
+        [2.35,4.15,1.1,0.55,.46,ROPERO], [8.65,5.9,0.5,0.5,.3,VERDE]
       ]},
-    C: { n:'Tipología C', m2:92, w:640, d:400, cuartos:[
-        { x:0,   y:0,   w:250, h:150, n:'Cocina',          m:'12 m²', c:CLARO },
-        { x:250, y:0,   w:390, h:230, n:'Estar · comedor', m:'32 m²', c:MADERA },
-        { x:0,   y:150, w:250, h:100, n:'Baño',            m:'6 m²',  c:AGUA },
-        { x:0,   y:250, w:310, h:150, n:'Dormitorio 1',    m:'16 m²', c:MADERA },
-        { x:310, y:230, w:200, h:170, n:'Dormitorio 2',    m:'12 m²', c:MADERA },
-        { x:510, y:230, w:130, h:170, n:'Balcón',          m:'7 m²',  c:AIRE, aire:1 }
+    C: { n:'Tipología C', m2:92, wm:10.0, dm:7.0, cuartos:[
+        { x:0,   y:0,   w:3.0, h:4.2, n:'Cocina',          m:'12 m²', c:P_COCINA },
+        { x:3.0, y:0,   w:4.6, h:4.2, n:'Estar · comedor', m:'19 m²', c:P_MADERA },
+        { x:7.6, y:0,   w:2.4, h:2.1, n:'Baño',            m:'5 m²',  c:P_BANO },
+        { x:7.6, y:2.1, w:2.4, h:2.1, n:'Vestidor',        m:'5 m²',  c:P_VEST },
+        { x:0,   y:4.2, w:3.6, h:2.8, n:'Dormitorio 1',    m:'10 m²', c:P_MADERA2 },
+        { x:3.6, y:4.2, w:3.2, h:2.8, n:'Dormitorio 2',    m:'9 m²',  c:P_MADERA2 },
+        { x:6.8, y:4.2, w:3.2, h:2.8, n:'Balcón',          m:'9 m²',  c:P_AIRE, aire:1 }
       ], muebles:[
-        { x:15,  y:15,  w:220, h:40, a:15, c:'#3f3d39' },
-        { x:290, y:30,  w:180, h:64, a:12, c:'#4a4740' },
-        { x:500, y:50,  w:80,  h:140,a:11, c:'#7a6a52' },
-        { x:20,  y:170, w:44,  h:34, a:11, c:'#e8e6e0' },
-        { x:150, y:165, w:80,  h:66, a:8, c:'#dcdad4' },
-        { x:40,  y:280, w:170, h:110,a:13, c:'#b9b2a4' },
-        { x:335, y:265, w:130, h:100,a:13, c:'#b9b2a4' }
+        [0.15,0.15,2.6,0.6,.4,LOZA], [0.15,0.15,0.6,2.6,.4,LOZA],
+        [3.6,0.6,2.2,0.9,.3,SOFA], [4.4,2.35,1.5,0.85,.34,MESA], [7.25,0.8,0.15,1.4,.5,TV],
+        [7.8,0.3,0.45,0.65,.2,LOZA], [9.1,0.35,0.7,0.7,.08,DUCHA],
+        [7.75,2.3,0.55,1.7,.46,ROPERO], [9.35,2.3,0.55,1.7,.46,ROPERO],
+        [0.45,4.75,1.7,2.0,.3,CAMA], [3.95,4.75,1.5,1.9,.3,CAMA],
+        [8.7,5.6,0.5,0.5,.3,VERDE]
       ]},
-    D: { n:'Tipología D', m2:124, w:720, d:450, cuartos:[
-        { x:0,   y:0,   w:420, h:250, n:'Estar · comedor', m:'40 m²', c:MADERA },
-        { x:420, y:0,   w:300, h:150, n:'Cocina',          m:'14 m²', c:CLARO },
-        { x:420, y:150, w:150, h:100, n:'Toilette',        m:'3 m²',  c:AGUA },
-        { x:570, y:150, w:150, h:100, n:'Lavadero',        m:'4 m²',  c:CLARO },
-        { x:0,   y:250, w:280, h:200, n:'Dormitorio 1',    m:'19 m²', c:MADERA },
-        { x:280, y:250, w:170, h:200, n:'Dormitorio 2',    m:'12 m²', c:MADERA },
-        { x:450, y:250, w:150, h:200, n:'Dormitorio 3',    m:'11 m²', c:MADERA },
-        { x:600, y:250, w:120, h:200, n:'Balcón',          m:'8 m²',  c:AIRE, aire:1 }
+    D: { n:'Tipología D', m2:124, wm:11.6, dm:7.6, cuartos:[
+        { x:0,   y:0,   w:5.2, h:4.4, n:'Estar · comedor', m:'23 m²', c:P_MADERA },
+        { x:5.2, y:0,   w:3.0, h:4.4, n:'Cocina',          m:'13 m²', c:P_COCINA },
+        { x:8.2, y:0,   w:1.7, h:2.2, n:'Toilette',        m:'4 m²',  c:P_BANO },
+        { x:9.9, y:0,   w:1.7, h:2.2, n:'Lavadero',        m:'4 m²',  c:P_LAV },
+        { x:8.2, y:2.2, w:3.4, h:2.2, n:'Baño',            m:'7 m²',  c:P_BANO },
+        { x:0,   y:4.4, w:3.8, h:3.2, n:'Dormitorio 1',    m:'12 m²', c:P_MADERA2 },
+        { x:3.8, y:4.4, w:3.0, h:3.2, n:'Dormitorio 2',    m:'10 m²', c:P_MADERA2 },
+        { x:6.8, y:4.4, w:2.6, h:3.2, n:'Dormitorio 3',    m:'8 m²',  c:P_MADERA2 },
+        { x:9.4, y:4.4, w:2.2, h:3.2, n:'Balcón',          m:'7 m²',  c:P_AIRE, aire:1 }
       ], muebles:[
-        { x:40,  y:40,  w:200, h:66, a:12, c:'#4a4740' },
-        { x:290, y:50,  w:90,  h:160,a:11, c:'#7a6a52' },
-        { x:435, y:15,  w:265, h:40, a:15, c:'#3f3d39' },
-        { x:440, y:170, w:44,  h:34, a:11, c:'#e8e6e0' },
-        { x:50,  y:290, w:170, h:120,a:13, c:'#b9b2a4' },
-        { x:305, y:290, w:120, h:100,a:13, c:'#b9b2a4' },
-        { x:470, y:290, w:110, h:100,a:13, c:'#b9b2a4' },
-        { x:620, y:280, w:44,  h:44, a:9, c:'#5c6b4f' }
+        [0.6,0.7,2.4,0.95,.3,SOFA], [1.3,2.55,1.7,0.9,.34,MESA], [4.85,0.9,0.15,1.5,.5,TV],
+        [5.4,0.15,2.6,0.65,.4,LOZA], [5.4,0.15,0.65,2.4,.4,LOZA], [6.0,2.85,1.5,0.7,.4,LOZA],
+        [8.4,0.35,0.45,0.65,.2,LOZA], [10.05,0.35,0.6,0.6,.4,LOZA],
+        [10.55,2.45,0.8,0.8,.08,DUCHA], [8.45,2.5,0.45,0.65,.2,LOZA],
+        [0.45,4.95,1.8,2.1,.3,CAMA], [2.65,4.55,1.1,0.55,.46,ROPERO],
+        [4.25,5.0,1.5,2.0,.3,CAMA], [7.15,5.05,1.4,1.9,.3,CAMA],
+        [9.7,5.3,0.7,0.7,.25,MESA], [10.55,6.4,0.5,0.5,.3,VERDE]
       ]},
-    PH:{ n:'Penthouse', m2:186, w:820, d:470, cuartos:[
-        { x:0,   y:0,   w:470, h:270, n:'Estar · comedor', m:'52 m²', c:MADERA },
-        { x:470, y:0,   w:350, h:160, n:'Cocina isla',     m:'18 m²', c:CLARO },
-        { x:470, y:160, w:170, h:110, n:'Baño',            m:'6 m²',  c:AGUA },
-        { x:640, y:160, w:180, h:110, n:'Vestidor',        m:'7 m²',  c:CLARO },
-        { x:0,   y:270, w:320, h:200, n:'Dormitorio 1',    m:'23 m²', c:MADERA },
-        { x:320, y:270, w:200, h:200, n:'Dormitorio 2',    m:'14 m²', c:MADERA },
-        { x:520, y:270, w:300, h:200, n:'Terraza',         m:'26 m²', c:AIRE, aire:1 }
+    PH:{ n:'Penthouse', m2:186, wm:13.6, dm:8.6, cuartos:[
+        { x:0,   y:0,   w:6.0, h:5.0, n:'Estar · comedor', m:'30 m²', c:P_MADERA },
+        { x:6.0, y:0,   w:3.4, h:5.0, n:'Cocina isla',     m:'17 m²', c:P_COCINA },
+        { x:9.4, y:0,   w:2.1, h:2.4, n:'Baño',            m:'5 m²',  c:P_BANO },
+        { x:11.5,y:0,   w:2.1, h:2.4, n:'Vestidor',        m:'5 m²',  c:P_VEST },
+        { x:9.4, y:2.4, w:4.2, h:2.6, n:'Escritorio',      m:'11 m²', c:P_MADERA2 },
+        { x:0,   y:5.0, w:4.2, h:3.6, n:'Dormitorio 1',    m:'15 m²', c:P_MADERA2 },
+        { x:4.2, y:5.0, w:3.4, h:3.6, n:'Dormitorio 2',    m:'12 m²', c:P_MADERA2 },
+        { x:7.6, y:5.0, w:6.0, h:3.6, n:'Terraza',         m:'22 m²', c:P_AIRE, aire:1 }
       ], muebles:[
-        { x:40,  y:40,  w:230, h:70, a:12, c:'#4a4740' },
-        { x:320, y:60,  w:100, h:170,a:11, c:'#7a6a52' },
-        { x:485, y:20,  w:315, h:44, a:15, c:'#3f3d39' },
-        { x:560, y:80,  w:180, h:60, a:13, c:'#3f3d39' },
-        { x:490, y:180, w:56,  h:70, a:9, c:'#dcdad4' },
-        { x:50,  y:310, w:190, h:130,a:13, c:'#b9b2a4' },
-        { x:345, y:310, w:130, h:110,a:13, c:'#b9b2a4' },
-        { x:560, y:300, w:120, h:56, a:10, c:'#4a4740' },
-        { x:720, y:300, w:60,  h:60, a:9, c:'#5c6b4f' }
+        [0.7,0.8,2.6,1.0,.3,SOFA], [1.6,2.85,1.8,0.95,.34,MESA], [5.65,1.0,0.15,1.6,.5,TV],
+        [6.2,0.15,2.9,0.65,.4,LOZA], [6.2,0.15,0.65,2.6,.4,LOZA], [7.0,3.15,1.6,0.75,.4,LOZA],
+        [10.35,0.35,0.85,0.85,.08,DUCHA], [10.0,1.55,0.45,0.65,.2,LOZA],
+        [11.65,0.3,0.5,1.8,.46,ROPERO], [12.95,0.3,0.5,1.8,.46,ROPERO],
+        [10.0,3.3,1.6,0.7,.35,MESA],
+        [0.5,5.6,1.8,2.1,.3,CAMA], [2.95,5.15,1.2,0.55,.46,ROPERO],
+        [4.65,5.6,1.6,2.0,.3,CAMA],
+        [9.0,6.2,0.9,0.9,.35,MESA], [12.55,5.45,0.55,0.55,.3,VERDE], [8.2,7.55,0.5,0.5,.3,VERDE]
       ]}
   };
+  /* el visor escala con T.w/T.d en píxeles */
+  (function(){
+    for (var k in PLANOS){ PLANOS[k].w = PLANOS[k].wm * ESC; PLANOS[k].d = PLANOS[k].dm * ESC; PLANOS[k].k2 = k; }
+  })();
 
-  var MURO_FUERA = 40, MURO_DENTRO = 22, GRUESO = 7;
+  /* ---- los muros entre vecinos, con su puerta, calculados solos ---- */
+  function murosDe(T){
+    var segs = [], i, j, A, B, a0, a1;
+    function puerta(seg, anchoPuerta){
+      /* un tramo largo se parte en dos dejando el hueco de la puerta */
+      if (seg.len < anchoPuerta + 0.5) return [seg];
+      var lado = (seg.len - anchoPuerta) / 2;
+      if (seg.dir === 'h') return [
+        { x:seg.x, y:seg.y, len:lado, dir:'h', alto:seg.alto },
+        { x:seg.x + lado + anchoPuerta, y:seg.y, len:lado, dir:'h', alto:seg.alto }];
+      return [
+        { x:seg.x, y:seg.y, len:lado, dir:'v', alto:seg.alto },
+        { x:seg.x, y:seg.y + lado + anchoPuerta, len:lado, dir:'v', alto:seg.alto }];
+    }
+    for (i = 0; i < T.cuartos.length; i++){
+      for (j = i + 1; j < T.cuartos.length; j++){
+        A = T.cuartos[i]; B = T.cuartos[j];
+        /* vecinos en vertical: el borde derecho de uno toca el izquierdo del otro */
+        if (Math.abs((A.x + A.w) - B.x) < .01 || Math.abs((B.x + B.w) - A.x) < .01){
+          var xm = Math.abs((A.x + A.w) - B.x) < .01 ? B.x : A.x;
+          a0 = Math.max(A.y, B.y); a1 = Math.min(A.y + A.h, B.y + B.h);
+          if (a1 - a0 > .3) segs = segs.concat(
+            puerta({ x:xm, y:a0, len:a1 - a0, dir:'v', alto:MURO_BAJO }, (A.aire || B.aire) ? 1.6 : 0.9));
+        }
+        /* vecinos en horizontal */
+        if (Math.abs((A.y + A.h) - B.y) < .01 || Math.abs((B.y + B.h) - A.y) < .01){
+          var ym = Math.abs((A.y + A.h) - B.y) < .01 ? B.y : A.y;
+          a0 = Math.max(A.x, B.x); a1 = Math.min(A.x + A.w, B.x + B.w);
+          if (a1 - a0 > .3) segs = segs.concat(
+            puerta({ x:a0, y:ym, len:a1 - a0, dir:'h', alto:MURO_BAJO }, (A.aire || B.aire) ? 1.6 : 0.9));
+        }
+      }
+    }
+    /* el borde de afuera: muro alto, salvo el frente de los balcones */
+    T.cuartos.forEach(function(c){
+      var alto = c.aire ? BARANDA : MURO_ALTO;
+      if (c.y < .01)               segs.push({ x:c.x, y:0,    len:c.w, dir:'h', alto:alto });
+      if (c.y + c.h > T.dm - .01)  segs.push({ x:c.x, y:T.dm, len:c.w, dir:'h', alto:alto });
+      if (c.x < .01)               segs.push({ x:0,   y:c.y,  len:c.h, dir:'v', alto:alto });
+      if (c.x + c.w > T.wm - .01)  segs.push({ x:T.wm,y:c.y,  len:c.h, dir:'v', alto:alto });
+    });
+    return segs;
+  }
 
   function construirPlano(destino, T){
-    T.k2 = T.k2 || T.n.replace(/[^A-Za-z]/g,'');
     var esc = doc.createElement('div');
     esc.className = 'escena';
     var raiz = doc.createElement('div');
     raiz.className = 'torre';
     raiz.style.width = '1px'; raiz.style.height = '1px';
 
-    function ubicar(el, cx, cy, cz){
+    function ubicar(el, mx, my, alto){
       el.className = 'piso';
       el.style.width = '1px'; el.style.height = '1px';
       el.style.transform = 'translate(-50%,-50%) translate3d(' +
-        (cx - T.w/2).toFixed(1) + 'px,' + cy.toFixed(1) + 'px,' + (cz - T.d/2).toFixed(1) + 'px)';
+        ((mx - T.wm/2) * ESC).toFixed(1) + 'px,' + (-alto).toFixed(1) + 'px,' +
+        ((my - T.dm/2) * ESC).toFixed(1) + 'px)';
       raiz.appendChild(el);
     }
+    function bloque(mx, my, mw, md, altoM, colores){
+      var el = doc.createElement('div');
+      var hpx = altoM * ESC;
+      ubicar(el, mx + mw/2, my + md/2, 4 + hpx/2);
+      caja(el, mw * ESC, hpx, md * ESC, false);
+      Array.prototype.forEach.call(el.querySelectorAll('.cara'), function(k){
+        k.style.background = colores[1]; k.style.border = '0';
+      });
+      var t = el.querySelector('.cara.t');
+      if (t) t.style.background = colores[0];
+      return el;
+    }
 
-    /* la losa */
+    /* la losa: la placa blanca con canto gris, como en los renders */
     var losa = doc.createElement('div');
-    ubicar(losa, T.w/2, 8, T.d/2);
-    caja(losa, T.w + 18, 8, T.d + 18, false);
-    Array.prototype.forEach.call(losa.querySelectorAll('.cara'), function(c){
-      c.style.background = '#1a1917'; c.style.borderColor = 'rgba(247,246,242,.10)';
+    ubicar(losa, T.wm/2, T.dm/2, -5);
+    caja(losa, T.wm * ESC + 22, 10, T.dm * ESC + 22, false);
+    Array.prototype.forEach.call(losa.querySelectorAll('.cara'), function(k){
+      k.style.background = '#d9d3c6'; k.style.border = '0';
     });
 
-    /* Un piso por ambiente, no una sola lámina grande.
-       El 3D de CSS no sabe cortar dos superficies que se cruzan: si el suelo es
-       un plano único, o tapa todos los muros o desaparece detrás de ellos. Con
-       una losita por ambiente, cada una se ordena bien contra los muros que la
-       rodean, y de paso cada una lleva su propio nombre escrito encima. */
+    /* el piso de cada ambiente, con su nombre en oscuro sobre claro */
     T.cuartos.forEach(function(c, i){
       var t = doc.createElement('div');
-      ubicar(t, c.x + c.w/2, -1, c.y + c.h/2);
-      caja(t, c.w, 4, c.h, false);
+      ubicar(t, c.x + c.w/2, c.y + c.h/2, 2);
+      caja(t, c.w * ESC, 4, c.h * ESC, false);
       Array.prototype.forEach.call(t.querySelectorAll('.cara'), function(k){
         k.style.background = c.c; k.style.border = '0';
-        if (c.aire) k.style.opacity = '.6';
       });
       var tapa = t.querySelector('.cara.t');
       if (!tapa) return;
       tapa.style.background = c.c;
-      var vet = (c.c === MADERA)
-        ? '<rect width="' + c.w + '" height="' + c.h + '" fill="url(#v' + i + T.k2 + ')"/>' +
-          '<defs><pattern id="v' + i + T.k2 + '" width="17" height="17" patternUnits="userSpaceOnUse">' +
-          '<path d="M0 0h17" stroke="rgba(0,0,0,.22)" stroke-width="1.5"/></pattern></defs>'
+      tapa.style.boxShadow = 'inset 0 0 0 1px rgba(0,0,0,.06)';
+      var wpx = c.w * ESC, hpx = c.h * ESC;
+      var veta = (c.c === P_MADERA || c.c === P_MADERA2)
+        ? '<rect width="' + wpx + '" height="' + hpx + '" fill="url(#v' + i + T.k2 + ')"/>' +
+          '<defs><pattern id="v' + i + T.k2 + '" width="14" height="14" patternUnits="userSpaceOnUse">' +
+          '<path d="M0 0h14" stroke="rgba(120,95,60,.14)" stroke-width="1.3"/></pattern></defs>'
         : '';
+      var chico = (wpx < 125);
+      /* la etiqueta va abajo a la izquierda —los muebles suelen vivir arriba—
+         y lleva un halo claro para leerse sobre la veta o sobre un mueble */
       tapa.innerHTML =
-        '<svg viewBox="0 0 ' + c.w + ' ' + c.h + '" xmlns="http://www.w3.org/2000/svg" ' +
-        'style="width:100%;height:100%;display:block" aria-hidden="true">' + vet +
-        '<text x="12" y="24" fill="#F7F6F2" ' +
-        'font-family="system-ui,sans-serif" font-size="16" font-weight="600" ' +
-        'style="paint-order:stroke" stroke="rgba(0,0,0,.55)" stroke-width="3.5">' + c.n + '</text>' +
-        '<text x="12" y="42" fill="rgba(247,246,242,.85)" ' +
-        'font-family="system-ui,sans-serif" font-size="12.5" ' +
-        'style="paint-order:stroke" stroke="rgba(0,0,0,.5)" stroke-width="3">' + c.m + '</text>' +
+        '<svg viewBox="0 0 ' + wpx + ' ' + hpx + '" xmlns="http://www.w3.org/2000/svg" ' +
+        'style="width:100%;height:100%;display:block" aria-hidden="true">' + veta +
+        '<text x="10" y="' + (hpx - (chico ? 22 : 28)) + '" fill="#4a4133" ' +
+        'font-family="system-ui,sans-serif" font-size="' + (chico ? 12 : 15) + '" font-weight="600" ' +
+        'style="paint-order:stroke" stroke="rgba(252,248,240,.75)" stroke-width="3">' + c.n + '</text>' +
+        '<text x="10" y="' + (hpx - (chico ? 8 : 10)) + '" fill="#8a7f6d" ' +
+        'font-family="system-ui,sans-serif" font-size="' + (chico ? 10.5 : 12) + '" ' +
+        'style="paint-order:stroke" stroke="rgba(252,248,240,.7)" stroke-width="2.5">' + c.m + '</text>' +
         '</svg>';
     });
 
-    /* los muros: cuatro por ambiente. Los que caen sobre el borde de afuera
-       van altos; los de adentro, cortados, para poder ver los ambientes. */
-    T.cuartos.forEach(function(c){
-      if (c.aire) return;
-      [[c.x + c.w/2, c.y, c.w, GRUESO],
-       [c.x + c.w/2, c.y + c.h, c.w, GRUESO],
-       [c.x, c.y + c.h/2, GRUESO, c.h],
-       [c.x + c.w, c.y + c.h/2, GRUESO, c.h]].forEach(function(m){
-        var fuera = (m[1] <= 1 || m[1] >= T.d - 1 || m[0] <= 1 || m[0] >= T.w - 1);
-        var alto = fuera ? MURO_FUERA : MURO_DENTRO;
-        var el = doc.createElement('div');
-        ubicar(el, m[0], -5 - alto/2, m[1]);
-        el.className += ' muro';
-        caja(el, m[2], alto, m[3], false);
-        Array.prototype.forEach.call(el.querySelectorAll('.cara'), function(k){
-          k.style.background = fuera ? '#4a463f' : '#6d675e';
-        });
+    /* los muros, generados con sus puertas */
+    murosDe(T).forEach(function(m){
+      var el = doc.createElement('div');
+      var hpx = m.alto * ESC, g = GROSOR * ESC;
+      if (m.dir === 'h'){
+        ubicar(el, m.x + m.len/2, m.y, 4 + hpx/2);
+        caja(el, m.len * ESC, hpx, g, false);
+      } else {
+        ubicar(el, m.x, m.y + m.len/2, 4 + hpx/2);
+        caja(el, g, hpx, m.len * ESC, false);
+      }
+      Array.prototype.forEach.call(el.querySelectorAll('.cara'), function(k){
+        k.style.background = C_MURO_L; k.style.border = '0';
       });
+      var t = el.querySelector('.cara.t');
+      if (t) t.style.background = C_MURO;
     });
 
-    /* los muebles */
+    /* los muebles: tapa clara, costado más oscuro */
     (T.muebles || []).forEach(function(m){
-      var el = doc.createElement('div');
-      ubicar(el, m.x + m.w/2, -5 - m.a/2, m.y + m.h/2);
-      el.className += ' mueble';
-      caja(el, m.w, m.a, m.h, false);
-      Array.prototype.forEach.call(el.querySelectorAll('.cara'), function(k){
-        k.style.background = m.c;
-      });
-      var techo = el.querySelector('.cara.t');
-      if (techo) techo.style.filter = 'brightness(1.25)';
+      bloque(m[0], m[1], m[2], m[3], m[4], m[5]);
     });
 
     esc.appendChild(raiz);
