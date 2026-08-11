@@ -543,6 +543,7 @@
     gira3d: { nombre: 'Producto 3D que gira', para: 'Productos físicos', demo: 'ejemplos/producto-3d-gira.html', prev: 'pv-tech', label: 'Ykua', why: 'Se arma con fotos tomadas en círculo, no con video: el visitante lo agarra y lo gira.' },
     imanes: { nombre: 'Neón y cristal', para: 'Producto de diseño · OLED', demo: 'ejemplos/reloj-imanes.html', prev: 'pv-darkpro', label: 'ORBE 01', why: 'Negro puro y luz propia: las bolitas de acero ruedan hasta formar tu hora de verdad, y el color del neón reilumina la página entera.' },
     ropa: { nombre: 'Tipografía cinética', para: 'Moda y tiendas de ropa', demo: 'ejemplos/ropa-cinetica.html', prev: 'pv-edit', label: 'YVOTY', why: 'La letra reacciona a la velocidad del scroll y al mouse: se estira, engorda y cae en diagonal. El movimiento es el producto.' },
+    edificio: { nombre: 'Edificio en 3D', para: 'Inmobiliarias · desarrolladoras', demo: 'ejemplos/edificio-3d.html', prev: 'pv-darkpro', label: 'Sky Tower', why: 'Maquetas 3D dibujadas con CSS que acompañan el relato, y un visor donde se elige el piso y se ve qué unidad está libre. Sin WebGL y sin bajar una sola librería.' },
     menuqr: { nombre: 'Menú con QR imprimible', para: 'Restaurantes y bares', demo: 'ejemplos/menu-qr.html', prev: 'pv-clasico', label: 'Guavirá', why: 'El código QR se genera de verdad en la página y sale listo para imprimir. El cartel impreso no cambia nunca; el menú al que apunta, sí.' },
     turnos: { nombre: 'Turnos por WhatsApp', para: 'Barberías · consultorios · estética', demo: 'ejemplos/turnos-whatsapp.html', prev: 'pv-prof', label: 'Karaí', why: 'Servicio, día y hora en tres toques, y el mensaje se escribe solo. Los horarios se calculan con la duración real de cada servicio.' },
     instaweb: { nombre: 'De Instagram a página web', para: 'Comercios con Instagram activo', demo: 'ejemplos/instagram-a-web.html', prev: 'pv-minimal', label: 'Ña Cata', why: 'Los posteos vuelan a su lugar en la página: la grilla queda vacía y la página llena. El contenido ya lo tenías.' },
@@ -555,7 +556,7 @@
                'cine', 'viajes', 'sala', 'ar',
                'tienda', 'carrito', 'filtros', 'ficha', 'setfoto',
                'videobucle', 'fondoscroll', 'gira3d', 'rescate',
-               'ropa', 'imanes', 'menuqr', 'turnos', 'instaweb'];
+               'ropa', 'imanes', 'menuqr', 'turnos', 'instaweb', 'edificio'];
   var minisEl = document.getElementById('minis');
   /* el conteo sale de ORDER, no de un número escrito a mano: ya se había
      quedado en 24 cuando la galería tenía 26 */
@@ -637,7 +638,7 @@
   var TINTES = {
     clasico: ['#a8672a', '#e0b154'], minimal: ['#b56a4c', '#d9c3b4'], prof: ['#2f6fbe', '#22d3ee'],
     bold: ['#c8a24a', '#f5e942'], neon: ['#e91e8c', '#f5e942'], grad: ['#7b2ff7', '#ff7a1a'],
-    tech: ['#4d7fff', '#a3e635'], revista: ['#e91e8c', '#f5e942'], conv: ['#1d6fd6', '#63c8ff'], edit: ['#e02020', '#0a0a0a'], darkpro: ['#a6e5f2', '#ff7a1a'], viajes: ['#58e0d8', '#ff6a3d'], sala: ['#d8a657', '#7c4a21'], ar: ['#a8672a', '#e0b154'], cine: ['#ff6a1f', '#ffc61a'], tienda: ['#e0a53f', '#c8702a'], carrito: ['#b8563f', '#d9a441'], filtros: ['#ff7a1a', '#63c8ff'], ficha: ['#2f6fbe', '#22d3ee'], setfoto: ['#c2470e', '#e0b154'], videobucle: ['#ff6a1f', '#ffc61a'], fondoscroll: ['#ff8c2b', '#7bc47f'], gira3d: ['#17c3b2', '#8d87a5'], rescate: ['#e0a53f', '#63c8ff'], ropa: ['#e02020', '#111111'], imanes: ['#22e0ff', '#7d5bff'], menuqr: ['#c8702a', '#e0b154'], turnos: ['#2f6fbe', '#22d3ee'], instaweb: ['#b56a4c', '#d9c3b4']
+    tech: ['#4d7fff', '#a3e635'], revista: ['#e91e8c', '#f5e942'], conv: ['#1d6fd6', '#63c8ff'], edit: ['#e02020', '#0a0a0a'], darkpro: ['#a6e5f2', '#ff7a1a'], viajes: ['#58e0d8', '#ff6a3d'], sala: ['#d8a657', '#7c4a21'], ar: ['#a8672a', '#e0b154'], cine: ['#ff6a1f', '#ffc61a'], tienda: ['#e0a53f', '#c8702a'], carrito: ['#b8563f', '#d9a441'], filtros: ['#ff7a1a', '#63c8ff'], ficha: ['#2f6fbe', '#22d3ee'], setfoto: ['#c2470e', '#e0b154'], videobucle: ['#ff6a1f', '#ffc61a'], fondoscroll: ['#ff8c2b', '#7bc47f'], gira3d: ['#17c3b2', '#8d87a5'], rescate: ['#e0a53f', '#63c8ff'], ropa: ['#e02020', '#111111'], imanes: ['#22e0ff', '#7d5bff'], menuqr: ['#c8702a', '#e0b154'], turnos: ['#2f6fbe', '#22d3ee'], instaweb: ['#b56a4c', '#d9c3b4'], edificio: ['#B8955A', '#D8D0C2']
   };
   function teñir(key) {
     var t = TINTES[key];

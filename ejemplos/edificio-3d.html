@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; frame-src 'self'; media-src 'self' data:; form-action 'none'; object-src 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0A0A0A">
+<title>Sky Tower — Anteproyecto de demostración · KatuWeb</title>
+<meta name="description" content="Demo de venta de edificio en construcción: maquetas 3D que acompañan el relato y un visor donde se elige el piso y se ve la disponibilidad real de cada unidad.">
+<!--
+  DEMO KatuWeb · Edificio en 3D · KTW-5QJTN
+
+  ATENCIÓN — TODOS LOS DATOS DE ESTA PÁGINA SON INVENTADOS.
+  Pisos, unidades, metros, precios, orientaciones, porcentaje de avance y fechas
+  son de ejemplo, puestos para que la mecánica se pueda mostrar funcionando.
+  Por eso la página lleva noindex: no tiene que aparecer en una búsqueda de
+  alguien que esté por comprar un departamento.
+
+  Para convertirla en la página real de un cliente hay que reemplazar los datos
+  de los objetos PROYECTO, TIPOS y OBRA que están al principio del script, y
+  sacar el noindex y el cartel de "datos de ejemplo".
+
+  EL 3D ES CSS, NO WEBGL.
+  Un edificio es una pila de cajas: se dibuja con transform 3D y preserve-3d,
+  sin bajar ninguna librería. Pesa cero, lo acelera la placa de video y anda en
+  un celular de gama media, que es donde se va a mirar. Three.js acá no aportaba
+  nada que se note y costaba medio megabyte.
+-->
+<style>
+  *,*::before,*::after{box-sizing:border-box}
+
+  :root{
+    --negro:#0A0A0A;
+    --panel:#121212;
+    --blanco:#F7F6F2;
+    --gris:#8f8a83;        /* 5.4:1 sobre negro */
+    --arena:#D8D0C2;
+    --oro:#B8955A;         /* 7.1:1 sobre negro */
+    --linea:rgba(247,246,242,.14);
+    --verde:#6FCF97;
+    --ambar:#E2B04A;
+    --rojo:#E27D7D;
+  }
+
+  html{background:var(--negro); -webkit-text-size-adjust:100%; overflow-x:hidden; scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--negro); color:var(--blanco);
+    font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+    line-height:1.6; overflow-x:hidden;
+  }
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} }
+
+  .env{max-width:1220px; margin:0 auto; padding:0 22px}
+  h1,h2,h3{margin:0; font-weight:500; line-height:1.05; letter-spacing:-.025em}
+
+  .num{
+    font-size:11px; letter-spacing:.34em; color:var(--oro);
+    text-transform:uppercase; margin:0 0 14px; font-weight:600;
+  }
+  .tit{font-size:clamp(29px,4.6vw,54px); margin:0 0 18px; max-width:18ch}
+  .baja{color:var(--gris); font-size:16px; max-width:46ch; margin:0 0 22px}
+
+  /* ---------- barra ---------- */
+  .barra{
+    position:fixed; inset:0 0 auto 0; z-index:60;
+    display:flex; align-items:center; justify-content:space-between; gap:16px;
+    padding:16px 22px; transition:background .35s ease, border-color .35s ease, padding .35s ease;
+    border-bottom:1px solid transparent;
+  }
+  .barra.pegada{
+    background:rgba(10,10,10,.82); backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px); border-bottom-color:var(--linea); padding:11px 22px;
+  }
+  .logo{font-size:14px; letter-spacing:.34em; text-transform:uppercase; font-weight:600}
+  .logo i{font-style:normal; color:var(--oro)}
+  .menu{display:none; gap:26px; list-style:none; margin:0; padding:0}
+  .menu a{
+    color:var(--gris); text-decoration:none; font-size:12.5px; letter-spacing:.12em;
+    text-transform:uppercase; display:inline-flex; align-items:center; justify-content:center;
+    min-height:44px; min-width:44px;
+  }
+  .menu a:hover{color:var(--blanco)}
+  .btLinea{
+    display:inline-flex; align-items:center; min-height:44px; padding:0 18px;
+    border:1px solid var(--oro); color:var(--oro); text-decoration:none;
+    font-size:11.5px; letter-spacing:.16em; text-transform:uppercase; font-weight:600;
+  }
+  .btLinea:hover{background:var(--oro); color:#0A0A0A}
+  @media (min-width:1000px){ .menu{display:flex} }
+
+  /* ---------- portada ---------- */
+  .portada{
+    min-height:100svh; display:grid; place-items:center;
+    padding:96px 22px 60px; position:relative; text-align:center;
+  }
+  .portada .piso0{
+    position:absolute; inset:auto 0 0 0; height:36%;
+    background:linear-gradient(transparent, rgba(216,208,194,.05));
+    pointer-events:none;
+  }
+  .portada .contenido{position:relative; z-index:2}
+  .kick{font-size:11px; letter-spacing:.4em; text-transform:uppercase; color:var(--oro)}
+  .portada h1{font-size:clamp(46px,11vw,132px); margin:16px 0 6px; letter-spacing:-.04em}
+  .lema{font-size:clamp(16px,2.4vw,22px); color:var(--arena); margin:0 0 10px}
+  .portada p.d{color:var(--gris); max-width:46ch; margin:0 auto 30px; font-size:15.5px}
+  .ctas{display:flex; gap:12px; justify-content:center; flex-wrap:wrap}
+  .btOro{
+    display:inline-flex; align-items:center; min-height:52px; padding:0 26px;
+    background:var(--oro); color:#0A0A0A; text-decoration:none; font-weight:700;
+    font-size:12.5px; letter-spacing:.14em; text-transform:uppercase; border:0; cursor:pointer;
+    font-family:inherit;
+  }
+  .btOro:hover{filter:brightness(1.1)}
+  .btGhost{
+    display:inline-flex; align-items:center; min-height:52px; padding:0 26px;
+    border:1px solid var(--linea); color:var(--blanco); text-decoration:none;
+    font-size:12.5px; letter-spacing:.14em; text-transform:uppercase; font-weight:600;
+    background:transparent; cursor:pointer; font-family:inherit;
+  }
+  .btGhost:hover{border-color:var(--blanco)}
+  .abajo{
+    position:absolute; left:50%; bottom:22px; transform:translateX(-50%);
+    font-size:10px; letter-spacing:.3em; text-transform:uppercase; color:var(--gris);
+  }
+  .torrePortada{
+    width:min(70vw,300px); height:min(46vh,380px); margin:0 auto 26px;
+  }
+
+  /* ---------- los bloques con maqueta ---------- */
+  .bloque{padding:clamp(56px,10vh,110px) 0; border-top:1px solid var(--linea)}
+  .par{display:grid; gap:34px; grid-template-columns:1fr; align-items:center}
+  @media (min-width:940px){
+    .par{grid-template-columns:1fr 1fr; gap:66px}
+    .bloque.izq .maq{order:-1}
+  }
+  .maq{
+    position:relative; width:100%; height:min(58vh,430px);
+    display:grid; place-items:center;
+  }
+  .maq .piso0{
+    position:absolute; left:12%; right:12%; bottom:8%; height:14px; border-radius:50%;
+    background:rgba(216,208,194,.10); filter:blur(10px);
+  }
+  .abrir3d{
+    -webkit-appearance:none; appearance:none; cursor:pointer; font-family:inherit;
+    position:absolute; left:50%; bottom:0; transform:translateX(-50%);
+    display:inline-flex; align-items:center; gap:9px; min-height:44px; padding:0 18px;
+    background:rgba(10,10,10,.7); border:1px solid var(--linea); color:var(--blanco);
+    font-size:11.5px; letter-spacing:.15em; text-transform:uppercase; font-weight:600;
+    backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+  }
+  .abrir3d:hover{border-color:var(--oro); color:var(--oro)}
+  .abrir3d b{font-weight:700; color:var(--oro)}
+
+  /* ---------- la torre en 3D (CSS puro) ---------- */
+  .escena{
+    width:100%; height:100%; display:grid; place-items:center;
+    perspective:1500px; perspective-origin:50% 42%;
+    touch-action:pan-y;
+  }
+  .escena.agarrable{cursor:grab}
+  .escena.agarrando{cursor:grabbing}
+  .torre{
+    position:relative; transform-style:preserve-3d; will-change:transform;
+  }
+  .piso{
+    position:absolute; left:50%; top:50%;
+    transform-style:preserve-3d; will-change:transform;
+  }
+  .cara{
+    position:absolute; left:50%; top:50%; transform-origin:50% 50%;
+    background:#161616; border:.5px solid rgba(247,246,242,.08);
+    backface-visibility:hidden;
+  }
+  /* las cuatro orientaciones tienen luz distinta: sin eso la torre se ve plana */
+  .cara.f{background:linear-gradient(#34322e,#26241f)}
+  .cara.r{background:linear-gradient(#242220,#191816)}
+  .cara.b{background:linear-gradient(#1d1c1a,#151413)}
+  .cara.l{background:linear-gradient(#171614,#100f0e)}
+  .cara.t{background:linear-gradient(120deg,#45423b,#26241f)}
+  /* las ventanas: una banda por piso, dibujada con un degradado repetido */
+  .cara.vidrio::after{
+    content:""; position:absolute; inset:22% 8% 22% 8%;
+    background:repeating-linear-gradient(90deg,
+      rgba(216,208,194,.30) 0 5px, transparent 5px 13px);
+  }
+  .piso.sel .cara{
+    background:rgba(184,149,90,.30); border-color:var(--oro);
+  }
+  .piso.sel .cara.t{background:rgba(184,149,90,.45)}
+  .piso.hecho .cara{background:#2a2825}
+  .torre.obra .piso.pend .cara{
+    background:transparent; border:.5px dashed rgba(247,246,242,.22);
+  }
+  .torre.obra .piso.pend .cara::after{display:none}
+  .torre.obra .piso.curso .cara{
+    background:rgba(226,176,74,.22); border-color:var(--ambar);
+  }
+  .piso.tocable{cursor:pointer}
+  .plano{
+    position:absolute; left:50%; top:50%; width:330px; height:264px;
+    transform:translate(-50%,-50%);
+  }
+  .plano svg{width:100%; height:100%; display:block}
+
+  /* ---------- datos ---------- */
+  .datos{display:grid; gap:1px; grid-template-columns:repeat(2,1fr); background:var(--linea); border:1px solid var(--linea)}
+  @media (min-width:760px){ .datos{grid-template-columns:repeat(3,1fr)} }
+  .dato{background:var(--negro); padding:22px 18px}
+  .dato b{display:block; font-size:clamp(28px,4vw,42px); font-weight:500; letter-spacing:-.03em; color:var(--blanco)}
+  .dato span{display:block; font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--gris); margin-top:4px}
+
+  /* ---------- avance ---------- */
+  .barraObra{height:3px; background:rgba(247,246,242,.12); margin:6px 0 26px; overflow:hidden}
+  .barraObra i{display:block; height:100%; background:var(--oro); width:0; transition:width 1.1s cubic-bezier(.2,.7,.2,1)}
+  .etapas{list-style:none; margin:0; padding:0}
+  .etapas li{
+    display:flex; align-items:baseline; gap:14px; padding:13px 0;
+    border-top:1px solid var(--linea); font-size:14.5px;
+  }
+  .etapas li:last-child{border-bottom:1px solid var(--linea)}
+  .etapas .est{
+    flex:0 0 auto; width:9px; height:9px; border-radius:50%;
+    background:rgba(247,246,242,.2);
+  }
+  .etapas li.ok .est{background:var(--verde)}
+  .etapas li.curso .est{background:var(--ambar); box-shadow:0 0 0 4px rgba(226,176,74,.18)}
+  .etapas li.ok{color:var(--blanco)}
+  .etapas li.curso{color:var(--ambar)}
+  .etapas li.pend{color:var(--gris)}
+  .etapas em{margin-left:auto; font-style:normal; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--gris)}
+
+  /* ---------- cerca ---------- */
+  .cerca{list-style:none; margin:0; padding:0}
+  .cerca li{display:flex; justify-content:space-between; gap:16px; padding:12px 0; border-top:1px solid var(--linea); font-size:15px}
+  .cerca li:last-child{border-bottom:1px solid var(--linea)}
+  .cerca b{color:var(--oro); font-weight:600; white-space:nowrap}
+
+  /* ---------- visor 3D ---------- */
+  .visor{
+    position:fixed; inset:0; z-index:200; background:#060606;
+    display:flex; flex-direction:column;
+  }
+  .visor[hidden]{display:none}
+  .visorTop{
+    display:flex; align-items:center; justify-content:space-between; gap:14px;
+    padding:12px 18px; border-bottom:1px solid var(--linea); flex:0 0 auto;
+  }
+  .visorTop h2{font-size:15px; letter-spacing:.16em; text-transform:uppercase; font-weight:600}
+  .visorTop h2 span{color:var(--gris); letter-spacing:.06em; text-transform:none; font-size:13px; display:block; margin-top:2px}
+  .cerrar{
+    -webkit-appearance:none; appearance:none; cursor:pointer; font-family:inherit;
+    min-width:44px; min-height:44px; background:transparent; border:1px solid var(--linea);
+    color:var(--blanco); font-size:18px; line-height:1;
+  }
+  .cerrar:hover{border-color:var(--oro); color:var(--oro)}
+  .visorCuerpo{flex:1 1 auto; display:grid; grid-template-rows:1fr auto; min-height:0}
+  @media (min-width:940px){ .visorCuerpo{grid-template-rows:1fr; grid-template-columns:1fr 372px} }
+  .visorEscena{position:relative; min-height:0; display:grid; place-items:center; overflow:hidden}
+  .visorEscena .escena{z-index:1}
+  .ayuda{
+    position:absolute; left:0; right:0; bottom:0; z-index:3;
+    padding:8px 12px; margin:0; background:linear-gradient(transparent, #060606 55%);
+    font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--gris);
+    text-align:center; pointer-events:none;
+  }
+  @media (max-width:620px){ .ayuda{font-size:9.5px; letter-spacing:.1em} }
+  .herramientas{
+    position:absolute; left:12px; top:12px; z-index:3;
+    display:flex; flex-direction:column; gap:8px;
+  }
+  .herr{
+    -webkit-appearance:none; appearance:none; cursor:pointer; font-family:inherit;
+    min-height:44px; padding:0 14px; background:rgba(10,10,10,.75); color:var(--blanco);
+    border:1px solid var(--linea); font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+    font-weight:600; text-align:left;
+  }
+  .herr[aria-pressed="true"]{border-color:var(--oro); color:var(--oro)}
+  .herr:hover{border-color:var(--blanco)}
+
+  .lado{
+    border-top:1px solid var(--linea); overflow-y:auto; -webkit-overflow-scrolling:touch;
+    max-height:44svh; padding:16px 18px 22px; background:var(--panel);
+  }
+  @media (min-width:940px){ .lado{border-top:0; border-left:1px solid var(--linea); max-height:none} }
+  .lado h3{font-size:22px; margin:0 0 2px}
+  .lado .sub{font-size:12px; letter-spacing:.16em; text-transform:uppercase; color:var(--gris); margin:0 0 16px}
+  .uni{
+    display:grid; grid-template-columns:auto 1fr auto; gap:4px 12px; align-items:center;
+    padding:13px 0; border-top:1px solid var(--linea);
+  }
+  .uni:last-child{border-bottom:1px solid var(--linea)}
+  .uni .n{font-size:17px; font-weight:600; grid-row:span 2}
+  .uni .d{font-size:12.5px; color:var(--gris); grid-column:2}
+  .uni .p{font-size:14px; color:var(--arena); grid-column:2}
+  .uni .e{
+    grid-row:span 2; font-size:10px; letter-spacing:.12em; text-transform:uppercase;
+    font-weight:700; padding:5px 9px; border:1px solid; white-space:nowrap;
+  }
+  /* el estado nunca se comunica solo con color: siempre lleva la palabra */
+  .e.disp{color:var(--verde); border-color:rgba(111,207,151,.5)}
+  .e.res{color:var(--ambar); border-color:rgba(226,176,74,.5)}
+  .e.vend{color:var(--rojo); border-color:rgba(226,125,125,.45)}
+  .uni .wa{
+    grid-column:1 / -1; margin-top:8px; display:inline-flex; align-items:center;
+    justify-content:center; min-height:44px; text-decoration:none;
+    border:1px solid var(--oro); color:var(--oro); font-size:11px;
+    letter-spacing:.14em; text-transform:uppercase; font-weight:700;
+  }
+  .uni .wa:hover{background:var(--oro); color:#0A0A0A}
+
+  /* ---------- pie ---------- */
+  .waFijo{
+    position:fixed; right:16px; bottom:16px; z-index:55;
+    display:inline-flex; align-items:center; gap:9px; min-height:52px; padding:0 20px;
+    background:var(--oro); color:#0A0A0A; text-decoration:none; font-weight:700;
+    font-size:12px; letter-spacing:.12em; text-transform:uppercase;
+  }
+  @media (max-width:620px){
+    .waFijo{left:14px; right:14px; bottom:14px; justify-content:center}
+  }
+  .aviso{
+    border:1px solid var(--linea); border-left:2px solid var(--oro);
+    padding:16px 18px; color:var(--gris); font-size:13.5px; margin:0 0 30px;
+  }
+  .aviso b{color:var(--arena); display:block; margin-bottom:3px}
+  .katu-pie{
+    margin-top:16px; border-top:1px solid var(--linea);
+    padding:24px 18px 100px; text-align:center; font-size:13px; color:var(--gris); line-height:2;
+  }
+  .katu-pie a{color:var(--oro); text-decoration:none; font-weight:600; display:inline-block; min-height:44px; line-height:44px; padding:0 8px}
+  .katu-pie a:hover{text-decoration:underline}
+
+  .rev{opacity:0; transform:translateY(20px); transition:opacity .7s ease, transform .7s ease}
+  .rev.vis{opacity:1; transform:none}
+  @media (prefers-reduced-motion: reduce){
+    .rev{opacity:1; transform:none; transition:none}
+    .barraObra i{transition:none}
+  }
+</style>
+</head>
+<body>
+
+<header class="barra" id="barra">
+  <span class="logo">Sky<i>&nbsp;Tower</i></span>
+  <nav aria-label="Secciones">
+    <ul class="menu">
+      <li><a href="#proyecto">Proyecto</a></li>
+      <li><a href="#planta">Unidades</a></li>
+      <li><a href="#amenities">Amenities</a></li>
+      <li><a href="#obra">Obra</a></li>
+      <li><a href="#zona">Ubicación</a></li>
+    </ul>
+  </nav>
+  <a class="btLinea" id="waBarra" href="#" target="_blank" rel="noopener noreferrer">Consultar disponibilidad</a>
+</header>
+
+<main>
+
+  <!-- ============ portada ============ -->
+  <section class="portada">
+    <span class="piso0" aria-hidden="true"></span>
+    <div class="contenido">
+      <div class="torrePortada" id="torrePortada" data-maqueta="hero" data-abre="torre" aria-hidden="true"></div>
+      <p class="kick">Nuevo proyecto residencial · Ciudad del Este</p>
+      <h1>Sky Tower</h1>
+      <p class="lema">Una nueva forma de vivir la ciudad.</p>
+      <p class="d">Dieciocho pisos sobre la avenida, con vista al río y a la frontera.
+      Tocá cualquier maqueta y entrá al edificio en 3D: elegís el piso y ves qué está libre.</p>
+      <div class="ctas">
+        <button class="btOro" type="button" data-abre="unidades">Ver disponibilidad</button>
+        <a class="btGhost" href="#proyecto">Explorar el proyecto</a>
+      </div>
+    </div>
+    <span class="abajo" aria-hidden="true">Bajá para recorrerlo</span>
+  </section>
+
+  <!-- ============ 01 el proyecto ============ -->
+  <section class="bloque" id="proyecto">
+    <div class="env par">
+      <div class="rev">
+        <p class="num">01 — El proyecto</p>
+        <h2 class="tit">Arquitectura que se reconoce desde la avenida.</h2>
+        <p class="baja">Una torre de planta compacta, con balcones corridos que hacen la sombra
+        que hace falta acá. Menos superficie perdida en pasillos y más metros adentro de cada
+        departamento.</p>
+        <div class="datos">
+          <div class="dato"><b data-cuenta="18">18</b><span>Pisos</span></div>
+          <div class="dato"><b data-cuenta="62">62</b><span>Unidades</span></div>
+          <div class="dato"><b data-cuenta="58">58</b><span>m² desde</span></div>
+          <div class="dato"><b data-cuenta="74">74</b><span>Cocheras</span></div>
+          <div class="dato"><b data-cuenta="8">8</b><span>Amenities</span></div>
+          <div class="dato"><b data-cuenta="2028">2028</b><span>Entrega</span></div>
+        </div>
+      </div>
+      <div class="maq" data-maqueta="torre" data-abre="torre">
+        <span class="piso0" aria-hidden="true"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 02 la planta ============ -->
+  <section class="bloque izq" id="planta">
+    <div class="env par">
+      <div class="rev">
+        <p class="num">02 — Las unidades</p>
+        <h2 class="tit">Cuatro departamentos por piso, ninguno interno.</h2>
+        <p class="baja">Todos con frente a la calle o al contrafrente abierto. Cuatro tipologías:
+        de un dormitorio de 58 m² al de tres de 124 m², más dos penthouse en el piso 17.</p>
+        <p class="baja" style="color:var(--arena)">Abrí el edificio, tocá un piso y mirá qué
+        queda libre en ese nivel.</p>
+        <button class="btOro" type="button" data-abre="unidades">Ver disponibilidad</button>
+      </div>
+      <div class="maq" data-maqueta="planta" data-abre="unidades">
+        <span class="piso0" aria-hidden="true"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 03 amenities ============ -->
+  <section class="bloque" id="amenities">
+    <div class="env par">
+      <div class="rev">
+        <p class="num">03 — Amenities</p>
+        <h2 class="tit">Los dos últimos pisos no se venden.</h2>
+        <p class="baja">Se comparten. Piscina y solárium arriba de todo, gimnasio, salón de usos
+        múltiples, quincho, coworking, lavandería y área infantil en el nivel de abajo.</p>
+        <ul class="cerca">
+          <li>Piscina y solárium <b>Piso 18</b></li>
+          <li>Gimnasio y coworking <b>Piso 18</b></li>
+          <li>Salón de usos múltiples y quincho <b>Piso 17</b></li>
+          <li>Lavandería y área infantil <b>Planta baja</b></li>
+        </ul>
+      </div>
+      <div class="maq" data-maqueta="corona" data-abre="torre">
+        <span class="piso0" aria-hidden="true"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 04 la obra ============ -->
+  <section class="bloque izq" id="obra">
+    <div class="env par">
+      <div class="rev">
+        <p class="num">04 — Avance de obra</p>
+        <h2 class="tit">El proyecto toma forma.</h2>
+        <p class="baja">Al día de hoy hay nueve losas hormigonadas y la décima en curso. En la
+        maqueta, lo lleno es lo construido y lo punteado es lo que falta.</p>
+        <p style="font-size:clamp(38px,7vw,64px); margin:0; letter-spacing:-.04em"><span data-cuenta="47">47</span>%</p>
+        <div class="barraObra"><i data-barra="47" style="width:47%"></i></div>
+        <ul class="etapas" id="etapas"></ul>
+      </div>
+      <div class="maq" data-maqueta="obra" data-abre="obra">
+        <span class="piso0" aria-hidden="true"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 05 ubicación ============ -->
+  <section class="bloque" id="zona">
+    <div class="env par">
+      <div class="rev">
+        <p class="num">05 — Ubicación</p>
+        <h2 class="tit">En el centro de todo.</h2>
+        <p class="baja">Sobre avenida, a cuadras del centro y con salida rápida a la ruta.
+        Los tiempos son en auto, en un día común.</p>
+        <ul class="cerca">
+          <li>Shopping <b>4 min</b></li>
+          <li>Supermercado <b>3 min</b></li>
+          <li>Hospital <b>7 min</b></li>
+          <li>Universidad <b>9 min</b></li>
+          <li>Puente y frontera <b>12 min</b></li>
+          <li>Aeropuerto <b>18 min</b></li>
+        </ul>
+      </div>
+      <div class="maq" data-maqueta="manzana" data-abre="torre">
+        <span class="piso0" aria-hidden="true"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ cierre ============ -->
+  <section class="bloque" style="text-align:center">
+    <div class="env">
+      <p class="num" style="text-align:center">Tu próximo espacio</p>
+      <h2 class="tit" style="margin-inline:auto; text-align:center; max-width:16ch">Comienza acá.</h2>
+      <div class="ctas" style="margin-bottom:34px">
+        <button class="btOro" type="button" data-abre="unidades">Ver disponibilidad</button>
+        <a class="btGhost" id="waCierre" href="#" target="_blank" rel="noopener noreferrer">Hablar con ventas</a>
+      </div>
+      <div class="aviso" style="text-align:left; max-width:640px; margin-inline:auto">
+        <b>Anteproyecto de demostración</b>
+        Sky Tower no existe: los pisos, las unidades, los metros, los precios, las orientaciones,
+        el porcentaje de avance y la fecha de entrega son datos inventados, puestos para que la
+        mecánica se pueda mostrar andando. En la página de un cliente real, cada uno de esos
+        números lo confirma la constructora por escrito antes de publicarse.
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<a class="waFijo" id="waFijo" href="#" target="_blank" rel="noopener noreferrer">Hablar por WhatsApp</a>
+
+<!-- ============ visor 3D ============ -->
+<div class="visor" id="visor" hidden role="dialog" aria-modal="true" aria-labelledby="visorTit">
+  <div class="visorTop">
+    <h2 id="visorTit">Sky Tower<span id="visorSub">Arrastrá para girar · tocá un piso</span></h2>
+    <button class="cerrar" id="cerrar" type="button" aria-label="Cerrar el visor">✕</button>
+  </div>
+  <div class="visorCuerpo">
+    <div class="visorEscena" id="visorEscena">
+      <div class="herramientas">
+        <button class="herr" id="hObra" type="button" aria-pressed="false">Ver avance</button>
+        <button class="herr" id="hReset" type="button">Enderezar</button>
+      </div>
+      <p class="ayuda" id="ayuda">Arrastrá para girar · tocá un piso para ver sus unidades</p>
+    </div>
+    <aside class="lado" id="lado" aria-live="polite"></aside>
+  </div>
+</div>
+
+<div class="katu-pie">
+  Demo de <strong>KatuWeb</strong> · <a href="../catalogo.html">Volver al catálogo</a> ·
+  <a href="https://wa.me/595983518856?text=Hola!%20Vi%20la%20demo%20del%20edificio%20en%203D%20(KTW-5QJTN)%20y%20quiero%20algo%20as%C3%AD%20para%20mi%20proyecto." target="_blank" rel="noopener noreferrer">Quiero esto para mi proyecto</a>
+  <br><span style="font-size:12px">Proyecto, unidades, precios y avance inventados · KTW-5QJTN</span>
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  var doc = document;
+  var QUIETO = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var MINI = (window.self !== window.top) && (window.innerHeight < 520);
+
+  /* ============================================================
+     0 · LOS DATOS — todo esto es inventado
+     ------------------------------------------------------------
+     Para usar la página con un cliente real se reemplazan estos tres
+     objetos y nada más. Ninguna medida vive dentro del HTML.
+     ============================================================ */
+  var PROYECTO = {
+    nombre: 'Sky Tower',
+    pisos: 18,
+    primerVivienda: 2,      /* del 2 al 16 hay departamentos */
+    ultimoVivienda: 16,
+    pisoPenthouse: 17,
+    pisoAmenities: 18,
+    wa: '595983518856',
+    moneda: 'USD'
+  };
+
+  var TIPOS = [
+    { k:'A', dorm:1, m2:58,  orient:'Norte',  base:68000 },
+    { k:'B', dorm:2, m2:87,  orient:'Este',   base:96000 },
+    { k:'C', dorm:2, m2:92,  orient:'Oeste',  base:102000 },
+    { k:'D', dorm:3, m2:124, orient:'Sur',    base:138000 }
+  ];
+  var PENTHOUSE = { k:'PH', dorm:3, m2:186, orient:'Norte y este', base:245000 };
+
+  var OBRA = {
+    avance: 47,
+    hechos: 9,        /* losas hormigonadas */
+    curso: 10,        /* piso en ejecución */
+    etapas: [
+      { n:'Proyecto y permisos', e:'ok',    f:'2025' },
+      { n:'Fundaciones',         e:'ok',    f:'2025' },
+      { n:'Estructura',          e:'curso', f:'En curso' },
+      { n:'Instalaciones',       e:'pend',  f:'2027' },
+      { n:'Terminaciones',       e:'pend',  f:'2027' },
+      { n:'Entrega',             e:'pend',  f:'2028' }
+    ]
+  };
+
+  /* ---- las unidades se generan una vez, con un patrón estable ---- */
+  var UNIDADES = (function(){
+    var out = [];
+    for (var p = PROYECTO.primerVivienda; p <= PROYECTO.ultimoVivienda; p++){
+      for (var t = 0; t < TIPOS.length; t++){
+        var T = TIPOS[t];
+        /* los pisos de abajo están casi todos vendidos, los de arriba libres.
+           No es al azar: así se vende un edificio de verdad. */
+        var est;
+        if (p <= 6)       est = (t === 3 && p === 6) ? 'res' : 'vend';
+        else if (p <= 10) est = (t % 2 === 0) ? 'vend' : (t === 1 ? 'res' : 'disp');
+        else if (p <= 13) est = (t === 0) ? 'res' : 'disp';
+        else              est = 'disp';
+        out.push({
+          id: p + '0' + (t+1),
+          piso: p, tipo: T.k, dorm: T.dorm, m2: T.m2, orient: T.orient,
+          precio: T.base + (p - PROYECTO.primerVivienda) * 900,
+          est: est,
+          cochera: T.dorm > 1
+        });
+      }
+    }
+    for (var q = 1; q <= 2; q++){
+      out.push({
+        id: PROYECTO.pisoPenthouse + '0' + q,
+        piso: PROYECTO.pisoPenthouse, tipo: PENTHOUSE.k, dorm: PENTHOUSE.dorm,
+        m2: PENTHOUSE.m2, orient: PENTHOUSE.orient,
+        precio: PENTHOUSE.base + (q - 1) * 12000,
+        est: q === 1 ? 'disp' : 'res', cochera: true
+      });
+    }
+    return out;
+  })();
+
+  var NOMBRE_EST = { disp:'Disponible', res:'Reservada', vend:'Vendida' };
+
+  function plata(n){
+    return 'USD ' + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  }
+  function unidadesDe(piso){
+    return UNIDADES.filter(function(u){ return u.piso === piso; });
+  }
+
+  /* ============================================================
+     1 · EL CONSTRUCTOR DE TORRES
+     ------------------------------------------------------------
+     Un edificio es una pila de cajas. Cada piso son cinco caras
+     posicionadas con transform 3D dentro de un preserve-3d.
+     La misma función arma las maquetas chicas y la torre del visor:
+     cambian las medidas y el nivel de detalle, no el código.
+     ============================================================ */
+  function caja(cont, W, H, D, conVidrio){
+    var caras = [
+      ['f', W, H, 'translate(-50%,-50%) translateZ(' + (D/2) + 'px)'],
+      ['b', W, H, 'translate(-50%,-50%) rotateY(180deg) translateZ(' + (D/2) + 'px)'],
+      ['r', D, H, 'translate(-50%,-50%) rotateY(90deg) translateZ(' + (W/2) + 'px)'],
+      ['l', D, H, 'translate(-50%,-50%) rotateY(-90deg) translateZ(' + (W/2) + 'px)'],
+      ['t', W, D, 'translate(-50%,-50%) rotateX(90deg) translateZ(' + (H/2) + 'px)']
+    ];
+    for (var i = 0; i < caras.length; i++){
+      var c = caras[i];
+      var el = doc.createElement('span');
+      el.className = 'cara ' + c[0] + (conVidrio && c[0] !== 't' ? ' vidrio' : '');
+      el.style.width  = c[1] + 'px';
+      el.style.height = c[2] + 'px';
+      el.style.transform = c[3];
+      cont.appendChild(el);
+    }
+  }
+
+  /* La planta se dibuja como lo que es: un plano, acostado en 3D.
+     Probé armarla con una caja por departamento y no se entendía —las cajas
+     sueltas se ven huecas desde arriba, porque no hay nada detrás que las tape.
+     Un plano en SVG es un solo elemento, no tiene ese problema, y además se lee
+     como plano de arquitecto, que es lo que la gente espera ver. */
+  function construirPlanta(destino){
+    var esc = doc.createElement('div');
+    esc.className = 'escena';
+    var torre = doc.createElement('div');
+    torre.className = 'torre';
+    torre.style.width = '1px'; torre.style.height = '1px';
+
+    var hoja = doc.createElement('div');
+    hoja.className = 'plano';
+    hoja.innerHTML =
+      '<svg viewBox="0 0 300 240" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+        '<rect x="4" y="4" width="292" height="232" fill="rgba(20,19,17,.92)" stroke="rgba(247,246,242,.22)"/>' +
+        /* núcleo */
+        '<rect x="126" y="96" width="48" height="48" fill="rgba(184,149,90,.22)" stroke="#B8955A"/>' +
+        '<path d="M132 102h36M132 112h36M132 122h36M132 132h36" stroke="rgba(184,149,90,.55)" stroke-width="1.5"/>' +
+        /* cuatro unidades */
+        '<g fill="none" stroke="rgba(247,246,242,.45)" stroke-width="1.6">' +
+          '<rect x="14" y="14" width="104" height="82"/>' +
+          '<rect x="182" y="14" width="104" height="82"/>' +
+          '<rect x="14" y="144" width="104" height="82"/>' +
+          '<rect x="182" y="144" width="104" height="82"/>' +
+        '</g>' +
+        /* balcones */
+        '<g fill="rgba(216,208,194,.13)">' +
+          '<rect x="14" y="6" width="104" height="9"/><rect x="182" y="6" width="104" height="9"/>' +
+          '<rect x="14" y="225" width="104" height="9"/><rect x="182" y="225" width="104" height="9"/>' +
+        '</g>' +
+        '<g fill="#D8D0C2" font-family="system-ui,sans-serif" font-size="15" font-weight="600">' +
+          '<text x="24" y="40">A</text><text x="192" y="40">B</text>' +
+          '<text x="24" y="170">C</text><text x="192" y="170">D</text>' +
+        '</g>' +
+        '<g fill="#8f8a83" font-family="system-ui,sans-serif" font-size="9.5">' +
+          '<text x="24" y="56">58 m²</text><text x="192" y="56">87 m²</text>' +
+          '<text x="24" y="186">92 m²</text><text x="192" y="186">124 m²</text>' +
+        '</g>' +
+      '</svg>';
+    torre.appendChild(hoja);
+    esc.appendChild(torre);
+    destino.appendChild(esc);
+    return { esc: esc, torre: torre };
+  }
+
+  function construirTorre(destino, o){
+    var pisos = o.pisos, W = o.ancho, D = o.prof, H = o.altoPiso;
+    var esc = doc.createElement('div');
+    esc.className = 'escena';
+    var torre = doc.createElement('div');
+    torre.className = 'torre';
+    torre.style.width = W + 'px';
+    torre.style.height = (pisos * H) + 'px';
+
+    var total = pisos * H;
+    for (var p = 1; p <= pisos; p++){
+      var el = doc.createElement('div');
+      el.className = 'piso';
+      el.setAttribute('data-piso', p);
+      el.style.width = W + 'px';
+      el.style.height = H + 'px';
+      /* el piso 1 es más ancho: es el zócalo comercial */
+      var w = (p === 1) ? W * 1.18 : W;
+      var d = (p === 1) ? D * 1.18 : D;
+      el.style.transform = 'translate(-50%,-50%) translateY(' +
+        (total/2 - (p - 0.5) * H) + 'px)';
+      caja(el, w, H - 1.5, d, o.vidrio && p >= 2);
+      if (p <= OBRA.hechos) el.className += ' hecho';
+      else if (p === OBRA.curso) el.className += ' curso';
+      else el.className += ' pend';
+      torre.appendChild(el);
+    }
+    esc.appendChild(torre);
+    destino.appendChild(esc);
+    return { esc: esc, torre: torre };
+  }
+
+  /* ---- el motor de giro: uno solo para toda la página ---- */
+  var rotables = [];
+  function hacerRotable(o, opts){
+    var st = {
+      esc: o.esc, torre: o.torre,
+      rx: opts.rx, ry: opts.ry, vy: opts.vy || 0,
+      auto: opts.auto || 0, arrastrando: false, px: 0, py: 0,
+      visible: true, sucio: true
+    };
+    if (opts.interactivo){
+      o.esc.classList.add('agarrable');
+      o.esc.addEventListener('pointerdown', function(e){
+        st.arrastrando = true; st.px = e.clientX; st.py = e.clientY;
+        o.esc.classList.add('agarrando');
+        if (o.esc.setPointerCapture) { try { o.esc.setPointerCapture(e.pointerId); } catch(err){} }
+      });
+      o.esc.addEventListener('pointermove', function(e){
+        if (!st.arrastrando) return;
+        st.ry += (e.clientX - st.px) * 0.42;
+        st.rx = Math.max(-32, Math.min(46, st.rx - (e.clientY - st.py) * 0.26));
+        st.px = e.clientX; st.py = e.clientY; st.sucio = true;
+      });
+      ['pointerup','pointercancel','pointerleave'].forEach(function(ev){
+        o.esc.addEventListener(ev, function(){
+          st.arrastrando = false; o.esc.classList.remove('agarrando');
+        });
+      });
+    }
+    rotables.push(st);
+    return st;
+  }
+
+  function pintar(st){
+    st.torre.style.transform = 'rotateX(' + st.rx.toFixed(2) + 'deg) rotateY(' + st.ry.toFixed(2) + 'deg)';
+  }
+
+  /* ============================================================
+     2 · LAS MAQUETAS DEL RELATO
+     ============================================================ */
+  var MAQUETAS = {
+    hero:    { pisos:18, ancho:96, prof:74, altoPiso:17, vidrio:true,  rx:9,  ry:-24, auto:.045 },
+    torre:   { pisos:18, ancho:112, prof:86, altoPiso:19, vidrio:true,  rx:12, ry:-26, auto:.055 },
+    planta:  { pisos:1,  ancho:230, prof:180, altoPiso:26, vidrio:false, rx:48, ry:-30, auto:.10 },
+    corona:  { pisos:6,  ancho:118, prof:92, altoPiso:34, vidrio:true,  rx:20, ry:22,  auto:.05 },
+    obra:    { pisos:18, ancho:112, prof:86, altoPiso:19, vidrio:false, rx:10, ry:-34, auto:.04, obra:true },
+    manzana: { pisos:18, ancho:96, prof:74, altoPiso:17, vidrio:true,  rx:36, ry:-18, auto:.05 }
+  };
+
+  Array.prototype.forEach.call(doc.querySelectorAll('[data-maqueta]'), function(cont){
+    var clave = cont.getAttribute('data-maqueta');
+    var cfg = MAQUETAS[clave];
+    if (!cfg) return;
+    var o = (clave === 'planta') ? construirPlanta(cont) : construirTorre(cont, cfg);
+    if (cfg.obra) o.torre.classList.add('obra');
+    if (clave === 'corona'){
+      /* la corona muestra los últimos pisos: los de abajo se marcan apagados */
+      /* ojo: poner opacity en el .piso lo aplana, porque crea un grupo que
+         rompe el preserve-3d. La opacidad va en cada cara. */
+      Array.prototype.forEach.call(o.torre.querySelectorAll('.piso'), function(p, i){
+        if (i < 4) Array.prototype.forEach.call(p.querySelectorAll('.cara'), function(c){
+          c.style.opacity = '.22';
+        });
+      });
+    }
+    var st = hacerRotable(o, { rx:cfg.rx, ry:cfg.ry, auto:(QUIETO || MINI) ? 0 : cfg.auto });
+    pintar(st);
+    cont.setAttribute('data-st', rotables.length - 1);
+
+    if (clave === 'hero') return;
+    var b = doc.createElement('button');
+    b.type = 'button'; b.className = 'abrir3d';
+    b.appendChild(doc.createTextNode('Abrir en '));
+    var bb = doc.createElement('b'); bb.textContent = '3D';
+    b.appendChild(bb);
+    b.setAttribute('data-abre', cont.getAttribute('data-abre') || 'torre');
+    cont.appendChild(b);
+  });
+
+  /* ============================================================
+     3 · EL VISOR
+     ============================================================ */
+  var visor = doc.getElementById('visor');
+  var visorEscena = doc.getElementById('visorEscena');
+  var lado = doc.getElementById('lado');
+  var elegido = null, stGrande = null, torreGrande = null, ultimoFoco = null;
+  var modoObra = false;
+
+  function medidaGrande(){
+    var h = visorEscena.clientHeight || 400;
+    var alto = Math.max(9, Math.min(24, Math.floor((h * 0.74) / PROYECTO.pisos)));
+    return { pisos:PROYECTO.pisos, ancho:Math.round(alto*5.6), prof:Math.round(alto*4.4),
+             altoPiso:alto, vidrio:true };
+  }
+
+  function armarGrande(){
+    while (visorEscena.querySelector('.escena')) {
+      visorEscena.removeChild(visorEscena.querySelector('.escena'));
+    }
+    var o = construirTorre(visorEscena, medidaGrande());
+    torreGrande = o.torre;
+    if (modoObra) torreGrande.classList.add('obra');
+    Array.prototype.forEach.call(torreGrande.querySelectorAll('.piso'), function(p){
+      var n = parseInt(p.getAttribute('data-piso'), 10);
+      if (unidadesDe(n).length){
+        p.classList.add('tocable');
+        p.addEventListener('click', function(){ elegirPiso(n); });
+      }
+    });
+    stGrande = hacerRotable(o, { rx:10, ry:-24, interactivo:true, auto:0 });
+    pintar(stGrande);
+    if (elegido) marcarPiso(elegido);
+  }
+
+  function marcarPiso(n){
+    if (!torreGrande) return;
+    Array.prototype.forEach.call(torreGrande.querySelectorAll('.piso'), function(p){
+      p.classList.toggle('sel', parseInt(p.getAttribute('data-piso'), 10) === n);
+    });
+  }
+
+  function elegirPiso(n){
+    elegido = n;
+    marcarPiso(n);
+    var us = unidadesDe(n);
+    while (lado.firstChild) lado.removeChild(lado.firstChild);
+
+    var h = doc.createElement('h3');
+    h.textContent = us.length ? ('Piso ' + n) : ('Piso ' + n);
+    var s = doc.createElement('p'); s.className = 'sub';
+    if (!us.length){
+      s.textContent = n === PROYECTO.pisoAmenities ? 'Amenities · no se vende'
+        : (n === 1 ? 'Planta baja · acceso y locales' : 'Sin unidades');
+      lado.appendChild(h); lado.appendChild(s);
+      return;
+    }
+    var libres = us.filter(function(u){ return u.est === 'disp'; }).length;
+    s.textContent = us.length + ' unidades · ' + libres + ' disponible' + (libres === 1 ? '' : 's');
+    lado.appendChild(h); lado.appendChild(s);
+
+    us.forEach(function(u){
+      var d = doc.createElement('div'); d.className = 'uni';
+      var nn = doc.createElement('span'); nn.className = 'n'; nn.textContent = u.id;
+      var dd = doc.createElement('span'); dd.className = 'd';
+      dd.textContent = u.dorm + (u.dorm === 1 ? ' dormitorio' : ' dormitorios') +
+        ' · ' + u.m2 + ' m² · ' + u.orient + (u.cochera ? ' · con cochera' : '');
+      var pp = doc.createElement('span'); pp.className = 'p'; pp.textContent = plata(u.precio);
+      var ee = doc.createElement('span'); ee.className = 'e ' + u.est;
+      ee.textContent = NOMBRE_EST[u.est];
+      d.appendChild(nn); d.appendChild(dd); d.appendChild(ee); d.appendChild(pp);
+      if (u.est !== 'vend'){
+        var a = doc.createElement('a'); a.className = 'wa';
+        a.target = '_blank'; a.rel = 'noopener noreferrer';
+        a.href = 'https://wa.me/' + PROYECTO.wa + '?text=' + encodeURIComponent(
+          'Hola! Me interesa la unidad ' + u.id + ' de ' + PROYECTO.nombre + ' (piso ' + u.piso +
+          ', ' + u.dorm + ' dorm, ' + u.m2 + ' m²). ¿Me contás disponibilidad y condiciones? [KTW-5QJTN]');
+        a.textContent = u.est === 'res' ? 'Consultar igual' : 'Consultar esta unidad';
+        d.appendChild(a);
+      }
+      lado.appendChild(d);
+    });
+  }
+
+  function vacio(){
+    while (lado.firstChild) lado.removeChild(lado.firstChild);
+    var h = doc.createElement('h3'); h.textContent = 'Elegí un piso';
+    var s = doc.createElement('p'); s.className = 'sub';
+    s.textContent = UNIDADES.filter(function(u){ return u.est === 'disp'; }).length +
+      ' unidades disponibles en el edificio';
+    lado.appendChild(h); lado.appendChild(s);
+  }
+
+  function abrir(que){
+    ultimoFoco = doc.activeElement;
+    visor.hidden = false;
+    doc.body.style.overflow = 'hidden';
+    modoObra = (que === 'obra');
+    doc.getElementById('hObra').setAttribute('aria-pressed', modoObra ? 'true' : 'false');
+    /* medir en el mismo cuadro en que se muestra da una altura equivocada y la
+       torre sale gigante y cortada. Se arma en el cuadro siguiente. */
+    requestAnimationFrame(armarGrande);
+    var pendiente = que;
+    if (pendiente === 'unidades'){
+      /* se abre en el piso más bajo que tenga algo libre: es lo que buscan */
+      var l = UNIDADES.filter(function(u){ return u.est === 'disp'; });
+      elegirPiso(l.length ? l[0].piso : PROYECTO.primerVivienda);
+    } else {
+      elegido = null; vacio();
+    }
+    doc.getElementById('cerrar').focus();
+  }
+
+  function cerrar(){
+    visor.hidden = true;
+    doc.body.style.overflow = '';
+    if (stGrande){
+      var i = rotables.indexOf(stGrande);
+      if (i >= 0) rotables.splice(i, 1);
+      stGrande = null;
+    }
+    if (ultimoFoco && ultimoFoco.focus) ultimoFoco.focus();
+  }
+
+  doc.addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('[data-abre]') : null;
+    if (b) { abrir(b.getAttribute('data-abre')); }
+  });
+  doc.getElementById('cerrar').addEventListener('click', cerrar);
+  doc.getElementById('hReset').addEventListener('click', function(){
+    if (!stGrande) return;
+    stGrande.rx = 10; stGrande.ry = -24; stGrande.sucio = true;
+  });
+  doc.getElementById('hObra').addEventListener('click', function(){
+    modoObra = !modoObra;
+    this.setAttribute('aria-pressed', modoObra ? 'true' : 'false');
+    if (torreGrande) torreGrande.classList.toggle('obra', modoObra);
+    doc.getElementById('ayuda').textContent = modoObra
+      ? 'Lleno = hormigonado · punteado = pendiente · ámbar = en curso'
+      : 'Arrastrá para girar · tocá un piso para ver sus unidades';
+  });
+
+  doc.addEventListener('keydown', function(e){
+    if (visor.hidden) return;
+    if (e.key === 'Escape'){ cerrar(); return; }
+    if (!stGrande) return;
+    if (e.key === 'ArrowLeft'){ stGrande.ry -= 8; stGrande.sucio = true; e.preventDefault(); }
+    if (e.key === 'ArrowRight'){ stGrande.ry += 8; stGrande.sucio = true; e.preventDefault(); }
+    if (e.key === 'ArrowUp' || e.key === 'ArrowDown'){
+      var n = elegido || PROYECTO.primerVivienda;
+      n += (e.key === 'ArrowUp' ? 1 : -1);
+      n = Math.max(PROYECTO.primerVivienda, Math.min(PROYECTO.pisoPenthouse, n));
+      elegirPiso(n); e.preventDefault();
+    }
+  });
+
+  /* ============================================================
+     4 · las etapas de obra
+     ============================================================ */
+  var ul = doc.getElementById('etapas');
+  OBRA.etapas.forEach(function(et){
+    var li = doc.createElement('li'); li.className = et.e;
+    var s = doc.createElement('span'); s.className = 'est';
+    var t = doc.createElement('span'); t.textContent = et.n;
+    var f = doc.createElement('em'); f.textContent = et.f;
+    var sr = doc.createElement('span');
+    sr.style.cssText = 'position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)';
+    sr.textContent = et.e === 'ok' ? 'Completado. ' : (et.e === 'curso' ? 'En curso. ' : 'Pendiente. ');
+    li.appendChild(s); li.appendChild(sr); li.appendChild(t); li.appendChild(f);
+    ul.appendChild(li);
+  });
+
+  /* ============================================================
+     5 · WhatsApp
+     ============================================================ */
+  var base = 'https://wa.me/' + PROYECTO.wa + '?text=';
+  [['waBarra','Hola! Quiero consultar disponibilidad en ' + PROYECTO.nombre + '. [KTW-5QJTN]'],
+   ['waCierre','Hola! Quiero hablar con ventas sobre ' + PROYECTO.nombre + '. [KTW-5QJTN]'],
+   ['waFijo','Hola! Quiero recibir información de ' + PROYECTO.nombre + '. [KTW-5QJTN]']
+  ].forEach(function(x){
+    var el = doc.getElementById(x[0]);
+    if (el) el.href = base + encodeURIComponent(x[1]);
+  });
+
+  /* ============================================================
+     6 · lo que aparece al entrar, y los contadores
+     ============================================================ */
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(en){
+        if (!en.isIntersecting) return;
+        en.target.classList.add('vis');
+        Array.prototype.forEach.call(en.target.querySelectorAll('[data-cuenta]'), contar);
+        Array.prototype.forEach.call(en.target.querySelectorAll('[data-barra]'), function(b){
+          if (QUIETO){ b.style.width = b.getAttribute('data-barra') + '%'; return; }
+          b.style.width = '0%';
+          requestAnimationFrame(function(){
+            requestAnimationFrame(function(){
+              b.style.width = b.getAttribute('data-barra') + '%';
+            });
+          });
+        });
+        io.unobserve(en.target);
+      });
+    }, { rootMargin:'-8% 0px -8% 0px' });
+    Array.prototype.forEach.call(doc.querySelectorAll('.rev'), function(r){ io.observe(r); });
+  } else {
+    Array.prototype.forEach.call(doc.querySelectorAll('.rev'), function(r){ r.classList.add('vis'); });
+  }
+
+  /* El número real está escrito en el HTML. Si no hay animación —o si el JS
+     no llega a correr— se lee el dato correcto y no un cero. */
+  function contar(el){
+    var fin = parseInt(el.getAttribute('data-cuenta'), 10);
+    if (QUIETO || MINI){ el.textContent = fin; return; }
+    el.textContent = '0';
+    var t0 = 0, dur = 1000;
+    function paso(t){
+      if (!t0) t0 = t;
+      var k = Math.min(1, (t - t0) / dur);
+      k = 1 - Math.pow(1 - k, 3);
+      el.textContent = Math.round(fin * k);
+      if (k < 1) requestAnimationFrame(paso);
+    }
+    requestAnimationFrame(paso);
+  }
+
+  /* ============================================================
+     7 · la barra que se pega
+     ============================================================ */
+  var barra = doc.getElementById('barra');
+  window.addEventListener('scroll', function(){
+    barra.classList.toggle('pegada', window.scrollY > 40);
+  }, { passive:true });
+
+  /* ============================================================
+     8 · EL BUCLE. Uno solo para todas las torres de la página.
+     ------------------------------------------------------------
+     Solo se escribe el transform de las que están en pantalla y de
+     las que efectivamente cambiaron. Con veinte cajas por torre y
+     cinco torres, escribir todo cada cuadro sería el fin.
+     ============================================================ */
+  if ('IntersectionObserver' in window){
+    var ioT = new IntersectionObserver(function(es){
+      es.forEach(function(en){
+        for (var i = 0; i < rotables.length; i++){
+          if (rotables[i].esc === en.target) rotables[i].visible = en.isIntersecting;
+        }
+      });
+    }, { rootMargin:'80px' });
+    setTimeout(function(){
+      rotables.forEach(function(st){ ioT.observe(st.esc); });
+    }, 0);
+  }
+
+  function bucle(t){
+    for (var i = 0; i < rotables.length; i++){
+      var st = rotables[i];
+      if (!st.visible) continue;
+      if (st.auto && !st.arrastrando){ st.ry += st.auto; st.sucio = true; }
+      if (st.sucio || st.auto){ pintar(st); st.sucio = false; }
+    }
+    requestAnimationFrame(bucle);
+  }
+  if (!MINI) requestAnimationFrame(bucle);
+
+  /* rearmar la torre grande si cambia el tamaño de la ventana */
+  var tmr = 0;
+  window.addEventListener('resize', function(){
+    clearTimeout(tmr);
+    tmr = setTimeout(function(){ if (!visor.hidden) armarGrande(); }, 200);
+  }, { passive:true });
+
+  vacio();
+})();
+</script>
+</body>
+</html>
