@@ -302,7 +302,7 @@
   <h2>Encontrá tu estilo</h2>
   <div class="h2-big">3 preguntas y te digo cuál va con tu negocio</div>
   <p class="sub">Respondé las tres y aparece tu estilo recomendado. O saltá directo a la galería
-  de abajo y explorá las 14 páginas en miniatura — están vivas, tocá cualquiera para agrandarla.</p>
+  de abajo y explorá las <span class="galConteo">30</span> páginas en miniatura — están vivas, tocá cualquiera para agrandarla.</p>
 
   <div class="quiz reveal">
     <div class="preg">
@@ -345,7 +345,7 @@
     </div>
   </div>
 
-  <div class="h2-big" id="galeria" style="font-size:20px; scroll-margin-top:70px">La galería — <span id="galConteo">24</span> páginas vivas</div>
+  <div class="h2-big" id="galeria" style="font-size:20px; scroll-margin-top:70px">La galería — <span id="galConteo" class="galConteo">30</span> páginas vivas</div>
   <p class="sub">Cada cuadro es una página real funcionando en miniatura. Pasá el mouse y se inclina;
   tocá y se agranda.</p>
   <div class="minis" id="minis"></div>
@@ -385,7 +385,7 @@
   <div class="builder reveal" style="background:linear-gradient(140deg,#12111c,#1c1526)">
     <div>
       <h3>El catálogo <span style="color:var(--amarillo)">KatuMotion</span></h3>
-      <p>Veintinueve piezas numeradas: seis portadas, ocho efectos, once estilos completos y cuatro
+      <p>Treinta piezas numeradas: seis portadas, ocho efectos, doce estilos completos y cuatro
       extras en 3D. Cada una con su demo funcionando. Mirala, anotá los números
       que te gusten y mandámelos por WhatsApp — con eso ya arranco tu página.</p>
       <a class="btn" href="motion.html">Ver el catálogo completo</a>
@@ -558,10 +558,11 @@
                'videobucle', 'fondoscroll', 'gira3d', 'rescate',
                'ropa', 'imanes', 'menuqr', 'turnos', 'instaweb', 'edificio'];
   var minisEl = document.getElementById('minis');
-  /* el conteo sale de ORDER, no de un número escrito a mano: ya se había
-     quedado en 24 cuando la galería tenía 26 */
-  var galC = document.getElementById('galConteo');
-  if (galC) galC.textContent = ORDER.length;
+  /* todos los conteos salen de ORDER, no de un número escrito a mano: ya se
+     habían quedado atrás dos veces cuando la galería creció */
+  document.querySelectorAll('.galConteo').forEach(function (el) {
+    el.textContent = ORDER.length;
+  });
   ORDER.forEach(function (key) {
     var s = STYLES[key];
     var tile = document.createElement('div');
@@ -627,11 +628,6 @@
       });
     }, { rootMargin: '400px 0px' });
     marcos.forEach(function (f) { obs.observe(f); });
-  })();
-
-  (function () {
-    var c = document.getElementById('galConteo');
-    if (c) c.textContent = ORDER.length;
   })();
 
   // ---- tinte sutil de la página según el estilo elegido ----

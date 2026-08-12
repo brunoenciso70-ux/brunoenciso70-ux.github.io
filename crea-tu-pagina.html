@@ -17,6 +17,12 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background: var(--bg); color: var(--ink); line-height: 1.6; padding: 24px 12px 130px; }
   .wrap { max-width: 1120px; margin: 0 auto; }
+  .barra { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-bottom: 24px; }
+  .barra a { font-size: 13px; color: var(--ink-2); text-decoration: none; border: 1px solid var(--linea); background: var(--surface); border-radius: 999px; padding: 7px 14px; white-space: nowrap; transition: border-color .16s ease, color .16s ease; }
+  .barra a:hover { border-color: var(--azul); color: var(--azul); }
+  .barra a.volver { font-weight: 700; color: var(--azul); border-color: var(--azul); }
+  .barra a.wa { color: #0d6b3a; border-color: #b8e2cb; background: #eef8f2; font-weight: 700; }
+  .barra a.wa:hover { border-color: #128c4a; color: #0a4f2b; }
   h1 { font-size: 23px; font-weight: 700; }
   .pvh { display: block; margin: 0; font-weight: 700; }
   .sub { color: var(--ink-2); margin-top: 6px; font-size: 14px; max-width: 70ch; }
@@ -422,6 +428,17 @@
 </head>
 <body>
 <div class="wrap">
+
+  <nav class="barra" aria-label="Navegación de KatuWeb">
+    <a class="volver" href="index.html">← KatuWeb</a>
+    <a href="motion.html">Catálogo completo</a>
+    <a href="catalogo.html">Qué se puede hacer</a>
+    <a href="portadas.html">Portadas</a>
+    <a href="efectos.html">Efectos</a>
+    <a href="modo-3d.html">Modo 3D ✦</a>
+    <a href="clientes/index.html">Clientes</a>
+    <a class="wa" href="https://wa.me/595983518856?text=Hola!%20Estoy%20armando%20mi%20p%C3%A1gina%20en%20el%20editor" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+  </nav>
 
   <h1>Armá tu página web</h1>
   <p class="sub">Completá tus datos, y después <strong>moldeá tu página en vivo</strong>: elegí estilo, color,

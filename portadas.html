@@ -17,6 +17,12 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background: var(--bg); color: var(--ink); line-height: 1.6; padding: 32px 16px 64px; }
   .wrap { max-width: 980px; margin: 0 auto; }
+  .barra { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-bottom: 24px; }
+  .barra a { font-size: 13px; color: var(--ink-2); text-decoration: none; border: 1px solid var(--linea); background: var(--surface); border-radius: 999px; padding: 7px 14px; white-space: nowrap; transition: border-color .16s ease, color .16s ease; }
+  .barra a:hover { border-color: var(--azul); color: var(--azul); }
+  .barra a.volver { font-weight: 700; color: var(--azul); border-color: var(--azul); }
+  .barra a.wa { color: #0d6b3a; border-color: #b8e2cb; background: #eef8f2; font-weight: 700; }
+  .barra a.wa:hover { border-color: #128c4a; color: #0a4f2b; }
   h1 { font-size: 25px; font-weight: 700; letter-spacing: -0.02em; }
   .sub { color: var(--ink-2); margin-top: 8px; max-width: 76ch; font-size: 14.5px; }
   .sub a { color: var(--azul); }
@@ -167,15 +173,16 @@
 <body>
 <div class="wrap">
 
-  <div style="display:flex;gap:14px;flex-wrap:wrap;font-size:13.5px;margin-bottom:22px">
-    <a href="index.html" style="color:var(--azul);text-decoration:none">← KatuWeb</a>
-    <a href="motion.html" style="color:var(--azul);text-decoration:none">Catálogo completo</a>
-    <a href="catalogo.html" style="color:var(--azul);text-decoration:none">Qué se puede hacer</a>
-    <a href="efectos.html" style="color:var(--azul);text-decoration:none">Efectos</a>
-    <a href="clientes/index.html" style="color:var(--azul);text-decoration:none">Clientes</a>
-    <a href="crea-tu-pagina.html" style="color:var(--azul);text-decoration:none">Armá tu página</a>
-    <a href="https://wa.me/595983518856?text=Hola!%20Quiero%20una%20portada%20de%20la%20biblioteca" target="_blank" rel="noopener noreferrer" style="color:#128c4a;text-decoration:none;font-weight:600">WhatsApp</a>
-  </div>
+  <nav class="barra" aria-label="Navegación de KatuWeb">
+    <a class="volver" href="index.html">← KatuWeb</a>
+    <a href="motion.html">Catálogo completo</a>
+    <a href="catalogo.html">Qué se puede hacer</a>
+    <a href="efectos.html">Efectos</a>
+    <a href="modo-3d.html">Modo 3D ✦</a>
+    <a href="clientes/index.html">Clientes</a>
+    <a href="crea-tu-pagina.html">Armá tu página</a>
+    <a class="wa" href="https://wa.me/595983518856?text=Hola!%20Quiero%20una%20portada%20de%20la%20biblioteca" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+  </nav>
 
   <h1>Biblioteca de portadas — pedilas por número</h1>
   <p class="sub">Seis modelos de <strong>primera pantalla</strong>, que es lo que el visitante ve antes de bajar. Se aplican sobre cualquiera de los estilos: cambian el color y la tipografía, no la estructura. Mirá cuál te gusta y pedila por número.</p>
@@ -294,6 +301,8 @@
   <p class="sub" style="margin-top:22px"><strong>Cómo usarlas:</strong> el cliente elige el número y el resto de la página sigue con
   su estilo de siempre. P1, P2, P3 y P5 no piden ninguna foto del negocio — son ideales para arrancar el mismo día.
   P4 y P6 sí necesitan una imagen buena. Con el interruptor de arriba podés ver cada una con y sin imagen de fondo.</p>
+
+</div>
 
 <script>
 (function () {
