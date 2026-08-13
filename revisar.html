@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; font-src 'self'; connect-src https://iknrqmtliixxmxyjhlkt.supabase.co; form-action 'none'; object-src 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#14121c">
+<title>Revisar cargas — KatuWeb</title>
+<style>
+  :root {
+    --fondo: #14121c; --panel: #1d1a29; --panel2: #262234;
+    --linea: #322d45; --linea2: #443d5c;
+    --blanco: #f2f0fa; --gris: #9a94b0; --gris2: #6f6885;
+    --teal: #17c3b2; --fucsia: #e91e8c; --amarillo: #f5e942;
+    --ok: #34d399; --ok-b: rgba(52,211,153,.13);
+    --no: #f87171; --no-b: rgba(248,113,113,.13);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: var(--fondo); color: var(--blanco); line-height: 1.5;
+    -webkit-font-smoothing: antialiased; font-size: 16px; padding-bottom: 40px;
+  }
+  img { display: block; max-width: 100%; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 0 16px; }
+
+  nav {
+    border-bottom: 1px solid var(--linea); padding: 15px 0;
+    position: sticky; top: 0; background: rgba(20,18,28,.94);
+    backdrop-filter: blur(10px); z-index: 20;
+  }
+  .nav-in { max-width: 860px; margin: 0 auto; padding: 0 16px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .marca { font-weight: 900; font-size: 17px; letter-spacing: -.02em; }
+  .marca span { color: var(--teal); }
+  .marca small { display: block; font-size: 11px; font-weight: 600; color: var(--gris2); letter-spacing: .14em; text-transform: uppercase; }
+  .quien { font-size: 12.5px; color: var(--gris); text-align: right; }
+  .quien button { background: none; border: 0; color: var(--gris2); font: inherit; font-size: 12px; text-decoration: underline; cursor: pointer; padding: 2px 0; }
+  .quien button:hover { color: var(--blanco); }
+
+  h1 { font-size: 25px; font-weight: 800; letter-spacing: -.03em; margin-top: 26px; }
+  .sub { color: var(--gris); font-size: 15px; margin-top: 7px; max-width: 62ch; }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    border: none; border-radius: 8px; padding: 12px 18px; font-size: 14.5px;
+    font-weight: 700; font-family: inherit; cursor: pointer; line-height: 1.2;
+  }
+  .btn-p { background: var(--teal); color: #06231f; }
+  .btn-o { background: transparent; border: 1px solid var(--linea2); color: var(--blanco); }
+  .btn-o:hover { border-color: var(--gris); }
+  .btn-ok { background: var(--ok); color: #04241a; }
+  .btn-no { background: transparent; border: 1px solid var(--no); color: var(--no); }
+  .btn-no:hover { background: var(--no-b); }
+  .btn:disabled { opacity: .4; cursor: not-allowed; }
+
+  input[type="email"], input[type="text"], textarea {
+    width: 100%; background: var(--panel2); border: 1.5px solid var(--linea2);
+    border-radius: 8px; color: var(--blanco); font: inherit; font-size: 16px;
+    padding: 12px 14px; outline: none;
+  }
+  input:focus, textarea:focus { border-color: var(--teal); }
+  label { display: block; font-size: 13px; font-weight: 700; color: var(--gris); margin-bottom: 6px; }
+
+  /* ---------- entrada ---------- */
+  .entrar { max-width: 400px; margin: 60px auto; background: var(--panel); border: 1px solid var(--linea); border-radius: 14px; padding: 26px; }
+  .entrar h2 { font-size: 19px; font-weight: 800; letter-spacing: -.02em; }
+  .entrar p { color: var(--gris); font-size: 14px; margin-top: 8px; }
+  .entrar .campo { margin-top: 18px; }
+  .entrar .btn { width: 100%; margin-top: 14px; }
+  .msg { font-size: 14px; margin-top: 14px; min-height: 20px; font-weight: 600; }
+  .msg.mal { color: var(--no); }
+  .msg.bien { color: var(--ok); }
+
+  /* ---------- fichas ---------- */
+  .resumen { display: flex; gap: 9px; flex-wrap: wrap; margin-top: 22px; }
+  .pastilla { background: var(--panel); border: 1px solid var(--linea); border-radius: 999px; padding: 7px 15px; font-size: 13px; color: var(--gris); }
+  .pastilla b { color: var(--blanco); }
+
+  .fichas { display: grid; gap: 14px; margin-top: 22px; }
+  .ficha { background: var(--panel); border: 1px solid var(--linea); border-radius: 13px; overflow: hidden; }
+  .ficha-in { display: grid; grid-template-columns: 190px 1fr; gap: 0; }
+  @media (max-width: 640px) { .ficha-in { grid-template-columns: 1fr; } }
+  .ficha .foto { background: #fff; aspect-ratio: 1; }
+  .ficha .foto img { width: 100%; height: 100%; object-fit: contain; }
+  .ficha .foto.sin { background: var(--panel2); display: grid; place-items: center; color: var(--gris2); font-size: 13px; aspect-ratio: 16/10; }
+  .ficha .datos { padding: 17px 18px; display: flex; flex-direction: column; }
+  .ficha .cliente { font-size: 11px; letter-spacing: .13em; text-transform: uppercase; color: var(--teal); font-weight: 700; }
+  .ficha h3 { font-size: 17px; font-weight: 750; letter-spacing: -.02em; margin-top: 6px; }
+  .ficha .precio { font-size: 21px; font-weight: 900; color: var(--amarillo); margin-top: 8px; font-variant-numeric: tabular-nums; }
+  .ficha .rubro { display: inline-block; margin-top: 8px; font-size: 12px; color: var(--gris); border: 1px solid var(--linea2); border-radius: 5px; padding: 2px 8px; align-self: flex-start; }
+  .ficha .desc { font-size: 14px; color: var(--gris); margin-top: 10px; flex: 1; }
+  .ficha .cuando { font-size: 12px; color: var(--gris2); margin-top: 10px; }
+  .ficha .acc { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+  .ficha.yendo { opacity: .45; pointer-events: none; }
+
+  .vacio { text-align: center; color: var(--gris); padding: 50px 20px; border: 1px dashed var(--linea2); border-radius: 13px; margin-top: 22px; }
+  .vacio b { display: block; color: var(--blanco); font-size: 17px; margin-bottom: 6px; }
+
+  /* ---------- publicar ---------- */
+  .publicar { background: var(--panel); border: 1px solid var(--linea); border-radius: 13px; padding: 20px; margin-top: 30px; }
+  .publicar h2 { font-size: 17px; font-weight: 800; letter-spacing: -.02em; }
+  .publicar p { color: var(--gris); font-size: 14px; margin-top: 7px; }
+  .publicar .acc { display: flex; gap: 9px; flex-wrap: wrap; margin-top: 14px; }
+  pre {
+    background: #0e0c15; border: 1px solid var(--linea); border-radius: 8px;
+    padding: 13px; margin-top: 13px; overflow-x: auto;
+    font-family: ui-monospace, Menlo, monospace; font-size: 12px; color: #cfc9e0;
+    max-height: 300px; overflow-y: auto; white-space: pre;
+  }
+  .oculto { display: none !important; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+<script>
+(function () {
+  if (window.top === window.self) return;
+  if (window.location.protocol === 'file:') return;
+  var propio = false;
+  try { propio = (window.top.location.origin === window.location.origin); } catch (e) { propio = false; }
+  if (propio) return;
+  try { window.top.location = window.location.href; }
+  catch (e2) { document.documentElement.style.display = 'none'; }
+})();
+</script>
+</head>
+<body>
+
+<nav>
+  <div class="nav-in">
+    <div class="marca">Katu<span>Web</span><small>Revisar cargas</small></div>
+    <div class="quien oculto" id="quien">
+      <div id="correo"></div>
+      <button id="btnSalir">Cerrar sesión</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ENTRADA -->
+<div class="wrap oculto" id="pantEntrar">
+  <div class="entrar">
+    <h2>Entrar al panel</h2>
+    <p>Te mandamos un código de seis dígitos por correo. No hay contraseña que recordar ni que
+    perder.</p>
+
+    <div id="pasoCorreo">
+      <div class="campo">
+        <label for="correoInp">Tu correo</label>
+        <input type="email" id="correoInp" autocomplete="email" placeholder="vos@ejemplo.com">
+      </div>
+      <button class="btn btn-p" id="btnCodigo">Mandarme el código</button>
+    </div>
+
+    <div id="pasoCodigo" class="oculto">
+      <div class="campo">
+        <label for="otpInp">Código que llegó al correo</label>
+        <input type="text" id="otpInp" inputmode="numeric" autocomplete="one-time-code"
+               maxlength="6" placeholder="000000">
+      </div>
+      <button class="btn btn-p" id="btnEntrar">Entrar</button>
+      <button class="btn btn-o" id="btnOtroCorreo" style="width:100%; margin-top:8px">Usar otro correo</button>
+    </div>
+
+    <div class="msg" id="msgEntrar"></div>
+  </div>
+</div>
+
+<!-- PANEL -->
+<div class="wrap oculto" id="pantPanel">
+  <h1>Cargas esperando</h1>
+  <p class="sub">Lo que mandaron tus clientes desde su página de carga. Nada de esto está publicado
+  todavía: aparece en la página recién cuando lo aprobás.</p>
+
+  <div class="resumen">
+    <div class="pastilla" id="pEsperando"><b>0</b> esperando</div>
+    <div class="pastilla" id="pAprobados"><b>0</b> aprobados sin publicar</div>
+    <button class="pastilla" id="btnRecargar" style="cursor:pointer; font-family:inherit">Actualizar</button>
+  </div>
+
+  <div class="fichas" id="fichas"></div>
+  <div class="vacio oculto" id="vacio"><b>No hay nada esperando</b>Cuando un cliente cargue un producto, aparece acá.</div>
+
+  <div class="publicar oculto" id="publicar">
+    <h2>Pasar lo aprobado a la página</h2>
+    <p>La base es la sala de espera, no el depósito. Bajá las fotos numeradas y las filas, pegalas
+    en el <code>index.html</code> del cliente, y después marcá como publicado para vaciar la cola.</p>
+    <div class="acc">
+      <button class="btn btn-p" id="btnBajarTodo">Bajar fotos y filas</button>
+      <button class="btn btn-o" id="btnVerFilas">Ver las filas</button>
+      <button class="btn btn-o" id="btnPublicado">Marcar como publicado</button>
+    </div>
+    <div class="msg" id="msgPublicar"></div>
+    <pre class="oculto" id="filas"></pre>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var API = 'https://iknrqmtliixxmxyjhlkt.supabase.co';
+  var LLAVE = 'sb_publishable_kMfQtsofPTiUUeFxNG66Pw_H3YX12oB';
+  var SESION = 'katuweb-revisar-sesion';
+  var DESDE = 'katuweb-revisar-desde';   /* por cliente: en qué número va la numeración de fotos */
+
+  var sesion = null;
+  var pendientes = [];
+  var aprobados = [];
+
+  function $(id) { return document.getElementById(id); }
+  function ver(id, si) { $(id).classList.toggle('oculto', !si); }
+
+  /* ---------- llamadas ---------- */
+  function pedir(ruta, opciones) {
+    opciones = opciones || {};
+    var cab = { 'apikey': LLAVE, 'Content-Type': 'application/json' };
+    if (sesion && sesion.access_token) cab['Authorization'] = 'Bearer ' + sesion.access_token;
+    if (opciones.headers) Object.keys(opciones.headers).forEach(function (k) { cab[k] = opciones.headers[k]; });
+    return fetch(API + ruta, { method: opciones.method || 'GET', headers: cab, body: opciones.body })
+      .then(function (r) {
+        return r.text().then(function (t) {
+          var datos = null;
+          try { datos = t ? JSON.parse(t) : null; } catch (e) { datos = null; }
+          if (!r.ok) {
+            var m = (datos && (datos.message || datos.error_description || datos.msg)) || ('Error ' + r.status);
+            throw new Error(m);
+          }
+          return datos;
+        });
+      });
+  }
+
+  /* ---------- entrada por código al correo ---------- */
+  function decirEntrar(msg, mal) {
+    $('msgEntrar').textContent = msg;
+    $('msgEntrar').className = 'msg' + (msg ? (mal ? ' mal' : ' bien') : '');
+  }
+
+  $('btnCodigo').addEventListener('click', function () {
+    var correo = $('correoInp').value.trim();
+    if (!correo || correo.indexOf('@') < 0) { decirEntrar('Escribí un correo válido.', true); return; }
+    $('btnCodigo').disabled = true;
+    decirEntrar('Mandando el código…');
+    pedir('/auth/v1/otp', {
+      method: 'POST',
+      body: JSON.stringify({ email: correo, create_user: true })
+    }).then(function () {
+      ver('pasoCorreo', false);
+      ver('pasoCodigo', true);
+      decirEntrar('Te mandamos un código a ' + correo + '. Puede tardar un minuto.');
+      $('otpInp').focus();
+    }).catch(function (e) {
+      decirEntrar('No se pudo mandar: ' + e.message, true);
+    }).then(function () { $('btnCodigo').disabled = false; });
+  });
+
+  $('btnOtroCorreo').addEventListener('click', function () {
+    ver('pasoCodigo', false); ver('pasoCorreo', true); decirEntrar('');
+  });
+
+  function entrar() {
+    var correo = $('correoInp').value.trim();
+    var codigo = $('otpInp').value.trim();
+    if (codigo.length < 6) { decirEntrar('El código tiene seis dígitos.', true); return; }
+    $('btnEntrar').disabled = true;
+    decirEntrar('Verificando…');
+    pedir('/auth/v1/verify', {
+      method: 'POST',
+      body: JSON.stringify({ type: 'email', email: correo, token: codigo })
+    }).then(function (s) {
+      sesion = s;
+      try { localStorage.setItem(SESION, JSON.stringify(s)); } catch (e) {}
+      return arrancarPanel();
+    }).catch(function (e) {
+      decirEntrar('No entró: ' + e.message, true);
+      $('btnEntrar').disabled = false;
+    });
+  }
+  $('btnEntrar').addEventListener('click', entrar);
+  $('otpInp').addEventListener('keydown', function (e) { if (e.key === 'Enter') entrar(); });
+
+  $('btnSalir').addEventListener('click', function () {
+    sesion = null;
+    try { localStorage.removeItem(SESION); } catch (e) {}
+    location.reload();
+  });
+
+  /* ---------- panel ---------- */
+  function arrancarPanel() {
+    /* RLS ya tapa todo para quien no sea admin, pero entonces la cola se vería
+       simplemente vacía. Preguntamos derecho para poder decirlo con todas las letras. */
+    return pedir('/rest/v1/rpc/es_admin', { method: 'POST', body: '{}' }).then(function (si) {
+      if (si !== true) throw new Error('Esta cuenta no está autorizada.');
+      return cargar();
+    }).then(function () {
+      var correo = (sesion.user && sesion.user.email) || '';
+      $('correo').textContent = correo;
+      ver('quien', true);
+      ver('pantEntrar', false);
+      ver('pantPanel', true);
+    }).catch(function (e) {
+      decirEntrar('Entraste, pero esa cuenta no tiene permiso para revisar. ' + e.message, true);
+      $('btnEntrar').disabled = false;
+      sesion = null;
+      try { localStorage.removeItem(SESION); } catch (e2) {}
+    });
+  }
+
+  function cargar() {
+    return pedir('/rest/v1/productos?select=*&order=creado_en.asc').then(function (filas) {
+      if (!Array.isArray(filas)) throw new Error('Respuesta inesperada.');
+      pendientes = filas.filter(function (f) { return f.estado === 'pendiente'; });
+      aprobados = filas.filter(function (f) { return f.estado === 'aprobado'; });
+      pintar();
+    });
+  }
+
+  function gs(n) { return 'Gs. ' + Number(n).toLocaleString('es-PY'); }
+  function cuando(iso) {
+    var d = new Date(iso);
+    return d.toLocaleDateString('es-PY', { day: '2-digit', month: 'short' }) + ' · ' +
+           d.toLocaleTimeString('es-PY', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  function ficha(p) {
+    var c = document.createElement('article');
+    c.className = 'ficha';
+    var inn = document.createElement('div');
+    inn.className = 'ficha-in';
+
+    var foto = document.createElement('div');
+    foto.className = 'foto' + (p.foto ? '' : ' sin');
+    if (p.foto) {
+      var im = document.createElement('img');
+      im.src = p.foto; im.alt = p.nombre;
+      foto.appendChild(im);
+    } else {
+      foto.textContent = 'Sin foto';
+    }
+
+    var d = document.createElement('div');
+    d.className = 'datos';
+    var cl = document.createElement('div'); cl.className = 'cliente'; cl.textContent = p.cliente_slug;
+    var h = document.createElement('h3'); h.textContent = p.nombre;
+    var pr = document.createElement('div'); pr.className = 'precio'; pr.textContent = gs(p.precio);
+    var ru = document.createElement('div'); ru.className = 'rubro'; ru.textContent = p.rubro;
+    var de = document.createElement('div'); de.className = 'desc'; de.textContent = p.descripcion || 'Sin descripción.';
+    var cu = document.createElement('div'); cu.className = 'cuando'; cu.textContent = 'Cargado el ' + cuando(p.creado_en);
+
+    var acc = document.createElement('div'); acc.className = 'acc';
+    var si = document.createElement('button'); si.className = 'btn btn-ok'; si.textContent = 'Aprobar';
+    var no = document.createElement('button'); no.className = 'btn btn-no'; no.textContent = 'Rechazar';
+    si.addEventListener('click', function () { decidir(c, p, 'aprobado'); });
+    no.addEventListener('click', function () {
+      var nota = window.prompt('¿Por qué se rechaza? (lo ves solo vos)', 'La foto no sirve');
+      if (nota === null) return;
+      decidir(c, p, 'rechazado', nota);
+    });
+    acc.appendChild(si); acc.appendChild(no);
+
+    d.appendChild(cl); d.appendChild(h); d.appendChild(pr); d.appendChild(ru);
+    d.appendChild(de); d.appendChild(cu); d.appendChild(acc);
+    inn.appendChild(foto); inn.appendChild(d);
+    c.appendChild(inn);
+    return c;
+  }
+
+  function decidir(tarjeta, p, estado, nota) {
+    tarjeta.classList.add('yendo');
+    pedir('/rest/v1/productos?id=eq.' + p.id, {
+      method: 'PATCH',
+      headers: { 'Prefer': 'return=representation' },
+      body: JSON.stringify({ estado: estado, nota: nota || null, revisado_en: new Date().toISOString() })
+    }).then(function (filas) {
+      if (!filas || !filas.length) throw new Error('No se pudo guardar.');
+      return cargar();
+    }).catch(function (e) {
+      tarjeta.classList.remove('yendo');
+      window.alert('No se pudo guardar: ' + e.message);
+    });
+  }
+
+  function pintar() {
+    var cont = $('fichas');
+    cont.textContent = '';
+    pendientes.forEach(function (p) { cont.appendChild(ficha(p)); });
+    ver('vacio', !pendientes.length);
+    $('pEsperando').innerHTML = '';
+    $('pEsperando').appendChild(document.createElement('b')).textContent = pendientes.length;
+    $('pEsperando').appendChild(document.createTextNode(' esperando'));
+    $('pAprobados').innerHTML = '';
+    $('pAprobados').appendChild(document.createElement('b')).textContent = aprobados.length;
+    $('pAprobados').appendChild(document.createTextNode(' aprobados sin publicar'));
+    ver('publicar', aprobados.length > 0);
+  }
+
+  $('btnRecargar').addEventListener('click', function () {
+    $('btnRecargar').disabled = true;
+    cargar().catch(function (e) { window.alert(e.message); })
+      .then(function () { $('btnRecargar').disabled = false; });
+  });
+
+  /* ---------- pasar lo aprobado al repositorio ---------- */
+  function numeroInicial(slug) {
+    try { return parseInt(localStorage.getItem(DESDE + '-' + slug), 10) || 85; } catch (e) { return 85; }
+  }
+  function guardarNumero(slug, n) {
+    try { localStorage.setItem(DESDE + '-' + slug, String(n)); } catch (e) {}
+  }
+  function escapar(s) {
+    return String(s || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\s+/g, ' ').trim();
+  }
+  function armarFilas() {
+    var n = {}, lineas = [];
+    aprobados.forEach(function (p) {
+      if (n[p.cliente_slug] === undefined) n[p.cliente_slug] = numeroInicial(p.cliente_slug);
+      var celda = p.foto ? n[p.cliente_slug]++ : 0;
+      lineas.push("    ['" + escapar(p.nombre) + "', " + p.precio + ", '" + escapar(p.rubro) +
+                  "', " + celda + ", '" + escapar(p.descripcion) + "'],");
+    });
+    return { texto: lineas.join('\n'), siguientes: n };
+  }
+
+  $('btnVerFilas').addEventListener('click', function () {
+    $('filas').textContent = armarFilas().texto;
+    ver('filas', true);
+  });
+
+  function bajar(nombre, url) {
+    var a = document.createElement('a');
+    a.href = url; a.download = nombre;
+    document.body.appendChild(a); a.click(); a.remove();
+  }
+  $('btnBajarTodo').addEventListener('click', function () {
+    var r = armarFilas();
+    bajar('productos.txt', 'data:text/plain;charset=utf-8,' + encodeURIComponent(r.texto));
+    var n = {}, fotos = [];
+    aprobados.forEach(function (p) {
+      if (!p.foto) return;
+      if (n[p.cliente_slug] === undefined) n[p.cliente_slug] = numeroInicial(p.cliente_slug);
+      var num = n[p.cliente_slug]++;
+      fotos.push({ nombre: (num < 10 ? '0' + num : num) + '.jpg', datos: p.foto });
+    });
+    if (!fotos.length) { $('msgPublicar').textContent = 'Listo: se bajó productos.txt.'; return; }
+    var k = 0;
+    (function siguiente() {
+      if (k >= fotos.length) {
+        $('msgPublicar').className = 'msg bien';
+        $('msgPublicar').textContent = 'Listo: ' + fotos.length + ' fotos y productos.txt. Pegá las filas y subí las fotos al repositorio.';
+        return;
+      }
+      bajar(fotos[k].nombre, fotos[k].datos);
+      $('msgPublicar').className = 'msg';
+      $('msgPublicar').textContent = 'Bajando ' + (++k) + ' de ' + fotos.length + '…';
+      setTimeout(siguiente, 900);
+    })();
+  });
+
+  $('btnPublicado').addEventListener('click', function () {
+    if (!aprobados.length) return;
+    if (!window.confirm('Confirmás que ya subiste al repositorio los ' + aprobados.length +
+        ' productos aprobados? Se van a borrar de la cola.')) return;
+    var r = armarFilas();
+    Object.keys(r.siguientes).forEach(function (slug) { guardarNumero(slug, r.siguientes[slug]); });
+    var ids = aprobados.map(function (p) { return p.id; });
+    $('btnPublicado').disabled = true;
+    pedir('/rest/v1/productos?id=in.(' + ids.join(',') + ')', {
+      method: 'DELETE',
+      headers: { 'Prefer': 'return=representation' }
+    }).then(function () {
+      $('msgPublicar').className = 'msg bien';
+      $('msgPublicar').textContent = 'Cola vaciada. La numeración de fotos sigue desde donde quedó.';
+      ver('filas', false);
+      return cargar();
+    }).catch(function (e) {
+      $('msgPublicar').className = 'msg mal';
+      $('msgPublicar').textContent = 'No se pudo vaciar: ' + e.message;
+    }).then(function () { $('btnPublicado').disabled = false; });
+  });
+
+  /* ---------- arranque ---------- */
+  try { sesion = JSON.parse(localStorage.getItem(SESION)); } catch (e) { sesion = null; }
+  if (sesion && sesion.access_token) {
+    arrancarPanel().catch(function () { ver('pantEntrar', true); });
+  } else {
+    ver('pantEntrar', true);
+  }
+})();
+</script>
+</body>
+</html>
