@@ -256,8 +256,18 @@
   <!-- PASO 2 -->
   <section class="paso">
     <h2><i id="ic2">2</i>Completá los datos</h2>
+    <div class="aviso" id="avisoEspacio" style="display:none; background:var(--falta-b); border-color:#f2c4c1; color:#7a1f19">
+      <b>Se llenó la memoria del teléfono.</b> Lo que ya cargaste sigue en pantalla y se puede
+      enviar sin problema, pero <b>no se está guardando</b>: si cerrás la página ahora, lo perdés.
+      Tocá <b>Enviar a KatuWeb</b> antes de seguir agregando.
+    </div>
+
     <div class="prods" id="prods"></div>
     <div class="vacio" id="vacio">Todavía no agregaste ningún producto.<br>Empezá arriba con “Sacar foto”.</div>
+
+    <button class="btn btn-s" id="btnLimpiarEnviados" style="display:none; margin-top:12px">
+      Quitar de la lista los que ya envié
+    </button>
 
     <details id="avanzado">
       <summary>Ajuste técnico (no lo toques salvo que Bruno te lo pida)</summary>
@@ -346,8 +356,21 @@
   function $(id) { return document.getElementById(id); }
 
   /* ---------- guardado en el propio teléfono ---------- */
+  var sinEspacio = false;
   function guardar() {
-    try { localStorage.setItem(CLAVE, JSON.stringify(items)); } catch (e) { /* sin espacio: seguimos */ }
+    try {
+      localStorage.setItem(CLAVE, JSON.stringify(items));
+      if (sinEspacio) { sinEspacio = false; verAvisoEspacio(); }
+    } catch (e) {
+      /* el teléfono se quedó sin lugar. Todo sigue en pantalla y se puede
+         enviar igual, pero si cierran la página ahora, lo pierden. */
+      if (!sinEspacio) { sinEspacio = true; verAvisoEspacio(); }
+    }
+  }
+  function verAvisoEspacio() {
+    var caja = $('avisoEspacio');
+    caja.style.display = sinEspacio ? '' : 'none';
+    if (sinEspacio) caja.scrollIntoView({ block: 'nearest' });
   }
   function recuperar() {
     try { items = JSON.parse(localStorage.getItem(CLAVE)) || []; } catch (e) { items = []; }
@@ -565,6 +588,11 @@
     $('ic3').textContent = (total && enviados === total) ? '✓' : '3';
     $('btnDescargar').disabled = !total;
     $('btnEnviar').disabled = $('btnBajar').disabled = !total || enviados === total;
+    /* sacar los enviados es lo que evita que el teléfono se quede sin lugar */
+    $('btnLimpiarEnviados').style.display = enviados ? '' : 'none';
+    $('btnLimpiarEnviados').textContent = enviados === 1
+      ? 'Quitar de la lista el que ya envié'
+      : 'Quitar de la lista los ' + enviados + ' que ya envié';
   }
 
   function pintar() {
@@ -760,6 +788,17 @@
   $('desde').addEventListener('input', guardar);
   $('btnDescargar').addEventListener('click', bajarTodo);
   $('btnBajar').addEventListener('click', enviarTodo);
+  $('btnLimpiarEnviados').addEventListener('click', function () {
+    var cuantos = items.filter(function (it) { return it.enviado; }).length;
+    if (!cuantos) return;
+    if (!window.confirm('Se sacan de la lista ' + cuantos + ' producto(s) que ya llegaron a KatuWeb. ' +
+        'Siguen enviados; solo se limpia la pantalla. ¿Seguro?')) return;
+    items = items.filter(function (it) { return !it.enviado; });
+    guardar();
+    pintar();
+    decir('Lista limpia. Los enviados siguen en camino.');
+  });
+
   $('btnBorrar').addEventListener('click', function () {
     if (!items.length) return;
     if (!window.confirm('Se borran los ' + items.length + ' productos cargados y no se pueden recuperar. ¿Seguro?')) return;
