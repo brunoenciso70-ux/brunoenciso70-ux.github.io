@@ -141,24 +141,27 @@
 <div class="wrap oculto" id="pantEntrar">
   <div class="entrar">
     <h2>Entrar al panel</h2>
-    <p>Te mandamos un código de seis dígitos por correo. No hay contraseña que recordar ni que
-    perder.</p>
+    <p>Te mandamos un correo con un enlace. Lo abrís y entrás. Sin contraseña que recordar ni
+    que perder.</p>
 
     <div id="pasoCorreo">
       <div class="campo">
         <label for="correoInp">Tu correo</label>
         <input type="email" id="correoInp" autocomplete="email" placeholder="vos@ejemplo.com">
       </div>
-      <button class="btn btn-p" id="btnCodigo">Mandarme el código</button>
+      <button class="btn btn-p" id="btnCodigo">Mandarme el enlace</button>
     </div>
 
     <div id="pasoCodigo" class="oculto">
+      <p style="color:var(--gris); font-size:14px">Abrí el correo <b style="color:var(--blanco)">en
+      este mismo aparato</b> y tocá el enlace. Si en vez de un enlace te llegó un código de seis
+      dígitos, escribilo acá abajo.</p>
       <div class="campo">
-        <label for="otpInp">Código que llegó al correo</label>
+        <label for="otpInp">Código de seis dígitos (solo si te llegó uno)</label>
         <input type="text" id="otpInp" inputmode="numeric" autocomplete="one-time-code"
                maxlength="6" placeholder="000000">
       </div>
-      <button class="btn btn-p" id="btnEntrar">Entrar</button>
+      <button class="btn btn-p" id="btnEntrar">Entrar con el código</button>
       <button class="btn btn-o" id="btnOtroCorreo" style="width:100%; margin-top:8px">Usar otro correo</button>
     </div>
 
@@ -202,7 +205,32 @@
   var API = 'https://iknrqmtliixxmxyjhlkt.supabase.co';
   var LLAVE = 'sb_publishable_kMfQtsofPTiUUeFxNG66Pw_H3YX12oB';
   var SESION = 'katuweb-revisar-sesion';
+  var CORREO = 'katuweb-revisar-correo';
   var DESDE = 'katuweb-revisar-desde';   /* por cliente: en qué número va la numeración de fotos */
+
+  /* a dónde tiene que volver el enlace del correo */
+  function volverA() { return location.origin + location.pathname; }
+
+  /* Supabase deja el enlace del correo con la sesión colgada en el # de la URL.
+     La leemos, la guardamos y limpiamos la barra de direcciones para que el
+     token no quede a la vista ni en el historial. */
+  function sesionDelEnlace() {
+    var h = location.hash || '';
+    if (h.length < 2) return null;
+    var p = new URLSearchParams(h.slice(1));
+    var limpiar = function () {
+      try { history.replaceState(null, '', location.pathname + location.search); }
+      catch (e) { location.hash = ''; }
+    };
+    if (p.get('error_description') || p.get('error')) {
+      limpiar();
+      return { error: p.get('error_description') || p.get('error') };
+    }
+    var at = p.get('access_token');
+    if (!at) return null;
+    limpiar();
+    return { access_token: at, refresh_token: p.get('refresh_token') || '' };
+  }
 
   var sesion = null;
   var pendientes = [];
@@ -241,15 +269,16 @@
     var correo = $('correoInp').value.trim();
     if (!correo || correo.indexOf('@') < 0) { decirEntrar('Escribí un correo válido.', true); return; }
     $('btnCodigo').disabled = true;
-    decirEntrar('Mandando el código…');
-    pedir('/auth/v1/otp', {
+    decirEntrar('Mandando el correo…');
+    try { localStorage.setItem(CORREO, correo); } catch (e) {}
+    /* el enlace del correo tiene que volver acá, no a la raíz del sitio */
+    pedir('/auth/v1/otp?redirect_to=' + encodeURIComponent(volverA()), {
       method: 'POST',
       body: JSON.stringify({ email: correo, create_user: true })
     }).then(function () {
       ver('pasoCorreo', false);
       ver('pasoCodigo', true);
-      decirEntrar('Te mandamos un código a ' + correo + '. Puede tardar un minuto.');
-      $('otpInp').focus();
+      decirEntrar('Te mandamos el correo a ' + correo + '. Puede tardar un minuto.');
     }).catch(function (e) {
       decirEntrar('No se pudo mandar: ' + e.message, true);
     }).then(function () { $('btnCodigo').disabled = false; });
@@ -290,8 +319,16 @@
   function arrancarPanel() {
     /* RLS ya tapa todo para quien no sea admin, pero entonces la cola se vería
        simplemente vacía. Preguntamos derecho para poder decirlo con todas las letras. */
-    return pedir('/rest/v1/rpc/es_admin', { method: 'POST', body: '{}' }).then(function (si) {
+    /* si la sesión vino del enlace del correo, todavía no sabemos de quién es */
+    var saberQuien = (sesion && sesion.user && sesion.user.email)
+      ? Promise.resolve(sesion.user)
+      : pedir('/auth/v1/user').then(function (u) { sesion.user = u; return u; });
+
+    return saberQuien.then(function () {
+      return pedir('/rest/v1/rpc/es_admin', { method: 'POST', body: '{}' });
+    }).then(function (si) {
       if (si !== true) throw new Error('Esta cuenta no está autorizada.');
+      try { localStorage.setItem(SESION, JSON.stringify(sesion)); } catch (e) {}
       return cargar();
     }).then(function () {
       var correo = (sesion.user && sesion.user.email) || '';
@@ -300,7 +337,16 @@
       ver('pantEntrar', false);
       ver('pantPanel', true);
     }).catch(function (e) {
-      decirEntrar('Entraste, pero esa cuenta no tiene permiso para revisar. ' + e.message, true);
+      var m = e.message || '';
+      /* que el mensaje diga lo que de verdad pasó: no es lo mismo un enlace
+         vencido que una cuenta sin permiso */
+      var esToken = /jwt|token|expired|malformed|signature|401/i.test(m);
+      decirEntrar(esToken
+        ? 'La sesión venció o el enlace ya no sirve. Pedí uno nuevo.'
+        : 'Entraste, pero esa cuenta no está autorizada para revisar.', true);
+      ver('pantEntrar', true);
+      ver('pasoCorreo', true);
+      ver('pasoCodigo', false);
       $('btnEntrar').disabled = false;
       sesion = null;
       try { localStorage.removeItem(SESION); } catch (e2) {}
@@ -480,11 +526,24 @@
   });
 
   /* ---------- arranque ---------- */
-  try { sesion = JSON.parse(localStorage.getItem(SESION)); } catch (e) { sesion = null; }
-  if (sesion && sesion.access_token) {
-    arrancarPanel().catch(function () { ver('pantEntrar', true); });
-  } else {
+  try { $('correoInp').value = localStorage.getItem(CORREO) || ''; } catch (e) {}
+
+  var delEnlace = sesionDelEnlace();
+  if (delEnlace && delEnlace.error) {
     ver('pantEntrar', true);
+    decirEntrar('Ese enlace ya venció o se usó. Pedí uno nuevo.', true);
+  } else if (delEnlace) {
+    sesion = delEnlace;
+    ver('pantEntrar', true);
+    decirEntrar('Entrando…');
+    arrancarPanel().catch(function () { /* arrancarPanel ya avisa */ });
+  } else {
+    try { sesion = JSON.parse(localStorage.getItem(SESION)); } catch (e) { sesion = null; }
+    if (sesion && sesion.access_token) {
+      arrancarPanel().catch(function () { ver('pantEntrar', true); });
+    } else {
+      ver('pantEntrar', true);
+    }
   }
 })();
 </script>
