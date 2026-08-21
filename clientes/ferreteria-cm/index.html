@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self' https://iknrqmtliixxmxyjhlkt.supabase.co; frame-src 'self'; media-src 'self' data:; form-action 'none'; object-src 'none'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'self'; img-src 'self' data: https://iknrqmtliixxmxyjhlkt.supabase.co; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self' https://iknrqmtliixxmxyjhlkt.supabase.co; frame-src 'self'; media-src 'self' data:; form-action 'none'; object-src 'none'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta http-equiv="X-Content-Type-Options" content="nosniff">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -772,9 +772,9 @@
   /* cada producto tiene su propia foto en img/NN.jpg; se bajan recién cuando aparecen */
   function imagen(ref, alt) {
     var im = document.createElement('img');
-    /* ref es el número de la foto en img/, o —si el producto se aprobó recién y
-       todavía no bajó al repositorio— la foto misma como data URL */
-    im.src = (typeof ref === 'string' && ref.slice(0, 5) === 'data:')
+    /* ref puede ser el número de la foto en img/, la dirección de la foto
+       cargada por la ferretería, o —de cargas viejas— la foto misma en data URL */
+    im.src = (typeof ref === 'string' && /^(data:|https?:)/.test(ref))
       ? ref
       : 'img/' + (ref < 10 ? '0' + ref : ref) + '.jpg';
     im.alt = alt || '';
@@ -880,11 +880,11 @@
   pintarFiltros(); pintar();
 
   /* ------------------------------------------------------------------
-     Productos aprobados que todavía no bajaron al repositorio.
-     El catálogo de arriba ya se pintó y funciona solo: esto únicamente
-     suma. Si la base no contesta, no pasa nada y nadie se entera.
+     Productos que la ferretería carga desde su página de carga: se publican
+     al instante y se suman acá. El catálogo de arriba ya se pintó y funciona
+     solo, así que si la base no contesta, no pasa nada y nadie se entera.
      ------------------------------------------------------------------ */
-  (function sumarAprobados() {
+  (function sumarCargados() {
     var API = 'https://iknrqmtliixxmxyjhlkt.supabase.co';
     var LLAVE = 'sb_publishable_kMfQtsofPTiUUeFxNG66Pw_H3YX12oB';
     var corte = setTimeout(function () { corte = null; }, 6000);

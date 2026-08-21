@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; font-src 'self'; connect-src https://iknrqmtliixxmxyjhlkt.supabase.co; form-action 'none'; object-src 'none'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'self'; img-src 'self' data: https://iknrqmtliixxmxyjhlkt.supabase.co; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; font-src 'self'; connect-src https://iknrqmtliixxmxyjhlkt.supabase.co; form-action 'none'; object-src 'none'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta http-equiv="X-Content-Type-Options" content="nosniff">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -113,6 +113,13 @@
   }
   .prod .quitar:active { color: var(--falta); }
   .prod-campos { padding: 0 14px 16px; display: grid; gap: 14px; }
+
+  /* ---------- lo que ya está publicado ---------- */
+  .prod.oculto { opacity: .6; }
+  .prod .acciones { display: flex; gap: 8px; padding: 0 14px 14px; flex-wrap: wrap; }
+  .prod .acciones .btn { width: auto; flex: 1 1 92px; padding: 11px 12px; font-size: 14.5px; }
+  .prod .acciones .btn.borrar { color: var(--falta); }
+  .contador { font-size: 13.5px; color: var(--tinta3); margin-top: 10px; }
 
   label { display: block; font-size: 13.5px; font-weight: 700; color: var(--tinta2); margin-bottom: 6px; }
   input[type="text"], input[type="tel"], textarea, select {
@@ -259,34 +266,22 @@
     <div class="aviso" id="avisoEspacio" style="display:none; background:var(--falta-b); border-color:#f2c4c1; color:#7a1f19">
       <b>Se llenó la memoria del teléfono.</b> Lo que ya cargaste sigue en pantalla y se puede
       enviar sin problema, pero <b>no se está guardando</b>: si cerrás la página ahora, lo perdés.
-      Tocá <b>Enviar a KatuWeb</b> antes de seguir agregando.
+      Tocá <b>Publicar</b> antes de seguir agregando.
     </div>
 
     <div class="prods" id="prods"></div>
     <div class="vacio" id="vacio">Todavía no agregaste ningún producto.<br>Empezá arriba con “Sacar foto”.</div>
 
-    <button class="btn btn-s" id="btnLimpiarEnviados" style="display:none; margin-top:12px">
-      Quitar de la lista los que ya envié
-    </button>
-
-    <details id="avanzado">
-      <summary>Ajuste técnico (no lo toques salvo que Bruno te lo pida)</summary>
-      <div class="cuerpo">
-        <label for="desde" style="margin:0">Numerar las fotos desde</label>
-        <input type="tel" id="desde" value="85" inputmode="numeric">
-        <span>La última que ya está en la página es la 84.</span>
-      </div>
-    </details>
   </section>
 
   <!-- PASO 3 -->
   <section class="paso">
-    <h2><i id="ic3">3</i>Enviá</h2>
+    <h2><i id="ic3">3</i>Publicá</h2>
     <div class="tarjeta">
-      <p class="bajada" style="margin:0 0 14px">Se manda solo. No hace falta WhatsApp ni descargar
-      nada: le llega a Bruno, lo revisa y lo publica en la página.</p>
+      <p class="bajada" style="margin:0 0 14px">Se publica solo, al instante. No hace falta esperar
+      a nadie: apenas tocás el botón, el producto ya está en la página para tus clientes.</p>
       <div class="botonera">
-        <button class="btn btn-p" id="btnEnviar">Enviar a KatuWeb</button>
+        <button class="btn btn-p" id="btnEnviar">Publicar en la página</button>
       </div>
       <div class="estado-msg" id="estado"></div>
 
@@ -305,9 +300,20 @@
     </div>
   </section>
 
+  <!-- LO QUE YA ESTÁ EN LA PÁGINA -->
+  <section class="paso" id="secPub">
+    <h2><i>4</i>Lo que ya está en la página</h2>
+    <p class="bajada">Tu catálogo, como lo ven tus clientes. Podés corregir un precio, ocultar
+    lo que se te acabó o borrar lo que ya no vendés.</p>
+    <div class="contador" id="contadorPub"></div>
+    <div class="estado-msg" id="estadoPub"></div>
+    <div class="prods" id="publicados"></div>
+    <div class="vacio" id="vacioPub" style="display:none">Todavía no publicaste nada por acá.</div>
+  </section>
+
   <footer>
-    Esta página no manda nada por internet: las fotos y los textos quedan en tu teléfono
-    hasta que vos me los pasás.<br>Ferretería CM · hecho por KatuWeb
+    Las fotos y los textos quedan en tu teléfono hasta que tocás Publicar. Después viajan
+    a la página y ya los ve cualquiera.<br>Ferretería CM · hecho por KatuWeb
   </footer>
 </div>
 
@@ -315,7 +321,7 @@
   <div class="barra-in">
     <div class="cuenta" id="cuenta"><b>0 productos</b><span>Agregá el primero</span></div>
     <button class="btn btn-s" id="btnBorrar" style="padding:14px 16px">Borrar</button>
-    <button class="btn btn-p" id="btnBajar">Enviar</button>
+    <button class="btn btn-p" id="btnBajar">Publicar</button>
   </div>
 </div>
 
@@ -329,26 +335,33 @@
   var CLAVE = 'ferreteria-cm-carga';
   var CLAVE_COD = 'ferreteria-cm-codigo';
 
-  /* La base solo acepta lo que venga con el código correcto, y lo que entra
-     queda esperando la revisión de Bruno. Esta llave es pública a propósito:
-     sin código no sirve para nada, y no puede leer ni modificar nada. */
+  /* Lo que se carga acá se publica solo, al instante, en la página.
+     El código de la ferretería es la llave: sin él no entra nada.
+     Esta llave de abajo es pública a propósito y no sirve por sí sola. */
   var API = 'https://iknrqmtliixxmxyjhlkt.supabase.co';
   var LLAVE = 'sb_publishable_kMfQtsofPTiUUeFxNG66Pw_H3YX12oB';
+  var FUNCION = API + '/functions/v1/catalogo';
 
-  function rpc(nombre, cuerpo) {
-    return fetch(API + '/rest/v1/rpc/' + nombre, {
+  var codigo = '';
+
+  function fn(accion, datos) {
+    var cuerpo = { accion: accion, codigo: (datos && datos.codigo) || codigo };
+    if (datos) for (var k in datos) if (Object.prototype.hasOwnProperty.call(datos, k)) cuerpo[k] = datos[k];
+    cuerpo.accion = accion;
+    return fetch(FUNCION, {
       method: 'POST',
       headers: { 'apikey': LLAVE, 'Content-Type': 'application/json' },
       body: JSON.stringify(cuerpo)
     }).then(function (r) {
       return r.json().catch(function () { return null; }).then(function (datos) {
-        if (!r.ok) throw new Error((datos && datos.message) || 'No se pudo conectar.');
+        if (!r.ok) throw new Error((datos && datos.error) || 'No se pudo conectar.');
         return datos;
       });
     });
   }
 
   var items = [];
+  var publicados = [];
   var cont = document.getElementById('prods');
   var vacio = document.getElementById('vacio');
   var estado = document.getElementById('estado');
@@ -363,7 +376,7 @@
       if (sinEspacio) { sinEspacio = false; verAvisoEspacio(); }
     } catch (e) {
       /* el teléfono se quedó sin lugar. Todo sigue en pantalla y se puede
-         enviar igual, pero si cierran la página ahora, lo pierden. */
+         publicar igual, pero si cierran la página ahora, lo pierden. */
       if (!sinEspacio) { sinEspacio = true; verAvisoEspacio(); }
     }
   }
@@ -374,6 +387,8 @@
   }
   function recuperar() {
     try { items = JSON.parse(localStorage.getItem(CLAVE)) || []; } catch (e) { items = []; }
+    /* de versiones anteriores podían quedar productos marcados como enviados */
+    items = items.filter(function (it) { return !it.enviado; });
   }
 
   /* ---------- la foto se encuadra en un cuadrado blanco de 600 px ---------- */
@@ -403,25 +418,23 @@
   function limpiarPrecio(v) { return parseInt(String(v || '').replace(/\D/g, ''), 10) || 0; }
   function gs(n) { return 'Gs. ' + n.toLocaleString('es-PY'); }
   function dosDig(n) { return n < 10 ? '0' + n : String(n); }
-  function numeroDe(i) {
-    var n = parseInt($('desde').value, 10) || 85;
-    for (var k = 0; k < i; k++) if (items[k].foto) n++;
-    return n;
-  }
   function faltaDe(it) {
     if (!String(it.nombre || '').trim()) return 'Falta el nombre';
     if (!limpiarPrecio(it.precio)) return 'Falta el precio';
     return null;
   }
+  function decir(msg, ojo) {
+    estado.textContent = msg;
+    estado.className = 'estado-msg' + (ojo ? ' ojo' : '');
+  }
 
-  /* ---------- armado de una tarjeta ---------- */
+  /* ---------- armado de una tarjeta de carga ---------- */
   function tarjeta(it, i) {
     var falta = faltaDe(it);
 
     var c = document.createElement('div');
     c.className = 'prod' + (it.enviado ? ' enviado' : (falta ? ' incompleto' : ''));
 
-    /* cabecera: foto, número de orden, estado, quitar */
     var top = document.createElement('div');
     top.className = 'prod-top';
 
@@ -443,7 +456,7 @@
     ord.textContent = 'Producto ' + (i + 1);
     var est = document.createElement('div');
     est.className = 'estado ' + (it.enviado ? 'enviado' : (falta ? 'falta' : 'listo'));
-    est.textContent = it.enviado ? 'Enviado ✓' : (falta || 'Listo para enviar');
+    est.textContent = it.enviado ? 'Publicado ✓' : (falta || 'Listo para publicar');
     cabe.appendChild(ord);
     cabe.appendChild(est);
 
@@ -460,7 +473,6 @@
 
     top.appendChild(foto); top.appendChild(cabe); top.appendChild(qu);
 
-    /* campos */
     var campos = document.createElement('div');
     campos.className = 'prod-campos';
 
@@ -562,37 +574,35 @@
       t.classList.toggle('enviado', !!it.enviado);
       var e = t.querySelector('.estado');
       e.className = 'estado ' + (it.enviado ? 'enviado' : (falta ? 'falta' : 'listo'));
-      e.textContent = it.enviado ? 'Enviado ✓' : (falta || 'Listo para enviar');
+      e.textContent = it.enviado ? 'Publicado ✓' : (falta || 'Listo para publicar');
     }
     refrescarCuenta();
   }
 
   function refrescarCuenta() {
     var total = items.length;
-    var enviados = items.filter(function (it) { return it.enviado; }).length;
     var faltan = items.filter(function (it) { return !it.enviado && faltaDe(it); }).length;
     var b = $('cuenta').querySelector('b');
     var s = $('cuenta').querySelector('span');
-    b.textContent = total + (total === 1 ? ' producto' : ' productos');
-    if (!total) { s.className = ''; s.textContent = 'Agregá el primero'; }
-    else if (faltan) { s.className = 'pendiente'; s.textContent = faltan + ' sin completar'; }
-    else if (enviados === total) { s.className = ''; s.textContent = 'Todo enviado'; }
-    else { s.className = ''; s.textContent = (total - enviados) + ' listos para enviar'; }
+    b.textContent = total + (total === 1 ? ' sin publicar' : ' sin publicar');
+    if (!total) {
+      b.textContent = publicados.length + (publicados.length === 1 ? ' publicado' : ' publicados');
+      s.className = ''; s.textContent = 'Agregá otro cuando quieras';
+    } else if (faltan) {
+      s.className = 'pendiente'; s.textContent = faltan + ' sin completar';
+    } else {
+      s.className = ''; s.textContent = 'Listos para publicar';
+    }
 
     $('ic1').className = total ? 'ok' : '';
     $('ic1').textContent = total ? '✓' : '1';
     var completos = total && !faltan;
     $('ic2').className = completos ? 'ok' : '';
     $('ic2').textContent = completos ? '✓' : '2';
-    $('ic3').className = (total && enviados === total) ? 'ok' : '';
-    $('ic3').textContent = (total && enviados === total) ? '✓' : '3';
+    $('ic3').className = (!total && publicados.length) ? 'ok' : '';
+    $('ic3').textContent = (!total && publicados.length) ? '✓' : '3';
     $('btnDescargar').disabled = !total;
-    $('btnEnviar').disabled = $('btnBajar').disabled = !total || enviados === total;
-    /* sacar los enviados es lo que evita que el teléfono se quede sin lugar */
-    $('btnLimpiarEnviados').style.display = enviados ? '' : 'none';
-    $('btnLimpiarEnviados').textContent = enviados === 1
-      ? 'Quitar de la lista el que ya envié'
-      : 'Quitar de la lista los ' + enviados + ' que ya envié';
+    $('btnEnviar').disabled = $('btnBajar').disabled = !total;
   }
 
   function pintar() {
@@ -602,54 +612,241 @@
     refrescarCuenta();
   }
 
-  /* ---------- el texto que Bruno pega en la página ---------- */
-  function escapar(s) {
-    return String(s || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\s+/g, ' ').trim();
-  }
-  function armarTexto() {
-    return items.map(function (it, i) {
-      return "    ['" + escapar(it.nombre) + "', " + limpiarPrecio(it.precio) + ", '" +
-        escapar(it.rubro || RUBROS[0]) + "', " + (it.foto ? numeroDe(i) : 0) + ", '" +
-        escapar(it.desc) + "'],";
-    }).join('\n');
+  /* ================================================================
+     LO QUE YA ESTÁ EN LA PÁGINA
+     El mismo código de la ferretería sirve para corregir y para borrar.
+     ================================================================ */
+  var listaPub = document.getElementById('publicados');
+  var vacioPub = document.getElementById('vacioPub');
+  var contadorPub = document.getElementById('contadorPub');
+
+  function traerPublicados() {
+    if (!codigo) { publicados = []; pintarPublicados(); return; }
+    contadorPub.textContent = 'Buscando…';
+    fn('listar', {}).then(function (d) {
+      publicados = (d && d.productos) || [];
+      pintarPublicados();
+    }).catch(function (e) {
+      contadorPub.textContent = 'No se pudo leer el catálogo: ' + e.message;
+    });
   }
 
-  /* ---------- descargas ---------- */
-  function bajar(nombre, url) {
-    var a = document.createElement('a');
-    a.href = url; a.download = nombre;
-    document.body.appendChild(a); a.click(); a.remove();
+  function pintarPublicados() {
+    listaPub.textContent = '';
+    var n = publicados.length;
+    contadorPub.textContent = !codigo ? 'Cargá el código para ver tu catálogo.'
+      : (n === 0 ? '' : (n === 1 ? '1 producto en la página' : n + ' productos en la página'));
+    vacioPub.style.display = (codigo && n === 0) ? '' : 'none';
+    publicados.forEach(function (p) { listaPub.appendChild(tarjetaPub(p)); });
+    refrescarCuenta();
   }
-  function decir(msg, ojo) {
-    estado.textContent = msg;
-    estado.className = 'estado-msg' + (ojo ? ' ojo' : '');
-  }
-  function bajarTodo() {
-    if (!items.length) { decir('Todavía no agregaste ningún producto.', true); return; }
-    var malos = [];
-    items.forEach(function (it, i) { if (faltaDe(it)) malos.push(i + 1); });
-    if (malos.length) {
-      decir('Completá primero el producto ' + malos.join(', el ') + '.', true);
-      var t = cont.children[malos[0] - 1];
-      if (t) t.scrollIntoView({ block: 'center' });
-      return;
-    }
-    bajar('productos.txt', 'data:text/plain;charset=utf-8,' + encodeURIComponent(armarTexto()));
-    var fotos = [];
-    items.forEach(function (it, i) {
-      if (it.foto) fotos.push({ n: dosDig(numeroDe(i)) + '.jpg', d: it.foto });
+
+  function tarjetaPub(p) {
+    var c = document.createElement('div');
+    c.className = 'prod' + (p.visible ? '' : ' oculto');
+
+    var top = document.createElement('div');
+    top.className = 'prod-top';
+
+    var foto = document.createElement('div');
+    foto.className = 'foto' + (p.foto ? '' : ' sin');
+    if (p.foto) {
+      var im = document.createElement('img');
+      im.src = p.foto; im.alt = p.nombre; im.loading = 'lazy';
+      foto.appendChild(im);
+    } else { foto.textContent = 'Sin foto'; }
+
+    var cabe = document.createElement('div');
+    cabe.className = 'cabe';
+    var nom = document.createElement('div');
+    nom.className = 'orden';
+    nom.textContent = p.nombre;
+    var det = document.createElement('div');
+    det.className = 'estado ' + (p.visible ? 'listo' : 'falta');
+    det.textContent = (p.visible ? 'En la página · ' : 'Oculto · ') + gs(p.precio);
+    cabe.appendChild(nom); cabe.appendChild(det);
+
+    top.appendChild(foto); top.appendChild(cabe);
+
+    var acc = document.createElement('div');
+    acc.className = 'acciones';
+
+    var bEdit = document.createElement('button');
+    bEdit.className = 'btn btn-s'; bEdit.type = 'button'; bEdit.textContent = 'Corregir';
+
+    var bVer = document.createElement('button');
+    bVer.className = 'btn btn-s'; bVer.type = 'button';
+    bVer.textContent = p.visible ? 'Ocultar' : 'Mostrar';
+    bVer.addEventListener('click', function () {
+      bVer.disabled = true;
+      fn('editar', { id: p.id, visible: !p.visible }).then(function (d) {
+        p.visible = d.producto.visible;
+        pintarPublicados();
+        decirPub(p.visible ? 'Volvió a la página.' : 'Se ocultó de la página.');
+      }).catch(function (e) { bVer.disabled = false; decirPub(e.message, true); });
     });
-    if (!fotos.length) { decir('Listo. Mandame el archivo productos.txt por WhatsApp.'); return; }
-    var k = 0;
-    (function siguiente() {
-      if (k >= fotos.length) {
-        decir('Listo: ' + fotos.length + ' fotos y productos.txt. Mandame todo por WhatsApp.');
-        return;
-      }
-      bajar(fotos[k].n, fotos[k].d);
-      decir('Bajando foto ' + (++k) + ' de ' + fotos.length + '…');
-      setTimeout(siguiente, 1000);
-    })();
+
+    var bDel = document.createElement('button');
+    bDel.className = 'btn btn-s borrar'; bDel.type = 'button'; bDel.textContent = 'Borrar';
+    bDel.addEventListener('click', function () {
+      if (!window.confirm('Se borra “' + p.nombre + '” de la página y no se puede recuperar. ¿Seguro?')) return;
+      bDel.disabled = true;
+      fn('borrar', { id: p.id }).then(function () {
+        publicados = publicados.filter(function (x) { return x.id !== p.id; });
+        pintarPublicados();
+        decirPub('Producto borrado de la página.');
+      }).catch(function (e) { bDel.disabled = false; decirPub(e.message, true); });
+    });
+
+    acc.appendChild(bEdit); acc.appendChild(bVer); acc.appendChild(bDel);
+
+    var editor = document.createElement('div');
+    editor.className = 'prod-campos';
+    editor.style.display = 'none';
+    var borrador = { nombre: p.nombre, precio: String(p.precio), rubro: p.rubro, desc: p.descripcion || '', foto: null };
+    var armado = false;
+
+    bEdit.addEventListener('click', function () {
+      var abierto = editor.style.display !== 'none';
+      if (abierto) { editor.style.display = 'none'; bEdit.textContent = 'Corregir'; return; }
+      if (!armado) { armarEditor(); armado = true; }
+      editor.style.display = ''; bEdit.textContent = 'Cerrar';
+    });
+
+    function armarEditor() {
+      editor.appendChild(campoTextoPub('Nombre del producto', borrador.nombre,
+        'Como lo pide el cliente.', function (v) { borrador.nombre = v; }));
+      editor.appendChild(campoPrecioPub(borrador));
+      editor.appendChild(campoRubroPub(borrador));
+      editor.appendChild(campoTextoPub('Descripción', borrador.desc,
+        'Una o dos frases.', function (v) { borrador.desc = v; }, true));
+
+      var wf = document.createElement('div');
+      wf.className = 'campo';
+      var lf = document.createElement('label');
+      lf.textContent = 'Foto';
+      var bf = document.createElement('button');
+      bf.className = 'btn btn-s'; bf.type = 'button'; bf.textContent = 'Cambiar la foto';
+      var inpF = document.createElement('input');
+      inpF.type = 'file'; inpF.accept = 'image/*'; inpF.style.display = 'none';
+      var pf = document.createElement('div');
+      pf.className = 'pista';
+      pf.textContent = 'Se reemplaza la que está en la página.';
+      bf.addEventListener('click', function () { inpF.click(); });
+      inpF.addEventListener('change', function (e) {
+        var f = e.target.files[0];
+        e.target.value = '';
+        if (!f) return;
+        pf.textContent = 'Preparando la foto…';
+        encuadrar(f, function (dataUrl) {
+          if (!dataUrl) { pf.className = 'pista error'; pf.textContent = 'No se pudo leer esa foto.'; return; }
+          borrador.foto = dataUrl;
+          pf.className = 'pista';
+          pf.textContent = 'Foto nueva lista. Tocá Guardar.';
+        });
+      });
+      wf.appendChild(lf); wf.appendChild(bf); wf.appendChild(inpF); wf.appendChild(pf);
+      editor.appendChild(wf);
+
+      var bot = document.createElement('div');
+      bot.className = 'botonera';
+      var bOk = document.createElement('button');
+      bOk.className = 'btn btn-p'; bOk.type = 'button'; bOk.textContent = 'Guardar el cambio';
+      bOk.addEventListener('click', function () {
+        if (!String(borrador.nombre).trim()) { decirPub('El nombre no puede quedar vacío.', true); return; }
+        if (!limpiarPrecio(borrador.precio)) { decirPub('El precio no puede quedar vacío.', true); return; }
+        bOk.disabled = true; bOk.textContent = 'Guardando…';
+        var cambios = {
+          id: p.id,
+          nombre: borrador.nombre,
+          precio: limpiarPrecio(borrador.precio),
+          rubro: borrador.rubro,
+          descripcion: borrador.desc
+        };
+        if (borrador.foto) cambios.foto = borrador.foto;
+        fn('editar', cambios).then(function (d) {
+          var q = d.producto;
+          p.nombre = q.nombre; p.precio = q.precio; p.rubro = q.rubro;
+          p.descripcion = q.descripcion; p.visible = q.visible;
+          if (q.foto) p.foto = q.foto;
+          pintarPublicados();
+          decirPub('Cambio guardado. Ya se ve en la página.');
+        }).catch(function (e) {
+          bOk.disabled = false; bOk.textContent = 'Guardar el cambio';
+          decirPub(e.message, true);
+        });
+      });
+      bot.appendChild(bOk);
+      editor.appendChild(bot);
+    }
+
+    c.appendChild(top); c.appendChild(acc); c.appendChild(editor);
+    return c;
+  }
+
+  function decirPub(msg, ojo) {
+    var e = $('estadoPub');
+    e.textContent = msg;
+    e.className = 'estado-msg' + (ojo ? ' ojo' : '');
+  }
+
+  /* mismos campos, pero escribiendo sobre un borrador y sin tocar localStorage */
+  function campoTextoPub(etiqueta, valor, pista, alCambiar, largo) {
+    var w = document.createElement('div');
+    w.className = 'campo';
+    var lb = document.createElement('label');
+    lb.textContent = etiqueta;
+    var inp = document.createElement(largo ? 'textarea' : 'input');
+    if (!largo) inp.type = 'text';
+    inp.value = valor || '';
+    var pi = document.createElement('div');
+    pi.className = 'pista';
+    pi.textContent = pista;
+    inp.addEventListener('input', function () { alCambiar(inp.value); });
+    lb.htmlFor = inp.id = 'e' + Math.random().toString(36).slice(2, 9);
+    w.appendChild(lb); w.appendChild(inp); w.appendChild(pi);
+    return w;
+  }
+  function campoPrecioPub(b) {
+    var w = document.createElement('div');
+    w.className = 'campo';
+    var lb = document.createElement('label');
+    lb.textContent = 'Precio';
+    var inp = document.createElement('input');
+    inp.type = 'tel'; inp.inputMode = 'numeric'; inp.value = b.precio || '';
+    var pi = document.createElement('div');
+    pi.className = 'pista precio';
+    function ver() {
+      var n = limpiarPrecio(inp.value);
+      if (!n) { pi.textContent = 'Solo números, sin puntos ni “Gs.”'; return; }
+      pi.textContent = '';
+      pi.appendChild(document.createTextNode('Queda en '));
+      var e = document.createElement('b');
+      e.textContent = gs(n);
+      pi.appendChild(e);
+    }
+    inp.addEventListener('input', function () { b.precio = inp.value; ver(); });
+    ver();
+    lb.htmlFor = inp.id = 'f' + Math.random().toString(36).slice(2, 9);
+    w.appendChild(lb); w.appendChild(inp); w.appendChild(pi);
+    return w;
+  }
+  function campoRubroPub(b) {
+    var w = document.createElement('div');
+    w.className = 'campo';
+    var lb = document.createElement('label');
+    lb.textContent = 'Rubro';
+    var sel = document.createElement('select');
+    RUBROS.forEach(function (r) {
+      var o = document.createElement('option');
+      o.value = o.textContent = r;
+      if (b.rubro === r) o.selected = true;
+      sel.appendChild(o);
+    });
+    sel.addEventListener('change', function () { b.rubro = sel.value; });
+    lb.htmlFor = sel.id = 'g' + Math.random().toString(36).slice(2, 9);
+    w.appendChild(lb); w.appendChild(sel);
+    return w;
   }
 
   /* ---------- alta de productos ---------- */
@@ -672,7 +869,6 @@
   }
 
   /* ---------- el código de la ferretería ---------- */
-  var codigo = '';
   function verLlave() {
     var puesto = !!codigo;
     $('llaveForm').style.display = puesto ? 'none' : '';
@@ -685,12 +881,9 @@
     if (!v) { $('pistaCodigo').className = 'pista error'; $('pistaCodigo').textContent = 'Escribí el código que te pasó Bruno.'; return; }
     $('pistaCodigo').className = 'pista';
     $('pistaCodigo').textContent = 'Verificando…';
-    /* se prueba de verdad contra la base: un código mal escrito se detecta ahora
-       y no cuando ya cargaron veinte productos */
-    rpc('cargar_producto', { p_codigo: v, p_nombre: '', p_precio: 0, p_rubro: RUBROS[0] })
+    fn('verificar', { codigo: v })
       .then(function () { aceptar(v); })
       .catch(function (e) {
-        if (/nombre|precio/i.test(e.message)) { aceptar(v); return; }  /* código bien, faltaban datos */
         $('pistaCodigo').className = 'pista error';
         $('pistaCodigo').textContent = /válido/i.test(e.message)
           ? 'Ese código no es válido. Fijate que esté completo.'
@@ -702,17 +895,20 @@
     try { localStorage.setItem(CLAVE_COD, v); } catch (e) {}
     verLlave();
     decir('Código guardado. Ya podés cargar productos.');
+    traerPublicados();
   }
   $('btnGuardarCodigo').addEventListener('click', guardarCodigo);
   $('codigo').addEventListener('keydown', function (e) { if (e.key === 'Enter') guardarCodigo(); });
   $('btnCambiarCodigo').addEventListener('click', function () {
     codigo = ''; $('codigo').value = '';
     try { localStorage.removeItem(CLAVE_COD); } catch (e) {}
+    publicados = [];
     verLlave();
+    pintarPublicados();
   });
 
-  /* ---------- envío a la cola de revisión ---------- */
-  function enviarTodo() {
+  /* ---------- publicación ---------- */
+  function publicarTodo() {
     if (!codigo) {
       decir('Primero cargá el código de la ferretería, arriba de todo.', true);
       $('secLlave').scrollIntoView({ block: 'center' });
@@ -720,7 +916,7 @@
     }
     var porEnviar = items.filter(function (it) { return !it.enviado; });
     if (!porEnviar.length) {
-      decir(items.length ? 'Ya está todo enviado.' : 'Todavía no agregaste ningún producto.', !items.length);
+      decir('Todavía no agregaste ningún producto.', true);
       return;
     }
     var malos = [];
@@ -734,34 +930,38 @@
 
     $('btnEnviar').disabled = $('btnBajar').disabled = true;
     var hechos = 0, fallados = [];
-    decir('Enviando 1 de ' + porEnviar.length + '…');
+    decir('Publicando 1 de ' + porEnviar.length + '…');
 
     (function siguiente(k) {
       if (k >= porEnviar.length) {
-        $('btnEnviar').disabled = $('btnBajar').disabled = false;
+        /* lo publicado sale de la lista de carga y pasa al catálogo de abajo */
+        items = items.filter(function (it) { return !it.enviado; });
         guardar();
         pintar();
+        pintarPublicados();
+        $('btnEnviar').disabled = $('btnBajar').disabled = !items.length;
         if (fallados.length) {
-          decir('Se enviaron ' + hechos + '. Quedaron ' + fallados.length +
-                ' sin enviar: ' + fallados.join(', ') + '. Probá de nuevo.', true);
+          decir('Se publicaron ' + hechos + '. Quedaron ' + fallados.length +
+                ' sin publicar: ' + fallados.join(', ') + '. Probá de nuevo.', true);
         } else {
-          decir('Listo: ' + hechos + (hechos === 1 ? ' producto enviado' : ' productos enviados') +
-                '. Bruno los revisa y los publica.');
+          decir('Listo: ' + hechos + (hechos === 1 ? ' producto ya está' : ' productos ya están') +
+                ' en la página.');
+          $('secPub').scrollIntoView({ block: 'start', behavior: 'smooth' });
         }
         return;
       }
       var it = porEnviar[k];
-      decir('Enviando ' + (k + 1) + ' de ' + porEnviar.length + '…');
-      rpc('cargar_producto', {
-        p_codigo: codigo,
-        p_nombre: it.nombre,
-        p_precio: limpiarPrecio(it.precio),
-        p_rubro: it.rubro || RUBROS[0],
-        p_descripcion: it.desc || '',
-        p_foto: it.foto || null
-      }).then(function () {
+      decir('Publicando ' + (k + 1) + ' de ' + porEnviar.length + '…');
+      fn('crear', {
+        nombre: it.nombre,
+        precio: limpiarPrecio(it.precio),
+        rubro: it.rubro || RUBROS[0],
+        descripcion: it.desc || '',
+        foto: it.foto || null
+      }).then(function (d) {
         it.enviado = true;
         hechos++;
+        if (d && d.producto) publicados.unshift(d.producto);
         guardar();
       }).catch(function (e) {
         fallados.push(it.nombre || 'sin nombre');
@@ -769,7 +969,8 @@
       }).then(function () { siguiente(k + 1); });
     })(0);
   }
-  $('btnEnviar').addEventListener('click', enviarTodo);
+  $('btnEnviar').addEventListener('click', publicarTodo);
+  $('btnBajar').addEventListener('click', publicarTodo);
 
   $('btnCamara').addEventListener('click', function () { $('fCamara').click(); });
   $('btnGaleria').addEventListener('click', function () { $('fGaleria').click(); });
@@ -785,27 +986,61 @@
     var ult = cont.lastElementChild;
     if (ult) ult.scrollIntoView({ block: 'center' });
   });
-  $('desde').addEventListener('input', guardar);
-  $('btnDescargar').addEventListener('click', bajarTodo);
-  $('btnBajar').addEventListener('click', enviarTodo);
-  $('btnLimpiarEnviados').addEventListener('click', function () {
-    var cuantos = items.filter(function (it) { return it.enviado; }).length;
-    if (!cuantos) return;
-    if (!window.confirm('Se sacan de la lista ' + cuantos + ' producto(s) que ya llegaron a KatuWeb. ' +
-        'Siguen enviados; solo se limpia la pantalla. ¿Seguro?')) return;
-    items = items.filter(function (it) { return !it.enviado; });
-    guardar();
-    pintar();
-    decir('Lista limpia. Los enviados siguen en camino.');
-  });
 
   $('btnBorrar').addEventListener('click', function () {
     if (!items.length) return;
-    if (!window.confirm('Se borran los ' + items.length + ' productos cargados y no se pueden recuperar. ¿Seguro?')) return;
+    if (!window.confirm('Se borran los ' + items.length + ' productos que todavía no publicaste. ¿Seguro?')) return;
     items = [];
     try { localStorage.removeItem(CLAVE); } catch (e) {}
     pintar(); decir('');
   });
+
+  /* ---------- respaldo por WhatsApp, si no hay señal ---------- */
+  function escapar(s) {
+    return String(s || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\s+/g, ' ').trim();
+  }
+  function armarTexto() {
+    var n = 0;
+    return items.map(function (it) {
+      return "    ['" + escapar(it.nombre) + "', " + limpiarPrecio(it.precio) + ", '" +
+        escapar(it.rubro || RUBROS[0]) + "', " + (it.foto ? ++n : 0) + ", '" +
+        escapar(it.desc) + "'],";
+    }).join('\n');
+  }
+  function bajar(nombre, url) {
+    var a = document.createElement('a');
+    a.href = url; a.download = nombre;
+    document.body.appendChild(a); a.click(); a.remove();
+  }
+  function bajarTodo() {
+    if (!items.length) { decir('Todavía no agregaste ningún producto.', true); return; }
+    var malos = [];
+    items.forEach(function (it, i) { if (faltaDe(it)) malos.push(i + 1); });
+    if (malos.length) {
+      decir('Completá primero el producto ' + malos.join(', el ') + '.', true);
+      var t = cont.children[malos[0] - 1];
+      if (t) t.scrollIntoView({ block: 'center' });
+      return;
+    }
+    bajar('productos.txt', 'data:text/plain;charset=utf-8,' + encodeURIComponent(armarTexto()));
+    var fotos = [], n = 0;
+    items.forEach(function (it) {
+      if (it.foto) fotos.push({ n: dosDig(++n) + '.jpg', d: it.foto });
+    });
+    if (!fotos.length) { decir('Listo. Mandame el archivo productos.txt por WhatsApp.'); return; }
+    var k = 0;
+    (function siguiente() {
+      if (k >= fotos.length) {
+        decir('Listo: ' + fotos.length + ' fotos y productos.txt. Mandame todo por WhatsApp.');
+        return;
+      }
+      bajar(fotos[k].n, fotos[k].d);
+      decir('Bajando foto ' + (++k) + ' de ' + fotos.length + '…');
+      setTimeout(siguiente, 1000);
+    })();
+  }
+  $('btnDescargar').addEventListener('click', bajarTodo);
+
   window.addEventListener('beforeunload', function (e) {
     if (items.length) { e.preventDefault(); e.returnValue = ''; }
   });
@@ -814,6 +1049,8 @@
   try { codigo = localStorage.getItem(CLAVE_COD) || ''; } catch (e) { codigo = ''; }
   verLlave();
   pintar();
+  pintarPublicados();
+  if (codigo) traerPublicados();
 })();
 </script>
 </body>

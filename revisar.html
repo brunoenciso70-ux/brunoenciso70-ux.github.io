@@ -2,13 +2,13 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; font-src 'self'; connect-src https://iknrqmtliixxmxyjhlkt.supabase.co; form-action 'none'; object-src 'none'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'self'; img-src 'self' data: https://iknrqmtliixxmxyjhlkt.supabase.co; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; font-src 'self'; connect-src https://iknrqmtliixxmxyjhlkt.supabase.co; form-action 'none'; object-src 'none'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta http-equiv="X-Content-Type-Options" content="nosniff">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#14121c">
-<title>Revisar cargas — KatuWeb</title>
+<title>Catálogo de clientes — KatuWeb</title>
 <style>
   :root {
     --fondo: #14121c; --panel: #1d1a29; --panel2: #262234;
@@ -56,6 +56,13 @@
   .btn-no:hover { background: var(--no-b); }
   .btn:disabled { opacity: .4; cursor: not-allowed; }
 
+  .ficha.apagada { opacity: .55; }
+  .nuevo {
+    display: inline-block; background: var(--amarillo); color: #241f00;
+    font-size: 10.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
+    padding: 2px 7px; border-radius: 20px; vertical-align: middle;
+  }
+
   input[type="email"], input[type="text"], textarea {
     width: 100%; background: var(--panel2); border: 1.5px solid var(--linea2);
     border-radius: 8px; color: var(--blanco); font: inherit; font-size: 16px;
@@ -99,17 +106,6 @@
   .vacio { text-align: center; color: var(--gris); padding: 50px 20px; border: 1px dashed var(--linea2); border-radius: 13px; margin-top: 22px; }
   .vacio b { display: block; color: var(--blanco); font-size: 17px; margin-bottom: 6px; }
 
-  /* ---------- publicar ---------- */
-  .publicar { background: var(--panel); border: 1px solid var(--linea); border-radius: 13px; padding: 20px; margin-top: 30px; }
-  .publicar h2 { font-size: 17px; font-weight: 800; letter-spacing: -.02em; }
-  .publicar p { color: var(--gris); font-size: 14px; margin-top: 7px; }
-  .publicar .acc { display: flex; gap: 9px; flex-wrap: wrap; margin-top: 14px; }
-  pre {
-    background: #0e0c15; border: 1px solid var(--linea); border-radius: 8px;
-    padding: 13px; margin-top: 13px; overflow-x: auto;
-    font-family: ui-monospace, Menlo, monospace; font-size: 12px; color: #cfc9e0;
-    max-height: 300px; overflow-y: auto; white-space: pre;
-  }
   .oculto { display: none !important; }
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
@@ -171,31 +167,19 @@
 
 <!-- PANEL -->
 <div class="wrap oculto" id="pantPanel">
-  <h1>Cargas esperando</h1>
-  <p class="sub">Lo que mandaron tus clientes desde su página de carga. Nada de esto está publicado
-  todavía: aparece en la página recién cuando lo aprobás.</p>
+  <h1>Lo que cargaron tus clientes</h1>
+  <p class="sub">Cada cliente publica solo, desde su propia página de carga: lo que ves acá ya está
+  en su sitio. Este panel es para mirar lo nuevo y arreglar lo que haga falta.</p>
 
   <div class="resumen">
-    <div class="pastilla" id="pEsperando"><b>0</b> esperando</div>
-    <div class="pastilla" id="pAprobados"><b>0</b> aprobados sin publicar</div>
+    <div class="pastilla" id="pNuevos"><b>0</b> nuevos</div>
+    <div class="pastilla" id="pTotal"><b>0</b> en las páginas</div>
+    <div class="pastilla" id="pOcultos"><b>0</b> ocultos</div>
     <button class="pastilla" id="btnRecargar" style="cursor:pointer; font-family:inherit">Actualizar</button>
   </div>
 
   <div class="fichas" id="fichas"></div>
-  <div class="vacio oculto" id="vacio"><b>No hay nada esperando</b>Cuando un cliente cargue un producto, aparece acá.</div>
-
-  <div class="publicar oculto" id="publicar">
-    <h2>Pasar lo aprobado a la página</h2>
-    <p>La base es la sala de espera, no el depósito. Bajá las fotos numeradas y las filas, pegalas
-    en el <code>index.html</code> del cliente, y después marcá como publicado para vaciar la cola.</p>
-    <div class="acc">
-      <button class="btn btn-p" id="btnBajarTodo">Bajar fotos y filas</button>
-      <button class="btn btn-o" id="btnVerFilas">Ver las filas</button>
-      <button class="btn btn-o" id="btnPublicado">Marcar como publicado</button>
-    </div>
-    <div class="msg" id="msgPublicar"></div>
-    <pre class="oculto" id="filas"></pre>
-  </div>
+  <div class="vacio oculto" id="vacio"><b>Todavía no hay nada</b>Cuando un cliente cargue un producto, aparece acá y en su página.</div>
 </div>
 
 <script>
@@ -206,7 +190,6 @@
   var LLAVE = 'sb_publishable_kMfQtsofPTiUUeFxNG66Pw_H3YX12oB';
   var SESION = 'katuweb-revisar-sesion';
   var CORREO = 'katuweb-revisar-correo';
-  var DESDE = 'katuweb-revisar-desde';   /* por cliente: en qué número va la numeración de fotos */
 
   /* a dónde tiene que volver el enlace del correo */
   function volverA() { return location.origin + location.pathname; }
@@ -233,8 +216,6 @@
   }
 
   var sesion = null;
-  var pendientes = [];
-  var aprobados = [];
 
   function $(id) { return document.getElementById(id); }
   function ver(id, si) { $(id).classList.toggle('oculto', !si); }
@@ -353,11 +334,14 @@
     });
   }
 
+  var productos = [];
+  var VISTO = 'katuweb-revisar-visto';   /* hasta cuándo ya miré las cargas */
+  var visto = 0;
+
   function cargar() {
-    return pedir('/rest/v1/productos?select=*&order=creado_en.asc').then(function (filas) {
+    return pedir('/rest/v1/productos?select=*&order=creado_en.desc').then(function (filas) {
       if (!Array.isArray(filas)) throw new Error('Respuesta inesperada.');
-      pendientes = filas.filter(function (f) { return f.estado === 'pendiente'; });
-      aprobados = filas.filter(function (f) { return f.estado === 'aprobado'; });
+      productos = filas;
       pintar();
     });
   }
@@ -368,18 +352,27 @@
     return d.toLocaleDateString('es-PY', { day: '2-digit', month: 'short' }) + ' · ' +
            d.toLocaleTimeString('es-PY', { hour: '2-digit', minute: '2-digit' });
   }
+  function esNuevo(p) { return new Date(p.creado_en).getTime() > visto; }
+
+  /* la foto puede ser una dirección de Storage o, de cargas viejas, un data URL */
+  function rutaEnStorage(url) {
+    var marca = '/storage/v1/object/public/catalogo/';
+    var i = String(url || '').indexOf(marca);
+    return i === -1 ? null : String(url).slice(i + marca.length);
+  }
 
   function ficha(p) {
     var c = document.createElement('article');
-    c.className = 'ficha';
+    c.className = 'ficha' + (p.visible === false ? ' apagada' : '');
     var inn = document.createElement('div');
     inn.className = 'ficha-in';
 
+    var fuente = p.foto_url || p.foto;
     var foto = document.createElement('div');
-    foto.className = 'foto' + (p.foto ? '' : ' sin');
-    if (p.foto) {
+    foto.className = 'foto' + (fuente ? '' : ' sin');
+    if (fuente) {
       var im = document.createElement('img');
-      im.src = p.foto; im.alt = p.nombre;
+      im.src = fuente; im.alt = p.nombre; im.loading = 'lazy';
       foto.appendChild(im);
     } else {
       foto.textContent = 'Sin foto';
@@ -387,23 +380,70 @@
 
     var d = document.createElement('div');
     d.className = 'datos';
-    var cl = document.createElement('div'); cl.className = 'cliente'; cl.textContent = p.cliente_slug;
+
+    var cl = document.createElement('div'); cl.className = 'cliente';
+    cl.textContent = p.cliente_slug;
+    if (esNuevo(p)) {
+      var nu = document.createElement('span');
+      nu.className = 'nuevo';
+      nu.textContent = 'nuevo';
+      cl.appendChild(document.createTextNode(' '));
+      cl.appendChild(nu);
+    }
+
     var h = document.createElement('h3'); h.textContent = p.nombre;
     var pr = document.createElement('div'); pr.className = 'precio'; pr.textContent = gs(p.precio);
-    var ru = document.createElement('div'); ru.className = 'rubro'; ru.textContent = p.rubro;
+    var ru = document.createElement('div'); ru.className = 'rubro';
+    ru.textContent = p.rubro + (p.visible === false ? ' · oculto de la página' : '');
     var de = document.createElement('div'); de.className = 'desc'; de.textContent = p.descripcion || 'Sin descripción.';
     var cu = document.createElement('div'); cu.className = 'cuando'; cu.textContent = 'Cargado el ' + cuando(p.creado_en);
 
     var acc = document.createElement('div'); acc.className = 'acc';
-    var si = document.createElement('button'); si.className = 'btn btn-ok'; si.textContent = 'Aprobar';
-    var no = document.createElement('button'); no.className = 'btn btn-no'; no.textContent = 'Rechazar';
-    si.addEventListener('click', function () { decidir(c, p, 'aprobado'); });
-    no.addEventListener('click', function () {
-      var nota = window.prompt('¿Por qué se rechaza? (lo ves solo vos)', 'La foto no sirve');
-      if (nota === null) return;
-      decidir(c, p, 'rechazado', nota);
+
+    var ver_ = document.createElement('button');
+    ver_.className = 'btn btn-o';
+    ver_.textContent = p.visible === false ? 'Mostrar en la página' : 'Ocultar de la página';
+    ver_.addEventListener('click', function () {
+      ver_.disabled = true;
+      pedir('/rest/v1/productos?id=eq.' + p.id, {
+        method: 'PATCH',
+        headers: { 'Prefer': 'return=representation' },
+        body: JSON.stringify({ visible: p.visible === false, actualizado_en: new Date().toISOString() })
+      }).then(function () { return cargar(); })
+        .catch(function (e) { ver_.disabled = false; window.alert('No se pudo guardar: ' + e.message); });
     });
-    acc.appendChild(si); acc.appendChild(no);
+
+    var no = document.createElement('button');
+    no.className = 'btn btn-no';
+    no.textContent = 'Borrar';
+    no.addEventListener('click', function () {
+      if (!window.confirm('Se borra "' + p.nombre + '" de la página de ' + p.cliente_slug +
+          ' y no se puede recuperar. ¿Seguro?')) return;
+      c.classList.add('yendo');
+      var ruta = rutaEnStorage(p.foto_url);
+      pedir('/rest/v1/productos?id=eq.' + p.id, {
+        method: 'DELETE',
+        headers: { 'Prefer': 'return=representation' }
+      }).then(function () {
+        /* la foto se va con el producto: si falla, queda huérfana y no rompe nada */
+        if (!ruta) return null;
+        return pedir('/storage/v1/object/catalogo/' + ruta, { method: 'DELETE' })
+          .catch(function () { return null; });
+      }).then(function () { return cargar(); })
+        .catch(function (e) {
+          c.classList.remove('yendo');
+          window.alert('No se pudo borrar: ' + e.message);
+        });
+    });
+
+    var ir = document.createElement('a');
+    ir.className = 'btn btn-o';
+    ir.href = 'clientes/' + p.cliente_slug + '/#catalogo';
+    ir.target = '_blank';
+    ir.rel = 'noopener noreferrer';
+    ir.textContent = 'Ver en la página';
+
+    acc.appendChild(ver_); acc.appendChild(ir); acc.appendChild(no);
 
     d.appendChild(cl); d.appendChild(h); d.appendChild(pr); d.appendChild(ru);
     d.appendChild(de); d.appendChild(cu); d.appendChild(acc);
@@ -412,33 +452,21 @@
     return c;
   }
 
-  function decidir(tarjeta, p, estado, nota) {
-    tarjeta.classList.add('yendo');
-    pedir('/rest/v1/productos?id=eq.' + p.id, {
-      method: 'PATCH',
-      headers: { 'Prefer': 'return=representation' },
-      body: JSON.stringify({ estado: estado, nota: nota || null, revisado_en: new Date().toISOString() })
-    }).then(function (filas) {
-      if (!filas || !filas.length) throw new Error('No se pudo guardar.');
-      return cargar();
-    }).catch(function (e) {
-      tarjeta.classList.remove('yendo');
-      window.alert('No se pudo guardar: ' + e.message);
-    });
+  function pastilla(id, n, texto) {
+    var e = $(id);
+    e.textContent = '';
+    e.appendChild(document.createElement('b')).textContent = n;
+    e.appendChild(document.createTextNode(' ' + texto));
   }
 
   function pintar() {
     var cont = $('fichas');
     cont.textContent = '';
-    pendientes.forEach(function (p) { cont.appendChild(ficha(p)); });
-    ver('vacio', !pendientes.length);
-    $('pEsperando').innerHTML = '';
-    $('pEsperando').appendChild(document.createElement('b')).textContent = pendientes.length;
-    $('pEsperando').appendChild(document.createTextNode(' esperando'));
-    $('pAprobados').innerHTML = '';
-    $('pAprobados').appendChild(document.createElement('b')).textContent = aprobados.length;
-    $('pAprobados').appendChild(document.createTextNode(' aprobados sin publicar'));
-    ver('publicar', aprobados.length > 0);
+    productos.forEach(function (p) { cont.appendChild(ficha(p)); });
+    ver('vacio', !productos.length);
+    pastilla('pNuevos', productos.filter(esNuevo).length, 'nuevos');
+    pastilla('pTotal', productos.filter(function (p) { return p.visible !== false; }).length, 'en las páginas');
+    pastilla('pOcultos', productos.filter(function (p) { return p.visible === false; }).length, 'ocultos');
   }
 
   $('btnRecargar').addEventListener('click', function () {
@@ -447,83 +475,11 @@
       .then(function () { $('btnRecargar').disabled = false; });
   });
 
-  /* ---------- pasar lo aprobado al repositorio ---------- */
-  function numeroInicial(slug) {
-    try { return parseInt(localStorage.getItem(DESDE + '-' + slug), 10) || 85; } catch (e) { return 85; }
-  }
-  function guardarNumero(slug, n) {
-    try { localStorage.setItem(DESDE + '-' + slug, String(n)); } catch (e) {}
-  }
-  function escapar(s) {
-    return String(s || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\s+/g, ' ').trim();
-  }
-  function armarFilas() {
-    var n = {}, lineas = [];
-    aprobados.forEach(function (p) {
-      if (n[p.cliente_slug] === undefined) n[p.cliente_slug] = numeroInicial(p.cliente_slug);
-      var celda = p.foto ? n[p.cliente_slug]++ : 0;
-      lineas.push("    ['" + escapar(p.nombre) + "', " + p.precio + ", '" + escapar(p.rubro) +
-                  "', " + celda + ", '" + escapar(p.descripcion) + "'],");
-    });
-    return { texto: lineas.join('\n'), siguientes: n };
-  }
-
-  $('btnVerFilas').addEventListener('click', function () {
-    $('filas').textContent = armarFilas().texto;
-    ver('filas', true);
+  /* al salir queda marcado hasta acá: la próxima vez "nuevos" arranca de cero */
+  window.addEventListener('pagehide', function () {
+    try { localStorage.setItem(VISTO, String(Date.now())); } catch (e) {}
   });
-
-  function bajar(nombre, url) {
-    var a = document.createElement('a');
-    a.href = url; a.download = nombre;
-    document.body.appendChild(a); a.click(); a.remove();
-  }
-  $('btnBajarTodo').addEventListener('click', function () {
-    var r = armarFilas();
-    bajar('productos.txt', 'data:text/plain;charset=utf-8,' + encodeURIComponent(r.texto));
-    var n = {}, fotos = [];
-    aprobados.forEach(function (p) {
-      if (!p.foto) return;
-      if (n[p.cliente_slug] === undefined) n[p.cliente_slug] = numeroInicial(p.cliente_slug);
-      var num = n[p.cliente_slug]++;
-      fotos.push({ nombre: (num < 10 ? '0' + num : num) + '.jpg', datos: p.foto });
-    });
-    if (!fotos.length) { $('msgPublicar').textContent = 'Listo: se bajó productos.txt.'; return; }
-    var k = 0;
-    (function siguiente() {
-      if (k >= fotos.length) {
-        $('msgPublicar').className = 'msg bien';
-        $('msgPublicar').textContent = 'Listo: ' + fotos.length + ' fotos y productos.txt. Pegá las filas y subí las fotos al repositorio.';
-        return;
-      }
-      bajar(fotos[k].nombre, fotos[k].datos);
-      $('msgPublicar').className = 'msg';
-      $('msgPublicar').textContent = 'Bajando ' + (++k) + ' de ' + fotos.length + '…';
-      setTimeout(siguiente, 900);
-    })();
-  });
-
-  $('btnPublicado').addEventListener('click', function () {
-    if (!aprobados.length) return;
-    if (!window.confirm('Confirmás que ya subiste al repositorio los ' + aprobados.length +
-        ' productos aprobados? Se van a borrar de la cola.')) return;
-    var r = armarFilas();
-    Object.keys(r.siguientes).forEach(function (slug) { guardarNumero(slug, r.siguientes[slug]); });
-    var ids = aprobados.map(function (p) { return p.id; });
-    $('btnPublicado').disabled = true;
-    pedir('/rest/v1/productos?id=in.(' + ids.join(',') + ')', {
-      method: 'DELETE',
-      headers: { 'Prefer': 'return=representation' }
-    }).then(function () {
-      $('msgPublicar').className = 'msg bien';
-      $('msgPublicar').textContent = 'Cola vaciada. La numeración de fotos sigue desde donde quedó.';
-      ver('filas', false);
-      return cargar();
-    }).catch(function (e) {
-      $('msgPublicar').className = 'msg mal';
-      $('msgPublicar').textContent = 'No se pudo vaciar: ' + e.message;
-    }).then(function () { $('btnPublicado').disabled = false; });
-  });
+  try { visto = parseInt(localStorage.getItem(VISTO), 10) || 0; } catch (e) { visto = 0; }
 
   /* ---------- arranque ---------- */
   try { $('correoInp').value = localStorage.getItem(CORREO) || ''; } catch (e) {}
