@@ -900,13 +900,18 @@
       clearTimeout(corte);
       var yaEstan = {};
       P.forEach(function (p) { yaEstan[String(p[0]).toLowerCase()] = true; });
-      var sumados = 0;
+      /* lo recién cargado va ARRIBA: si la ferretería publica algo, lo primero
+         que tiene que ver el cliente es eso, no el producto número 85 */
+      var nuevos = [];
       filas.forEach(function (f) {
         if (!f || !f.nombre || yaEstan[String(f.nombre).toLowerCase()]) return;
-        P.push([f.nombre, f.precio, f.rubro, f.foto || 0, f.descripcion || '']);
-        sumados++;
+        nuevos.push([f.nombre, f.precio, f.rubro, f.foto || 0, f.descripcion || '']);
       });
-      if (sumados) { pintarFiltros(); pintar(); }
+      if (nuevos.length) {
+        nuevos.reverse();                    /* la base los da del más viejo al más nuevo */
+        P.unshift.apply(P, nuevos);
+        pintarFiltros(); pintar();
+      }
     }).catch(function () { /* sin conexión: el catálogo de siempre ya está en pantalla */ });
   })();
 
