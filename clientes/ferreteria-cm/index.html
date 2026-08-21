@@ -825,9 +825,11 @@
       if (!q) return true;
       return normal(p[0]).indexOf(q) >= 0 || normal(p[2]).indexOf(q) >= 0 || normal(p[4]).indexOf(q) >= 0;
     }).sort(function (a, b) {
+      var na = a[5] ? 0 : 1, nb = b[5] ? 0 : 1;
+      if (na !== nb) return na - nb;      /* lo que acaba de cargar la ferretería, primero */
       var fa = a[3] ? 0 : 1, fb = b[3] ? 0 : 1;
-      if (fa !== fb) return fa - fb;      /* los que tienen foto, primero */
-      return b[1] - a[1];                  /* después, del más caro al más barato */
+      if (fa !== fb) return fa - fb;      /* después, los que tienen foto */
+      return b[1] - a[1];                  /* y al final, del más caro al más barato */
     });
     var g = document.getElementById('grilla');
     g.textContent = '';
@@ -900,12 +902,13 @@
       clearTimeout(corte);
       var yaEstan = {};
       P.forEach(function (p) { yaEstan[String(p[0]).toLowerCase()] = true; });
-      /* lo recién cargado va ARRIBA: si la ferretería publica algo, lo primero
-         que tiene que ver el cliente es eso, no el producto número 85 */
+      /* Lo que carga la ferretería lleva un sexto campo en true. Eso es lo que
+         lo pone arriba de todo: el orden del array no alcanza, porque pintar()
+         reordena por foto y por precio antes de dibujar. */
       var nuevos = [];
       filas.forEach(function (f) {
         if (!f || !f.nombre || yaEstan[String(f.nombre).toLowerCase()]) return;
-        nuevos.push([f.nombre, f.precio, f.rubro, f.foto || 0, f.descripcion || '']);
+        nuevos.push([f.nombre, f.precio, f.rubro, f.foto || 0, f.descripcion || '', true]);
       });
       if (nuevos.length) {
         nuevos.reverse();                    /* la base los da del más viejo al más nuevo */
