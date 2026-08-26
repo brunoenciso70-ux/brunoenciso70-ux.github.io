@@ -219,17 +219,62 @@
     background:#161616; border:.5px solid rgba(247,246,242,.08);
     backface-visibility:hidden;
   }
-  /* las cuatro orientaciones tienen luz distinta: sin eso la torre se ve plana */
-  .cara.f{background:linear-gradient(#34322e,#26241f)}
-  .cara.r{background:linear-gradient(#242220,#191816)}
-  .cara.b{background:linear-gradient(#1d1c1a,#151413)}
-  .cara.l{background:linear-gradient(#171614,#100f0e)}
-  .cara.t{background:linear-gradient(120deg,#45423b,#26241f)}
-  /* las ventanas: una banda por piso, dibujada con un degradado repetido */
+  /* Las cuatro orientaciones tienen luz distinta: sin eso la torre se ve plana.
+     Los tonos salen de los renders: hormigón oscuro y cálido al atardecer. */
+  .cara.f{background:linear-gradient(#3a352d,#28231d)}
+  .cara.r{background:linear-gradient(#272320,#1a1815)}
+  .cara.b{background:linear-gradient(#201d19,#161412)}
+  .cara.l{background:linear-gradient(#1a1815,#12100e)}
+  .cara.t{background:linear-gradient(120deg,#48433a,#28241e)}
+  /* las ventanas: una banda por piso; el vidrio encendido, como en los renders */
   .cara.vidrio::after{
     content:""; position:absolute; inset:22% 8% 22% 8%;
     background:repeating-linear-gradient(90deg,
-      rgba(216,208,194,.30) 0 5px, transparent 5px 13px);
+      rgba(232,176,106,.40) 0 5px, rgba(216,208,194,.08) 5px 8px, transparent 8px 13px);
+  }
+  .cara.r.vidrio::after, .cara.l.vidrio::after{
+    background:repeating-linear-gradient(90deg,
+      rgba(232,176,106,.18) 0 5px, transparent 5px 13px);
+  }
+  /* el lobby de planta baja: vidrio de piso a techo, bien encendido */
+  .piso[data-piso="1"] .cara.vidrio::after{
+    inset:10% 5% 6% 5%;
+    background:repeating-linear-gradient(90deg,
+      rgba(238,196,132,.55) 0 9px, rgba(216,208,194,.14) 9px 11px, transparent 11px 15px);
+  }
+
+  /* ---------- los volúmenes que hacen que la torre parezca la del render ---------- */
+  .vol{position:absolute; left:50%; top:50%; transform-style:preserve-3d; pointer-events:none}
+  .losa3d .cara{background:linear-gradient(#78705f,#57504a); border:0}
+  .baranda{
+    position:absolute; left:50%; top:50%; pointer-events:none;
+    background:linear-gradient(rgba(188,208,218,.17), rgba(188,208,218,.04));
+    border-top:1px solid rgba(240,245,248,.38);
+    backface-visibility:hidden;
+  }
+  .franja{
+    position:absolute; left:50%; top:50%; pointer-events:none;
+    background:linear-gradient(#ece7dc,#d3ccbe);
+    box-shadow:inset -2px 0 3px rgba(0,0,0,.25);
+    backface-visibility:hidden;
+  }
+  .remate .cara{background:linear-gradient(#191821,#111017); border-color:rgba(247,246,242,.10)}
+  .cartelTorre{
+    position:absolute; left:50%; top:50%; pointer-events:none;
+    display:grid; place-items:center; align-content:center; gap:6%;
+    background:#14131b; border:.5px solid rgba(247,246,242,.14);
+    backface-visibility:hidden;
+  }
+  .cartelTorre .barras{display:flex; gap:12%; height:26%; align-items:flex-end; justify-content:center; width:40%}
+  .cartelTorre .barras i{flex:1; background:#F7F6F2; opacity:.92}
+  .cartelTorre .barras i:nth-child(1){height:55%}
+  .cartelTorre .barras i:nth-child(2){height:75%}
+  .cartelTorre .barras i:nth-child(3){height:100%}
+  .cartelTorre .barras i:nth-child(4){height:75%}
+  .cartelTorre .barras i:nth-child(5){height:55%}
+  .cartelTorre b{
+    color:#F7F6F2; font-weight:700; line-height:1.15; text-align:center;
+    letter-spacing:.14em; text-shadow:0 0 6px rgba(247,246,242,.45);
   }
   .piso.sel .cara{
     background:rgba(184,149,90,.30); border-color:var(--oro);
@@ -822,12 +867,72 @@
       var d = (p === 1) ? D * 1.18 : D;
       el.style.transform = 'translate(-50%,-50%) translateY(' +
         (total/2 - (p - 0.5) * H) + 'px)';
-      caja(el, w, H - 1.5, d, o.vidrio && p >= 2);
+      caja(el, w, H - 1.5, d, (o.vidrio && p >= 2) || (o.detalle && p === 1));
+
+      /* con detalle, cada piso lleva su losa saliente y su baranda de vidrio */
+      if (o.detalle && p >= 2){
+        var losa = doc.createElement('div');
+        losa.className = 'vol losa3d';
+        losa.style.transform = 'translate(-50%,-50%) translateY(' + (H/2 - 1.2) + 'px)';
+        caja(losa, w * 1.08, 2.4, d * 1.08, false);
+        el.appendChild(losa);
+        var zb = (d * 1.08) / 2 - 1;
+        [1, -1].forEach(function(lado){
+          var bar = doc.createElement('span');
+          bar.className = 'baranda';
+          bar.style.width  = (w * 0.90) + 'px';
+          bar.style.height = (H * 0.40) + 'px';
+          bar.style.transform = 'translate(-50%,-50%) ' +
+            (lado < 0 ? 'rotateY(180deg) ' : '') +
+            'translateY(' + (H * 0.09) + 'px) translateZ(' + zb + 'px)';
+          el.appendChild(bar);
+        });
+      }
       if (p <= OBRA.hechos) el.className += ' hecho';
       else if (p === OBRA.curso) el.className += ' curso';
       else el.className += ' pend';
       torre.appendChild(el);
     }
+
+    if (o.detalle){
+      /* la franja blanca del núcleo, la firma del edificio */
+      var fr = doc.createElement('span');
+      fr.className = 'franja';
+      fr.style.width  = (W * 0.14) + 'px';
+      fr.style.height = (total - H * 1.2) + 'px';
+      fr.style.transform = 'translate(-50%,-50%) translateX(' + (-W * 0.10) + 'px) ' +
+        'translateY(' + (-H * 0.6) + 'px) translateZ(' + (D / 2 + 4.5) + 'px)';
+      torre.appendChild(fr);
+
+      /* el parapeto de la azotea */
+      var par = doc.createElement('div');
+      par.className = 'vol losa3d';
+      par.style.transform = 'translate(-50%,-50%) translateY(' + (-total/2 - 1) + 'px)';
+      caja(par, W * 1.05, 2.6, D * 1.05, false);
+      torre.appendChild(par);
+
+      /* el remate con el cartel */
+      var altoRem = H * 2.1, anchoRem = W * 0.34, profRem = D * 0.5;
+      var rem = doc.createElement('div');
+      rem.className = 'vol remate';
+      rem.style.transform = 'translate(-50%,-50%) translateY(' + (-total/2 - altoRem/2 + 0.5) + 'px)';
+      caja(rem, anchoRem, altoRem, profRem, false);
+      [1, -1].forEach(function(lado){
+        var cartel = doc.createElement('span');
+        cartel.className = 'cartelTorre';
+        cartel.style.width  = anchoRem + 'px';
+        cartel.style.height = altoRem + 'px';
+        cartel.style.transform = 'translate(-50%,-50%) ' +
+          (lado < 0 ? 'rotateY(180deg) ' : '') +
+          'translateZ(' + (profRem/2 + 0.8) + 'px)';
+        cartel.style.fontSize = Math.max(6, H * 0.34) + 'px';
+        cartel.innerHTML = '<span class="barras"><i></i><i></i><i></i><i></i><i></i></span>' +
+          '<b>SKY<br>TOWER</b>';
+        rem.appendChild(cartel);
+      });
+      torre.appendChild(rem);
+    }
+
     esc.appendChild(torre);
     destino.appendChild(esc);
     return { esc: esc, torre: torre };
@@ -846,13 +951,21 @@
       o.esc.classList.add('agarrable');
       o.esc.addEventListener('pointerdown', function(e){
         st.arrastrando = true; st.px = e.clientX; st.py = e.clientY;
+        st.capturado = false; st.pid = e.pointerId;
         o.esc.classList.add('agarrando');
-        if (o.esc.setPointerCapture) { try { o.esc.setPointerCapture(e.pointerId); } catch(err){} }
+        /* OJO: capturar acá rompería el "tocá un piso": con el puntero
+           capturado, el click del final va a la escena y no al piso.
+           La captura arranca recién cuando hay arrastre de verdad. */
       });
       o.esc.addEventListener('pointermove', function(e){
         if (!st.arrastrando) return;
-        st.ry += (e.clientX - st.px) * 0.42;
-        st.rx = Math.max(-32, Math.min(46, st.rx - (e.clientY - st.py) * 0.26));
+        var dx = e.clientX - st.px, dy = e.clientY - st.py;
+        if (!st.capturado && (Math.abs(dx) > 3 || Math.abs(dy) > 3)){
+          st.capturado = true;
+          if (o.esc.setPointerCapture) { try { o.esc.setPointerCapture(st.pid); } catch(err){} }
+        }
+        st.ry += dx * 0.42;
+        st.rx = Math.max(-32, Math.min(46, st.rx - dy * 0.26));
         st.px = e.clientX; st.py = e.clientY; st.sucio = true;
       });
       ['pointerup','pointercancel','pointerleave'].forEach(function(ev){
@@ -1189,7 +1302,7 @@
     var h = visorEscena.clientHeight || 400;
     var alto = Math.max(9, Math.min(24, Math.floor((h * 0.74) / PROYECTO.pisos)));
     return { pisos:PROYECTO.pisos, ancho:Math.round(alto*5.6), prof:Math.round(alto*4.4),
-             altoPiso:alto, vidrio:true };
+             altoPiso:alto, vidrio:true, detalle:true };
   }
 
   function armarGrande(){
