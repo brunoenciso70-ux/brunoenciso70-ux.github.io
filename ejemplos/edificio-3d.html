@@ -10,6 +10,8 @@
 <meta name="theme-color" content="#0A0A0A">
 <title>Sky Tower — Anteproyecto de demostración · KatuWeb</title>
 <meta name="description" content="Demo de venta de edificio en construcción: maquetas 3D que acompañan el relato y un visor donde se elige el piso y se ve la disponibilidad real de cada unidad.">
+<meta property="og:title" content="Sky Tower — Anteproyecto de demostración">
+<meta property="og:image" content="https://katuweb.com/ejemplos/img/sky-tower/fachada-hero.webp">
 <!--
   DEMO KatuWeb · Edificio en 3D · KTW-5QJTN
 
@@ -101,7 +103,7 @@
     background:linear-gradient(transparent, rgba(216,208,194,.05));
     pointer-events:none;
   }
-  .portada .contenido{position:relative; z-index:2}
+  .portada .contenido{position:relative; z-index:2; text-shadow:0 1px 14px rgba(0,0,0,.55)}
   .kick{font-size:11px; letter-spacing:.4em; text-transform:uppercase; color:var(--oro)}
   .portada h1{font-size:clamp(46px,11vw,132px); margin:16px 0 6px; letter-spacing:-.04em}
   .lema{font-size:clamp(16px,2.4vw,22px); color:var(--arena); margin:0 0 10px}
@@ -139,6 +141,48 @@
   .maq{
     position:relative; width:100%; height:min(58vh,430px);
     display:grid; place-items:center;
+  }
+
+  /* ---------- renders reales ---------- */
+  .portadaFoto{
+    position:absolute; inset:0; width:100%; height:100%;
+    object-fit:cover; object-position:center 30%; z-index:0;
+  }
+  .portadaVelo{
+    position:absolute; inset:0; z-index:1; pointer-events:none;
+    background:linear-gradient(rgba(10,10,10,.72), rgba(10,10,10,.52) 46%, rgba(10,10,10,.62) 78%, var(--negro));
+  }
+  .fotoBtn{
+    -webkit-appearance:none; appearance:none; border:0; padding:0; margin:0;
+    background:none; cursor:pointer; position:relative; display:block;
+    width:100%; font-family:inherit;
+  }
+  .fotoBtn img{
+    display:block; width:100%; height:auto; max-height:560px; object-fit:cover;
+    border-radius:16px; border:1px solid var(--linea);
+  }
+  .fotoBtn .pill3d{
+    position:absolute; left:50%; bottom:14px; transform:translateX(-50%);
+    display:inline-flex; align-items:center; gap:9px; min-height:40px; padding:0 18px;
+    background:rgba(10,10,10,.72); border:1px solid var(--linea); border-radius:40px;
+    color:var(--blanco); font-size:13.5px; letter-spacing:.02em; white-space:nowrap;
+    backdrop-filter:blur(6px);
+  }
+  .fotoBtn .pill3d::before{content:''; width:7px; height:7px; border-radius:50%; background:var(--oro)}
+  .galFotos{
+    display:grid; gap:12px; grid-template-columns:repeat(2,1fr); margin-top:36px;
+  }
+  @media (min-width:720px){ .galFotos{grid-template-columns:repeat(3,1fr); gap:14px} }
+  .galFotos figure{margin:0; position:relative}
+  .galFotos img{
+    display:block; width:100%; height:100%; aspect-ratio:3/2; object-fit:cover;
+    border-radius:12px; border:1px solid var(--linea);
+  }
+  .galFotos figcaption{
+    position:absolute; left:10px; bottom:10px; padding:4px 11px; border-radius:30px;
+    background:rgba(10,10,10,.72); border:1px solid var(--linea);
+    font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--arena);
+    backdrop-filter:blur(6px);
   }
   .maq .piso0{
     position:absolute; left:12%; right:12%; bottom:8%; height:14px; border-radius:50%;
@@ -386,14 +430,16 @@
 
   <!-- ============ portada ============ -->
   <section class="portada">
+    <img class="portadaFoto" src="img/sky-tower/fachada-hero.webp" width="1672" height="941"
+         alt="" aria-hidden="true" fetchpriority="high">
+    <span class="portadaVelo" aria-hidden="true"></span>
     <span class="piso0" aria-hidden="true"></span>
     <div class="contenido">
-      <div class="torrePortada" id="torrePortada" data-maqueta="hero" data-abre="torre" aria-hidden="true"></div>
       <p class="kick">Nuevo proyecto residencial · Ciudad del Este</p>
       <h1>Sky Tower</h1>
       <p class="lema">Una nueva forma de vivir la ciudad.</p>
       <p class="d">Dieciocho pisos sobre la avenida, con vista al río y a la frontera.
-      Tocá cualquier maqueta y entrá al edificio en 3D: elegís el piso y ves qué está libre.</p>
+      Tocá cualquier imagen y entrá al edificio en 3D: elegís el piso y ves qué está libre.</p>
       <div class="ctas">
         <button class="btOro" type="button" data-abre="unidades">Ver disponibilidad</button>
         <a class="btGhost" href="#proyecto">Explorar el proyecto</a>
@@ -420,8 +466,12 @@
           <div class="dato"><b data-cuenta="2028">2028</b><span>Entrega</span></div>
         </div>
       </div>
-      <div class="maq" data-maqueta="torre" data-abre="torre">
-        <span class="piso0" aria-hidden="true"></span>
+      <div class="maq" style="height:auto">
+        <button class="fotoBtn" type="button" data-abre="torre">
+          <img src="img/sky-tower/fachada-torre.webp" width="800" height="941" loading="lazy"
+               alt="Render de la fachada de Sky Tower al atardecer, vista desde la avenida">
+          <span class="pill3d">Abrir el edificio en 3D</span>
+        </button>
       </div>
     </div>
   </section>
@@ -438,8 +488,22 @@
         queda libre en ese nivel.</p>
         <button class="btOro" type="button" data-abre="unidades">Ver disponibilidad</button>
       </div>
-      <div class="maq" data-maqueta="planta" data-abre="unidades">
-        <span class="piso0" aria-hidden="true"></span>
+      <div class="maq" style="height:auto">
+        <button class="fotoBtn" type="button" data-abre="unidades">
+          <img src="img/sky-tower/plano-3d-tipo01.webp" width="1536" height="1024" loading="lazy"
+               alt="Plano del departamento de 3 dormitorios Tipo 01, 136 m² totales, pisos 3 al 18">
+          <span class="pill3d">Ver disponibilidad por piso</span>
+        </button>
+      </div>
+    </div>
+    <div class="env">
+      <div class="galFotos">
+        <figure><img src="img/sky-tower/interior-living.webp" loading="lazy" alt="Living comedor integrado con vista a la ciudad"><figcaption>Living</figcaption></figure>
+        <figure><img src="img/sky-tower/interior-comedor.webp" loading="lazy" alt="Comedor con cocina integrada de isla"><figcaption>Comedor</figcaption></figure>
+        <figure><img src="img/sky-tower/interior-balcon.webp" loading="lazy" alt="Balcón amplio con parrilla y vista abierta"><figcaption>Balcón</figcaption></figure>
+        <figure><img src="img/sky-tower/interior-dormitorio.webp" loading="lazy" alt="Dormitorio principal en suite"><figcaption>Suite</figcaption></figure>
+        <figure><img src="img/sky-tower/interior-dorm2.webp" loading="lazy" alt="Dormitorio secundario con escritorio"><figcaption>Dormitorio</figcaption></figure>
+        <figure><img src="img/sky-tower/interior-bano.webp" loading="lazy" alt="Baño con ducha de vidrio"><figcaption>Baño</figcaption></figure>
       </div>
     </div>
   </section>
@@ -459,8 +523,22 @@
           <li>Lavandería y área infantil <b>Planta baja</b></li>
         </ul>
       </div>
-      <div class="maq" data-maqueta="corona" data-abre="torre">
-        <span class="piso0" aria-hidden="true"></span>
+      <div class="maq" style="height:auto">
+        <button class="fotoBtn" type="button" data-abre="torre">
+          <img src="img/sky-tower/rooftop-aereo-pileta.webp" width="768" height="341" loading="lazy"
+               alt="Vista aérea del rooftop de Sky Tower con piscina y terrazas al atardecer">
+          <span class="pill3d">Ver la corona en 3D</span>
+        </button>
+      </div>
+    </div>
+    <div class="env">
+      <div class="galFotos">
+        <figure><img src="img/sky-tower/rooftop-pileta.webp" loading="lazy" alt="Piscina del rooftop con reposeras al atardecer"><figcaption>Piscina · P18</figcaption></figure>
+        <figure><img src="img/sky-tower/gimnasio.webp" loading="lazy" alt="Gimnasio con equipos frente al ventanal"><figcaption>Gimnasio · P18</figcaption></figure>
+        <figure><img src="img/sky-tower/coworking.webp" loading="lazy" alt="Sala de coworking con mesas y vista a la ciudad"><figcaption>Coworking · P18</figcaption></figure>
+        <figure><img src="img/sky-tower/rooftop-quincho.webp" loading="lazy" alt="Quincho con parrilla y mesa bajo pérgola"><figcaption>Quincho · P17</figcaption></figure>
+        <figure><img src="img/sky-tower/lounge.webp" loading="lazy" alt="Lounge y sala de usos múltiples"><figcaption>SUM · P17</figcaption></figure>
+        <figure><img src="img/sky-tower/rooftop-fogon.webp" loading="lazy" alt="Estar exterior con fogón de noche"><figcaption>Fogón · P17</figcaption></figure>
       </div>
     </div>
   </section>
@@ -500,8 +578,12 @@
           <li>Aeropuerto <b>18 min</b></li>
         </ul>
       </div>
-      <div class="maq" data-maqueta="manzana" data-abre="torre">
-        <span class="piso0" aria-hidden="true"></span>
+      <div class="maq" style="height:auto">
+        <button class="fotoBtn" type="button" data-abre="torre">
+          <img src="img/sky-tower/aerea-barrio.webp" width="512" height="342" loading="lazy"
+               alt="Vista aérea del barrio con Sky Tower destacándose entre las casas y edificios bajos">
+          <span class="pill3d">Abrir el edificio en 3D</span>
+        </button>
       </div>
     </div>
   </section>
