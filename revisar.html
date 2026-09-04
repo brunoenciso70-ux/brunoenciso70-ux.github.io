@@ -95,6 +95,7 @@
   .ficha .cuando { font-size: 12px; color: var(--gris2); margin-top: 10px; }
   .ficha .acc { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
   .ficha.yendo { opacity: .45; pointer-events: none; }
+  .ficha.agotado-fila { opacity: .6; }
 
   .vacio { text-align: center; color: var(--gris); padding: 50px 20px; border: 1px dashed var(--linea2); border-radius: 13px; margin-top: 22px; }
   .vacio b { display: block; color: var(--blanco); font-size: 17px; margin-bottom: 6px; }
@@ -287,7 +288,7 @@
   /* ---------- productos ya publicados: borrar uno ---------- */
   function fichaPublicado(p) {
     var c = document.createElement('article');
-    c.className = 'ficha';
+    c.className = 'ficha' + (p.agotado ? ' agotado-fila' : '');
     var inn = document.createElement('div');
     inn.className = 'ficha-in';
 
@@ -306,10 +307,28 @@
     var cl = document.createElement('div'); cl.className = 'cliente'; cl.textContent = p.cliente_slug;
     var h = document.createElement('h3'); h.textContent = p.nombre;
     var pr = document.createElement('div'); pr.className = 'precio'; pr.textContent = gs(p.precio);
+    if (p.agotado) {
+      var eti = document.createElement('span');
+      eti.textContent = 'AGOTADO';
+      eti.style.cssText = 'margin-left:8px; font-size:11px; font-weight:800; color:var(--no); border:1px solid var(--no); border-radius:6px; padding:2px 7px; vertical-align:middle';
+      pr.appendChild(eti);
+    }
     var ru = document.createElement('div'); ru.className = 'rubro'; ru.textContent = p.rubro;
     var cu = document.createElement('div'); cu.className = 'cuando'; cu.textContent = 'Publicado el ' + cuando(p.creado_en);
 
     var acc = document.createElement('div'); acc.className = 'acc';
+    var ag = document.createElement('button');
+    ag.className = 'btn btn-o';
+    ag.textContent = p.agotado ? 'Marcar disponible' : 'Marcar agotado';
+    ag.addEventListener('click', function () {
+      ag.disabled = true;
+      pedirPanel('alternar_agotado', { id: p.id, agotado: !p.agotado }).then(function () {
+        return cargar();
+      }).catch(function (e) {
+        ag.disabled = false;
+        window.alert('No se pudo guardar: ' + e.message);
+      });
+    });
     var bo = document.createElement('button'); bo.className = 'btn btn-no'; bo.textContent = 'Borrar';
     bo.addEventListener('click', function () {
       if (!window.confirm('¿Borrar "' + p.nombre + '" de ' + p.cliente_slug + '? No se puede deshacer.')) return;
@@ -321,7 +340,7 @@
         window.alert('No se pudo borrar: ' + e.message);
       });
     });
-    acc.appendChild(bo);
+    acc.appendChild(ag); acc.appendChild(bo);
 
     d.appendChild(cl); d.appendChild(h); d.appendChild(pr); d.appendChild(ru);
     d.appendChild(cu); d.appendChild(acc);
