@@ -173,6 +173,12 @@
     <div class="msg" id="msgPublicar"></div>
     <pre class="oculto" id="filas"></pre>
   </div>
+
+  <h1 style="margin-top:44px">Productos publicados</h1>
+  <p class="sub">Lo que ya está en la página de cada cliente. Borrar acá lo saca del catálogo y
+  de la foto guardada, al instante.</p>
+  <div class="fichas" id="fichasPublicados"></div>
+  <div class="vacio oculto" id="vacioPublicados"><b>No hay productos publicados</b>Todavía no hay nada en ningún catálogo.</div>
 </div>
 
 <script>
@@ -278,6 +284,52 @@
     });
   }
 
+  /* ---------- productos ya publicados: borrar uno ---------- */
+  function fichaPublicado(p) {
+    var c = document.createElement('article');
+    c.className = 'ficha';
+    var inn = document.createElement('div');
+    inn.className = 'ficha-in';
+
+    var foto = document.createElement('div');
+    foto.className = 'foto' + (p.foto ? '' : ' sin');
+    if (p.foto) {
+      var im = document.createElement('img');
+      im.src = p.foto; im.alt = p.nombre;
+      foto.appendChild(im);
+    } else {
+      foto.textContent = 'Sin foto';
+    }
+
+    var d = document.createElement('div');
+    d.className = 'datos';
+    var cl = document.createElement('div'); cl.className = 'cliente'; cl.textContent = p.cliente_slug;
+    var h = document.createElement('h3'); h.textContent = p.nombre;
+    var pr = document.createElement('div'); pr.className = 'precio'; pr.textContent = gs(p.precio);
+    var ru = document.createElement('div'); ru.className = 'rubro'; ru.textContent = p.rubro;
+    var cu = document.createElement('div'); cu.className = 'cuando'; cu.textContent = 'Publicado el ' + cuando(p.creado_en);
+
+    var acc = document.createElement('div'); acc.className = 'acc';
+    var bo = document.createElement('button'); bo.className = 'btn btn-no'; bo.textContent = 'Borrar';
+    bo.addEventListener('click', function () {
+      if (!window.confirm('¿Borrar "' + p.nombre + '" de ' + p.cliente_slug + '? No se puede deshacer.')) return;
+      c.classList.add('yendo');
+      pedirPanel('borrar', { id: p.id }).then(function () {
+        return cargar();
+      }).catch(function (e) {
+        c.classList.remove('yendo');
+        window.alert('No se pudo borrar: ' + e.message);
+      });
+    });
+    acc.appendChild(bo);
+
+    d.appendChild(cl); d.appendChild(h); d.appendChild(pr); d.appendChild(ru);
+    d.appendChild(cu); d.appendChild(acc);
+    inn.appendChild(foto); inn.appendChild(d);
+    c.appendChild(inn);
+    return c;
+  }
+
   function pintar() {
     var cont = $('fichas');
     cont.textContent = '';
@@ -290,6 +342,11 @@
     $('pAprobados').appendChild(document.createElement('b')).textContent = aprobados.length;
     $('pAprobados').appendChild(document.createTextNode(' aprobados sin publicar'));
     ver('publicar', aprobados.length > 0);
+
+    var contPub = $('fichasPublicados');
+    contPub.textContent = '';
+    aprobados.forEach(function (p) { contPub.appendChild(fichaPublicado(p)); });
+    ver('vacioPublicados', !aprobados.length);
   }
 
   $('btnRecargar').addEventListener('click', function () {
