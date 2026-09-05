@@ -116,6 +116,8 @@
 
   /* ---------- lo que ya está publicado ---------- */
   .prod.oculto { opacity: .6; }
+  .prod.agotado .foto img { filter: grayscale(1); opacity: .75; }
+  .prod .estado.agotado { background: #fee2e2; color: #b91c1c; }
   .prod .acciones { display: flex; gap: 8px; padding: 0 14px 14px; flex-wrap: wrap; }
   .prod .acciones .btn { width: auto; flex: 1 1 92px; padding: 11px 12px; font-size: 14.5px; }
   .prod .acciones .btn.borrar { color: var(--falta); }
@@ -643,7 +645,7 @@
 
   function tarjetaPub(p) {
     var c = document.createElement('div');
-    c.className = 'prod' + (p.visible ? '' : ' oculto');
+    c.className = 'prod' + (p.visible ? '' : ' oculto') + (p.agotado ? ' agotado' : '');
 
     var top = document.createElement('div');
     top.className = 'prod-top';
@@ -662,8 +664,8 @@
     nom.className = 'orden';
     nom.textContent = p.nombre;
     var det = document.createElement('div');
-    det.className = 'estado ' + (p.visible ? 'listo' : 'falta');
-    det.textContent = (p.visible ? 'En la página · ' : 'Oculto · ') + gs(p.precio);
+    det.className = 'estado ' + (!p.visible ? 'falta' : (p.agotado ? 'agotado' : 'listo'));
+    det.textContent = (!p.visible ? 'Oculto · ' : (p.agotado ? 'Agotado · ' : 'En la página · ')) + gs(p.precio);
     cabe.appendChild(nom); cabe.appendChild(det);
 
     top.appendChild(foto); top.appendChild(cabe);
@@ -698,7 +700,21 @@
       }).catch(function (e) { bDel.disabled = false; decirPub(e.message, true); });
     });
 
-    acc.appendChild(bEdit); acc.appendChild(bVer); acc.appendChild(bDel);
+    /* Sin stock: el producto se queda en la página pero no se puede pedir.
+       Es distinto de "Ocultar", que lo saca del catálogo por completo. */
+    var bStock = document.createElement('button');
+    bStock.className = 'btn btn-s'; bStock.type = 'button';
+    bStock.textContent = p.agotado ? 'Hay stock' : 'Sin stock';
+    bStock.addEventListener('click', function () {
+      bStock.disabled = true;
+      fn('editar', { id: p.id, agotado: !p.agotado }).then(function (d) {
+        p.agotado = !!d.producto.agotado;
+        pintarPublicados();
+        decirPub(p.agotado ? 'Se marcó como agotado.' : 'Volvió a estar disponible.');
+      }).catch(function (e) { bStock.disabled = false; decirPub(e.message, true); });
+    });
+
+    acc.appendChild(bEdit); acc.appendChild(bStock); acc.appendChild(bVer); acc.appendChild(bDel);
 
     var editor = document.createElement('div');
     editor.className = 'prod-campos';
@@ -767,7 +783,7 @@
         fn('editar', cambios).then(function (d) {
           var q = d.producto;
           p.nombre = q.nombre; p.precio = q.precio; p.rubro = q.rubro;
-          p.descripcion = q.descripcion; p.visible = q.visible;
+          p.descripcion = q.descripcion; p.visible = q.visible; p.agotado = !!q.agotado;
           if (q.foto) p.foto = q.foto;
           pintarPublicados();
           decirPub('Cambio guardado. Ya se ve en la página.');

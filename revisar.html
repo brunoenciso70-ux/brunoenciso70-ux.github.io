@@ -187,7 +187,25 @@
   'use strict';
 
   var FUNC = 'https://iknrqmtliixxmxyjhlkt.supabase.co/functions/v1/panel-admin';
-  var TOKEN = new URLSearchParams(location.search).get('token') || '';
+  /* El token entra por el link, pero no se queda en la barra de direcciones:
+     lo guardamos en la pestaña (sessionStorage) y limpiamos la URL. Así no
+     queda en el historial ni se copia sin querer al pasar el link. */
+  var LLAVE_TOKEN = 'katuweb-revisar-token';
+  var TOKEN = '';
+  (function tomarToken() {
+    var enUrl = new URLSearchParams(location.search).get('token') || '';
+    if (enUrl) {
+      TOKEN = enUrl;
+      try { sessionStorage.setItem(LLAVE_TOKEN, enUrl); } catch (e) {}
+      try {
+        var u = new URL(location.href);
+        u.searchParams.delete('token');
+        history.replaceState(null, '', u.pathname + (u.search || '') + u.hash);
+      } catch (e) {}
+    } else {
+      try { TOKEN = sessionStorage.getItem(LLAVE_TOKEN) || ''; } catch (e) { TOKEN = ''; }
+    }
+  })();
   var DESDE = 'katuweb-revisar-desde';   /* por cliente: en qué número va la numeración de fotos */
 
   var pendientes = [];
@@ -460,6 +478,7 @@
       ver('pantEntrar', false);
       ver('pantPanel', true);
     }).catch(function (e) {
+      try { sessionStorage.removeItem(LLAVE_TOKEN); } catch (er) {}
       ver('pantEntrar', true);
       decirEntrar(e.message || 'Acceso no autorizado.');
     });
