@@ -1,0 +1,47 @@
+# Mantiene despierto el proyecto Supabase de KatuWeb.
+#
+# El plan gratuito PAUSA el proyecto cuando pasa una semana sin ninguna
+# consulta. Si eso ocurre, el catálogo de los clientes deja de cargar hasta
+# que alguien lo despierta a mano desde el panel de Supabase.
+#
+# Este trabajo pide el catálogo cada 3 días: alcanza para que Supabase lo
+# cuente como actividad y el proyecto nunca se duerma.
+#
+# OJO: GitHub apaga los trabajos programados si el repositorio pasa 60 días
+# sin ningún commit. Si eso llega a pasar, se vuelve a activar desde la
+# pestaña Actions del repositorio.
+
+name: Mantener Supabase despierto
+
+on:
+  schedule:
+    - cron: '17 9 */3 * *'   # cada 3 días, 09:17 UTC (06:17 en Paraguay)
+  workflow_dispatch:          # también se puede correr a mano
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pedir el catálogo de Ferretería CM
+        run: |
+          set -euo pipefail
+          API="https://iknrqmtliixxmxyjhlkt.supabase.co"
+          # Llave publicable: es pública por diseño, la misma que usa la página.
+          LLAVE="sb_publishable_kMfQtsofPTiUUeFxNG66Pw_H3YX12oB"
+
+          codigo=$(curl -s -o respuesta.json -w '%{http_code}' \
+            -X POST "$API/rest/v1/rpc/productos_publicados" \
+            -H "apikey: $LLAVE" \
+            -H "Content-Type: application/json" \
+            -d '{"p_slug":"ferreteria-cm"}')
+
+          echo "HTTP $codigo"
+          cuantos=$(python3 -c "import json;print(len(json.load(open('respuesta.json'))))" 2>/dev/null || echo 0)
+          echo "Productos devueltos: $cuantos"
+
+          if [ "$codigo" != "200" ] || [ "$cuantos" = "0" ]; then
+            echo "::error::Supabase no devolvió el catálogo (HTTP $codigo, $cuantos productos)."
+            head -c 500 respuesta.json || true
+            exit 1
+          fi
+          echo "Supabase responde bien."

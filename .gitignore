@@ -1,0 +1,9 @@
+# Cache local de Wrangler (Cloudflare). No va al repositorio:
+# guarda el id de cuenta y el mail, y el repo es publico.
+.wrangler/
+
+# Basura de Windows y de editores
+Thumbs.db
+desktop.ini
+.DS_Store
+.vscode/
